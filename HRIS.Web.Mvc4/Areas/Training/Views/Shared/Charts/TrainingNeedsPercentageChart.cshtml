@@ -1,0 +1,138 @@
+﻿@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-tnp" class="chart-params">
+        @* From Date *@
+        <div id="from-date-tnp" style="float:@pageDir;width:48%;">
+            <div class="control control-from-date-tnp">
+                <div class="k-edit-label">
+                    <label for="fromDateTnp">@GlobalResource.FromDate</label>
+                </div>
+                <div data-container-for="fromDateTnp" class="k-edit-field">
+                    <input id="fromDateTnp" />
+                </div>
+
+            </div>
+        </div>
+        @* To Date *@
+        <div id="to-date-tnp" style="float:@pageDir;width:48%;">
+            <div class="control control-to-date-tnp">
+                <div class="k-edit-label">
+                    <label for="toDateTnp">@GlobalResource.ToDate</label>
+                </div>
+                <div data-container-for="toDateTnp" class="k-edit-field">
+                    <input id="toDateTnp" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div id="training-need-percentage-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+    function getTrainingNeedsPercentage() {
+        var date = new Date();
+        date.setMonth(date.getMonth() - 1);
+
+        $('#fromDateTnp').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth(), 1),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showTrainingNeedsPercentageChart();
+            }
+        });
+
+        $('#toDateTnp').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showTrainingNeedsPercentageChart();
+            }
+        });
+
+        setTimeout(function () { showTrainingNeedsPercentageChart(); }, 500);
+    }
+
+    function showTrainingNeedsPercentageChart() {
+       
+        var fromKendoDatePicker = $('#fromDateTnp').data('kendoDatePicker');
+        var fromDate = fromKendoDatePicker.value();
+
+        var toKendoDatePicker = $('#toDateTnp').data('kendoDatePicker');
+        var toDate = toKendoDatePicker.value();
+
+        window.Souccar.ajax('@Url.Action("TrainingNeedsPercentage", "Dashboard", new { area = "Training" })', { fromDate: fromDate, toDate: toDate }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success)
+                initTrainingNeedsPercentageChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:showTrainingNeedsPercentageChart');
+        }
+    }
+
+    function initTrainingNeedsPercentageChart(data) {
+        
+        var colors = [getDefaultThemeColor(), '#434348', '#7CB5EC', '#F45B5B'];
+
+        Highcharts.chart('training-need-percentage-chart', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TrainingNeedsPercentage)'
+            },
+
+            tooltip: {
+                enabled: false
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<br>{point.percentage:.1f} %',
+                        distance: -50
+                    },
+                    showInLegend: true
+                }
+            },
+            colors: colors,
+            series: [{
+
+                data: [
+                     {
+                        name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.ManualEntry) ' + data.ManualEntry + ' %',
+                        y: data.ManualEntry
+                    },
+                    {
+                        name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.Appraisal) ' + data.Appraisal + ' %',
+                        y: data.Appraisal
+                    }, {
+                        name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.Probation) ' + data.Probation + ' %',
+                        y: data.Probation
+                    }]
+            }]
+        });
+    }
+</script>

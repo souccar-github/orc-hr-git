@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="08/16/2016 15:07:02" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvtAuagZpKU5MDrhfP1cKqYA==">
+      <TableDataSource Name="Table1" Alias="DataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     dbo.Employee.Id, dbo.Employee.FirstName + ' ' + dbo.Employee.LastName + ' ' + dbo.Employee.FatherName AS FullName, dbo.Employee.Code,&#13;&#10;                          (SELECT     dbo.Node.Id&#13;&#10;                             FROM         dbo.Node INNER JOIN&#13;&#10;                                                   dbo.JobDescription ON dbo.Node.Id = dbo.JobDescription.Node_id INNER JOIN&#13;&#10;                                                   dbo.Position ON dbo.JobDescription.Id = dbo.Position.JobDescription_id INNER JOIN&#13;&#10;                                                   dbo.AssigningEmployeeToPosition ON dbo.Position.AssigningEmployeeToPosition_id = dbo.AssigningEmployeeToPosition.Id AND &#13;&#10;                                                   dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id&#13;&#10;                             WHERE     (dbo.Node.IsVertualDeleted = 0) AND (dbo.JobDescription.IsVertualDeleted = 0) AND (dbo.Position.IsVertualDeleted = 0) AND &#13;&#10;                                                   (dbo.AssigningEmployeeToPosition.IsVertualDeleted = 0)) AS NodeId, dbo.EmployeeTermination.CreationDate, dbo.EmployeeCard.StartWorkingDate, &#13;&#10;                      dbo.EmployeeTermination.LastWorkingDate, dbo.EmployeeTermination.TerminationReason&#13;&#10;FROM         dbo.Employee INNER JOIN&#13;&#10;                      dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id INNER JOIN&#13;&#10;                      dbo.EmployeeTermination ON dbo.EmployeeCard.Id = dbo.EmployeeTermination.EmployeeCard_Id&#13;&#10;WHERE     (dbo.EmployeeCard.CardStatus = 2) AND (dbo.Employee.IsVertualDeleted = 0) AND (dbo.EmployeeCard.IsVertualDeleted = 0) AND &#13;&#10;                      (dbo.EmployeeTermination.IsVertualDeleted = 0)">
+        <Column Name="CreationDate" DataType="System.DateTime"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="NodeId" DataType="System.Int32"/>
+        <Column Name="LastWorkingDate" DataType="System.DateTime"/>
+        <Column Name="TerminationReason" DataType="System.String"/>
+        <Column Name="StartWorkingDate" DataType="System.DateTime"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table1" ParentDataSource="null" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="66.15">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين المنتهية خدمتهم" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="70" Width="718.2" Height="68.6" DataSource="Table1">
+      <TextObject Name="Text43" Top="56.7" Width="718.2" Height="2.45" Border.Lines="Left, Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      <TextObject Name="Text40" Left="594.35" Width="123.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="594.35" Top="18.9" Width="123.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Left="235.25" Width="123.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ بداية العمل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text44" Left="235.25" Top="18.9" Width="123.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تارخ نهاية العمل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text50" Left="594.35" Top="37.8" Width="123.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="سبب انهاء الخدمة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text1" Left="359.1" Top="18.9" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[DataSourse.FullName]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Top="37.8" Width="595.35" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[DataSourse.TerminationReason]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [DataSourse.StartWorkingDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[DataSourse.StartWorkingDate] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text10" Top="18.9" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [DataSourse.LastWorkingDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[DataSourse.LastWorkingDate] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text12" Left="359.1" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[DataSourse.Code]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="142.44" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="595.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="165.19" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

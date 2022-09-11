@@ -1,0 +1,82 @@
+﻿@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+
+<fieldset>
+<legend>@GlobalResource.AutoGenerateAttendanceRecords</legend>
+<div id="AutoGenerateAttendanceRecordsInfo"></div>
+
+
+</fieldset>
+<div id="gridCards"></div>
+
+<script>
+    var databind = kendo.observable();
+
+    var tempdata = [
+        { Name: "FromDate", Title: '@GlobalResource.FromDate', Type: "Date" },
+        { Name: "ToDate", Title: '@GlobalResource.ToDate', Type: "Date" },
+        { Name: "Note", Title: '@GlobalResource.Notes', Type: "Text" }
+    ];
+    createCustomEditForm($("#AutoGenerateAttendanceRecordsInfo"), { Fields: tempdata, Key: "" }, databind);
+    LoadEmployeeAttendanceCards();
+    addRequiredStar('FromDate');
+    addRequiredStar('ToDate');
+    addRequiredStar('Note');
+    function ApplyAutoGenerateAttendanceRecords() {
+
+        var fromDate = $("[name=FromDate]").data("kendoDatePicker").value();
+        var toDate = $("[name=ToDate]").data("kendoDatePicker").value();
+        var note = $("[name=Note]").val();
+
+        if (fromDate == null || toDate == null || note == "") {
+            var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.SetValuesToAllFieldsBeforeAutoGeneratingRecords))';
+            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+        } else
+            if (fromDate > toDate) {
+            var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.FromDateCannotBeGreaterThanToDate))';
+            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+        } else {
+            $.ajax({
+                url: window.applicationpath + 'AttendanceSystem/AttendanceService/ApplyAutoGenerateAttendanceRecords',
+                type: "POST",
+                data: JSON.stringify(
+                    {
+                        fromDate: fromDate,
+                        toDate: toDate,
+                        note: note,
+                        filter: $("#gridCards").data("kendoGrid").dataSource.filter()
+                    }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+        }
+    }
+
+    function LoadEmployeeAttendanceCards() {
+        $("#gridCards").html();
+        $.ajax({
+            url: window.applicationpath + 'AttendanceSystem/AttendanceService/GetEmployeeAttendanceCardGridModel',
+            type: "POST",
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+                data.Name = "gridCards";
+                new Grid(data).CreateSimpleGrid();
+                $(".AutoGenerateAttendanceRecords").off("click").on("click", function () {
+                    ApplyAutoGenerateAttendanceRecords();
+                });
+            }
+        });
+    }
+
+</script>

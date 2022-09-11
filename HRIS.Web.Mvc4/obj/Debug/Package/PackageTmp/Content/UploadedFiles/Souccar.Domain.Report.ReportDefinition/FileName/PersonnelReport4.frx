@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 10:42:54" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+    private void AllBloodTypeCheckBox_Click(object sender, EventArgs e)
+    {
+      if (AllBloodTypeCheckBox.Checked)
+      {
+        AllBloodTypeComboBox.SelectedIndex=-1;		 
+        AllBloodTypeComboBox.AutoFilter=false;
+        AllBloodTypeComboBox.AutoFill=false;
+        AllBloodTypeComboBox.Enabled=false;
+      }else
+      {
+        AllBloodTypeComboBox.AutoFilter=true;	
+        AllBloodTypeComboBox.AutoFill=true;
+        AllBloodTypeComboBox.Enabled=true;         
+      } 
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqtis+rNOUXql9HL1HltlmQ4xrZNcFdWmqbzG+em7BFI2SYgX0JmavMyZ62c5siTv8emusZ3BaHLjZ77wseBf54IpcUyR/Z6fpr0A/QSOW42fQ5BcgxHWIdBMEBH6MSkOF0DQx8KAVUPtx2aZ/ZFVqK5pAe25hxPHGMn1K0HBFoEPIzsnT12VaVRT/GUHV4Jii">
+      <TableDataSource Name="Table1" Alias="EmployeeWithBloodTypeDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id AS EmployeeId, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.BloodType, &#13;&#10;dbo.Employee.Code AS EmployeeCode, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;CASE WHEN dbo.Employee.BloodType = 0 THEN 'لايوجد' &#13;&#10;	 WHEN dbo.Employee.BloodType = 1 THEN 'O+'&#13;&#10;	 WHEN dbo.Employee.BloodType = 2 THEN 'O-'&#13;&#10;	 WHEN dbo.Employee.BloodType = 3 THEN 'A+'&#13;&#10;	 WHEN dbo.Employee.BloodType = 4 THEN 'A-'&#13;&#10;	 WHEN dbo.Employee.BloodType = 5 THEN 'B+'&#13;&#10;	 WHEN dbo.Employee.BloodType = 6 THEN 'B-'&#13;&#10;	 WHEN dbo.Employee.BloodType = 7 THEN 'AB+'&#13;&#10;	 WHEN dbo.Employee.BloodType = 8 THEN 'AB-'&#13;&#10;	 END AS BloodName&#13;&#10;FROM &#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND  dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id&#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0&#13;&#10;GROUP BY &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName,&#13;&#10;dbo.Employee.BloodType, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code&#13;&#10;ORDER BY &#13;&#10;dbo.Employee.BloodType">
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="EmployeeCode" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="BloodName" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="BloodTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT 0 BloodType,'لايوجد' BloodName&#13;&#10;UNION&#13;&#10;SELECT 1 BloodType,'O+' BloodName&#13;&#10;UNION&#13;&#10;SELECT 2 BloodType,'O-' BloodName&#13;&#10;UNION&#13;&#10;SELECT 3 BloodType,'A+' BloodName&#13;&#10;UNION&#13;&#10;SELECT 4 BloodType,'A-' BloodName&#13;&#10;UNION&#13;&#10;SELECT 5 BloodType,'B+' BloodName&#13;&#10;UNION&#13;&#10;SELECT 6 BloodType,'B-' BloodName&#13;&#10;UNION&#13;&#10;SELECT 7 BloodType,'AB+' BloodName&#13;&#10;UNION&#13;&#10;SELECT 8 BloodType,'AB-' BloodName">
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="BloodName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table_Table1" ParentDataSource="Table" ChildDataSource="Table1" ParentColumns="BloodType" ChildColumns="BloodType" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين حسب زمرة الدم" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Left="236.25" Top="56.7" Width="103.95" Height="37.8" Text="[AllBloodTypeComboBox.Text]" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="340.2" Top="56.7" Width="66.15" Height="37.8" Text="زمرة الدم:" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="100.85" Width="718.2" Height="18.9">
+      <TextObject Name="Text29" Left="113.4" Width="198.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="500.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="311.85" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text36" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="زمرة الدم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="126.1" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text4" Left="122.85" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithBloodTypeDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="311.85" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithBloodTypeDataSourse.FirstName] [EmployeeWithBloodTypeDataSourse.FatherName] [EmployeeWithBloodTypeDataSourse.LastName]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Left="500.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithBloodTypeDataSourse.EmployeeCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithBloodTypeDataSourse.BloodName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="151.35" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="500.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="500.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="176.6" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="132.3" Top="9.45" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Switch( [EmployeeWithBloodTypeDataSourse.BloodType] == 0, &quot;O+&quot;,[EmployeeWithBloodTypeDataSourse.BloodType] == 1, &quot;O-&quot;, [EmployeeWithBloodTypeDataSourse.BloodType] == 2, &quot;A+&quot;, [EmployeeWithBloodTypeDataSourse.BloodType] == 3, &quot;A-&quot;,[EmployeeWithBloodTypeDataSourse.BloodType] == 4, &quot;B+&quot;,[EmployeeWithBloodTypeDataSourse.BloodType] == 5, &quot;B-&quot; ,[EmployeeWithBloodTypeDataSourse.BloodType] == 6, &quot;AB+&quot;,[EmployeeWithBloodTypeDataSourse.BloodType] == 7, &quot;AB-&quot;)]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="310" Height="162" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="110" Top="87" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="192" Top="32" Width="49" Height="13" TabIndex="2" Text="زمرة الدم"/>
+    <ComboBoxControl Name="AllBloodTypeComboBox" Left="12" Top="28" Width="175" TabIndex="3" DataColumn="EmployeeWithBloodTypeDataSourse.BloodTable.BloodName" DropDownStyle="DropDownList" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="AllBloodTypeCheckBox" Left="172" Top="60" Width="118" Height="17" TabIndex="5" Text="عرض جميع زمر الدم" ClickEvent="AllBloodTypeCheckBox_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

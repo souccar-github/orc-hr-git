@@ -1,0 +1,469 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script>
+    function OverwriteWorkflowSetting(workflowSettingId) {
+        var title = "@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.OverwriteWorkflowSetting)";
+        var buttons = [
+            { Name: "ovrewrite_workflow_setting_cancel", CssClass: "cancel", Title: "@GlobalResource.Close" }
+        ];
+        var containerId = "ovrewrite-workflow-setting-container";
+        var bodyHTML = "<div class='ovrewrite-workflow-setting-body fix-custom-popup'></div>";
+        var popupDiv = $('<div id="OverwriteWorkflowSetting_window"></div>');
+        createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, true);
+
+        var template = kendo.template($("#overwrite-workflow-setting-template").html());
+        popupDiv.find(".ovrewrite-workflow-setting-body").html(template({}));
+        kendo.init(popupDiv.find(".ovrewrite-workflow-setting-body"));
+        var container = popupDiv;
+        container.find(".step-count-input").kendoNumericTextBox({
+            value: 1, max: 99, min: 0, format: "{0:n0}", decimals: 0
+        });
+
+        $("#ovrewrite_workflow_setting_cancel").off('click').on('click', function () {
+            container.data("kendo-window").close();
+        });
+
+        updateWorkflowSettingTreePreview(workflowSettingId);
+
+        container.find(".org-level-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetStepByOrgLevel", "Home", new { area = "Workflow" })';
+            var id = container.find(".org-level-dropdown input").data("kendoDropDownList").value();
+            var stepCount = container.find("[name='orgLevelStep']").data("kendoNumericTextBox").value();
+            setStepCount(url, stepCount, id, workflowSettingId);
+        });
+
+        container.find(".grade-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetStepByGrade", "Home", new { area = "Workflow" })';
+            var id = container.find(".grade-dropdown input").data("kendoDropDownList").value();
+            var stepCount = container.find("[name='gradeStep']").data("kendoNumericTextBox").value();;
+            setStepCount(url, stepCount, id, workflowSettingId);
+        });
+
+        container.find(".job-title-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetStepByJobTitle", "Home", new { area = "Workflow" })';
+            var id = container.find(".job-title-dropdown input").data("kendoDropDownList").value();
+            var stepCount = container.find("[name='jobTitleStep']").data("kendoNumericTextBox").value();;
+            setStepCount(url, stepCount, id, workflowSettingId);
+        });
+
+        container.find(".job-description-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetStepByJobDescription", "Home", new { area = "Workflow" })';
+            var id = container.find(".job-description-dropdown input").data("kendoDropDownList").value();
+            var stepCount = container.find("[name='jobDescriptionStep']").data("kendoNumericTextBox").value();;
+            setStepCount(url, stepCount, id, workflowSettingId);
+        });
+        container.find(".job-position-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetStepByJobPosition", "Home", new { area = "Workflow" })';
+            var id = container.find(".job-position-dropdown input").data("kendoDropDownList").value();
+            var stepCount = container.find("[name='jobPositionStep']").data("kendoNumericTextBox").value();;
+            setStepCount(url, stepCount, id, workflowSettingId);
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetOrgLevel", "Home", new { area = "Workflow" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                $(".org-level-dropdown input").kendoDropDownList({
+                    filter: "contains",
+                    autoBind: true,
+                    minLength: 1,
+                    dataTextField: "Name",
+                    dataValueField: "Id",
+                });
+                var dropdownlist = container.find(".org-level-dropdown input").data("kendoDropDownList");
+                dropdownlist.setDataSource(dataSource);
+                dropdownlist.text("@GlobalResource.Select");
+                dropdownlist.bind("change", orgLevelDropdownChange);
+            }
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetAllJobDescription", "Home", new { area = "Workflow" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                $("[name='selectJobDescriptionApproval']").kendoDropDownList({
+                    filter: "contains",
+                    autoBind: true,
+                    minLength: 1,
+                    dataTextField: "Name",
+                    dataValueField: "Id",
+                });
+                var dropdownlist = container.find("[name='selectJobDescriptionApproval']").data("kendoDropDownList");
+                dropdownlist.setDataSource(dataSource);
+                dropdownlist.text("@GlobalResource.Select");
+                dropdownlist.bind("change", selectJobDescriptionApprovalChange);
+            }
+        });
+        $.ajax({
+            url: '@Url.Action("GetWorkflowSettingApprovals", "Home", new { area = "Workflow" })',
+            type: "POST",
+            data: JSON.stringify({ workflowId: workflowSettingId }),
+            contentType: 'application/json',
+            success: function (data) {
+                updateApproval(data, workflowSettingId);
+            }
+        });
+
+
+    }
+
+    //step
+    function orgLevelDropdownChange(e) {
+
+        $(".grade-dropdown input").kendoDropDownList({
+            filter: "contains",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+        });
+        $(".grade-dropdown input").data("kendoDropDownList").bind("change", gradeDropdownChange);
+        var url = '@Url.Action("GetGrade", "Home", new { area = "Workflow" })';
+        var targetControl = $("#OverwriteWorkflowSetting_window").find(".grade-dropdown input").data("kendoDropDownList");
+        cascadeFor(url, targetControl, e.sender.value());
+    }
+
+    function gradeDropdownChange(e) {
+        $(".job-title-dropdown input").kendoDropDownList({
+            filter: "contains",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+        });
+
+        $(".job-title-dropdown input").data("kendoDropDownList").bind("change", jobTitleDropdownChange);
+        var url = '@Url.Action("GetJobTitle", "Home", new { area = "Workflow" })';
+        var targetControl = $("#OverwriteWorkflowSetting_window").find(".job-title-dropdown input").data("kendoDropDownList");
+        cascadeFor(url, targetControl, e.sender.value());
+
+    }
+
+    function jobTitleDropdownChange(e) {
+        $(".job-description-dropdown input").kendoDropDownList({
+            filter: "contains",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+        });
+        $(".job-description-dropdown input").data("kendoDropDownList").bind("change", jobDescriptionDropdownChange);
+        var url = '@Url.Action("GetJobDescription", "Home", new { area = "Workflow" })';
+        var targetControl = $("#OverwriteWorkflowSetting_window").find(".job-description-dropdown input").data("kendoDropDownList");
+        cascadeFor(url, targetControl, e.sender.value());
+    }
+    function jobDescriptionDropdownChange(e) {
+        $(".job-position-dropdown input").kendoDropDownList({
+            filter: "contains",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+        });
+        var url = '@Url.Action("GetJobPosition", "Home", new { area = "Workflow" })';
+        var targetControl = $("#OverwriteWorkflowSetting_window").find(".job-position-dropdown input").data("kendoDropDownList");
+        cascadeFor(url, targetControl, e.sender.value());
+    }
+
+    function setStepCount(url, stepCount, id, workflowSettingId) {
+        if (id == "" || id == "0" || id == 0) {
+            return;
+        }
+        if (stepCount == "" || stepCount == "0" || stepCount == 0) {
+            return;
+        }
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify({ id: id, stepCount: stepCount, workflowSettingId: workflowSettingId }),
+            contentType: 'application/json',
+            success: function (data) {
+                updateWorkflowSettingTreePreview(workflowSettingId);
+            }
+        });
+    }
+    //end step
+
+    //approval
+
+    function selectJobDescriptionApprovalChange(e) {
+
+        $("[name='selectPositionApproval']").kendoDropDownList({
+            filter: "contains",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+        });
+        var url = '@Url.Action("GetPosition", "Home", new { area = "Workflow" })';
+        var targetControl = $("#OverwriteWorkflowSetting_window").find("[name='selectPositionApproval']").data("kendoDropDownList");
+        cascadeFor(url, targetControl, e.sender.value());
+    }
+
+    function updateApproval(workflowApprovals, workflowSettingId) {
+        var approvalsTemplate = kendo.template($("#overwrite-workflow-setting-approvals-template").html());
+        $("#OverwriteWorkflowSetting_window .workflow-setting-approval").html(approvalsTemplate(workflowApprovals));
+
+        $("#OverwriteWorkflowSetting_window .add-approval").off('click').on('click', function () {
+            var positionDropdown = $("[name='selectPositionApproval']").data("kendoDropDownList");
+            var positionId = positionDropdown.value();
+            if (positionId == "" || positionId == "0" || positionId == 0) {
+                return;
+            }
+            $.ajax({
+                url: '@Url.Action("AddApprovalToWorkflowSetting", "Home", new { area = "Workflow" })',
+                type: "POST",
+                data: JSON.stringify({ positionId: positionId, workflowId: workflowSettingId }),
+                contentType: 'application/json',
+                success: function (dataAfterAdd) {
+                    updateApproval(dataAfterAdd, workflowSettingId);
+                }
+            });
+        });
+
+        $("#OverwriteWorkflowSetting_window .remove-approval").off('click').on('click', function () {
+            approvalCommand('@Url.Action("RemoveApprovalFromWorkflowSetting", "Home", new { area = "Workflow" })', $(this).attr("data-position-id"));
+        });
+        $("#OverwriteWorkflowSetting_window .move-approval-down").off('click').on('click', function () {
+            approvalCommand('@Url.Action("MoveApprovalDown", "Home", new { area = "Workflow" })', $(this).attr("data-position-id"));
+        });
+        $("#OverwriteWorkflowSetting_window .move-approval-up").off('click').on('click', function () {
+            approvalCommand('@Url.Action("MoveApprovalUp", "Home", new { area = "Workflow" })', $(this).attr("data-position-id"));
+        });
+
+        function approvalCommand(url, positionId) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ positionId: positionId, workflowId: workflowSettingId }),
+                contentType: 'application/json',
+                success: function (dataAfterCommand) {
+                    updateApproval(dataAfterCommand, workflowSettingId);
+                }
+            });
+        }
+    }
+
+    //end approval
+
+    function cascadeFor(url, targetControl, value) {
+        debugger;
+        if (value > 0) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ id: value }),
+                contentType: 'application/json',
+                success: function (data) {
+                    data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                    var dataSource = new kendo.data.DataSource({
+                        data: data.Data
+                    });
+                    targetControl.setDataSource(dataSource);
+                    targetControl.text("@GlobalResource.Select");
+                }
+            });
+        }
+    }
+
+    function updateWorkflowSettingTreePreview(workflowSettingId) {
+        var container = $("#OverwriteWorkflowSetting_window");
+        container.find('.tree-preview-container').html('<div class="tree-preview"></div>');
+        container.find('.tree-preview').kendoTreeView({
+            dataSource: new kendo.data.HierarchicalDataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDatasourceBasedGradeForWorkflow","CoreTree",new {area=""})',
+                        data: { settingId: workflowSettingId },
+                        type: "POST",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8"
+                    }, parameterMap: function (innerData, operation) {
+                        return JSON.stringify(innerData);
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "Id",
+                        children: "Items"
+                    }
+                }
+            }),
+            dataTextField: "Name",
+            dataSpriteCssClassField: "ImageName",
+            loadOnDemand: false,
+        });
+    }
+</script>
+
+<script id="overwrite-workflow-setting-template" type="text/x-kendo-template">
+    <fieldset>
+        <legend>@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.OverwriteStep)</legend>
+        <table class="overwrite-workflow-setting">
+            <thead>
+                <tr>
+                    <th>@GlobalResource.FilterBy</th>
+                    <th>@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Step)</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <colgroup>
+                <col class="workflow-filter-by-column"/>
+                <col style="width:85px" class="workflow-step-column"/>
+                <col  class="workflow-apply-column"/>
+            </colgroup>
+
+            <tbody>
+                <tr class="org-level-step workflow-cascade">
+                    <td class="menu-cell">
+                        <label>@GlobalResource.OrgLevel</label> <br />
+                        <input class="org-level-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                    </td>
+                    <td>
+                        <input name="orgLevelStep" class="org-level-step-count k-input step-count-input" />
+
+                    </td>
+                    <td>
+                        <button class="org-level-submit k-button">
+                            <span class="k-icon k-update"></span>
+                        </button>
+
+                    </td>
+                </tr>
+
+                <tr class="grade-step  workflow-cascade">
+                    <td class="menu-cell">
+                        <label>@GlobalResource.Grade</label> <br />
+                        <input class="grade-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                    </td>
+                    <td>
+                        <input name="gradeStep" class="grade-step-count k-input step-count-input" />
+                    </td>
+                    <td>
+                        <button class="grade-submit k-button">
+                            <span class="k-icon k-update"></span>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr class="job-title-step  workflow-cascade">
+                    <td class="menu-cell">
+                        <label>@GlobalResource.JobTitle</label><br />
+                        <input class="job-title-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                    </td>
+                    <td>
+                        <input name="jobTitleStep" class="job-title-step-count k-input step-count-input" />
+                    </td>
+                    <td>
+                        <button class="job-title-submit k-button">
+                            <span class="k-icon k-update"></span>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr class="job-description-step  workflow-cascade">
+                    <td class="menu-cell">
+                        <label>@GlobalResource.JobDescription</label><br />
+                        <input class="job-description-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                    </td>
+                    <td>
+                        <input name="jobDescriptionStep" class="job-description-step-count k-input step-count-input" />
+                    </td>
+                    <td>
+                        <button class="job-description-submit k-button">
+                            <span class="k-icon k-update"></span>
+                        </button>
+                    </td>
+                </tr>
+                <tr class="job-position-step  workflow-cascade">
+                    <td class="menu-cell">
+                        <label>@GlobalResource.Position</label><br />
+                        <input class="job-position-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                    </td>
+                    <td>
+                        <input name="jobPositionStep" class="job-position-step-count k-input step-count-input" />
+                    </td>
+                    <td>
+                        <button class="job-position-submit k-button">
+                            <span class="k-icon k-update"></span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+     
+
+        <div class="tree-preview-container">
+        
+        </div>
+
+
+    </fieldset>
+    <fieldset>
+        <legend>@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.ManageApproval)</legend>
+        <div class="workflow-setting-approvals">
+            <div>
+                <div class="k-edit-label">
+                    <label>@GlobalResource.JobDescription</label>
+                </div>
+
+                <div class="k-edit-field">
+                    <input name="selectJobDescriptionApproval" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                </div>
+            </div>
+            <div>
+                <div class="k-edit-label">
+                    <label>@GlobalResource.Position</label>
+                </div>
+
+                <div class="k-edit-field">
+                    <input name="selectPositionApproval" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" /> 
+                </div>
+
+                <div class="k-edit-label"></div>
+
+                <div class="k-edit-field">
+                    <button class="add-approval  k-button">@GlobalResource.Add</button>
+                </div>
+            </div>
+            
+        </div>
+        <div class="workflow-setting-approval"></div>
+    </fieldset>
+
+</script>
+
+
+<script id="overwrite-workflow-setting-approvals-template" type="text/x-kendo-template">
+  <table>
+    <thead>
+        <tr><th>@GlobalResource.Position</th><th>@GlobalResource.Order</th></tr>        
+    </thead>
+    <tbody>
+        #for (var i = 0; i < Approvals.length; i++) {#
+            #var approval=Approvals[i];#
+        <tr>
+            <td>#=approval.PositionName#</td>
+            <td>
+                <input type="text" value="#=approval.Order#" disabled="disabled" class="k-input k-textbox">
+                <button data-position-id="#=approval.PositionId#" class="k-button move-approval-up">@Html.Raw(((char)9650).ToString()) </button>
+                <button data-position-id="#=approval.PositionId#" class="k-button move-approval-down">@Html.Raw(((char)9660).ToString()) </button>
+                <button data-position-id="#=approval.PositionId#" class="remove-approval k-button"><span class="k-icon k-delete"></span></button>
+            </td>
+        </tr>
+        #}#        
+    </tbody>
+  </table>   
+</script>

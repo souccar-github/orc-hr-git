@@ -1,0 +1,46 @@
+﻿
+
+<div id="grid"></div>
+<script>
+    function getddd(parameters) {
+        var result = {
+            transport: {
+                read: {
+                    url: "read",
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                },
+            },
+            //data: [
+            //  { firstName: "Jane", lastName: "Doe", age: 30 },
+            //  { firstName: "John", lastName: "Doe", age: 33 }
+            //],
+            aggregate: [{ field: "age", aggregate: "max" }]
+        };
+        return result;
+    }
+
+
+    $("#grid").kendoGrid({
+        columns: [
+            { field: "firstName", groupable: false },
+            { field: "lastName" }, /* group by this column to see the footer template */
+            {
+                field: "age",
+                footerTemplate: "Max :#:max #"
+            }
+        ],
+        dataSource: getddd(),
+           
+    });
+    
+
+    
+
+
+
+
+
+
+</script>

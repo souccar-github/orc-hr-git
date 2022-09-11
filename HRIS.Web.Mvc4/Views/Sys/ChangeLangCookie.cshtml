@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "ChangeLang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ChangeLang</h2>
+<script>
+    $(document).ready(function () {
+        
+        if ($.cookie("changeLang") == "true") {
+            window.requestInformation = JSON.parse($.cookie("requestInformation"));
+            changeLocation();
+            
+            $.cookie("changeLang", null);
+            $.cookie("requestInformation", null);
+            $.cookie("changeLang", null);
+        }
+
+
+    })
+    ;
+</script>

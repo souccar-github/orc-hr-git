@@ -1,0 +1,138 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function SetOralExaminationMark(applicantId) {
+
+        var title = "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.SetOralExaminationMark)";
+        var databind = kendo.observable();
+        databind.AdvertisementId = window.requestInformation.NavigationInfo.Previous[0].RowId;
+        databind.RecruitmentInformationId = window.requestInformation.NavigationInfo.Previous[1].RowId;
+        databind.ApplicantId = applicantId;
+
+        $.ajax({
+            url: '@Url.Action("IsTest", "Home")',
+            type: "POST",
+            data: JSON.stringify({
+                advertisementId: window.requestInformation.NavigationInfo.Previous[0].RowId
+            }),
+            contentType: 'application/json',
+            async: false,
+            success: function (result) {
+
+                if (result.Success) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                }
+                else {
+
+                    $.ajax({
+                        url: '@Url.Action("IsPassedWrittenExam", "Home")',
+                        type: "POST",
+                        data: JSON.stringify({
+                            model: databind
+                        }),
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (result) {
+
+                            if (result.Success) {
+
+
+                                var tempdata = [
+                                    { Name: "OralDeservedMark", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.DeservedMark)", Type: "Number", IsRequired: true },
+                                    { Name: "IsAttendedOral", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.IsAttended)", Type: "Boolean" }
+                                ];
+
+                                $.ajax({
+                                    url: '@Url.Action("GetOralDeservedMark", "Home")',
+                                    type: "POST",
+                                    data: JSON.stringify({
+                                        model: databind
+                                    }),
+                                    contentType: 'application/json',
+                                    async: false,
+                                    success: function (data) {
+
+                                        databind.OralDeservedMark = data.OralDeservedMark;
+                                        databind.IsAttendedOral = data.IsAttendedOral;
+
+                                    }
+                                });
+
+                                var buttons = [
+                                    { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                                    { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                                ];
+                                var containerId = "SetOralExaminationMarkContainer";
+                                var bodyHTML = "<div class='SetOralExaminationMark fix-custom-popup'></div>";
+                                var isTwoColumns = false;
+
+                                createAndOpenCustomWindow($('<div class="SetOralExaminationMarkDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+                                $("#cancel").off('click').on('click', function () {
+                                    $(".SetOralExaminationMarkDiv").data("kendo-window").close();
+                                });
+
+                                $("#update").off('click').on('click', function () {
+                                    if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                                        $.ajax({
+                                            url: '@Url.Action("SaveOralDeservedMark", "Home")',
+                                            type: "POST",
+                                            data: JSON.stringify({
+                                                model: databind
+                                            }),
+
+                                            contentType: 'application/json',
+                                            success: function (data) {
+                                                if (data.Success) {
+                                                    var grid = $("#" + gridModel.Name).data("kendoGrid");
+                                                    grid.refresh();
+                                                    $(".SetOralExaminationMarkDiv").data("kendo-window").close();
+                                                } else {
+                                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+
+                                createCustomEditForm($(".SetOralExaminationMark"), { Fields: tempdata, Key: "SetOralExaminationMarkKey" }, databind);
+                                updateOralDeservedMark();
+
+
+                                $('[Name="IsAttendedOral"]').click(function () {
+                                    updateOralDeservedMark();
+                                });
+                                
+                                function updateOralDeservedMark() {
+                                    
+                                    if (!$("[name='IsAttendedOral']").is(':checked')) {
+                                        $('[Name="OralDeservedMark"]').data("kendoNumericTextBox").value(0);
+                                        databind.OralDeservedMark = 0;
+                                        $('[Name="OralDeservedMark"]').data("kendoNumericTextBox").enable(false);
+
+                                    } else {
+                                        $('[Name="OralDeservedMark"]').data("kendoNumericTextBox").enable(true);
+                                    }
+                                };
+
+                            } else {
+                                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+
+    }
+
+    
+
+</script>
+

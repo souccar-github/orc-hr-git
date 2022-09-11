@@ -1,0 +1,1369 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+@using HRIS.Domain.EmployeeRelationServices.Enums;
+
+<div class="LeaveCancelDiv"></div>
+
+<div class="LeaveDecreaseDiv"></div>
+<script>
+    var postionsDataSource = {
+        transport: {
+            read: {
+                url: '@Url.Action("ReadPositionCascadeJobTitle", "Reference", new { area = "EmployeeRelationServices"})'
+        }
+    },
+        schema: {
+        data: "Data",
+        id: "Id"
+        }
+    };
+    var sourcePostionsDataSource = {
+        transport: {
+            read: {
+                url: '@Url.Action("ReadSourcePosition", "Reference", new { area = "EmployeeRelationServices"})',
+            },
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+    var sourceSecondaryPostionsDataSource = {
+        transport: {
+            read: {
+                url: '@Url.Action("ReadSourceSecondaryPosition", "Reference", new { area = "EmployeeRelationServices"})',
+            },
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+</script>
+<script>
+    function EmployeeInfractionEditHandler(e) {
+        debugger;
+        var infractionId;
+        var employeeId;
+        $('[name="PenaltyName"]').attr("disabled", "disabled");
+       // $("[name='PenaltyName']").after('<input data-field-name="Infraction">');
+    
+        $("[Name='Employee']").data("kendoDropDownList").bind("change", onEmployeeChanged);
+        $("[Name='Infraction']").data("kendoDropDownList").bind("change", onInfractionChanged);
+       
+        
+   
+
+    }
+    function onInfractionChanged(e) {
+        debugger;
+        employeeId = $("#dropDownListEmployee").data("kendoDropDownList").value();
+        infractionId = $("#dropDownListInfraction").data("kendoDropDownList").value();
+       
+            $.ajax({
+                url: "Service/GetPenalty",
+                type: "POST",
+                data: JSON.stringify(
+                    {
+                        infractionId: infractionId,
+                        employeeId: employeeId
+
+
+                    }),
+                contentType: 'application/json',
+                success: function (data) {
+                    debugger;
+                    $("[name='PenaltyName']").val(data.penaltyName);
+                }
+             
+            
+            });
+      
+        
+    }
+    function onEmployeeChanged() {
+
+        employeeId = $("#dropDownListEmployee").data("kendoDropDownList").value();
+        infractionId = $("#dropDownListInfraction").data("kendoDropDownList").value();
+
+        $.ajax({
+            url: "Service/GetPenalty",
+            type: "POST",
+            data: JSON.stringify(
+                {
+                    infractionId: infractionId,
+                    employeeId: employeeId
+
+
+                }),
+            contentType: 'application/json',
+            success: function (data) {
+                debugger;
+                $("[name='PenaltyName']").val(data.penaltyName);
+            }
+
+
+        });
+       
+    }
+    function EndingSecondaryPositionEmployeeEditHandler(e) {
+        var employeeCardId = window.requestInformation.NavigationInfo.Previous[0].RowId;
+
+        var container = e.container.find(".controls-container");
+        var elementPosition = '<div class="control control-Position second-column required"><div class="k-edit-label"><label for="Position">Source Position<span class="equired-star">*</span></label></div><div data-container-for="Position" class="k-edit-field">' +
+                        '<input id="Position" name="Position" class="dropDownList addabelIndex" ' +
+                        ' data-role="dropdownlist" ' +
+                        ' data-text-field="Name" ' +
+                        ' data-value-field="Id" ' +
+                        ' data-source="sourceSecondaryPostionsDataSource"' +
+                        ' data-value-primitive="true" ' +
+                        ' data-option-label="Select" ' +
+                        ' data-bind="value:PositionName" /> &nbsp;' +
+                        ' <button id="openPosition" class="k-button"> ' +
+                        ' <span class="k-icon k-i-note" style="vertical-align: sub;"></span> ' +
+                        ' </button> ' +
+                        ' </div></div>';
+        $(elementPosition).insertBefore(".control-LeavingDate");
+        kendo.init($(".control-Position"));
+        var position = $("#Position").data("kendoDropDownList");
+        container.find("#openPosition").off('click').on('click', function () {
+            var referenceId = position.value();
+            if (referenceId == null || referenceId == 0)
+                return;
+            openViewWindow('HRIS.Domain.JobDescription.Entities.Position', '@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)', referenceId);
+        });
+        position.value("");
+        position.search();
+        position.dataSource.filter([
+                    { field: "EmployeeCardId", operator: "eq", value: parseInt(employeeCardId) }
+        ]);
+        reOrderControls(container);
+        var positionDict = {
+            position: 0
+        };
+        positionDict.position = 0;
+        position.bind("change", function () {
+            positionDict.position = position.value();
+            e.model.CustomInformation = positionDict;
+        });
+    }
+    function EmployeeTransferEditHandler(e) {
+        var employeeCardId = window.requestInformation.NavigationInfo.Previous[0].RowId;
+
+        var container = e.container.find(".controls-container");
+        var destJobTitle = $("[name=DestinationJobTitle]").data("kendoDropDownList");
+        var elementSourcePosition = '<div class="control control-SourcePosition second-column required"><div class="k-edit-label"><label for="SourcePosition">Source Position<span class="equired-star">*</span></label></div><div data-container-for="SourcePosition" class="k-edit-field">' +
+                        '<input id="SourcePosition" name="SourcePosition" class="dropDownList addabelIndex" ' +
+                        ' data-role="dropdownlist" ' +
+                        ' data-text-field="Name" ' +
+                        ' data-value-field="Id" ' +
+                        ' data-source="sourcePostionsDataSource"' +
+                        ' data-value-primitive="true" ' +
+                        ' data-option-label="Select" ' +
+                        ' data-bind="value:SourcePositionName" /> &nbsp;' +
+                        ' <button id="openSourcePosition" class="k-button"> ' +
+                        ' <span class="k-icon k-i-note" style="vertical-align: sub;"></span> ' +
+                        ' </button> ' +
+                        ' </div></div>';
+
+        $(elementSourcePosition).insertBefore(".control-DestinationJobTitle");
+        var elementDestPosition = '<div class="control control-DestinationPosition second-column required"><div class="k-edit-label"><label for="DestinationPosition">Destination Position<span class="equired-star">*</span></label></div><div data-container-for="DestinationPosition" class="k-edit-field">' +
+                        '<input id="DestinationPosition" name="DestinationPosition" class="dropDownList addabelIndex" ' +
+                        ' data-role="dropdownlist" ' +
+                        ' data-text-field="Name" ' +
+                        ' data-value-field="Id" ' +
+                        ' data-source="postionsDataSource"' +
+                        ' data-value-primitive="true" ' +
+                        ' data-option-label="Select" ' +
+                        ' data-bind="value:DestinationPositionName" /> &nbsp;' +
+                        ' <button id="openDestinationPosition" class="k-button"> ' +
+                        ' <span class="k-icon k-i-note" style="vertical-align: sub;"></span> ' +
+                        ' </button> ' +
+                        ' </div></div>';
+
+        $(elementDestPosition).insertAfter(".control-DestinationJobTitle");
+        kendo.init($(".control-SourcePosition"));
+        kendo.init($(".control-DestinationPosition"));
+
+
+        var sourcePosition = $("#SourcePosition").data("kendoDropDownList");
+        var destinationPosition = $("#DestinationPosition").data("kendoDropDownList");
+
+        container.find("#openSourcePosition").off('click').on('click', function () {
+            var referenceId = sourcePosition.value();
+            if (referenceId == null || referenceId == 0)
+                return;
+            openViewWindow('HRIS.Domain.JobDescription.Entities.Position', '@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)', referenceId);
+        });
+        container.find("#openDestinationPosition").off('click').on('click', function () {
+            var referenceId = destinationPosition.value();
+            if (referenceId == null || referenceId == 0)
+                return;
+            openViewWindow('HRIS.Domain.JobDescription.Entities.Position', '@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)', referenceId);
+        });
+        sourcePosition.value("");
+        sourcePosition.search();
+        sourcePosition.dataSource.filter([
+                    { field: "EmployeeCardId", operator: "eq", value: parseInt(employeeCardId) }
+        ]);
+        destinationPosition.enable(false);
+        function cascade() {
+            if (destJobTitle.value()) {
+                destinationPosition.value("");
+                destinationPosition.enable(true);
+                destinationPosition.dataSource.filter([
+                    { field: "ParentId", operator: "eq", value: parseInt(destJobTitle.value()) }
+                ]);
+            }
+            else {
+                destinationPosition.enable(false);
+                destinationPosition.value("");
+                positionDict.destination = 0;
+            }
+        }
+        destJobTitle.bind("cascade", cascade);
+        reOrderControls(container);
+        var positionDict = {
+            source: 0,
+            destination: 0
+        };
+        positionDict.source = 0;
+        positionDict.destination = 0;
+        sourcePosition.bind("change", function () {
+            positionDict.source =sourcePosition.value();
+            e.model.CustomInformation = positionDict;
+        });
+        destinationPosition.bind("change", function () {
+            positionDict.destination = destinationPosition.value();
+            e.model.CustomInformation = positionDict;
+        });
+
+    }
+    function EmployeePromotionEditHandler(e) {
+        var container = e.container.find(".controls-container");
+        var jobTitle = $("[name=JobTitle]").data("kendoDropDownList");
+        var elementPosition = '<div class="control control-Position second-column required"><div class="k-edit-label"><label for="Position">Position<span class="equired-star">*</span></label></div><div data-container-for="Position" class="k-edit-field">' +
+                        '<input id="Position" name="Position" class="dropDownList addabelIndex" ' +
+                        ' data-role="dropdownlist" ' +
+                        ' data-text-field="Name" ' +
+                        ' data-value-field="Id" ' +
+                        ' data-source="postionsDataSource"' +
+                        ' data-value-primitive="true" ' +
+                        ' data-option-label="Select" ' +
+                        ' data-bind="value:PositionName" />&nbsp;' +
+                        ' <button id="openPosition" class="k-button"> ' +
+                        ' <span class="k-icon k-i-note" style="vertical-align: sub;"></span> '+
+                        ' </button> '+
+                        ' </div></div>';
+
+        $(elementPosition).insertAfter(".control.control-JobTitle");
+
+        kendo.init($(".control-Position"));
+
+        var position = $("#Position").data("kendoDropDownList");
+        container.find("#openPosition").off('click').on('click', function () {
+            var referenceId = position.value();
+            if (referenceId == null || referenceId == 0)
+                return;
+            openViewWindow('HRIS.Domain.JobDescription.Entities.Position', '@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)', referenceId);
+        });
+        position.enable(false);
+        //var position = $('#positions').kendoDropDownList({ dataSource: { data: postionsDataSource }, autoBind: false, dataTextField: "Name", dataValueField: "Id", enable: true }).data("kendoDropDownList");
+        function cascade() {
+            if (jobTitle.value()) {
+                position.value("");
+                position.enable(true);
+                position.dataSource.filter([
+                    { field: "ParentId", operator: "eq", value: parseInt(jobTitle.value()) }
+                ]);
+            }
+            else {
+                position.enable(false);
+                position.value("");
+            }
+        }
+        jobTitle.bind("cascade", cascade);
+        reOrderControls(container);
+        position.bind("change", function () {
+            e.model.CustomInformation = position.value();
+        });
+    }
+    function RecycledLeaveAfterRequestEnd() {
+        $(".k-grid-add").remove();
+    }
+
+    function initializeActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@Project.Web.Mvc4.Helpers.GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@Project.Web.Mvc4.Helpers.GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+    function initializeView() {
+        $("#view_edit").remove();
+    }
+    function AdministrativeLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Administrative");
+    }
+
+    function UnpaidLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Unpaid");
+    }
+
+    function HealthyLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Healthy");
+    }
+
+    function HourlyLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Hourly");
+    }
+
+    function MaternityLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Maternity");
+    }
+
+    function MarriageLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Marriage");
+    }
+
+    function DeathLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Death");
+    }
+
+    function PilgrimageLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Pilgrimage");
+    }
+
+    function OtherLeaveCancel(leaveId) {
+
+        LeaveCancel(leaveId, "Other");
+    }
+
+    function LeaveCancel(leaveId, leaveType) {
+
+        var title = "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveCancel)";
+        var databind = kendo.observable();
+        databind.LeaveId = leaveId;
+        databind.LeaveType = leaveType;
+
+        $.ajax({
+            url: '@Url.Action("IsLeaveApproved", "LeaveRequest")',
+            type: "POST",
+            data: JSON.stringify({
+                leaveId: leaveId,
+                leaveType: leaveType
+            }),
+            contentType: 'application/json',
+            async: false,
+            success: function(result) {
+
+                if (result.Success) {
+
+                    var tempdata = [
+                       { Name: "StartingDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartingDate)", Type: "Date" },
+                       { Name: "CentralAgencyAgreementDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CentralAgencyAgreementDate)", Type: "Date" },
+                       { Name: "CancellationCause", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CancellationCause)", Type: "Textarea" }
+                    ];
+
+                    var buttons = [
+                        { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                        { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                    ];
+                    var containerId = "LeaveCancelContainer";
+                    var bodyHTML = "<div class='LeaveCancel fix-custom-popup'></div>";
+                    var isTwoColumns = false;
+
+                    createAndOpenCustomWindow($(".LeaveCancelDiv"), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+                    $("#cancel").off('click').on('click', function () {
+                        $(".LeaveCancelDiv").data("kendo-window").close();
+                    });
+
+                    $("#update").off('click').on('click', function () {
+                        if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                            $.ajax({
+                                url: '@Url.Action("LeaveCancel", "LeaveRequest")',
+                                type: "POST",
+                                data: JSON.stringify({
+                                    model: databind
+                                }),
+
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    if (data.Success) {
+                                        var grid = $("#" + gridModel.Name).data("kendoGrid");
+                                        grid.refresh();
+                                        $(".LeaveCancelDiv").data("kendo-window").close();
+                                    } else {
+                                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    createCustomEditForm($(".LeaveCancel"), { Fields: tempdata, Key: "LeaveCancelKey" }, databind);
+
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+
+    function AdministrativeLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Administrative");
+    }
+
+    function UnpaidLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Unpaid");
+    }
+
+    function HealthyLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Healthy");
+    }
+
+    function HourlyLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Hourly");
+    }
+
+    function MaternityLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Maternity");
+    }
+
+    function MarriageLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Marriage");
+    }
+
+    function DeathLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Death");
+    }
+
+    function PilgrimageLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Pilgrimage");
+    }
+
+    function OtherLeaveDecrease(leaveId) {
+
+        LeaveDecrease(leaveId, "Other");
+    }
+
+    function LeaveDecrease(leaveId, leaveType) {
+
+        var title = "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveDecrease)";
+        var databind = kendo.observable();
+        databind.LeaveId = leaveId;
+        databind.LeaveType = leaveType;
+
+        $.ajax({
+            url: '@Url.Action("IsLeaveApproved", "LeaveRequest")',
+            type: "POST",
+            data: JSON.stringify({
+                leaveId: leaveId,
+                leaveType: leaveType
+            }),
+            contentType: 'application/json',
+            async: false,
+            success: function (result) {
+
+                if (result.Success) {
+
+                    var requiredDaysHoursCaption = "";
+
+                    if (leaveType == "Hourly") {
+                        requiredDaysHoursCaption = "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequiredHours)";
+                    } else {
+                        requiredDaysHoursCaption = "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequiredDays)";
+                    }
+
+                    alert(requiredDaysHoursCaption);
+
+                    var tempdata = [
+                       { Name: "RequiredDays", Title: requiredDaysHoursCaption, Type: "Number" },
+                       { Name: "StartingDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartingDate)", Type: "Date" },
+                       { Name: "CentralAgencyAgreementDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CentralAgencyAgreementDate)", Type: "Date" },
+                       { Name: "DeductionCause", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DeductionCause)", Type: "Textarea" }
+                    ];
+
+                    var buttons = [
+                        { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                        { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                    ];
+                    var containerId = "LeaveDecreaseContainer";
+                    var bodyHTML = "<div class='LeaveDecrease fix-custom-popup'></div>";
+                    var isTwoColumns = false;
+
+                    createAndOpenCustomWindow($(".LeaveDecreaseDiv"), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+                    $("#cancel").off('click').on('click', function () {
+                        $(".LeaveDecreaseDiv").data("kendo-window").close();
+                    });
+
+                    $("#update").off('click').on('click', function () {
+                        if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                            $.ajax({
+                                url: '@Url.Action("LeaveDecrease", "LeaveRequest")',
+                                type: "POST",
+                                data: JSON.stringify({
+                                    model: databind
+                                }),
+
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    if (data.Success) {
+                                        var grid = $("#" + gridModel.Name).data("kendoGrid");
+                                        grid.refresh();
+                                        $(".LeaveDecreaseDiv").data("kendo-window").close();
+                                    } else {
+                                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    createCustomEditForm($(".LeaveDecrease"), { Fields: tempdata, Key: "LeaveDecreaseKey" }, databind);
+
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+    function AdministrativeLeaveSettingEditHandler(e)
+    {
+        ActivateControlsByEmployeeAgeCheck(this.checked);
+
+        $("[name='IsByEmployeeAge']").click(function () {
+            ActivateControlsByEmployeeAgeCheck(this.checked);
+        });
+
+        function ActivateControlsByEmployeeAgeCheck() {
+
+            if (!$("[name='IsByEmployeeAge']").is(':checked')) {
+
+                $("[name='MinimumYearsOfService']").data("kendoNumericTextBox").enable(true);
+                $("[name='MaximumYearsOfService']").data("kendoNumericTextBox").enable(true);
+                $("[name='ForcedDueBalance']").data("kendoNumericTextBox").enable(true);
+                $("[name='ForcedDueBalanceForMothers']").data("kendoNumericTextBox").enable(true);
+                $("[name='EmployeeAge']").data("kendoNumericTextBox").enable(false);
+                $("[name='EmployeeAge']").data("kendoNumericTextBox").value(0);
+                e.model.EmployeeAge = 0;
+
+            }
+            else {
+                $("[name='MinimumYearsOfService']").data("kendoNumericTextBox").enable(false);
+                $("[name='MaximumYearsOfService']").data("kendoNumericTextBox").enable(false);
+                $("[name='ForcedDueBalance']").data("kendoNumericTextBox").enable(false);
+                $("[name='ForcedDueBalanceForMothers']").data("kendoNumericTextBox").enable(false);
+                $("[name='MinimumYearsOfService']").data("kendoNumericTextBox").value(0);
+                $("[name='MaximumYearsOfService']").data("kendoNumericTextBox").value(0);
+                $("[name='ForcedDueBalance']").data("kendoNumericTextBox").value(0);
+                $("[name='ForcedDueBalanceForMothers']").data("kendoNumericTextBox").value(0);
+                e.model.MinimumYearsOfService = 0;
+                e.model.MaximumYearsOfService = 0;
+                e.model.ForcedDueBalance = 0;
+                e.model.ForcedDueBalanceForMothers = 0;
+                $("[name='EmployeeAge']").data("kendoNumericTextBox").enable(true);
+            }
+        }
+
+    }
+
+    //AdministrativeLeaveRequest
+
+    function AdministrativeLeaveRequestEditHandler(e) {
+
+        if (e.model.Id == 0) {
+            e.model.IsDeducted = true;
+        }
+        var balance, remain, granted;
+
+        if (e.model.isNew()) {
+            e.container.find("[name='IsDeducted']").attr("checked", "checked");
+        }
+        GetBalanceInformationForAdministrativeLeaveRequest(e.model.IsForced);
+
+        $("[name='IsForced']").click(function () {
+            GetBalanceInformationForAdministrativeLeaveRequest(this.checked);
+        });
+
+        $("[name='RequiredDays']").kendoNumericTextBox({
+            change: function () {
+                if (this.value() > remain) {
+                    this.value(remain);
+                    e.model.RequiredDays = remain;
+                }
+                if (this.value() < 0) {
+                    this.value(0);
+                    e.model.RequiredDays = 0;
+                }
+                $("[name='Remain']").val(remain - this.value());
+                $("[name='Granted']").val(granted + this.value());
+            }
+        });
+
+        if (!e.model.isNew()) {
+            var editedRequiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+            $("[name='Remain']").val(remain - editedRequiredDays);
+            $("[name='Granted']").val(granted + editedRequiredDays);
+        }
+
+        function GetBalanceInformationForAdministrativeLeaveRequest(isForced) {
+            $.ajax({
+                url: '@Url.Action("GetBalanceInformationForAdministrativeLeaveRequest", "LeaveRequest", new { area = "EmployeeRelationServices" })',
+                type: "POST",
+                async:false,
+                 contentType: 'application/json',
+                 data: JSON.stringify({
+                     employeeId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                     leaveId: e.model.Id,
+                     isForced: isForced
+                 }),
+                 success: function (data) {
+
+                     balance = data.Balance;
+                     granted = data.Granted;
+                     remain = data.Remain;
+
+                     if (e.container.find('[name="Balance"]').length == 0) {
+                         $(".fieldset-EmployeeRelationServicesGroupNames_LeaveKind").after('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.BalanceInformation)</legend></fieldset>');
+                        addLabelInControl($(".fieldset-BalanceInformation"), "Balance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", balance, "Text");
+                         addLabelInControl($(".fieldset-BalanceInformation"), "Granted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Granted)", granted, "Text");
+                         addLabelInControl($(".fieldset-BalanceInformation"), "Remain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)", remain, "Text");
+                         reOrderControls($(".fieldset-BalanceInformation"));
+                     }
+                     e.container.find('[name="Balance"]').val(balance);
+                     e.container.find('[name="Granted"]').val(granted);
+                     e.container.find('[name="Remain"]').val(remain);
+
+                 }
+             });
+        }
+    }
+
+    //UnpaidLeaveRequest
+
+    function UnpaidLeaveRequestEditHandler(e) {
+
+        var balancePerEmploymentAge, grantedDeductedDaysPerEmploymentAge, remainPerEmploymentAge, balancePerYear, grantedCalculatedDaysPerYear,
+            grantedUncalculatedDaysPerYear, remainPerYear;
+
+        if (e.model.isNew()) {
+            e.container.find("[name='IsDeducted']").attr("checked", "checked");
+            e.container.find("[name='IsJustified']").attr("checked", "checked");
+            e.model.IsDeducted = true;
+            e.model.IsJustified = true;
+        }
+
+        $.ajax({
+            url: '@Url.Action("GetBalanceInformationForUnpaidLeaveRequest", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                employeeId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                leaveId: e.model.Id,
+            }),
+            success: function (data) {
+
+                balancePerEmploymentAge = data.BalancePerEmploymentAge;
+                grantedDeductedDaysPerEmploymentAge = data.GrantedDeductedDaysPerEmploymentAge;
+                //grantedUndeductedDaysPerEmploymentAge = data.GrantedUndeductedDaysPerEmploymentAge;
+                remainPerEmploymentAge = data.RemainPerEmploymentAge;
+                balancePerYear = data.BalancePerYear;
+                grantedCalculatedDaysPerYear = data.GrantedCalculatedDaysPerYear;
+                grantedUncalculatedDaysPerYear = data.GrantedUncalculatedDaysPerYear;
+                remainPerYear = data.RemainPerYear;
+
+                if (e.container.find('[name="BalancePerEmploymentAge"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalancePerEmploymentAgeInformation"><legend>Balance_Per_Employment_Age</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalancePerEmploymentAgeInformation"), "BalancePerEmploymentAge", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", balancePerEmploymentAge, "Text");
+                    addLabelInControl($(".fieldset-BalancePerEmploymentAgeInformation"), "GrantedDeductedDaysPerEmploymentAge", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Granted)", grantedDeductedDaysPerEmploymentAge, "Text");
+                    addLabelInControl($(".fieldset-BalancePerEmploymentAgeInformation"), "RemainPerEmploymentAge", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)", remainPerEmploymentAge, "Text");
+                    reOrderControls($(".fieldset-BalancePerEmploymentAgeInformation"));
+                }
+                e.container.find('[name="BalancePerEmploymentAge"]').val(balancePerEmploymentAge);
+                e.container.find('[name="GrantedDeductedDaysPerEmploymentAge"]').val(grantedDeductedDaysPerEmploymentAge);
+                e.container.find('[name="RemainPerEmploymentAge"]').val(remainPerEmploymentAge);
+
+                if (e.container.find('[name="BalancePerYear"]').length == 0) {
+                    $(".fieldset-BalancePerEmploymentAgeInformation").after('<fieldset class="fieldset-BalancePerYearInformation"><legend>Balance_Per_Year</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "BalancePerYear", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", balancePerYear, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "GrantedCalculatedDaysPerYear", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Calculated)", grantedCalculatedDaysPerYear, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "GrantedUncalculatedDaysPerYear", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Uncalculated)", grantedUncalculatedDaysPerYear, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "RemainPerYear", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)", remainPerYear, "Text");
+                    reOrderControls($(".fieldset-BalancePerYearInformation"));
+                }
+                e.container.find('[name="BalancePerYear"]').val(balancePerYear);
+                e.container.find('[name="GrantedCalculatedDaysPerYear"]').val(grantedCalculatedDaysPerYear);
+                e.container.find('[name="GrantedUncalculatedDaysPerYear"]').val(grantedUncalculatedDaysPerYear);
+                e.container.find('[name="RemainPerYear"]').val(remainPerYear);
+
+            }
+        });
+
+        function SetDefaultValues() {
+            $("[name='BalancePerEmploymentAge']").val(balancePerEmploymentAge);
+            $("[name='GrantedDeductedDaysPerEmploymentAge']").val(grantedDeductedDaysPerEmploymentAge);
+            $("[name='RemainPerEmploymentAge']").val(remainPerEmploymentAge);
+            $("[name='BalancePerYear']").val(balancePerYear);
+            $("[name='GrantedCalculatedDaysPerYear']").val(grantedCalculatedDaysPerYear);
+            $("[name='GrantedUncalculatedDaysPerYear']").val(grantedUncalculatedDaysPerYear);
+            $("[name='RemainPerYear']").val(remainPerYear);
+        }
+
+        function SetValuesByRequiredDays() {
+            if (!$("[name='IsDeducted']").is(':checked')) {
+                e.model.IsDeducted = false;
+                SetDefaultValues();
+            } else {
+
+                e.model.IsDeducted = true;
+                var requiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+
+                if (requiredDays < 0) {
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").value(0);
+                    e.model.RequiredDays = 0;
+                    SetDefaultValues();
+                }
+                else
+                {
+                    if (requiredDays >= remainPerEmploymentAge) {
+                        $("[name='RequiredDays']").data("kendoNumericTextBox").value(remainPerEmploymentAge);
+                        e.model.RequiredDays = remainPerEmploymentAge;
+                        $("[name='BalancePerEmploymentAge']").val(balancePerEmploymentAge);
+                        $("[name='GrantedDeductedDaysPerEmploymentAge']").val(balancePerEmploymentAge);
+                        $("[name='RemainPerEmploymentAge']").val(0);
+                        $("[name='BalancePerYear']").val(balancePerYear);
+                    }
+                    else {
+                        e.model.RequiredDays = requiredDays;
+                        $("[name='BalancePerEmploymentAge']").val(balancePerEmploymentAge);
+                        $("[name='GrantedDeductedDaysPerEmploymentAge']").val(grantedDeductedDaysPerEmploymentAge + requiredDays);
+                        $("[name='RemainPerEmploymentAge']").val(remainPerEmploymentAge - requiredDays);
+                        $("[name='BalancePerYear']").val(balancePerYear);
+                    }
+
+                    requiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+                    if (requiredDays >= remainPerYear) {
+                        $("[name='GrantedCalculatedDaysPerYear']").val(balancePerYear);
+                        $("[name='GrantedUncalculatedDaysPerYear']").val(requiredDays - remainPerYear);
+                        $("[name='RemainPerYear']").val(0);
+                    }
+                    else {
+                        $("[name='GrantedCalculatedDaysPerYear']").val(grantedCalculatedDaysPerYear + requiredDays);
+                        $("[name='GrantedUncalculatedDaysPerYear']").val(grantedUncalculatedDaysPerYear);
+                        $("[name='RemainPerYear']").val(remainPerYear - requiredDays);
+                    }
+                }
+            }
+        }
+
+        $("[name='IsDeducted']").click(function () {
+            SetValuesByRequiredDays();
+        });
+
+        $("[name='RequiredDays']").kendoNumericTextBox({
+            change: function () {
+                SetValuesByRequiredDays();
+            }
+        });
+
+        if (!e.model.isNew()) {
+            var editedRequiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+            $("[name='GrantedDeductedDaysPerEmploymentAge']").val(grantedDeductedDaysPerEmploymentAge + editedRequiredDays);
+            $("[name='RemainPerEmploymentAge']").val(remainPerEmploymentAge - editedRequiredDays);
+            if (remainPerYear >= editedRequiredDays) {
+                $("[name='GrantedCalculatedDaysPerYear']").val(grantedCalculatedDaysPerYear + editedRequiredDays);
+                $("[name='GrantedUncalculatedDaysPerYear']").val(grantedUncalculatedDaysPerYear);
+                $("[name='RemainPerYear']").val(remainPerYear - editedRequiredDays);
+            } else {
+                $("[name='GrantedCalculatedDaysPerYear']").val(grantedCalculatedDaysPerYear + remainPerYear);
+                $("[name='GrantedUncalculatedDaysPerYear']").val(grantedUncalculatedDaysPerYear + (editedRequiredDays - remainPerYear));
+                $("[name='RemainPerYear']").val(0);
+            }
+
+        }
+    }
+
+    //HealthyLeaveRequest
+
+    function HealthyLeaveRequestEditHandler(e) {
+
+        var consecutiveSeparateBalanceDuringFiveYears, consecutiveSeparateGrantedDuringFiveYears, consecutiveSeparateRemainDuringFiveYears,
+            consecutiveBalance, separateBalance, consecutiveGranted, separateGranted, consecutiveRemain, separateRemain;
+
+        $.ajax({
+            url: '@Url.Action("GetHealthyLeaveRequestBalanceInformation", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                employeeId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                leaveId: e.model.Id,
+            }),
+            success: function (data) {
+
+                consecutiveSeparateBalanceDuringFiveYears = data.ConsecutiveSeparateBalanceDuringFiveYears;
+                consecutiveSeparateGrantedDuringFiveYears = data.ConsecutiveSeparateGrantedDuringFiveYears;
+                consecutiveSeparateRemainDuringFiveYears = data.ConsecutiveSeparateRemainDuringFiveYears;
+                consecutiveBalance = data.ConsecutiveBalance;
+                separateBalance = data.SeparateBalance;
+                consecutiveGranted = data.ConsecutiveGranted;
+                separateGranted = data.SeparateGranted;
+                consecutiveRemain = data.ConsecutiveRemain;
+                separateRemain = data.SeparateRemain;
+
+                if (e.container.find('[name="ConsecutiveBalance"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalancePerYearInformation"><legend>Balance_Per_Year</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "ConsecutiveBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ConsecutiveBalance)", consecutiveBalance, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "SeparateBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SeparateBalance)", separateBalance, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "ConsecutiveGranted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ConsecutiveGranted)", consecutiveGranted, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "SeparateGranted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SeparateGranted)", separateGranted, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "ConsecutiveRemain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ConsecutiveRemain)", consecutiveRemain, "Text");
+                    addLabelInControl($(".fieldset-BalancePerYearInformation"), "SeparateRemain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SeparateRemain)", separateRemain, "Text");
+                    reOrderControls($(".fieldset-BalancePerYearInformation"));
+                }
+                e.container.find('[name="ConsecutiveBalance"]').val(consecutiveBalance);
+                e.container.find('[name="ConsecutiveGranted"]').val(consecutiveGranted);
+                e.container.find('[name="ConsecutiveRemain"]').val(consecutiveRemain);
+                e.container.find('[name="SeparateBalance"]').val(separateBalance);
+                e.container.find('[name="SeparateGranted"]').val(separateGranted);
+                e.container.find('[name="SeparateRemain"]').val(separateRemain);
+
+                if (e.container.find('[name="ConsecutiveSeparateBalanceDuringFiveYears"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalanceDuringFiveYearsInformation"><legend>Balance_During_Five_Years</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalanceDuringFiveYearsInformation"), "ConsecutiveSeparateBalanceDuringFiveYears", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", consecutiveSeparateBalanceDuringFiveYears, "Text");
+                    addLabelInControl($(".fieldset-BalanceDuringFiveYearsInformation"), "ConsecutiveSeparateGrantedDuringFiveYears", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Granted)", consecutiveSeparateGrantedDuringFiveYears, "Text");
+                    addLabelInControl($(".fieldset-BalanceDuringFiveYearsInformation"), "ConsecutiveSeparateRemainDuringFiveYears", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)", consecutiveSeparateRemainDuringFiveYears, "Text");
+                    reOrderControls($(".fieldset-BalanceDuringFiveYearsInformation"));
+                }
+                e.container.find('[name="ConsecutiveSeparateBalanceDuringFiveYears"]').val(consecutiveSeparateBalanceDuringFiveYears);
+                e.container.find('[name="ConsecutiveSeparateGrantedDuringFiveYears"]').val(consecutiveSeparateGrantedDuringFiveYears);
+                e.container.find('[name="ConsecutiveSeparateRemainDuringFiveYears"]').val(consecutiveSeparateRemainDuringFiveYears);
+
+            }
+        });
+
+        $("[name='IsContinuous']").click(function () {
+            ActivateControlsByContinuousCheck(this.checked);
+        });
+
+        function ActivateControlsByContinuousCheck() {
+
+            if ($("[name='IsContinuous']").is(':checked')) {
+                if (consecutiveRemain == consecutiveBalance) {
+                    if (consecutiveRemain <= consecutiveSeparateRemainDuringFiveYears) {
+                        $("[name='RequiredDays']").data("kendoNumericTextBox").value(consecutiveBalance);
+                        e.model.RequiredDays = consecutiveBalance;
+                        $("[name='RequiredDays']").data("kendoNumericTextBox").enable(false);
+                        $("[name='ConsecutiveRemain']").val(0);
+                        $("[name='ConsecutiveGranted']").val(consecutiveBalance);
+                        $("[name='SeparateGranted']").val(separateGranted);
+                        $("[name='SeparateRemain']").val(separateRemain);
+                        $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears + consecutiveBalance);
+                        $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears - consecutiveBalance);
+                    }
+                    else {
+                        $("[name='IsContinuous']").removeAttr("checked");
+                        e.model.IsContinuous = false;
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgYourBalanceDuringFiveYearsIsnotEnoughCannotTakeConsecutiveHealthyLeave)", "k-icon w-b-error", commands);
+                    }
+                }
+                else
+                {
+                    $("[name='IsContinuous']").removeAttr("checked");
+                    e.model.IsContinuous = false;
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgYourYearlyConsecutiveBalanceIsnotEnoughCannotTakeConsecutiveHealthyLeave)", "k-icon w-b-error", commands);
+                }
+            }
+            else {
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").value(0);
+                    e.model.RequiredDays = 0;
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").enable(true);
+                    $("[name='SeparateRemain']").val(separateRemain);
+                    $("[name='SeparateGranted']").val(separateGranted);
+                    $("[name='ConsecutiveGranted']").val(consecutiveGranted);
+                    $("[name='ConsecutiveRemain']").val(consecutiveRemain);
+                    $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears);
+                    $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears);
+            }
+        }
+
+        $("[name='RequiredDays']").kendoNumericTextBox({
+            change: function () {
+                if (this.value() >= consecutiveBalance) {
+                    if (consecutiveRemain == consecutiveBalance) {
+                        if (consecutiveRemain <= consecutiveSeparateRemainDuringFiveYears) {
+                            this.value(consecutiveBalance);
+                            e.model.RequiredDays = consecutiveBalance;
+                            e.model.IsContinuous = true;
+                            $("[name='IsContinuous']").prop("checked", true);
+                            $("[name='ConsecutiveRemain']").val(0);
+                            $("[name='ConsecutiveGranted']").val(consecutiveBalance);
+                            $("[name='SeparateGranted']").val(separateGranted);
+                            $("[name='SeparateRemain']").val(separateRemain);
+                            $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears + consecutiveBalance);
+                            $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears - consecutiveBalance);
+                        }
+                        else {
+                            $("[name='IsContinuous']").removeAttr("checked");
+                            e.model.IsContinuous = false;
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("@GlobalResource.Error", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgYourBalanceDuringFiveYearsIsnotEnoughCannotTakeConsecutiveHealthyLeave)", "k-icon w-b-error", commands);
+                        }
+                    } else {
+                        $("[name='RequiredDays']").data("kendoNumericTextBox").value(0);
+                        e.model.RequiredDays = 0;
+                        e.model.IsContinuous = false;
+                        $("[name='ConsecutiveRemain']").val(consecutiveRemain);
+                        $("[name='ConsecutiveGranted']").val(consecutiveGranted);
+                        $("[name='SeparateGranted']").val(separateGranted);
+                        $("[name='SeparateRemain']").val(separateRemain);
+                        $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears);
+                        $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears);
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgYourYearlyConsecutiveBalanceIsnotEnoughCannotTakeConsecutiveHealthyLeave)", "k-icon w-b-error", commands);
+                    }
+                } else {
+                    if (this.value() <= separateRemain) {
+                        if (this.value() <= consecutiveSeparateRemainDuringFiveYears) {
+                            e.model.IsContinuous = false;
+                            e.model.RequiredDays = this.value();
+                            $("[name='IsContinuous']").removeAttr("checked");
+                            $("[name='SeparateRemain']").val(separateRemain - this.value());
+                            $("[name='SeparateGranted']").val(separateGranted + this.value());
+                            $("[name='ConsecutiveGranted']").val(consecutiveGranted);
+                            $("[name='ConsecutiveRemain']").val(consecutiveRemain);
+                            $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears + this.value());
+                            $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears - this.value());
+                        } else {
+                            $("[name='IsContinuous']").removeAttr("checked");
+                            e.model.IsContinuous = false;
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("@GlobalResource.Error", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgYourBalanceDuringFiveYearsIsnotEnoughCannotTakeSeperateHealthyLeave)", "k-icon w-b-error", commands);
+                        }
+                    } else {
+                        $("[name='RequiredDays']").data("kendoNumericTextBox").value(0);
+                        e.model.RequiredDays = 0;
+                        e.model.IsContinuous = false;
+                        $("[name='ConsecutiveRemain']").val(consecutiveRemain);
+                        $("[name='ConsecutiveGranted']").val(consecutiveGranted);
+                        $("[name='SeparateGranted']").val(separateGranted);
+                        $("[name='SeparateRemain']").val(separateRemain);
+                        $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears);
+                        $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears);
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgYourYearlySeperateBalanceIsnotEnoughCannotTakeSeperateHealthyLeave)", "k-icon w-b-error", commands);
+                    }
+                }
+
+                if (this.value() < 0) {
+                    this.value(0);
+                    e.model.RequiredDays = 0;
+                }
+
+            }
+        });
+
+        if (!e.model.isNew()) {
+            var editedRequiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+            if (e.model.IsContinuous) {
+                $("[name='ConsecutiveRemain']").val(consecutiveRemain - editedRequiredDays);
+                $("[name='ConsecutiveGranted']").val(consecutiveGranted + editedRequiredDays);
+            } else {
+                $("[name='SeparateGranted']").val(separateGranted + editedRequiredDays);
+                $("[name='SeparateRemain']").val(separateRemain - editedRequiredDays);
+            }
+            $("[name='ConsecutiveSeparateGrantedDuringFiveYears']").val(consecutiveSeparateGrantedDuringFiveYears + editedRequiredDays);
+            $("[name='ConsecutiveSeparateRemainDuringFiveYears']").val(consecutiveSeparateRemainDuringFiveYears - editedRequiredDays);
+        }
+
+    }
+
+    //HourlyLeaveRequest
+
+    function HourlyLeaveRequestEditHandler(e) {
+        if (e.model.Id == 0) {
+            e.model.IsPaid = true;
+        }
+
+        var balancePerDay, balancePerMonth, grantedPerDay, remainPerDay, grantedPerMonth, remainPerMonth, totalHoursForFullTimeDay;
+
+        $.ajax({
+            url: '@Url.Action("GetBalanceInformationForHourlyLeaveRequest", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                employeeId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                leaveId: e.model.Id,
+            }),
+            success: function (data) {
+
+                balancePerDay = data.BalancePerDay;
+                balancePerMonth = data.BalancePerMonth;
+                grantedPerDay = data.GrantedPerDay;
+                grantedPerMonth = data.GrantedPerMonth;
+                remainPerDay = data.RemainPerDay;
+                remainPerMonth = data.RemainPerMonth;
+                totalHoursForFullTimeDay = data.TotalHoursForFullTimeDay;
+
+                if (e.container.find('[name="BalancePerDay"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.BalanceInformation</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalanceInformation"), "BalancePerDay", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.BalancePerDay)", balancePerDay, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "BalancePerMonth", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.BalancePerMonth)", balancePerMonth, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "GrantedPerDay", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.GrantedPerDay)", grantedPerDay, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "GrantedPerMonth", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.GrantedPerMonth)", grantedPerMonth, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "RemainPerDay", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RemainPerDay)", remainPerDay, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "RemainPerMonth", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RemainPerMonth)", remainPerMonth, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "TotalHoursForFullTimeDay", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TotalHoursForFullTimeDay)", totalHoursForFullTimeDay, "Text");
+                    reOrderControls($(".fieldset-BalanceInformation"));
+                }
+                e.container.find('[name="BalancePerDay"]').val(balancePerDay);
+                e.container.find('[name="BalancePerMonth"]').val(balancePerMonth);
+                e.container.find('[name="GrantedPerDay"]').val(grantedPerDay);
+                e.container.find('[name="GrantedPerMonth"]').val(grantedPerMonth);
+                e.container.find('[name="RemainPerDay"]').val(remainPerDay);
+                e.container.find('[name="RemainPerMonth"]').val(remainPerMonth);
+                e.container.find('[name="TotalHoursForFullTimeDay"]').val(totalHoursForFullTimeDay);
+
+            }
+        });
+        $("[name='RequiredDays']").kendoNumericTextBox({
+            change: function () {
+
+                var requiredHours = this.value();
+                if (requiredHours < 0) {
+                    this.value(0);
+                    e.model.RequiredDays = 0;
+                }
+                else {
+
+                    if (requiredHours > remainPerDay) {
+                        if (remainPerDay > remainPerMonth) {
+                            this.value(remainPerMonth);
+                            e.model.RequiredDays = remainPerMonth;
+                        } else {
+                            this.value(remainPerDay);
+                            e.model.RequiredDays = remainPerDay;
+                        }
+                    } else {
+                        if (requiredHours > remainPerMonth) {
+                            this.value(remainPerMonth);
+                            e.model.RequiredDays = remainPerMonth;
+                        }
+                    }
+
+                    $("[name='GrantedPerDay']").val(grantedPerDay + this.value());
+                    $("[name='GrantedPerMonth']").val(grantedPerMonth + this.value());
+
+                    $("[name='RemainPerDay']").val(remainPerDay - this.value());
+                    $("[name='RemainPerMonth']").val(remainPerMonth - this.value());
+
+                }
+            }
+        });
+
+        if (!e.model.isNew()) {
+            var editedRequiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+            $("[name='RemainPerMonth']").val(remainPerMonth - editedRequiredDays);
+            $("[name='GrantedPerMonth']").val(grantedPerMonth + editedRequiredDays);
+            $("[name='GrantedPerDay']").val(grantedPerDay + editedRequiredDays);
+            $("[name='RemainPerDay']").val(remainPerDay - editedRequiredDays);
+        }
+
+    }
+
+
+    //MaternityLeaveRequest
+
+    function MaternityLeaveRequestEditHandler(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetMaternityLeaveRequestBalanceInformation", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                employeeId: window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 2].RowId
+            }),
+            success: function (data) {
+
+                firstChildBalance = data.FirstChildBalance;
+                secondChildBalance = data.SecondChildBalance;
+                thirdChildBalance = data.ThirdChildBalance;
+                deathPeriodPercentage = data.DeathPeriodPercentage;
+                granted = data.Granted;
+
+                if (e.container.find('[name="FirstChildBalance"]').length == 0) {
+                    $(".fieldset-EmployeeRelationServicesGroupNames_BornInfo").after('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.BalanceInformation</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalanceInformation"), "FirstChildBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FirstChildBalance)", firstChildBalance, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "DeathPeriodPercentage", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DeathPeriodPercentage)", deathPeriodPercentage + " %", "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "SecondChildBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SecondChildBalance)", secondChildBalance, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "PreviousLeavesCount", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PreviousLeavesCount)", granted, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "ThirdChildBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ThirdChildBalance)", thirdChildBalance, "Text");
+                    reOrderControls($(".fieldset-BalanceInformation"));
+                }
+
+                e.container.find('[name="FirstChildBalance"]').val(firstChildBalance);
+                e.container.find('[name="SecondChildBalance"]').val(secondChildBalance);
+                e.container.find('[name="ThirdChildBalance"]').val(thirdChildBalance);
+                e.container.find('[name="DeathPeriodPercentage"]').val(deathPeriodPercentage);
+                e.container.find('[name="PreviousLeavesCount"]').val(granted);
+
+                var dropdownlist = $("[name='ChildOrder']").data("kendoDropDownList");
+                dropdownlist.bind("change", function () {
+                    GetBalanceBySelectedItem();
+                });
+                dropdownlist.bind("select", function () {
+                    GetBalanceBySelectedItem();
+                });
+
+                if (!e.model.isNew()) {
+                    GetBalanceBySelectedItem();
+                    e.model.RequiredDays = $("[name='RequiredDays']").data("kendoNumericTextBox").value();
+                } else {
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").value(0);
+                    e.model.RequiredDays = 0;
+                }
+
+                $("[name='RequiredDays']").data("kendoNumericTextBox").enable(false);
+
+            }
+        });
+
+        $("[name='IsDead']").click(function () {
+            GetBalanceBySelectedItem();
+        });
+
+        function GetBalanceBySelectedItem() {
+
+            var dropdownlist = $("[name='ChildOrder']").data("kendoDropDownList");
+
+            if (!$("[name='IsDead']").is(':checked')) {
+
+                if (dropdownlist.value() == 0)
+                {
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").value($("[name='FirstChildBalance']").val());
+                    e.model.RequiredDays = $("[name='FirstChildBalance']").val();
+                }
+
+                if (dropdownlist.value() == 1)
+                {
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").value($("[name='SecondChildBalance']").val());
+                    e.model.RequiredDays = $("[name='SecondChildBalance']").val();
+                }
+
+                if (dropdownlist.value() == 2)
+                {
+                    $("[name='RequiredDays']").data("kendoNumericTextBox").value($("[name='ThirdChildBalance']").val());
+                    e.model.RequiredDays = $("[name='ThirdChildBalance']").val();
+                }
+
+            }
+            else
+            {
+                var requiredDays = 0;
+
+                if (dropdownlist.value() == 0) {
+                    requiredDays = (deathPeriodPercentage * firstChildBalance) / 100;
+                }
+
+                if (dropdownlist.value() == 1) {
+                    requiredDays = (deathPeriodPercentage * secondChildBalance) / 100;
+                }
+
+                if (dropdownlist.value() == 2) {
+                    requiredDays = (deathPeriodPercentage * thirdChildBalance) / 100;
+                }
+
+                $("[name='RequiredDays']").data("kendoNumericTextBox").value(requiredDays);
+                e.model.RequiredDays = requiredDays;
+            }
+        }
+
+    }
+
+
+    //MarriageLeaveRequest
+
+    function MarriageLeaveRequestEditHandler(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetBalanceInformation", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                leaveType: "Marriage",
+                employeeId: window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 2].RowId
+            }),
+            success: function (data) {
+
+
+                balance = data.Balance;
+                granted = data.Granted;
+
+                if (e.container.find('[name="Balance"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.BalanceInformation</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalanceInformation"), "Balance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", balance, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "PreviousLeavesCount", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PreviousLeavesCount)", granted, "Text");
+                    reOrderControls($(".fieldset-BalanceInformation"));
+                }
+
+                e.container.find('[name="Balance"]').val(balance);
+                e.container.find('[name="PreviousLeavesCount"]').val(granted);
+
+                $("[name='RequiredDays']").data("kendoNumericTextBox").value(balance);
+                e.model.RequiredDays = balance;
+                $("[name='RequiredDays']").data("kendoNumericTextBox").enable(false);
+            }
+        });
+
+    }
+
+    //PilgrimageLeaveRequest
+
+    function PilgrimageLeaveRequestEditHandler(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetBalanceInformation", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                leaveType: "Pilgrimage",
+                employeeId: window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 2].RowId
+            }),
+            success: function (data) {
+
+
+                balance = data.Balance;
+                granted = data.Granted;
+
+                if (e.container.find('[name="Balance"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.BalanceInformation</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalanceInformation"), "Balance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", balance, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "PreviousLeavesCount", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PreviousLeavesCount)", granted, "Text");
+                    reOrderControls($(".fieldset-BalanceInformation"));
+                }
+
+                e.container.find('[name="Balance"]').val(balance);
+                e.container.find('[name="PreviousLeavesCount"]').val(granted);
+
+                $("[name='RequiredDays']").data("kendoNumericTextBox").value(balance);
+                e.model.RequiredDays = balance;
+                $("[name='RequiredDays']").data("kendoNumericTextBox").enable(false);
+            }
+        });
+    }
+
+
+
+    //DeathLeaveRequest
+
+    function DeathLeaveRequestEditHandler(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetBalanceInformation", "LeaveRequest", new {area = "EmployeeRelationServices"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                leaveType: "Death",
+                employeeId: window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 2].RowId
+            }),
+            success: function (data) {
+
+                balance = data.Balance;
+                granted = data.Granted;
+
+                if (e.container.find('[name="Balance"]').length == 0) {
+                    $(".fieldsets-div").prepend('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.BalanceInformation</legend></fieldset>');
+                    addLabelInControl($(".fieldset-BalanceInformation"), "Balance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", balance, "Text");
+                    addLabelInControl($(".fieldset-BalanceInformation"), "PreviousLeavesCount", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PreviousLeavesCount)", granted, "Text");
+                    reOrderControls($(".fieldset-BalanceInformation"));
+                }
+
+                e.container.find('[name="Balance"]').val(balance);
+                e.container.find('[name="PreviousLeavesCount"]').val(granted);
+
+                $("[name='RequiredDays']").data("kendoNumericTextBox").value(balance);
+                e.model.RequiredDays = balance;
+                $("[name='RequiredDays']").data("kendoNumericTextBox").enable(false);
+            }
+        });
+
+    }
+
+
+
+    //Fixed Holiday
+
+     //function FixedHolidayEditHandler(e) {
+     //    e.container.find("#dropDownListMonth").data("kendoDropDownList").bind("change", chickMonth);
+     //}
+
+
+     //function chickMonth(e) {
+
+     //    var temp = ["4", "6", "9", "11", "8", "10", "12"];
+     //    var dataSource = $("#dropDownListDay").data("kendoDropDownList").dataSource;
+
+     //    if ($("#dropDownListMonth").val() == "2") {
+     //        dataSource.read();
+     //        dataSource.remove(dataSource.at(30));
+     //        dataSource.remove(dataSource.at(29));
+     //        dataSource.remove(dataSource.at(28));
+     //    } else if (itemInArrat(temp, $("#dropDownListMonth").val())) {
+     //        dataSource.read();
+     //        dataSource.remove(dataSource.at(30));
+     //    }
+
+     //}
+
+     //function itemInArrat(data, item) {
+     //    for (var i = 0; i < data.length; i++) {
+     //        if (data[i] == item)
+     //            return true;
+     //    }
+     //    return false;
+    //}
+
+
+ </script>

@@ -1,0 +1,175 @@
+﻿@{
+    ViewBag.Title = "IndexModule";
+}
+
+<input id='indexesDropDownList' style='width: 250px' /> <br />
+
+<script>
+
+    function onSelect(e) {
+        var dataItem = this.dataItem(e.item.index());
+        $.ajax({
+            url: window.applicationpath + "Index/GetGridModel",
+            type: "POST",
+            data: { name: dataItem.Value },
+            success: function (data) {
+                $("#grid").remove();
+                $("#indexgridcontainer").append("<div id='grid'></div>");
+                generateGridIndex(data);
+                registerGridKeydownEvent();
+            }
+        });
+    }
+    
+    function generateGridIndex(data) {
+        $("#" + data.Name).kendoGrid({
+            dataSource: getDataSource(data),
+            selectable: "single",
+            filterable: {
+                messages: {
+                    info: "Show items with value that:",
+                    filter: "Filter",
+                    clear: "Clear",
+                    isTrue: "Is true",
+                    isFalse: "Is false",
+                    and: "And",
+                    or: "Or"
+                },
+                operators: {
+                    string: {
+                        eq: "Is equal to",
+                        neq: "Not equal to",
+                        startswith: "Starts with",
+                        contains: "Contains",
+                        endswith: "Ends with"
+                    }
+                },
+                number: {
+                    eq: "Is equal to",
+                    neq: "Not equal to",
+                    gte: "Is greater than or equal to",
+                    gt: "Is greater than",
+                    lte: "Is less than or equal to",
+                    lt: "Is less than"
+                },
+                date: {
+                    eq: "Is equal to",
+                    neq: "Not equal to",
+                    gte: "Is after or equal to",
+                    gt: "Is after",
+                    lte: "Is before or equal to",
+                    lt: "Is before"
+                },
+                enums: {
+                    eq: "Is Equal to",
+                    neq: "Not equal to"
+                },
+                extra: false
+            },
+            sortable: true,
+            navigatable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true
+            },
+            height: 430,
+            toolbar: [
+                { name: "create", text: "Create" },
+                { name: "save", text: "Save" },
+                { name: "cancel", text: "Cancel" }
+            ],
+            columns: getColumns(data),
+            editable: true
+        });
+    }
+
+    function getDataSource(data) {
+        return {
+            serverPaging: true,
+            serverSorting: true,
+            type: "POST",
+            serverFiltering: true,
+            allowUnsort: true,
+            pageSize: 10,
+            transport: {
+                read: {
+                    url: window.applicationpath + 'Index/Read',
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: { name: data.TypeFullName }
+                },
+                update: {
+                    url: window.applicationpath + 'Index/Update',
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: { name: data.TypeFullName }
+                },
+                destroy: {
+                    url: window.applicationpath + 'Index/Destroy',
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: { name: data.TypeFullName }
+                },
+                create: {
+                    url: window.applicationpath + 'Index/Create',
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: { name: data.TypeFullName }
+                },
+                parameterMap: function (options, operation) {
+                    return JSON.stringify(options);
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: getSchemaFields(data)
+                },
+                data: data.DataFieldName,
+                total: data.TotalCountFieldName
+            }
+        };
+    }
+
+    $(document).ready(function () {
+       
+        $("#indexesDropDownList").kendoDropDownList({
+            dataTextField: "Text",
+            dataValueField: "Value",
+            value: "@ViewBag.IndexName",
+            select: onSelect,
+            dataSource: {
+                transport: {
+                    read: {
+                        dataType: "json",
+                        data: {moduleName:"@ViewBag.ModuleName"},
+                        url: window.applicationpath + 'Index/IndexesNameForModule'
+                    }
+                }
+            }
+        });
+
+
+        $.ajax({
+            url: window.applicationpath + "Index/GetGridModel",
+            type: "POST",
+            data: { name: $("#indexesDropDownList").val() },
+            success: function (data) {
+                $("#grid").remove();
+                $("#indexgridcontainer").append("<div id='grid'></div>");
+                generateGridIndex(data);
+                registerGridKeydownEvent();
+            }
+        });
+    });
+</script>
+
+<div id='indexgridcontainer' >
+    <div id="grid"></div>
+</div>
+

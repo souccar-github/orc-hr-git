@@ -1,0 +1,197 @@
+﻿
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+<div class="chart chart-width-full">
+    <div class="chart-params">
+        <div id="employee-elc" style="width:48%;">
+            <div class="control control-employee-elc">
+                <div class="k-edit-label">
+                    <label for="employeeElc">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)</label>
+                </div>
+                <div data-container-for="employeeElc" class="k-edit-field">
+                    <input id="employeeElc"/>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <div id="employee-life-cycle-chart" class="container-chart"></div>
+</div>
+<script type="text/javascript">
+
+    function getEmployeeLifeCycleChart() {
+
+        $('#employee-elc').css('float', $pageDir);
+
+        generateDropdownList('#employeeElc',
+            "@Url.Action("GetAllEmployees", "Dashboard", new { area = "EmployeeRelationServices" })",
+            function(e) {
+                getEmployeeLifeCycle(e);
+            });
+
+    }
+
+    function getEmployeeLifeCycle(employeeId) {
+        window.Souccar.ajax('@Url.Action("GetEmployeeLifeCycle", "Dashboard", new { area = "EmployeeRelationServices" })', { employeeId: employeeId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success) {
+                generateEmployeeLifeCycleChart(data.Data);
+            }
+        }
+        function erorrFunc() {
+            console.log("Error / func:getEmployeeLifeCycle");
+        }
+    }
+
+    function generateEmployeeLifeCycleChart(data) {
+        var styles = ["yellow", "lightblue", "red"];
+        var array = new Array();
+
+        for (var i = 0; i < data.length; i++) {
+            array.push({
+                name: data[i].Name,
+                label: convertJsonToDate(data[i].Date),
+                description: data[i].Description
+            });
+        }
+
+        array.sort(function (a, b) {
+            return a.label - b.label;
+        });
+
+        var colors = getDashboardColors();
+        Highcharts.setOptions({
+            colors: colors
+        });
+
+        Highcharts.chart('employee-life-cycle-chart',
+            {
+                chart: {
+                    type: 'timeline'
+                },
+                xAxis: {
+                    visible: false
+                },
+                yAxis: {
+                    visible: false
+                },
+                title: {
+                    text:
+                        '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeLifeCycle)',
+
+                },
+
+                tooltip: {
+                    outside: true,
+                    useHTML: true,
+                    borderRadius: 5,
+                    formatter: function () {
+                        return (
+                            '<div class="chart-tooltip' +
+                                this.point.color +
+                                '"><span class="tval"><b>' +
+                                this.point.name +
+                                '</b> </span><span class="tlabel"><p>' + (this.point.description != null ? this.point.description : '') + '</p></span></div>'
+                        );
+
+
+                    }
+                },
+                colors: colors,
+                series: [
+                    {
+                        name: '',
+                        data: getRealData(array, colors)
+                    }
+                ]
+            });
+
+    }
+
+    function convertJsonToDate(jsonDate) {
+        return new Date(parseInt(jsonDate.substr(6)));
+    }
+
+    function getRealData(array,colors) {
+        console.log(colors);
+
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        var data = new Array();
+        $.each(array, function (index, item) {
+            var date = item.label.getDate() + ' ' + monthNames[item.label.getMonth()] + ' ' + item.label.getFullYear();
+            data.push(
+                {
+                    //x: date,//في حال الاعتماد على التاريخ في المحور الافقي يجب وضع القيمة الحالية
+                    x: index,
+                    dataLabels: {
+                        outside: true,
+                        useHTML: true,
+                        borderRadius: 2,
+                        borderColor: colors[index],
+                        format: '<div class="chart-tooltip"><span class="tval"><b>{point.name}</b> </span><span class="tlabel">{point.label}</span></div>'
+                    },
+                    name: item.name,
+                    label: item.label.getDate() + ' ' + monthNames[item.label.getMonth()] + ' ' + item.label.getFullYear(),
+                    description: item.description
+                }
+               
+            );
+        });
+        
+        return data;
+    }
+
+</script>
+<style>
+    
+
+    #exp {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+    .label {
+        z-index: 1 !important;
+    }
+
+    .highcharts-tooltip span {
+        opacity: 1;
+        z-index: 9999 !important;
+    }
+
+    .tooltip {
+        padding: 5px;
+        text-align: center;
+    }
+    .chart-lot-label {
+        text-align:center;
+        display:block;
+    }
+
+    .chart-tooltip > span {
+        display: block;
+    }
+    
+    
+    .chart-tooltip {
+        font-size: 13px;
+        text-align: center;
+        font-family: Lato;
+        line-height: 18px;
+        padding: 4px 7px;
+    }
+
+    .chart-tooltip.tval {
+        color: #33658a;
+        font-weight: bold;
+    }
+    .chart-tooltip.tlabel {
+        color: #000;
+    }
+
+</style>

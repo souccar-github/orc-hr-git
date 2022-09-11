@@ -1,0 +1,643 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="interview-workflow-container"></div>
+<div class="development-workflow-Window"></div>
+
+<script type="text/javascript">
+
+    var evaluationViewModel = {};
+    var workflowContainer = $(".interview-workflow-container");
+
+    function showEvaluationWindow(id, workflowItemId) {
+
+        $.ajax({
+            url: '@Url.Action("InitialApplicantEvaluationInfo", "Interview", new { area = "Recruitment"})',
+            type: "POST",
+            data: JSON.stringify({ id: id }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    evaluationViewModel = data.Result;
+                    createWorkflow(workflowContainer, workflowItemId, initEvaluation, acceptEvaluation, rejectEvaluation, pendingEvaluation);
+                }
+            }
+        });
+    }
+
+    function oldWeights() {
+
+        $.ajax({
+            url: '@Url.Action("InitialApplicantEvaluationInfo", "Interview", new { area = "Recruitment"})',
+            type: "POST",
+            data: JSON.stringify({ id: evaluationViewModel.InterviewId }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    evaluationViewModel = data.Result;
+                }
+            }
+        });
+        for (var i = 0; i < evaluationViewModel.CustomSections.length; i++) {
+            for (var j = 0; j < evaluationViewModel.CustomSections[i].AppraisalItems.length; j++) {
+                var item = evaluationViewModel.CustomSections[i].AppraisalItems[j];
+                $('[name="appraisal-custom-section-weight-' + item.Id + '"]').data('kendoNumericTextBox').value(item.Weight);
+            }
+        }
+
+
+    }
+
+    function initEvaluation() {
+
+        gridContainer.html("");
+
+        var id = evaluationViewModel.InterviewId;
+        $.ajax({
+            url: '@Url.Action("GetCustomSectionsInformation", "Interview", new { area = "Recruitment"})',
+            type: "POST",
+            data: JSON.stringify({ interviewId: id }),
+            contentType: 'application/json',
+            success: function (data) {
+
+                generateInterviewInterface(data);
+            }
+        });
+    }
+
+    function generateInterviewInterface(data) {
+
+        if (!evaluationViewModel.ShowRejectButton)
+            $("#RejectButton").remove();
+
+        var container = $("#workflow_data");
+        $(".workflow_related_info .k-icon.k-i-calendar").remove();
+        var template = kendo.template($("#interview-workflow-template").html());
+        container.html(template(evaluationViewModel));
+
+        container.find(".appraisal-form").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
+
+     
+        for (var i = 0; i < data.length; i++) {
+            template = kendo.template($("#customSection-workflow-template").html());
+            container.find(".appraisal-form .appraisal-tab-custom-section-" + data[i].Id).html(template(data[i]));
+        }
+
+        kendo.init(container.find(".appraisal-form"));
+        container.find(".appraisal-rate").kendoDropDownList({
+            dataSource: {
+                data: getStepsDataSource(evaluationViewModel)
+            }
+        });
+
+        for (var i = 0; i < $(".show-incentive-item").length; i++) {
+            $(".show-incentive-item").eq(i).kendoTooltip({
+                content: $(".tooltip-wrapper").eq(i),
+                width: 400,
+                position: "top",
+            });
+
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            for (var j = 0; j < data[i].AppraisalItems.length; j++) {
+                var item = data[i].AppraisalItems[j];
+
+                if (item.CanNotEvaluate == true) {
+                    $('[name="appraisal-custom-section-cannotevaluate-' + item.Id + '"]').prop("checked", true);
+                    $('[name="appraisal-custom-section-weight-' + item.Id + '"]').data('kendoNumericTextBox').enable(false);
+                    $('[name="appraisal-custom-section-rate-' + item.Id + '"]').data('kendoDropDownList').enable(false);
+                    $("#note" + item.Id).prop('readonly', true);
+                }
+            }
+        }
+
+        var workflowInfo = $("#workflow_description").find(".workflow-custom-related-info");
+        workflowInfo.append("<span class='separator'>|</span>");
+        //workflowInfo.append("<a href='#'><span class='k-icon k-i-employee-info phase-employee-info-but'></span></a>");
+        //workflowInfo.append("<a href='#'><span class='k-icon k-i-setting phase-setting-but'></span></a>");
+        $("#workflow_description").append("<pre style='padding-left:50px;font-size: 16px;font-weight:  600;'>" + evaluationViewModel.FullName + "        @GlobalResource.Mark: " + evaluationViewModel.TotalMark + "</pre>");
+
+        workflowInfo.find('.phase-employee-info-but').click(function (e) {
+            //openViewWindow("HRIS.Domain.Personnel.RootEntities.Employee", "@GlobalResource.EmployeeInfo", appraisalViewModel.EmployeeId);
+        });
+        workflowInfo.find('.phase-setting-but').click(function (e) {
+            //openViewWindow(appraisalViewModel.PhaseSettingTypeName, "@GlobalResource.PhaseInfo", appraisalViewModel.PhaseSettingId);
+        });
+
+        $('.appraisal-custom-section-cannotevaluate').change(function (e) {
+
+            var id = $(this).attr('item-id');
+            var cannotevaluateSelector = $('[name="appraisal-custom-section-cannotevaluate-' + id + '"]');
+            var weightNumericTextBox = $('[name="appraisal-custom-section-weight-' + id + '"]').data('kendoNumericTextBox');
+            var rateDropDownList = $('[name="appraisal-custom-section-rate-' + id + '"]').data('kendoDropDownList');
+            var descriptionSelector = $("#note" + id);
+
+
+
+            if (cannotevaluateSelector.is(':checked')) {
+
+                rateDropDownList.enable(false);
+                weightNumericTextBox.enable(false);
+                descriptionSelector.prop('readonly', true);
+
+
+            } else {
+                descriptionSelector.prop('readonly', false);
+                weightNumericTextBox.enable(true);
+                rateDropDownList.enable(true);
+            }
+
+            checkInterviewViewModelWeights(evaluationViewModel);
+
+        });
+
+        function checkInterviewViewModelWeights(evaluationViewModel) {
+            for (var j = 0; j < evaluationViewModel.CustomSections.length; j++) {
+
+                updateInterviewViewModelWeights(evaluationViewModel.CustomSections[j].AppraisalItems, workflowContainer);
+            }
+        }
+
+        function updateInterviewViewModelWeights(appraisalItems, container) {
+
+            var checkedWeight = 0;
+            var newSumWeights = 0;
+            var lastSumWeight = 0;
+            var sumWeight = 0;
+
+
+            for (var i = 0; i < appraisalItems.length; i++) {
+                var item = appraisalItems[i];
+
+                var check = Boolean(container.find("[name='appraisal-custom-section-cannotevaluate-" + item.Id + "']").is(':checked'));
+                if (check) {
+
+                    sumWeight += Number(appraisalItems[i].Weight);
+                    $('[name="appraisal-custom-section-weight-' + item.Id + '"]').data('kendoNumericTextBox').value(0);
+                    $('[name="appraisal-custom-section-rate-' + item.Id + '"]').data('kendoDropDownList').value(0)
+                }
+
+            }
+            newSumWeights = 100 - sumWeight;
+            for (var j = 0; j < appraisalItems.length; j++) {
+                var item = appraisalItems[j];
+                var check = Boolean(container.find("[name='appraisal-custom-section-cannotevaluate-" + item.Id + "']").is(':checked'));
+                if (!check) {
+
+                    $('[name="appraisal-custom-section-weight-' + item.Id + '"]').data('kendoNumericTextBox').value(Number(appraisalItems[j].Weight * 100) / newSumWeights);
+                }
+
+                lastSumWeight += Number($('[name="appraisal-custom-section-weight-' + item.Id + '"]').val());
+
+            }
+
+        }
+    }
+
+    function acceptEvaluation() {
+        updateInterviewWeightAndRate(evaluationViewModel, workflowContainer);
+
+        var checkWeight = checkInterviewViewModelWeight(evaluationViewModel);
+
+        if (checkWeight == null) {
+
+            openEvaluationInfoWindow(evaluationViewModel);
+
+            oldWeights();
+            @*var checkRate = checkInterviewViewModelRate(evaluationViewModel);
+
+            if (checkRate == null) {
+                openEvaluationInfoWindow(evaluationViewModel);
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                ShowMessageBox("@GlobalResource.Error", checkRate, "k-icon w-b-error", commands);
+            }*@
+
+        }
+        else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+            ShowMessageBox("@GlobalResource.Error", checkWeight, "k-icon w-b-error", commands);
+            oldWeights();
+        }
+
+
+    }
+
+    function pendingEvaluation() {
+
+        updateInterviewWeightAndRate(evaluationViewModel, workflowContainer);
+
+        var checkWeight = checkInterviewViewModelWeight(evaluationViewModel);
+        if (checkWeight == null) {
+
+            @*var checkRate = checkInterviewViewModelRate(evaluationViewModel);
+
+            if (checkRate == null) {
+
+                var acceptUrl = "@Url.Action("Pending", "Interview", new { area = "Recruitment" })";
+            $.ajax({
+                url: acceptUrl,
+                type: "POST",
+                data: JSON.stringify({ evaluationViewModel: evaluationViewModel }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.PendingAppraisal" , "k-icon w-b-info", commands);
+                    workflowContainer.html("");
+                    viewApplicantsGrid();
+                }
+            });
+
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                ShowMessageBox("@GlobalResource.Error", checkRate, "k-icon w-b-error", commands);
+            }*@
+
+
+            var acceptUrl = "@Url.Action("Pending", "Interview", new { area = "Recruitment" })";
+            $.ajax({
+                url: acceptUrl,
+                type: "POST",
+                data: JSON.stringify({ evaluationViewModel: evaluationViewModel }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.PendingAppraisal", "k-icon w-b-info", commands);
+                    workflowContainer.html("");
+                    viewApplicantsGrid();
+                }
+            });
+
+        }
+        else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+            ShowMessageBox("@GlobalResource.Error", checkWeight, "k-icon w-b-error", commands);
+            oldWeights();
+        }
+
+    }
+
+    function rejectEvaluation() {
+        var rejecttUrl = "@Url.Action("Reject", "Interview", new { area = "Recruitment" })";
+        //saveApproval(rejecttUrl);
+    }
+
+    function getStepsDataSource(evaluationViewModel) {
+        var result = [];
+
+        for (var i = evaluationViewModel.MinMark; i < evaluationViewModel.MaxMark; i += evaluationViewModel.Step) {
+            result.push(Math.round(i * 100) / 100);
+        }
+        if (result[result.length - 1] != evaluationViewModel.MaxMark)
+            result.push(evaluationViewModel.MaxMark);
+
+        return result;
+    }
+
+    function updateInterviewWeightAndRate(evaluationViewModel, container) {
+
+        for (var j = 0; j < evaluationViewModel.CustomSections.length; j++) {
+            updateCustomSectionWeightAndRate(evaluationViewModel.CustomSections[j], container);
+        }
+    }
+
+    function updateCustomSectionWeightAndRate(customSections, container) {
+        for (var i = 0; i < customSections.AppraisalItems.length; i++) {
+            
+            var item = customSections.AppraisalItems[i];
+            item.CanNotEvaluate = Boolean(container.find("[name='appraisal-custom-section-cannotevaluate-" + item.Id + "']").is(':checked'));
+            if (item.CanNotEvaluate == true) { item.CanNotEvaluate = true; }
+
+            item.Weight = container.find("[name='appraisal-custom-section-weight-" + item.Id + "']").val();
+            item.Rate = container.find("[name='appraisal-custom-section-rate-" + item.Id + "']").val();
+            item.Note = container.find("[name='appraisal-custom-section-note" + item.Id + "']").val();
+        }
+    }
+
+    function checkInterviewViewModelWeight(evaluationViewModel) {
+        for (var j = 0; j < evaluationViewModel.CustomSections.length; j++) {
+           
+            if (!checkTotalWeight(evaluationViewModel.CustomSections[j].AppraisalItems)) {
+                return "@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.TotalCustomSectionWeightNotEqualTo100)";
+            }
+        }
+        return null;
+    }
+
+    function checkTotalWeight(appraisalItems) {
+        if (appraisalItems.length == 0)
+            return true;
+        var sumWeight = 0;
+        var newSumWeights = 0;
+        var lastSumWeight = 0;
+  
+        for (var j = 0; j < appraisalItems.length; j++) {
+            
+        
+             lastSumWeight += Number(appraisalItems[j].Weight);
+          
+        }
+       
+        if (lastSumWeight <= 99.5 || parseInt(lastSumWeight) > 100)
+        { return false; }
+        else
+            return true;
+       
+    }
+
+    function checkInterviewViewModelRate(evaluationViewModel) {
+
+        for (var j = 0; j < evaluationViewModel.CustomSections.length; j++) {
+            result = checkInterviewSectionDescriptionIsRequired(evaluationViewModel.CustomSections[j].AppraisalItems, evaluationViewModel);
+            if (result > -1) {
+                return "@GlobalResource.CustomSectionDescriptionIsRequired" + ", " + evaluationViewModel.CustomSections[j].AppraisalItems[result].Name;
+            }
+        }
+        return null;
+    }
+
+    function checkInterviewSectionDescriptionIsRequired(appraisalItems, interviewViewModel) {
+       
+        var isRequired = -1;
+        if (appraisalItems.length == 0)
+            return isRequired;
+        for (var i = 0; i < appraisalItems.length; i++) {
+            if (
+                (appraisalItems[i].Rate < interviewViewModel.WeaknessLimit || appraisalItems[i].Rate > interviewViewModel.StrongLimit) &&
+                    (appraisalItems[i].Note == "" || appraisalItems[i].Note == null)
+            ) {
+                isRequired = i;
+            }
+        }
+        return isRequired;
+    }
+
+    function openEvaluationInfoWindow(evaluationViewModel) {
+
+        var developmentViewModel = {};
+
+        var title = "@GlobalResource.DevelopmentWindow";
+        var buttons = [
+            { Name: "confirm_save_appraisal", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel_appraisal", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "development-info-container";
+        var bodyHTML = "<div class='development-info-container-body fieldsets-div'></div>";
+        createAndOpenCustomWindow($(".development-workflow-Window"), bodyHTML, containerId, title, buttons, true, false);
+
+        $.ajax({
+            url: '@Url.Action("GetEvaluationInformation", "Interview", new { area = "Recruitment" })',
+            type: "POST",
+            data: JSON.stringify({ evaluationViewModel: evaluationViewModel }),
+            contentType: 'application/json',
+            success: function (e) {
+                developmentViewModel = e;
+                var template = kendo.template($("#DevelopmentSection-workflow-template").html());
+                $(".development-info-container-body").html(template({ model: e }));
+                kendo.init($(".development-workflow-Window"));
+            }
+        });
+
+        $("#confirm_save_appraisal").off('click').on('click', function () {
+
+            var checkedItems = [];
+            var trs = $(".development-workflow-Window .WeakPoints-body tr");
+            for (var i = 0; i < trs.length ; i++) {
+                if ($($(".development-workflow-Window .WeakPoints-body tr")[i]).find(".check-traning-need").prop("checked")) {
+                    var name = $(trs[i]).find(".item-Name").text();
+                    var description = $(trs[i]).find(".item-Description").text();
+                    checkedItems.push({ Id: i, name: name, description: description });
+                }
+            }
+
+            evaluationViewModel.Note = $("#NewStepDescription").val();
+            //appraisalViewModel.WorkflowId = workflowId;
+            $.ajax({
+                url: '@Url.Action("Accept", "Interview", new { area = "Recruitment" })',
+                type: "POST",
+                data: JSON.stringify({ evaluationViewModel: evaluationViewModel, checkedItems: checkedItems }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var appraisalValue = data.Result;
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.AppraisalResult" + " : " + appraisalValue, "k-icon w-b-info", commands);
+                    workflowContainer.html("");
+                    viewApplicantsGrid();
+                }
+            });
+            $(".development-workflow-Window").data("kendo-window").close();
+        });
+
+        $("#cancel_appraisal").off('click').on('click', function () {
+            $(".development-workflow-Window").data("kendo-window").close();
+        });
+    }
+
+</script>
+
+<script id="customSection-workflow-template" type="text/x-kendo-template">
+    #var showKpisTemplate = kendo.template($("\\#show-kpis-template").html());#
+    <div>
+        <fieldset class="custom-info">
+            <legend>@GlobalResource.Information</legend>
+            <div class="appraisal-meta-info">
+                <div>
+                    <span>@GlobalResource.Name :</span>
+                    <span>#=Name#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionWeight :</span>
+                    <span>#=SectionWeight#</span>
+                </div>
+
+            </div>
+            <div class="appraisal-meta-desc">
+                <span>@GlobalResource.Description:</span>
+                #if(Description==null||Description=="null"){#
+
+                #Description="";#
+                #}#
+                <textarea readonly>#=Description#</textarea>
+            </div>
+
+        </fieldset>
+
+        <div class="custom">
+            <table>
+                <colgroup>
+                    <col class="column-namecolumn">
+                    <col class="column-cannotevaluate">
+                    <col class="column-kpis">
+                    <col class="column-weight">
+                    <col class="column-rate">
+                    <col class="column-description">
+                </colgroup>
+
+                <thead>
+                    <tr>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.CanNotEvaluate)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #for (var i = 0; i < AppraisalItems.length; i++) {#
+                    #var item=AppraisalItems[i];#
+                    <tr class="custom-#=i#">
+                        <td><p>#=item.Name#</p></td>
+                        <td class="center-column"><input value="#=item.CanNotEvaluate#" data-role="none" name="appraisal-custom-section-cannotevaluate-#=item.Id#" item-id="#=item.Id#" class="appraisal-custom-section-cannotevaluate" type="checkbox" /></td>
+
+                        <td class="item-commands">
+                            <button data-item-index="#=i#" class="show-incentive-item k-button">
+                                <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                            </button>
+                            <div class="kpis-info">
+                                <div class="tooltip-wrapper">
+                                    #=showKpisTemplate({Kpis:item.Kpis})#
+                                </div>
+                            </div>
+                        </td>
+                        <td class="center-column"><input value="#=item.Weight#" data-role="numerictextbox" name="appraisal-custom-section-weight-#=item.Id#" class="appraisal-custom-section-weight" type="text" /></td>
+                        <td class="center-column"><input value="#=item.Rate#" name="appraisal-custom-section-rate-#=item.Id#" class="appraisal-custom-section-rate  appraisal-rate" type="text" /></td>
+                        <td class="center-column">
+                            #if(item.Note==null||item.Note=="null"){#
+                            #item.Note="";#
+                            #}#
+                            <textarea name="appraisal-custom-section-note#=item.Id#" id="note#=item.Id#" class="appraisal-note appraisal-custom-section-note k-textbox">#=item.Note#</textarea>
+                        </td>
+                    </tr>
+                    #}#
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</script>
+
+<script id="show-kpis-template" type="text/x-kendo-template">
+    <table class="kpis-table">
+        <thead>
+            <tr>
+                <th>@GlobalResource.Description</th>
+                @*<th>@GlobalResource.Weight</th>*@
+                <th>@GlobalResource.Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i < Kpis.length; i++) {#
+            #var kpi=Kpis[i];#
+            <tr>
+                <td><span>#=kpi.Description#</span></td>
+                @*<td><span>#=kpi.Weight#</span></td>*@
+                <td><span>#=kpi.Value#</span></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+
+</script>
+
+<script id="interview-workflow-template" type="text/x-kendo-template">
+    <div class="appraisal-form">
+        <ul>
+            #for (var i = 0; i < CustomSections.length; i++) {#
+            <li>#=CustomSections[i].Name#</li>
+            #}#
+        </ul>
+
+        #for (var i = 0; i < CustomSections.length; i++) {#
+        <div class="appraisal-tab-div appraisal-tab-custom-section-#=CustomSections[i].Id#"></div>
+        #}#
+    </div>
+</script>
+
+<script id="DevelopmentSection-workflow-template" type="text/x-kendo-template">
+    <div>
+        <div class="development">
+
+            <fieldset class='weak-points-fieldset'>
+                <legend>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.WeakPoints)</legend><div class='weak-points'></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Section)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="WeakPoints-body">
+                        #for (var i = 0; i < model.length; i++) {#
+                        #var devSectionViewModel=model[i];#
+                        #for (var j = 0; j < devSectionViewModel.WeakPoints.length; j++) {#
+                        #var item=devSectionViewModel.WeakPoints[j];#
+                        #var checkStatus="";#
+                        #if(item.IsChecked){#
+                        #checkStatus='checked="checked"';#
+                        #}#
+                        <tr>
+                            <td>#=devSectionViewModel.SectionName#</td>
+                            <td class="item-Name">#=item.Name#</td>
+                            <td>#=item.Weight#</td>
+                            <td>#=item.Rate#</td>
+                            <td></td>
+                            <td>#=item.Note#</td>
+                        </tr>
+                        #}#
+                        #}#
+
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class='strong-points-fieldset'>
+                <legend>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.StrongPoints)</legend>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Section)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        #for (var i = 0; i < model.length; i++) {#
+                        #var devSectionViewModel=model[i];#
+                        #for (var j = 0; j < devSectionViewModel.StrongPoints.length; j++) {#
+                        #var item=devSectionViewModel.StrongPoints[j];#
+                        <tr>
+                            <td>#=devSectionViewModel.SectionName#</td>
+                            <td>#=item.Name#</td>
+                            <td>#=item.Weight#</td>
+                            <td>#=item.Rate#</td>
+                            <td></td>
+                            <td>#=item.Note#</td>
+                            <td></td>
+                        </tr>
+                        #}#
+                        #}#
+
+                    </tbody>
+                </table>
+            </fieldset>
+
+        </div>
+
+    </div>
+</script>

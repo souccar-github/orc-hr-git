@@ -1,0 +1,105 @@
+﻿<script type="text/javascript">
+    function HasStartExpiryDateCheckbox_Change(e) {
+        $('[name="HasStartDate"]').change(function () {
+            if (this.checked) {
+                $('[name="StartDate"]').data("kendoDatePicker").enable(true);
+            } else {
+                $('[name="StartDate"]').data("kendoDatePicker").enable(false);
+            }
+        });
+        $('[name="HasStartDate"]').trigger("change");
+
+        $('[name="HasExpiryDate"]').change(function () {
+            if (this.checked) {
+                $('[name="ExpiryDate"]').data("kendoDatePicker").enable(true);
+            } else {
+                $('[name="ExpiryDate"]').data("kendoDatePicker").enable(false);
+            }
+        });
+        $('[name="HasExpiryDate"]').trigger("change");
+    }
+
+    var isFirstEditLoad = true;
+    function PrimaryEmployeeBenefit_EditHandler(e) {
+        isFirstEditLoad = true;
+        $("#dropDownListBenefitCard").data("kendoDropDownList").bind("change", onBenefitCardSelect);
+        $("#dropDownListBenefitCard").data("kendoDropDownList").dataSource.one("change", onBenefitCardSelect);
+
+        HasStartExpiryDateCheckbox_Change(e);
+
+
+
+
+        function onBenefitCardSelect() {
+            if (e.model.Id > 0) {
+                if (isFirstEditLoad == true) {
+                    isFirstEditLoad = false;
+                    return;
+                }
+            }
+            var benefitCardId = $("#dropDownListBenefitCard").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: 'BenefitCard/GetBenefitCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: benefitCardId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                    e.model.Value = data.result.Value;
+                    $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                    e.model.ExtraValue = data.result.ExtraValue;
+                    $("[name=CeilValue]").data("kendoNumericTextBox").value(data.result.CeilValue);
+                    e.model.CeilValue = data.result.CeilValue;
+
+                    $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                    e.model.Formula = data.result.Formula;
+                    $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                    e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+                    $("#dropDownListCeilFormula").data("kendoDropDownList").value(data.result.CeilFormula);
+                    e.model.CeilFormula = data.result.CeilFormula;
+                }
+            });
+        }
+    }
+
+    function PrimaryEmployeeDeduction_EditHandler(e) {
+        isFirstEditLoad = true;
+        $("#dropDownListDeductionCard").data("kendoDropDownList").bind("change", onDeductionCardSelect);
+        $("#dropDownListDeductionCard").data("kendoDropDownList").dataSource.one("change", onDeductionCardSelect);
+
+        HasStartExpiryDateCheckbox_Change(e);
+
+
+        function onDeductionCardSelect() {
+            if (e.model.Id > 0) {
+                if (isFirstEditLoad == true) {
+                    isFirstEditLoad = false;
+                    return;
+                }
+            }
+
+            var deductionCard = $("#dropDownListDeductionCard").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: 'DeductionCard/GetDeductionCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: deductionCard }),
+                contentType: 'application/json',
+                success: function (data) {
+                    $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                    e.model.Value = data.result.Value;
+                    $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                    e.model.ExtraValue = data.result.ExtraValue;
+
+                    $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                    e.model.Formula = data.result.Formula;
+                    $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                    e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+                }
+            });
+        }
+    }
+
+  
+</script>

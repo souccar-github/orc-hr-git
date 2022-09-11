@@ -1,0 +1,23 @@
+﻿@using Project.Web.Mvc4.Helpers
+<script id="show-kpis-template" type="text/x-kendo-template">
+    <table class="kpis-table">
+        <thead>
+            <tr>
+                <th>@GlobalResource.Description</th>
+                @*<th>@GlobalResource.Weight</th>*@
+                <th>@GlobalResource.Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i < Kpis.length; i++) {#
+            #var kpi=Kpis[i];#
+            <tr>
+                <td><span>#=kpi.Description#</span></td>
+                @*<td><span>#=kpi.Weight#</span></td>*@
+                <td><span>#=kpi.Value#</span></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+
+</script>

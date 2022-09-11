@@ -1,0 +1,119 @@
+﻿@using Castle.Core.Internal
+@using  Project.Web.Mvc4
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Services
+@{
+    var dir = "pull-";
+    if (CurrentLocale.Language == Locale.Ltr)
+    {
+        dir += "left";
+    }
+    else if (CurrentLocale.Language == Locale.Rtl)
+    {
+        dir += "right";
+    }
+    var userName = GlobalResource.Admin;
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+
+    var userImg = Url.Content("~") + "Content/images/theme-" + themingName + "/placeholder.jpg";
+    var fullName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.FullName();
+    var photoId = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.PhotoId();
+    if (!String.IsNullOrEmpty(fullName))
+    {
+        userName = fullName;
+        if (!string.IsNullOrEmpty(photoId))
+        {
+            userImg = Url.Content("~") + "Content/EmployeesPhoto/" + photoId;
+        }
+    }
+    else if (Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUser != null)
+    {
+        userName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUser.Username;
+    }
+}
+
+<div class="maestro_header">
+    <div id="administrator">
+        <ul>
+            <li class="dropdown">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+                    @*<span class="admin_icon"></span>*@
+                    <img src="@userImg" width="32" height="32" style=" vertical-align: middle; border-radius: 20px; margin-top: -5px; " alt="img">
+                    <span class="admin_name">@userName </span> <span>▾</span>
+                </a>
+                <div class="notification_list dropdown-menu @dir blue_d">
+                    <div class="white_lin nlist_block">
+                        <ul>
+                        
+                            <li>
+                                <div class="nlist_thumb">
+                                    @*<img src="" width="40" height="40" alt="img">*@
+                                </div>
+                                <div class="list_inf">
+                                    <a href="@Url.Action("Settings", "Home", new { area=""})">@GlobalResource.Settings</a>
+                                </div>
+                            </li>
+                          
+                            <li>
+                                <div class="nlist_thumb">
+                                    @*<img src="" width="40" height="40" alt="img">*@
+                                </div>
+                                <div class="list_inf">
+                                    <a href="@Url.Action("Manage", "Account", new { area=""})">@GlobalResource.ChangePassword</a>
+                                </div>
+                            </li>
+                            <!--
+                            <li>
+                                <div class="nlist_thumb"> 
+                                    @*<img src="" width="40" height="40" alt="img">*@
+                                </div>
+                                <div class="list_inf">
+                                    @{
+                                        if (CurrentLocale.Language == Locale.Ltr)
+                                        {
+                                            <a href="#" onclick="changeLang('ar_SY')">عرض باللغة العربية</a> 
+                                        }
+                                        else
+                                        {
+                                            <a href="#" onclick="changeLang('en_US')">Switch to English</a>
+                                        }
+                                    }
+                                </div>
+                            </li>
+                            -->
+                            <li>
+                                <div class="nlist_thumb">
+                                    @*<img src="" width="40" height="40" alt="img">*@
+                                </div>
+                                <div class="list_inf">
+                                    <a href="#">@GlobalResource.Help</a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="nlist_thumb">
+                                    @*<img src="" width="40" height="40" alt="img">*@
+                                </div>
+                                <div class="list_inf">
+                                    <a href="@Url.Action("LogOff", "Account", new { area = "" })">@GlobalResource.Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div> <!-- end of administrator menu -->
+
+
+    <div class="div_sep"></div>
+    <div class="logo_container">
+        <div class="logo_image">
+        </div> <!-- end of logo_image div -->
+    </div> <!-- end of logo -->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <text> @Html.Partial("_NotificationAreaPartial")</text>
+    }
+
+</div>

@@ -1,0 +1,472 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"><Body><ReportItems><Tablix Name="Tablix1"><TablixBody><TablixColumns><TablixColumn><Width>4.57556cm</Width></TablixColumn><TablixColumn><Width>7.75056cm</Width></TablixColumn><TablixColumn><Width>8.17389cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Textbox1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>الراتب الكلي</Value><Style><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox1</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>الاسم الكامل للموظف</Value><Style><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox3</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox5"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>الرقم الذاتي</Value><Style><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox5</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="SalaryWithBenefit"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!SalaryWithBenefit.Value</Value><Style /></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">SalaryWithBenefit</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="FullName"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!FullName.Value</Value><Style /></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">FullName</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EmployeeCode"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!EmployeeCode.Value</Value><Style /></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">EmployeeCode</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup></TablixMember><TablixMember><Group Name="Details" /></TablixMember></TablixMembers></TablixRowHierarchy><DataSetName>BasicInfoDataSet</DataSetName><Top>0cm</Top><Left>0cm</Left><Height>1.2cm</Height><Width>20.50001cm</Width><Style><Border><Style>None</Style></Border></Style></Tablix></ReportItems><Height>0.47955in</Height><Style /></Body><Width>8.07087in</Width><Page><PageHeight>29.7cm</PageHeight><PageWidth>21cm</PageWidth><LeftMargin>2cm</LeftMargin><RightMargin>2cm</RightMargin><TopMargin>2cm</TopMargin><BottomMargin>2cm</BottomMargin><ColumnSpacing>0.13cm</ColumnSpacing><Style /></Page><AutoRefresh>0</AutoRefresh><DataSources><DataSource Name="DataSource"><DataSourceReference>SharedDataSource</DataSourceReference><rd:SecurityType xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">None</rd:SecurityType><rd:DataSourceID xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">9a350a56-51d6-40e0-b0cf-07e98984a2ce</rd:DataSourceID></DataSource></DataSources><DataSets><DataSet Name="BasicInfoDataSet"><Query><DataSourceName>DataSource</DataSourceName><CommandText>WITH EmployeeCardBenefit_CTE
+AS-- EmployeeCard CTE query.  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, --رقم الموظف
+dbo.BenefitCard.Id AS BenefitCardID, --رقم بطاقة التعويضات
+dbo.PrimaryEmployeeBenefit.Value,  --قيمة التعويض
+'من البطاقة' AS HasEmpCardBenefit,
+1 AS Type
+FROM	
+dbo.Employee 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id 
+INNER JOIN dbo.PrimaryEmployeeBenefit ON dbo.PrimaryEmployeeBenefit.EmployeeCard_id = dbo.EmployeeCard.Id 
+INNER JOIN dbo.BenefitCard ON dbo.PrimaryEmployeeBenefit.BenefitCard_id = dbo.BenefitCard.Id
+WHERE	
+PrimaryEmployeeBenefit.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+EmployeeCard.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0
+),-- Grade CTE query  
+GradeBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.GradeBenefitDetail.Value, 
+'من الفئة' AS HasEmpCardBenefit,
+2 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id 
+INNER JOIN dbo.GradeBenefitDetail ON dbo.GradeBenefitDetail.Grade_id = dbo.Grade.Id 
+INNER JOIN dbo.BenefitCard ON dbo.GradeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobTitle.IsVertualDeleted=0 AND 
+Grade.IsVertualDeleted=0 AND 
+GradeBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.EmpId = dbo.Employee.Id)
+),-- JobTitle CTE query  
+JobTitleBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.JobTitleBenefitDetail.Value, 
+'من المسمى الوظيفي' AS HasEmpCardBenefit,
+3 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.JobTitleBenefitDetail ON dbo.JobTitleBenefitDetail.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.BenefitCard ON dbo.JobTitleBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobTitle.IsVertualDeleted=0 AND 
+JobTitleBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	GradeBenefit_CTE.EmpId = dbo.Employee.Id)
+),-- JobDescription CTE query  
+JobDescriptionBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+--dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.JobDescriptionBenefitDetail.Value, 
+'من الوصف الوظيفي' AS HasEmpCardBenefit,
+4 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobDescriptionBenefitDetail ON dbo.JobDescriptionBenefitDetail.JobDescription_id = dbo.JobDescription.Id 
+INNER JOIN dbo.BenefitCard ON dbo.JobDescriptionBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobDescriptionBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id)
+),-- Position CTE query  
+PositionBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+--dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.PositionBenefitDetail.Value, 
+'من الموقع الوظيفي' AS HasEmpCardBenefit,
+5 AS Type
+FROM            
+dbo.Employee 
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id 
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND 
+dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id INNER JOIN
+dbo.PositionBenefitDetail ON dbo.PositionBenefitDetail.Position_id = dbo.Position.Id INNER JOIN
+dbo.BenefitCard ON dbo.PositionBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+--dbo.AssigningEmployeeToPosition.IsPrimary='True' AND
+Employee.IsVertualDeleted=0 AND 
+AssigningEmployeeToPosition.IsVertualDeleted=0 AND 
+Position.IsVertualDeleted=0 AND 
+PositionBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	JobDescriptionBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id)
+),-- Node CTE query  
+NodeBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+--dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.NodeBenefitDetail.Value, 
+'من العقدة' AS HasEmpCardBenefit,
+6 AS Type
+FROM         
+dbo.Employee INNER JOIN
+dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id INNER JOIN
+dbo.Node ON dbo.Node.Id = dbo.JobDescription.Node_id INNER JOIN
+dbo.NodeBenefitDetail ON dbo.NodeBenefitDetail.Node_id = dbo.Node.Id INNER JOIN
+dbo.BenefitCard ON dbo.NodeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+NodeBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	PositionBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobDescriptionBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id)
+)
+SELECT 
+CASE
+WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+END AS EmployeeId,--رقم معرف الموظف
+(SELECT dbo.Employee.FirstName+' '+dbo.Employee.FatherName+' '+ dbo.Employee.LastName FROM dbo.Employee WHERE dbo.Employee.Id = 
+(CASE	WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+		WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+		WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+		WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+		WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+		WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+		END)) FullName,--اسم الكامل للموظف
+(SELECT dbo.Employee.Code FROM dbo.Employee WHERE dbo.Employee.Id = 
+(CASE	WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+		WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+		WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+		WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+		WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+		WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+		END)) EmployeeCode,--الرقم الذاتي للموظف
+SUM(ISNULL(EmployeeCardBenefit_CTE.Value,0)+
+	ISNULL(GradeBenefit_CTE.Value,0)+
+	ISNULL(JobTitleBenefit_CTE.Value,0)+
+	ISNULL(JobDescriptionBenefit_CTE.Value,0)+
+	ISNULL(PositionBenefit_CTE.Value,0)+
+	ISNULL(NodeBenefit_CTE.Value,0)) EmployeeBenefitValue,--التعويض المستحق
+ISNULL((SELECT Salary FROM dbo.EmployeeCard WHERE Employee_id=
+(CASE	WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+		WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+		WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+		WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+		WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+		WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+		END) AND EmployeeCard.IsVertualDeleted=0),0) as Salary,--الراتب المقطوع
+SUM(ISNULL(EmployeeCardBenefit_CTE.Value,0)+
+	ISNULL(GradeBenefit_CTE.Value,0)+
+	ISNULL(JobTitleBenefit_CTE.Value,0)+
+	ISNULL(JobDescriptionBenefit_CTE.Value,0)+
+	ISNULL(PositionBenefit_CTE.Value,0)+
+	ISNULL(NodeBenefit_CTE.Value,0)) +
+	ISNULL((SELECT Salary 
+			FROM dbo.EmployeeCard 
+			WHERE Employee_id=
+			(	CASE	WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+						WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+						WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+						WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+						WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+						WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+						END) AND EmployeeCard.IsVertualDeleted=0),0) as SalaryWithBenefit,--التعويض مع الراتب المقطوع
+(	SELECT dbo.Grade.Id
+	FROM	dbo.Grade	
+			INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id 
+			INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id 
+			INNER JOIN dbo.Position ON dbo.JobDescription.Id = Position.JobDescription_id
+			INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Position.Id = AssigningEmployeeToPosition.Position_Id
+			INNER JOIN dbo.Employee ON dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id
+			AND dbo.AssigningEmployeeToPosition.IsPrimary='True'
+			AND dbo.Employee.Id =
+			(	CASE	WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+						WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+						WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+						WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+						WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+						WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+						END)) AS GradeId--رقم معرف الفئة
+
+FROM EmployeeCardBenefit_CTE 
+FULL JOIN GradeBenefit_CTE ON EmployeeCardBenefit_CTE.EmpId = GradeBenefit_CTE.EmpId
+FULL JOIN JobTitleBenefit_CTE ON GradeBenefit_CTE.EmpId = JobTitleBenefit_CTE.EmpId
+FULL JOIN JobDescriptionBenefit_CTE ON JobTitleBenefit_CTE.EmpId = JobDescriptionBenefit_CTE.EmpId
+FULL JOIN PositionBenefit_CTE ON JobDescriptionBenefit_CTE.EmpId = PositionBenefit_CTE.EmpId
+FULL JOIN NodeBenefit_CTE ON PositionBenefit_CTE.EmpId = NodeBenefit_CTE.EmpId
+WHERE (	CASE
+		WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+		WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+		WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+		WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+		WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+		WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+		END) IN (SELECT EmployeeCard.Employee_id FROM dbo.EmployeeCard WHERE dbo.EmployeeCard.CardStatus = 1)
+GROUP BY 
+CASE
+WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+END
+ORDER BY 2</CommandText></Query><Fields><Field Name="EmployeeId"><DataField>EmployeeId</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Int32</rd:TypeName></Field><Field Name="FullName"><DataField>FullName</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName></Field><Field Name="EmployeeCode"><DataField>EmployeeCode</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName></Field><Field Name="EmployeeBenefitValue"><DataField>EmployeeBenefitValue</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Double</rd:TypeName></Field><Field Name="GradeId"><DataField>GradeId</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Int32</rd:TypeName></Field><Field Name="Salary"><DataField>Salary</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Single</rd:TypeName></Field><Field Name="SalaryWithBenefit"><DataField>SalaryWithBenefit</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Double</rd:TypeName></Field></Fields><Filters><Filter><FilterExpression>=Fields!GradeId.Value</FilterExpression><Operator>Equal</Operator><FilterValues><FilterValue>=Parameters!GradId.Value</FilterValue></FilterValues></Filter></Filters></DataSet><DataSet Name="BenefitValueDataSet"><Query><DataSourceName>DataSource</DataSourceName><CommandText>WITH EmployeeCardBenefit_CTE
+AS-- EmployeeCard CTE query.  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.PrimaryEmployeeBenefit.Value, 
+'من البطاقة' AS HasEmpCardBenefit,
+1 AS Type
+FROM	
+dbo.Employee 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id 
+INNER JOIN dbo.PrimaryEmployeeBenefit ON dbo.PrimaryEmployeeBenefit.EmployeeCard_id = dbo.EmployeeCard.Id 
+INNER JOIN dbo.BenefitCard ON dbo.PrimaryEmployeeBenefit.BenefitCard_id = dbo.BenefitCard.Id
+WHERE	
+PrimaryEmployeeBenefit.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+EmployeeCard.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0
+),-- Grade CTE query  
+GradeBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.GradeBenefitDetail.Value, 
+'من الفئة' AS HasEmpCardBenefit,
+2 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id 
+INNER JOIN dbo.GradeBenefitDetail ON dbo.GradeBenefitDetail.Grade_id = dbo.Grade.Id 
+INNER JOIN dbo.BenefitCard ON dbo.GradeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobTitle.IsVertualDeleted=0 AND 
+Grade.IsVertualDeleted=0 AND 
+GradeBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.EmpId = dbo.Employee.Id)
+),-- JobTitle CTE query  
+JobTitleBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.JobTitleBenefitDetail.Value, 
+'من المسمى الوظيفي' AS HasEmpCardBenefit,
+3 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.JobTitleBenefitDetail ON dbo.JobTitleBenefitDetail.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.BenefitCard ON dbo.JobTitleBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobTitle.IsVertualDeleted=0 AND 
+JobTitleBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	GradeBenefit_CTE.EmpId = dbo.Employee.Id)
+),-- JobDescription CTE query  
+JobDescriptionBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+--dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.JobDescriptionBenefitDetail.Value, 
+'من الوصف الوظيفي' AS HasEmpCardBenefit,
+4 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobDescriptionBenefitDetail ON dbo.JobDescriptionBenefitDetail.JobDescription_id = dbo.JobDescription.Id 
+INNER JOIN dbo.BenefitCard ON dbo.JobDescriptionBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobDescriptionBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id)
+),-- Position CTE query  
+PositionBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+--dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.PositionBenefitDetail.Value, 
+'من الموقع الوظيفي' AS HasEmpCardBenefit,
+5 AS Type
+FROM            
+dbo.Employee 
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id 
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND 
+dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id INNER JOIN
+dbo.PositionBenefitDetail ON dbo.PositionBenefitDetail.Position_id = dbo.Position.Id INNER JOIN
+dbo.BenefitCard ON dbo.PositionBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+Employee.IsVertualDeleted=0 AND 
+AssigningEmployeeToPosition.IsVertualDeleted=0 AND 
+Position.IsVertualDeleted=0 AND 
+PositionBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	JobDescriptionBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id)
+),-- Node CTE query  
+NodeBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS EmpId, 
+dbo.BenefitCard.Id AS BenefitCardID,
+--dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.NodeBenefitDetail.Value, 
+'من العقدة' AS HasEmpCardBenefit,
+6 AS Type
+FROM         
+dbo.Employee INNER JOIN
+dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id INNER JOIN
+dbo.Node ON dbo.Node.Id = dbo.JobDescription.Node_id INNER JOIN
+dbo.NodeBenefitDetail ON dbo.NodeBenefitDetail.Node_id = dbo.Node.Id INNER JOIN
+dbo.BenefitCard ON dbo.NodeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+WHERE
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+NodeBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	PositionBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobDescriptionBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	EmpId = dbo.Employee.Id)
+)
+SELECT 
+CASE
+WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+END AS EmployeeId,
+SUM(
+ISNULL(EmployeeCardBenefit_CTE.Value,0)+
+ISNULL(GradeBenefit_CTE.Value,0)+
+ISNULL(JobTitleBenefit_CTE.Value,0)+
+ISNULL(JobDescriptionBenefit_CTE.Value,0)+
+ISNULL(PositionBenefit_CTE.Value,0)+
+ISNULL(NodeBenefit_CTE.Value,0)
+) EmployeeBenefitValue
+FROM EmployeeCardBenefit_CTE 
+FULL JOIN GradeBenefit_CTE ON EmployeeCardBenefit_CTE.EmpId = GradeBenefit_CTE.EmpId
+FULL JOIN JobTitleBenefit_CTE ON GradeBenefit_CTE.EmpId = JobTitleBenefit_CTE.EmpId
+FULL JOIN JobDescriptionBenefit_CTE ON JobTitleBenefit_CTE.EmpId = JobDescriptionBenefit_CTE.EmpId
+FULL JOIN PositionBenefit_CTE ON JobDescriptionBenefit_CTE.EmpId = PositionBenefit_CTE.EmpId
+FULL JOIN NodeBenefit_CTE ON PositionBenefit_CTE.EmpId = NodeBenefit_CTE.EmpId
+GROUP BY 
+CASE
+WHEN EmployeeCardBenefit_CTE.EmpId IS NOT NULL THEN EmployeeCardBenefit_CTE.EmpId
+WHEN GradeBenefit_CTE.EmpId IS NOT NULL THEN GradeBenefit_CTE.EmpId
+WHEN JobTitleBenefit_CTE.EmpId IS NOT NULL THEN JobTitleBenefit_CTE.EmpId
+WHEN JobDescriptionBenefit_CTE.EmpId IS NOT NULL THEN JobDescriptionBenefit_CTE.EmpId
+WHEN PositionBenefit_CTE.EmpId IS NOT NULL THEN PositionBenefit_CTE.EmpId
+WHEN NodeBenefit_CTE.EmpId IS NOT NULL THEN NodeBenefit_CTE.EmpId 
+END</CommandText></Query><Fields><Field Name="EmployeeId"><DataField>EmployeeId</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Int32</rd:TypeName></Field><Field Name="EmployeeBenefitValue"><DataField>EmployeeBenefitValue</DataField><rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Double</rd:TypeName></Field></Fields></DataSet></DataSets><ReportParameters><ReportParameter Name="GradId"><DataType>Integer</DataType><Prompt>ReportParameter1</Prompt><Hidden>true</Hidden></ReportParameter></ReportParameters><rd:ReportUnitType xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Cm</rd:ReportUnitType><rd:ReportID xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">0ea7a57c-d865-429d-b149-0922ff15b21f</rd:ReportID></Report>

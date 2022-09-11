@@ -1,0 +1,85 @@
+﻿@using HRIS.Domain.PayrollSystem.Enums
+@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+<script type="text/javascript">
+
+    function PerformAudit_Handler(entityId) {
+        var entityType = window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 1].TypeName;
+        $.ajax({
+            url: "StatusManagementHelper/PerformAudit",
+            type: "POST",
+            data: JSON.stringify({ entityId: entityId, entityType: entityType }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                } else {
+                    ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+    function CancelAudit_Handler(entityId) {
+        var entityType = window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 1].TypeName;
+        $.ajax({
+            url: "StatusManagementHelper/CancelAudit",
+            type: "POST",
+            data: JSON.stringify({ entityId: entityId, entityType: entityType }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                } else {
+                    ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+    function initializeAuditStateActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].HandlerName == "PerformAudit_Handler") {
+                if (dataItem.AuditState.Id == "@((int)AuditState.Audited)") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "CancelAudit_Handler") {
+                if (dataItem.AuditState.Id == "@((int) AuditState.NotAudited)") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+
+
+            if (actionListItems[i].HandlerName == "destroy") {
+                if (dataItem.AuditState.Id == "@((int)AuditState.Audited)") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "update") {
+                if (dataItem.AuditState.Id == "@((int)AuditState.Audited)") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+        }
+    }
+</script>

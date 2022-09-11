@@ -1,0 +1,679 @@
+﻿/*----------------------------------------------------------
+The base color for this template is #5c87b2. If you'd like
+to use a different color start by replacing all instances of
+#5c87b2 with your new color.
+----------------------------------------------------------*/
+
+html
+{
+    overflow-y: scroll;
+}
+
+body
+{
+    color: #696969;
+    font-family: Tahoma; /* background-color: white; */
+    font-size: .85em;
+    margin: 0;
+    padding: 0;
+}
+
+a:link
+{
+    color: #034af3;
+    font-family: inherit;
+    font-size: small;
+    text-decoration: none;
+}
+
+a:visited
+{
+    color: #505abc;
+    font-family: inherit;
+    font-size: small;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: #1d60ff;
+    font-family: inherit;
+    font-size: small;
+    text-decoration: none;
+}
+
+a:active
+{
+    color: #12eb87;
+}
+
+p, ul
+{
+    line-height: 1.6em;
+    margin-bottom: 20px;
+}
+
+header, footer, nav, section
+{
+    display: block;
+}
+
+/* HEADINGS   
+----------------------------------------------------------*/
+
+h1, h2, h3, h4, h5, h6
+{
+    color: #000;
+    font-family: inherit;
+    font-size: 1.5em;
+}
+
+h1
+{
+    font-size: 2em;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+h2
+{
+    padding: 0 0 10px 0;
+}
+
+h3
+{
+    font-size: 1.2em;
+}
+
+h4
+{
+    font-size: 1.1em;
+}
+
+h5, h6
+{
+    font-size: 1em;
+}
+
+/* this rule styles <h2> tags that are the 
+first child of the left and right table columns */
+
+.rightColumn > h1, .rightColumn > h2, .leftColumn > h1, .leftColumn > h2
+{
+    margin-top: 0;
+}
+
+/* PRIMARY LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+/* you can specify a greater or lesser percentage for the 
+page width. Or, you can specify an exact pixel width. */
+
+.page
+{
+    direction: inherit;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+header, #header
+{
+    color: #000;
+    margin-bottom: 0px;
+    padding: 0;
+    position: relative;
+}
+
+header h1, #header h1
+{
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 32px !important;
+    font-weight: bold;
+    line-height: 2em;
+    margin: 0;
+    padding: 5px 0;
+    text-shadow: 1px 1px 2px #111;
+}
+
+#main
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em; /*background-color: whitesmoke;*/
+    border-radius: 1em 3em;
+    padding: 5px 5px 5px 5px;
+}
+
+#ContentPlaceHolder
+{
+    margin: 5px;
+}
+
+footer, #footer
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-color: rgb(104, 146, 233);
+    border-radius: 1em 3em;
+    color: #999;
+    font-family: inherit;
+    font-size: .9em;
+    line-height: normal;
+    margin: 0 0 30px 0;
+    padding: 10px 0;
+    text-align: center;
+}
+
+#result
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-color: orange;
+    border-radius: 1em 3em;
+    margin: 5px;
+}
+
+.EntityAdd
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    border-radius: 1em 3em;
+    margin: 3px;
+}
+
+#Ribbon
+{
+    -moz-border-radius: 3em 1em;
+    -webkit-border-radius: 3em 1em; /* background-color: rgb(175, 189, 211); */
+    border-radius: 3em 1em;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#Navigator
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em; /*  background-color: rgb(107, 133, 195);    */
+    border-radius: 1em 3em;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#SplitterTree
+{
+    height: 400px;
+}
+
+
+/* TAB MENU   
+----------------------------------------------------------*/
+
+ul#menu
+{
+    border-bottom: 1px #5C87B2 solid;
+    margin: 0;
+    padding: 0 0 2px;
+    position: relative;
+    text-align: right;
+}
+
+ul#menu li
+{
+    display: inline;
+    list-style: none;
+}
+
+ul#menu li#greeting
+{
+    color: #fff;
+    font-weight: bold;
+    line-height: 2.8em;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+ul#menu li a
+{
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    background-color: #e8eef4;
+    border-radius: 4px 4px 0 0;
+    color: #034af3;
+    font-weight: bold;
+    line-height: 2.8em;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+ul#menu li a:hover
+{
+    background-color: #fff;
+    text-decoration: none;
+}
+
+ul#menu li a:active
+{
+    background-color: #a6e2a6;
+    text-decoration: none;
+}
+
+ul#menu li.selected a
+{
+    background-color: #fff;
+    color: #000;
+}
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+.ParentFieldset
+{
+    height: auto;
+}
+
+fieldset
+{
+    border: 0px solid #b;
+    height: 15em;
+    margin: 0.1em;
+    padding: 0.5em;
+}
+
+.ParentLegend
+{
+    font-family: inherit;
+    font-style: normal;
+}
+
+legend
+{
+    font-family: inherit;
+    font-size: 1.2em;
+    font-weight: normal;
+}
+
+/* TABLE
+----------------------------------------------------------*/
+
+table
+{   
+}
+
+table td
+{
+}
+
+table th
+{
+}
+
+/* MISC  
+----------------------------------------------------------*/
+
+.clear
+{
+    clear: both;
+}
+
+.error
+{
+    color: Red;
+}
+
+nav, #menucontainer
+{
+    margin-top: 1px;
+}
+
+div#title
+{
+    display: block;
+    float: left;
+    text-align: left;
+}
+
+#logindisplay
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-color: #60d4f0;
+    border-radius: 1em 3em;
+    color: White;
+    font-family: inherit;
+    font-size: 1.1em;
+}
+
+#logindisplay a:link
+{
+    color: white;
+    text-decoration: underline;
+}
+
+#logindisplay a:visited
+{
+    color: white;
+    text-decoration: underline;
+}
+
+#logindisplay a:hover
+{
+    color: white;
+    text-decoration: none;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+
+.field-validation-error
+{
+    color: #ff0000;
+}
+
+.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error
+{
+    background-color: #ffeeee;
+    border: 1px solid #ff0000;
+}
+
+.validation-summary-errors
+{
+    color: #ff0000;
+    font-weight: bold;
+}
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+
+.display-label, .editor-label
+{
+    color: rgb(6, 6, 6);
+    font-weight: normal;
+}
+
+.editor-label-required
+{
+    color: rgb(6, 6, 6);
+    font-size: 0.9em;
+    font-style: normal;
+    font-weight: bold;
+    margin: 0.3em 0;
+}
+
+.display-field, .editor-field
+{
+}
+
+
+
+.SingleLine[type="text"]
+{
+    background-color: transparent;
+    border-color: transparent;
+    width: 200px;
+}
+
+.MultiLine
+{
+    background-color: transparent;
+    border-color: transparent;
+    border-style: none;
+    width: 200px;
+}
+
+
+
+.numerictextbox
+{
+    width: 200px;
+}
+
+
+.InActive
+{
+    height: 13px;
+    width: 150px;
+}
+
+.Active
+{
+    background: #EFF5FF;
+    border: solid 2px #73A6FF;
+    color: #000;
+    height: 13px;
+    width: 150px;
+}
+
+a.ActionLinkImage
+{
+    background: url(../../Content/icon_picture.png) no-repeat top left;
+}
+
+textarea
+{
+    min-height: 75px;
+}
+
+input[type="text"], input[type="password"]
+{    
+}
+
+
+/* Buttons */
+
+input[type="button"]
+{
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background: #c2dfed url(images/button.png) repeat-x bottom;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    display: inline;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-shadow: 1px 1px #666;
+}
+
+input:hover[type="button"]
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-position: 0 -128px;
+    border-radius: 1em 3em;
+}
+
+input[type="submit"]
+{
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background: #4f5cd1 url(images/button.png) repeat-x bottom;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    display: inline;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-shadow: 1px 1px #666;
+}
+
+input:hover[type="submit"]
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-position: 0 -128px;
+    border-radius: 1em 3em;
+}
+
+.CancelButton
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background: #e8e8e8 url('~/Content/images/add.png') repeat-x bottom;
+    border: 1px solid;
+    border-color: Silver;
+    border-radius: 1em 3em;
+    color: #333;
+}
+
+.CancelButton:hover
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-position: 0 -128px;
+    border-radius: 1em 3em;
+}
+
+.EditButton
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background: #e8e8e8 url('2010.1.518/Vista/sprite.png') repeat-x 0 -96px;
+    border: 1px solid;
+    border-color: Silver;
+    border-radius: 1em 3em;
+    color: #333;
+}
+
+.EditButton:hover
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-position: 0 -128px;
+    border-radius: 1em 3em;
+}
+
+.AddButton
+{
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background: #329b01 url(images/button.png) repeat-x bottom;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    display: inline;
+    font-weight: bold;
+    padding: 5px 10px;
+    text-shadow: 1px 1px #666;
+}
+
+.AddButton:hover
+{
+    -moz-border-radius: 1em 3em;
+    -webkit-border-radius: 1em 3em;
+    background-position: 0 -128px;
+    border-radius: 1em 3em;
+}
+
+.GridToolBar
+{
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}
+.layer1
+{
+    margin: 0;
+    padding: 0;
+    width: 70%;
+}
+.heading
+{
+    margin: 1px;
+    color: #fff;
+    padding: 3px 10px;
+    cursor: pointer;
+    position: relative;
+    background-color: #c30;
+}
+.content
+{
+    padding: 5px 10px;
+    background-color: #fafafa;
+}
+
+
+.t-expired
+{
+    background-repeat: no-repeat;
+    background-image : url("/Content/images/NodePositionsTree/lock.png");
+    
+}
+
+.t-edit
+{
+    background-repeat: no-repeat;
+    background-image : url("/Content/images/edit.png");
+    
+}
+
+/* event log */
+.event-log-wrap
+{
+    text-align: right;
+    padding-top: 5px;
+}
+
+.event-log-wrap h3
+{
+    margin: -5px 0 0;
+    float: left;
+}
+
+.event-log-clear
+{
+    text-decoration: none;
+}
+
+.event-log-clear .t-icon
+{
+    /*background: transparent url('Images/sprite.png') no-repeat -320px -200px;*/
+    vertical-align: top;
+}
+
+.event-log
+{
+    text-align: left;
+    border: 1px solid #ccc;
+    font: normal 11px Consolas, Monaco, "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    height: 200px;
+    background-color: #fff;
+    overflow: scroll;
+    overflow-x:hidden;
+    overflow-y:scroll;
+    margin-top: 5px;
+    color: #333;
+}
+
+.event-log .call-count
+{
+    background-color: #a1c1ff;
+    color: #fff;
+    font-size: 10px;
+    padding: 3px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.event-log div
+{
+    border-bottom: 1px solid #ddd;
+    padding: 5px 5px 5px 24px;
+    /*background: transparent url('Images/sprite.png') no-repeat -317px -212px;*/
+}

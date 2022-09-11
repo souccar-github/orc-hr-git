@@ -1,0 +1,32 @@
+﻿@using ReportViewerForMvc;
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Report</title>
+    <style>
+        .iframeWidthClass {
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        $("iframe").addClass("iframeWidthClass");
+    </script>
+    <div>
+        @{   
+            if (ViewBag.ReportViewer != null) {
+                @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { scrolling = "no", width = "100%", height = ViewBag.Height })
+                    }
+        }
+
+    </div>
+
+</body>
+
+</html>

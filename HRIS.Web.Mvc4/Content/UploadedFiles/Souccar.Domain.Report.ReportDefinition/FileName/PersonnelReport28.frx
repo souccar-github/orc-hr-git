@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 12:39:25" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {
+      if (CheckBox1.Checked)
+      {        
+        CertificationComboBox.SelectedIndex=-1;
+        CertificationComboBox.AutoFilter=false;
+        CertificationComboBox.AutoFill=false;
+        CertificationComboBox.Enabled=false;
+      }else
+      {
+        CertificationComboBox.AutoFilter=true;
+        CertificationComboBox.AutoFill=true;
+        CertificationComboBox.Enabled=true;	         
+      }        
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvBwWypxET5c+4RTegH8ypoQ==">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  dbo.AssigningEmployeeToPosition.IsPrimary='True'&#13;&#10;ORDER BY dbo.Employee.Id DESC">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="CertificationDataSource" DataType="System.Int32" Enabled="true" SelectCommand="SELECT&#13;&#10;dbo.Certification.Type_id, &#13;&#10;(SELECT Name FROM dbo.CertificationType WHERE dbo.CertificationType.Id=dbo.Certification.Type_id) AS CertificationTypeName,&#13;&#10;dbo.Certification.PlaceOfIssuance_id, &#13;&#10;(SELECT Name FROM dbo.Country WHERE dbo.Country.Id=PlaceOfIssuance_id) AS PlaceOfIssuanceName,&#13;&#10;dbo.Certification.DateOfIssuance,&#13;&#10;dbo.Certification.ExpirationDate, &#13;&#10;dbo.Certification.Employee_id&#13;&#10;FROM&#13;&#10;dbo.Certification">
+        <Column Name="Employee_id" DataType="System.Int32"/>
+        <Column Name="Type_id" DataType="System.Int32"/>
+        <Column Name="CertificationTypeName" DataType="System.String"/>
+        <Column Name="PlaceOfIssuance_id" DataType="System.Int32"/>
+        <Column Name="PlaceOfIssuanceName" DataType="System.String"/>
+        <Column Name="DateOfIssuance" DataType="System.DateTime"/>
+        <Column Name="ExpirationDate" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="CertificationType" DataType="System.Int32" Enabled="true" TableName="CertificationType">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="CertificationType_Table" ParentDataSource="CertificationType" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="113.4">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير بيانات الشهادة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text44" Top="56.7" Width="718.2" Height="37.8" Text="[CertificationComboBox.Text] :نوع الشهادة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="119.75" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="320.3" Width="219" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="538.65" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Width="320.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="145" Width="718.2" Height="37.8" DataSource="Table1">
+      <TextObject Name="Text4" Left="320.3" Width="218.35" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="538.65" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Width="320.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text46" Left="538.65" Top="18.9" Width="180" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع الشهادة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text47" Left="320.3" Top="18.9" Width="217.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مكان الإصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text48" Left="170.1" Top="18.9" Width="150.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الإصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text49" Left="-0.55" Top="18.9" Width="171.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ إنتهاء الصلاحية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="189.15" Width="718.2" Height="18.9" DataSource="Table">
+        <TextObject Name="Text2" Left="321.3" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[CertificationDataSource.PlaceOfIssuanceName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text3" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [CertificationDataSource.ExpirationDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[CertificationDataSource.ExpirationDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text7" Left="170.1" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [CertificationDataSource.DateOfIssuance])) == &quot;01/01/0001&quot;,&quot;&quot;,[CertificationDataSource.DateOfIssuance] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text9" Left="538.65" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[CertificationDataSource.CertificationTypeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="214.4" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="538.65" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="538.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="239.65" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="166">
+    <ButtonControl Name="btnOk" Left="114" Top="91" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="192" Top="36" Width="62" Height="13" TabIndex="2" Text="نوع الشهادة"/>
+    <ComboBoxControl Name="CertificationComboBox" Left="12" Top="32" Width="175" TabIndex="3" DataColumn="CertificationDataSource.CertificationType.Name" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="172" Top="64" Width="46" Height="17" TabIndex="4" Text="الكل" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,120 @@
+﻿@using Project.Web.Mvc4.Helpers
+@Html.Partial("WorkingExperienceEditTemplate")
+
+<script type="text/javascript">
+
+    function jobApplicationEditorTemplate(e) {
+
+        disabilityExistClick();
+        otherNationalityExistControlClick();
+        haveWorkPermitClick();
+        
+        var recruitmentRequestKendoDropdown = $("[name='RecruitmentRequest']").data('kendoDropDownList');
+        var value = recruitmentRequestKendoDropdown.value();
+        if (value != "" && value != "0") {
+            $(".fieldset-RecruitmentGroupsNames_ApplicationDetails").find(".control.control-Position").hide();
+        } else {
+            $(".fieldset-RecruitmentGroupsNames_ApplicationDetails").find(".control.control-Position").show();
+        }
+
+        onChangeRecruitmentRequest(e);
+
+        e.container.find("[name='DisabilityExist']").off("click").on("click", disabilityExistClick);
+        e.container.find("[name='OtherNationalityExist']").off("click").on("click", otherNationalityExistControlClick);
+        e.container.find("[name='HaveWorkPermit']").off("click").on("click", haveWorkPermitClick);
+
+        $(".fieldset-PersonnelGoupesNames_PersonalInformation").find(".control.control-MilitaryStatus").hide();
+
+        
+    }
+
+    function onChangeRecruitmentRequest(e) {
+        
+        var recruitmentRequestKendoDropdown = $("[name='RecruitmentRequest']").data('kendoDropDownList');
+        recruitmentRequestKendoDropdown.bind('change', function () {
+            
+            var value = recruitmentRequestKendoDropdown.value();
+            if (value != "" && value != "0") {
+                $(".fieldset-RecruitmentGroupsNames_ApplicationDetails").find(".control.control-Position").hide();
+            } else {
+                $(".fieldset-RecruitmentGroupsNames_ApplicationDetails").find(".control.control-Position").show();
+            }
+        });
+    }
+
+    function disabilityExistClick() {
+        
+        var container = $(".fieldset-RecruitmentGroupsNames_MedicalInformation");
+        var disabilityExist = $("[name='DisabilityExist']").is(":checked");
+        if (disabilityExist) {
+            container.find(".control.control-DisabilityType").show();
+            addRequiredStar('DisabilityType');
+
+            container.find(".control.control-InterviewArrangements").show();
+
+        } else {
+            container.find(".control.control-DisabilityType").hide();
+            removeRequiredStar('DisabilityType');
+
+            container.find(".control.control-InterviewArrangements").hide();
+        }
+
+        reOrderControls(container);
+    }
+
+    function otherNationalityExistControlClick() {
+        var container = $(".fieldset-PersonnelGoupesNames_PersonalInformation");
+        var otherNationalityExist = $("[name='OtherNationalityExist']").is(":checked");
+        removeRequiredStar('OtherNationality');
+        if (otherNationalityExist) {
+            container.find(".control-OtherNationality").show();
+            addRequiredStar('OtherNationality');
+
+        } else {
+            container.find(".control-OtherNationality").hide();
+            removeRequiredStar('OtherNationality');
+        }
+
+        reOrderControls(container);
+    }
+
+    function haveWorkPermitClick() {
+        var container = $(".fieldset-RecruitmentGroupsNames_ForeignApplicantInformation");
+        var haveWorkPermit = $("[name='HaveWorkPermit']").is(":checked");
+        removeRequiredStar('Duration');
+        if (haveWorkPermit) {
+            container.find(".control-Duration").show();
+            addRequiredStar('Duration');
+        } else {
+            container.find(".control-Duration").hide();
+            removeRequiredStar('Duration');
+        }
+
+        reOrderControls(container);
+    }
+
+    function AddNewInterview(e) {
+
+        $.ajax({
+            url: '@Url.Action("RedirectToInterview", "Home", new {area = "Recruitment"})',
+            type: "POST",
+            data: JSON.stringify({ jobApplicationId: e }),
+            contentType: 'application/json',
+            success: function (data) {
+
+                if (data.Success) {
+
+                    var destinationModuleName = data.DestinationModuleName;
+                    var dataToStore = JSON.stringify(data);
+                    localStorage.setItem('data', dataToStore);
+                    redirectToModule(destinationModuleName);
+
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+</script>

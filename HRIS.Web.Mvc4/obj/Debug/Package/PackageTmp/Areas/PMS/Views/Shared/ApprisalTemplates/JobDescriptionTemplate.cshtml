@@ -1,0 +1,171 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script id="jobDescriptionSection-workflow-template" type="text/x-kendo-template">
+#var showKpisTemplate = kendo.template($("\\#show-kpis-template").html());#
+<div>
+    <fieldset class="jd-info">
+        <legend>@GlobalResource.JobDescriptionInformation</legend>  
+        <div class="appraisal-meta-info">
+            <div>
+                <span>@GlobalResource.Name :</span>
+                <span class="val">#=Name#</span>
+            </div>    
+             <div>
+                <span>@GlobalResource.JobTitle :</span>
+                <span class="val">#=JobTitle#</span>
+            </div>
+            <div>
+                <span>@GlobalResource.SectionWeight :</span>
+                <span class="val">#=SectionWeight#</span>
+            </div>
+        </div>
+
+
+        <div class="appraisal-meta-desc">
+            <span>@GlobalResource.Description:</span>
+            #if(Description==null||Description=="null"){#
+
+            #Description="";#
+            #}#
+            <textarea readonly>#=Description#</textarea>
+        </div>
+
+    </fieldset>
+
+    <fieldset class="roles">
+        <legend>@GlobalResource.Roles</legend>
+        #for (var i = 0; i < Roles.length; i++) {#
+          #var role=Roles[i];#
+          <div class="role-#=i#">
+              <div class="role-info">
+                  <div class="appraisal-meta-info">
+                        <div>
+                            <span>@GlobalResource.RoleName:</span>
+                            <span class="val">#=role.Name#</span>
+                        </div> 
+                        <div>
+                            <span>@GlobalResource.RoleWeight:</span>
+                            <span class="val">#=role.Weight#</span>
+                        </div>
+                  </div>
+
+                  <div class="appraisal-meta-desc">
+                      <span>@GlobalResource.Description:</span>
+                      #if(role.Description==null||role.Description=="null"){#
+
+                      #role.Description="";#
+                      #}#
+                        <textarea readonly>#=role.Description#</textarea>
+                  </div>
+              </div>
+            <div class="responsibilities">
+                <table>
+                    <colgroup>
+                        <col class="column-namecolumn">
+                        <col class="column-kpis">
+                        <col class="column-weight">
+                        <col class="column-rate">
+                        <col class="column-notes">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                            <th>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>    
+                            <th>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                            <th>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                            <th>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        #for (var j = 0; j < role.AppraisalItems.length; j++) {#
+                            #var item=role.AppraisalItems[j];#
+                            <tr class="responsibility-1">
+                                <td><p>#=item.Name#</p></td>
+                                <td class="center-column item-commands relative-table-cell">
+                                     <button data-item-index="#=i#" class="show-incentive-item k-button">
+                                        <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                                    </button>
+                                    <div class="kpis-info">
+                                        <div class="tooltip-wrapper">
+                                            #=showKpisTemplate({Kpis:item.Kpis})#
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="center-column"><input value="#=item.Weight#" data-role="numerictextbox" name="appraisal-res-weight-#=item.Id#" class="appraisal-res-weight" type="text"/></td>
+                                <td class="center-column"><input value="#=item.Rate#" name="appraisal-res-rate-#=item.Id#" class="appraisal-res-rate  appraisal-rate" type="text"/></td>
+                                <td class="center-column">
+                                    #if(item.Note==null||item.Note=="null"){#
+                                    #item.Note="";#
+                                    #}#
+                                    <textarea name="appraisal-res-note#=item.Id#" class="appraisal-note appraisal-res-note k-textbox">#=item.Note#</textarea>
+                                </td>
+                            </tr>
+                        #}#
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <hr>
+        #}#
+    </fieldset>  
+</div>
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

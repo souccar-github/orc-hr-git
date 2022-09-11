@@ -1,0 +1,9 @@
+D:\Projects\ORC-HR\HR System\ui\binaries\HRIS.Validation.dll
+D:\Projects\ORC-HR\HR System\ui\binaries\HRIS.Validation.pdb
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.MessageStore.CustomMessagesResource.resources
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.MessageStore.DefaultValidationMessagesResource.resources
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.MessageStore.GlobalMessagesResource.resources
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.csproj.GenerateResource.Cache
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.dll
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.pdb
+D:\Projects\ORC-HR\HR System\HRIS.Validation\obj\Debug\HRIS.Validation.csprojResolveAssemblyReference.cache

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE Locales SYSTEM "Locales.dtd">
+
+<Locales>
+	<Locale Id="en-US" Name="English" Description="English language that is used in the United States" />
+	<Locale Id="ar-SY" Name="ÇáÚÑÈíÉ" Description="ÇááÛÉ ÇáÚÑÈíÉ ÇáãÓÊÎÏãÉ Ýí ÇáÌãåæÑíÉ ÇáÚÑÈíÉ ÇáÓæÑíÉ" />
+</Locales>

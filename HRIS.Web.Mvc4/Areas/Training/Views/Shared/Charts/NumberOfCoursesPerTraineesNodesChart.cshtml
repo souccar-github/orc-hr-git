@@ -1,0 +1,306 @@
+﻿@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.Personnel.RootEntities
+@using HRIS.Domain.Training.Enums
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-noc" class="chart-params">
+
+        @* Nodes Type *@
+        <div id="p-node-type-noc" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-type-noc">
+                <div class="k-edit-label">
+                    <label for="nodeTypeNoc">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeNoc" class="k-edit-field">
+                    <input id="nodeTypeNoc" name="nodeTypeNoc" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeNoc" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Nodes *@
+        <div id="p-node-noc" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-noc">
+                <div class="k-edit-label">
+                    <label for="nodeNoc">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeNoc" class="k-edit-field">
+                    <input id="nodeNoc" name="nodeNoc" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeNoc" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Status *@
+        <div id="p-status-noc" style="float:@pageDir;width:48%;">
+            <div class="control control-p-status-noc">
+                <div class="k-edit-label">
+                    <label for="statusNoc">@typeof(CourseStatus).GetLocalized()</label>
+                </div>
+                <div data-container-for="statusNoc" class="k-edit-field">
+                    <input id="statusNoc" name="statusNoc" placeholder="@typeof(CourseStatus).GetLocalized() ..." />
+                    <input id="hf_statusNoc" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+    </div>
+
+    <div style="clear:both;"></div>
+    <div id="number-of-courses-per-trainees-nodes-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesNoc = null;
+    var $nodesNoc = null;
+    var $statusNoc = null;
+
+    function getNumberOfCoursesPerTraineesNodes(nodesTypes, nodes) {
+        $nodesTypesNoc = null;
+        $nodesNoc = null;
+        $statusNoc = null;
+
+        $nodesTypesNoc = nodesTypes;
+        $nodesNoc = nodes;
+        $statusNoc = getCourseStatus();
+        
+        generateComboBox("#nodeTypeNoc", "nodeTypeNoc", $nodesTypesNoc, onChangeNodeTypeNoc);
+        generateComboBox("#nodeNoc", "nodeNoc", $nodesNoc, onChangeNodeNoc);
+        generateComboBox("#statusNoc", "statusNoc", $statusNoc, onChangeStatusNoc);
+
+
+        setTimeout(function () { showNumberOfCoursesPerTraineesNodesChart(); }, 500);
+    }
+
+
+    function onChangeNodeTypeNoc(e) {
+
+        onChange(e);
+        updateNodeTypeComboBoxNoc(e);
+    }
+    function updateNodeTypeComboBoxNoc(e) {
+
+        var eleCount = $nodesTypesNoc.length;
+        $nodesTypesNoc.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesNoc.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesNoc.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesNoc($nodesTypesNoc);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesNoc);
+        dataSource.data(data);
+        
+        var nodeNocDropDownList = $('#nodeNoc').data("kendoDropDownList");
+        nodeNocDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeNocDropDownList.setDataSource(dataSource);
+
+        var nodeTextNoc = getComboBoxText($nodesNoc, 'nodeNoc');
+        nodeNocDropDownList.text(nodeTextNoc);
+
+        //===Status
+        updateStatusNoc($nodesNoc);
+        var statusDataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($statusNoc);
+        statusDataSource.data(data);
+
+        var statusNocDropDownList = $('#statusNoc').data("kendoDropDownList");
+        statusNocDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        statusNocDropDownList.setDataSource(statusDataSource);
+
+        var statusTextNoc = getComboBoxText($statusNoc, 'statusNoc');
+        statusNocDropDownList.text(statusTextNoc);
+
+        showNumberOfCoursesPerTraineesNodesChart();
+    }
+    function updateNodesNoc(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Training" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesNoc = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeNoc(e) {
+
+        onChange(e);
+        updateNodeComboBox(e);
+    }
+    function updateNodeComboBox(e) {
+        var eleCount = $nodesNoc.length;
+        $nodesNoc.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesNoc.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesNoc.push(items[i]);
+                }
+            }
+        }
+
+        updateStatusNoc($nodesNoc);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($statusNoc);
+        dataSource.data(data);
+
+        var statusNocDropDownList = $('#statusNoc').data("kendoDropDownList");
+        statusNocDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        statusNocDropDownList.setDataSource(dataSource);
+
+        showNumberOfCoursesPerTraineesNodesChart();
+    }
+
+    function updateStatusNoc(nodes) {
+        $statusNoc = getCourseStatus();
+    }
+
+    function onChangeStatusNoc(e) {
+
+        onChange(e);
+        updateStatusComboBoxNoc(e);
+    }
+
+    function updateStatusComboBoxNoc(e) {
+       
+        var eleCount = $statusNoc.length;
+        $statusNoc.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $statusNoc.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $statusNoc.push(items[i]);
+                }
+            }
+        }
+
+        showNumberOfCoursesPerTraineesNodesChart();
+    }
+
+    function showNumberOfCoursesPerTraineesNodesChart() {
+        window.Souccar.ajax('@Url.Action("NumberOfCoursesPerTraineesNodes", "Dashboard", new {area = "Training" })',
+            { nodes: $nodesNoc, status: $statusNoc},
+            successFunc,
+            erorrFunc);
+
+        function successFunc(data) {
+            if (data.Success)
+                initNumberOfCoursesPerTraineesNodesChart(data);
+        }
+
+        function erorrFunc() {
+            console.log('ERROR - func:updateStatus');
+        }
+
+    }
+
+    function initNumberOfCoursesPerTraineesNodesChart(data) {
+        var colors = [getDefaultThemeColor(), '#434348', '#7CB5EC', '#F45B5B'];
+        Highcharts.chart('number-of-courses-per-trainees-nodes-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfCoursesPerTraineesNodes)'
+            },
+            xAxis: {
+                categories: data.CoursesNames
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.CourseCount)'
+                }
+            },
+            legend: {
+                enable: false
+            },
+            tooltip: {
+                outside: true,
+                useHTML: true,
+                borderRadius: 5,
+                formatter: function () {
+                    return (
+                        '<div class="chart-tooltip' +
+                            this.x +
+                            '"><span class="tval"><b>' +
+                             this.x+
+                            '</b> </span><span class="tlabel"><p>'+ '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.CourseCount) '+ this.y + '</p></span></div>'
+                    );
+
+
+                }
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+            },
+            colors: colors,
+            series: [{
+                name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfCourses)',
+                data: data.NumberOfCourses
+            }]
+        });
+    }
+</script>
+
+

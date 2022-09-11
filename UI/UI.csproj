@@ -1,0 +1,2330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2AF07D84-759E-40FC-8CDD-2C3A39FF5B48}</ProjectGuid>
+    <ProjectTypeGuids>{e53f8fea-eae0-44a6-8774-ffd645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UI</RootNamespace>
+    <AssemblyName>UI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <FilesToIncludeForPublish>OnlyFilesToRunTheApp</FilesToIncludeForPublish>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <ExcludeApp_Data>true</ExcludeApp_Data>
+    <DeployEncryptKey>Encryption password is used only if any deployment setting is marked as secure</DeployEncryptKey>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="SqlServerConnectionString-Deployment" Order="2" xmlns="">
+          <Destination Path="Data Source=TFS%3bInitial Catalog=TestHumanResources%3bIntegrated Security=True" />
+          <Object Type="dbFullSql" Enabled="False">
+            <PreSource Path="Data Source=TFS%3b Initial Catalog=TestHumanResources%3b Trusted_Connection=true%3b User ID=souccar\baraa.katbeh%3b Password=helloworld%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" />
+            <Source Path="obj\Debug\AutoScripts\SqlServerConnectionString-Deployment_SchemaOnly.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
+    <PublishDatabases>true</PublishDatabases>
+    <DeployIisAppPath>Default Web Site/HR</DeployIisAppPath>
+    <PackageAsSingleFile>false</PackageAsSingleFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Binaries\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.v11.2, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v11.2.Core, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.Mvc.v11.2, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Binaries\Reporting\DevExpress.Web.Mvc.v11.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v11.2, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2.1\lib\Elmah.dll</HintPath>
+    </Reference>
+    <Reference Include="FizzWare.NBuilder, Version=3.0.1.0, Culture=neutral, PublicKeyToken=5651b03e12e42c12, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="HibernatingRhinos.Profiler.Appender, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0774796e73ebf640, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Binaries\HibernatingRhinos.Profiler.Appender.dll</HintPath>
+    </Reference>
+    <Reference Include="HRIS.Domain">
+      <HintPath>Binaries\HRIS.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Reporting">
+      <HintPath>Binaries\Reporting.dll</HintPath>
+    </Reference>
+    <Reference Include="Repository, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Binaries\Repository.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Core">
+      <HintPath>Binaries\Souccar.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Domain">
+      <HintPath>Binaries\Souccar.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.ReportGenerator.DataAccess">
+      <HintPath>Binaries\Souccar.ReportGenerator.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.ReportGenerator.Domain">
+      <HintPath>Binaries\Souccar.ReportGenerator.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.ReportGenerator.Services">
+      <HintPath>Binaries\Souccar.ReportGenerator.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Security.DataAccess">
+      <HintPath>Binaries\Souccar.Security.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Security.Domain">
+      <HintPath>Binaries\Souccar.Security.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Security.Provider">
+      <HintPath>Binaries\Souccar.Security.Provider.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=2.6.3.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.2.6.3\lib\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\Assemblies\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\Assemblies\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web.WebPages">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Web.Mvc, Version=2011.3.1115.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Binaries\Telerik.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivator, Version=1.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Binaries\WebActivator.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_GlobalResources\EditorLocalization.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.nl-NL.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.nl-NL.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.zh-CN.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.zh-CN.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.ar-SY.designer.cs">
+      <DependentUpon>GridLocalization.ar-SY.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.bg-BG.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.bg-BG.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.de-DE.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.de-DE.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.en-US.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.fr-FR.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.fr-FR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.pl-PL.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.pl-PL.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.pt-BR.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.pt-BR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.ru-RU.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.ru-RU.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\EditorLocalization.uk-UA.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditorLocalization.uk-UA.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.bg-BG.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.bg-BG.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.de-DE.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.de-DE.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.en-US.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.es-ES.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.es-ES.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.fr-FR.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.fr-FR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.nl-NL.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.nl-NL.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.pl-PL.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.pl-PL.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.pt-BR.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.pt-BR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.pt-PT.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.pt-PT.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.ru-RU.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.ru-RU.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.uk-UA.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.uk-UA.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\GridLocalization.zh-CN.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GridLocalization.zh-CN.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\UploadLocalization.bg-BG.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UploadLocalization.bg-BG.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\UploadLocalization.en-US.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UploadLocalization.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\UploadLocalization.fr-FR.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UploadLocalization.fr-FR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\UploadLocalization.pl-PL.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UploadLocalization.pl-PL.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\UploadLocalization.ru-RU.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UploadLocalization.ru-RU.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\UploadLocalization.zh-CN.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UploadLocalization.zh-CN.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\StructuremapMvc.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\ElmahController.cs" />
+    <Compile Include="Areas\Objective\Controllers\Indexes\DimensionController.cs" />
+    <Compile Include="Areas\Objective\Controllers\Indexes\ObjectiveKpiTypeController.cs" />
+    <Compile Include="Areas\Objective\Controllers\Indexes\StepStatusController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\EvaluatedObjectiveStepController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\EvaluationController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\EvaluationCriteriaController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\ObjectiveConstraintController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\ObjectiveKpiController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\ObjectiveStepController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ValueObjects\SharedWithController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\InsuranceCompanyController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\JobGroupController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\PositionFulfillmentController.cs" />
+    <Compile Include="Areas\OrganizationChart\DTO\Adapters\PositionFulfillmentAdapter.cs" />
+    <Compile Include="Areas\OrganizationChart\DTO\ViewModels\PositionFulfillmentViewModel.cs" />
+    <Compile Include="Areas\OrganizationChart\DTO\ViewModels\PositionViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\Controllers\Entities Root\LiveAppraisalAggregateController.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\Controllers\Entities\LiveAppraisalController.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\Controllers\Helper\DropDownListHelpers.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\Controllers\Helper\PMSComprehensiveLiveCacheKeys.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\Controllers\PMSComprehensiveLiveController.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\PMSComprehensiveLiveAreaRegistration.cs" />
+    <Compile Include="Areas\PMSComprehensiveLive\Views\Shared\PMSComprehensiveLive.master.cs">
+      <DependentUpon>PMSComprehensiveLive.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Areas\PMSComprehensiveLive\Views\Shared\PMSComprehensiveLive.master.designer.cs">
+      <DependentUpon>PMSComprehensiveLive.master</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\PMSComprehensive\Controllers\EntitiesRoots\AppraisalAggregateController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\EntitiesRoots\AppraisalPhaseAggregateController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\EntitiesRoots\AppraisalTemplateAggregateController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\EntitiesRoots\AppraisalSectionAggregateController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Entities\AppraisalController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Entities\AppraisalPhaseController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Entities\AppraisalSectionController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Entities\AppraisalSectionItemController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Entities\AppraisalTemplateController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Entities\AppraisalSectionItemKpiController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Indexes\AppraisalTypeController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\Indexes\TemplateTypeController.cs" />
+    <Compile Include="Areas\PMSComprehensive\Controllers\PMSComprehensiveController.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\Adapters\AppraisalPhaseAdapter.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\Adapters\AppraisalTemplateAdapter.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\AppraisalPhaseGridViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\AppraisalPhaseViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\AppraisalSectionItemKpiViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\AppraisalSectionItemViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\AppraisalSectionViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\AppraisalTemplateViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\DTO\ViewModels\GradeViewModel.cs" />
+    <Compile Include="Areas\PMSComprehensive\Helpers\DropDownListHelpers.cs" />
+    <Compile Include="Areas\PMSComprehensive\Helpers\PMSComprehensiveCacheKeys.cs" />
+    <Compile Include="Areas\PMSComprehensive\PMSComprehensiveAreaRegistration.cs" />
+    <Compile Include="Areas\PMSComprehensive\Views\Shared\PMSComprehensive.master.cs">
+      <DependentUpon>PMSComprehensive.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Areas\PMSComprehensive\Views\Shared\PMSComprehensive.master.designer.cs">
+      <DependentUpon>PMSComprehensive.master</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\JobDesc\Controllers\EntitiesRoots\JobDescAggregateController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Entities\JobDescEntityController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\AuthorityTypeController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\CareerLevelController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\CompetencyTypeController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\ComputerSkillTypeController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\ConditionTypeController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\LanguageNameController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\Indexes\PriorityController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\JobDescController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\AuthorityController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\CompetencyController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\ComputerSkillController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\ConditionController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\JEducationController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\JExperienceController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\JLanguageController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\JSkillController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\KnowledgeController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\ResponsibilityController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\ResponsibilityKpiController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\RoleController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\RoleKpiController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\SpecificationController.cs" />
+    <Compile Include="Areas\JobDesc\Controllers\ValueObjects\WorkingConditionController.cs" />
+    <Compile Include="Areas\JobDesc\Helpers\DropDownListHelpers.cs" />
+    <Compile Include="Areas\JobDesc\Helpers\JobDescCacheKeys.cs" />
+    <Compile Include="Areas\JobDesc\JobDescAreaRegistration.cs" />
+    <Compile Include="Areas\Objective\Controllers\EntitiesRoots\ObjectiveAggregateController.cs" />
+    <Compile Include="Areas\Objective\Controllers\EntitiesRoots\StrategicObjectiveAggregateController.cs" />
+    <Compile Include="Areas\Objective\Controllers\Entities\ObjectiveController.cs" />
+    <Compile Include="Areas\Objective\Controllers\Entities\StrategicObjectiveController.cs" />
+    <Compile Include="Areas\Objective\Controllers\Indexes\ObjectiveTypeController.cs" />
+    <Compile Include="Areas\Objective\Controllers\ObjectiveModuleController.cs" />
+    <Compile Include="Areas\Objective\Helpers\DropDownListHelpers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Areas\Objective\Helpers\ObjectiveCacheKeys.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Areas\Objective\ObjectiveAreaRegistration.cs" />
+    <Compile Include="Areas\Objective\Views\Shared\Objective.master.cs">
+      <DependentUpon>Objective.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Areas\Objective\Views\Shared\Objective.master.designer.cs">
+      <DependentUpon>Objective.master</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\OrganizationChart\Controllers\EntitiesRoots\GradeAggregateController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\EntitiesRoots\IndexesController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\EntitiesRoots\NodeAggregateController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\EntitiesRoots\OrganizationAggregateController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Entities\GradeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Entities\NodeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Entities\OrganizationController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\AssetStatusController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\AssetTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\CashBenefitTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\CashDeductionTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\CostCenterController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\CurrencyTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\DisabilityStatusController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\GroupSalaryScaleController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\InsuranceTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\JobRoleController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\JobTitleController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\NodeTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\NonCashBenefitTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\PositionLevelController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\PositionTypeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\Indexes\TimeIntervalController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\OrganizationChartController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\AssetsController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\AssignedAssetController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\AssignedCashBenefitController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\AssignedCashDeductionController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\AssignedInsuranceController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\AssignedNonCashBenefitController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\CashBenefitController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\CashDeductionController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\InsuranceController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\NonCashBenefitController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\PositionController.cs" />
+    <Compile Include="Areas\OrganizationChart\Controllers\ValueObjects\PositionGradeController.cs" />
+    <Compile Include="Areas\OrganizationChart\Helpers\DropDownListHelpers.cs" />
+    <Compile Include="Areas\OrganizationChart\Helpers\OrganizationChartCacheKeys.cs" />
+    <Compile Include="Areas\OrganizationChart\OrganizationChartAreaRegistration.cs" />
+    <Compile Include="Areas\OrganizationChart\Views\Shared\OrganizationChart.master.cs">
+      <DependentUpon>OrganizationChart.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Areas\OrganizationChart\Views\Shared\OrganizationChart.master.designer.cs">
+      <DependentUpon>OrganizationChart.master</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Personnel\Controllers\EntitiesRoots\EmployeeAggregateController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Areas\Personnel\Controllers\Entities\EmployeeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\BloodTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\BoolConditionController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\CertificationTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\ConvictionRuleController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\CountryController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\DrivingLicenseTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\GenderController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\LevelController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\MajorController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\MajorTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\MaritalStatusController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\MilitaryStatusController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\NationalityController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\RaceController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\ReligionController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\ResidencyTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\ScoreTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\Indexes\SkillTypeController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\PersonnelController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\CertificationController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\ChildrenController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\ContactController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\ConvictionController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\DependentController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\DrivingLicenseController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\EducationController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\ExperienceController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\LanguageController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\MilitaryServiceController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\PassportController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\ResidencyController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\SkillController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\SpouseController.cs" />
+    <Compile Include="Areas\Personnel\Controllers\ValueObjects\TrainingController.cs" />
+    <Compile Include="Areas\Personnel\Helpers\PersonnelDropDownListHelpers.cs" />
+    <Compile Include="Areas\Personnel\Helpers\ImageHandler.cs" />
+    <Compile Include="Areas\Personnel\Helpers\PersonnelCacheKeys.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\EntitiesRoots\ProjectAggregateController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Entities\ProjectController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Indexes\PhaseStatusController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Indexes\ProjectKpiTypeController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Indexes\ProjectResourceTypeController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Indexes\ProjectTypeController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Indexes\ResourceStatusController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\Indexes\ProjectRoleController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ProjectManagementController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\EvaluatedPhaseController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\EvaluatedTaskController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\PhaseTaskController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectConstraintController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectEvaluationController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectKpiController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectPhaseController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectResourceController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectSuccessFactorController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectTeamController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\ProjectTeamRoleController.cs" />
+    <Compile Include="Areas\ProjectManagement\Controllers\ValueObjects\TeamMemberController.cs" />
+    <Compile Include="Areas\ProjectManagement\Helpers\DropDownListHelpers.cs" />
+    <Compile Include="Areas\ProjectManagement\Helpers\ProjectCacheKeys.cs" />
+    <Compile Include="Areas\ProjectManagement\ProjectManagementAreaRegistration.cs" />
+    <Compile Include="Areas\ProjectManagement\Views\Shared\ProjectManagement.master.cs">
+      <DependentUpon>ProjectManagement.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Areas\ProjectManagement\Views\Shared\ProjectManagement.master.designer.cs">
+      <DependentUpon>ProjectManagement.master</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Reporting\Controllers\DynamicReportController.cs" />
+    <Compile Include="Areas\Reporting\Controllers\EntitiesRoots\ReportAggregateController.cs" />
+    <Compile Include="Areas\Reporting\Controllers\ReportTemplateController.cs" />
+    <Compile Include="Areas\Reporting\Controllers\JobDescReportController.cs" />
+    <Compile Include="Areas\Reporting\Controllers\QueryBuilderController.cs" />
+    <Compile Include="Areas\Reporting\Helpers\ReportingDropDownListHelpers.cs" />
+    <Compile Include="Areas\Reporting\ReportingAreaRegistration.cs" />
+    <Compile Include="Areas\Reporting\Views\Shared\ReportingViewers.Master.cs">
+      <DependentUpon>ReportingViewers.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Areas\Reporting\Views\Shared\ReportingViewers.Master.designer.cs">
+      <DependentUpon>ReportingViewers.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Services\Controllers\AssignEmployeeToPositionController.cs" />
+    <Compile Include="Areas\Services\Controllers\ResourceEditorController.cs" />
+    <Compile Include="Areas\Services\Controllers\ResourceFileTranslateController.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\ContactViewModel.cs" />
+    <Compile Include="Areas\Services\Controllers\DelegationController.cs" />
+    <Compile Include="Areas\Services\Controllers\EntitiesRoots\EmployeeOnlineController.cs" />
+    <Compile Include="Areas\Services\Controllers\EntitiesRoots\ServicesAggregateController.cs" />
+    <Compile Include="Areas\Services\Controllers\ValueObject\ContactOnlineController.cs" />
+    <Compile Include="Areas\Services\DTO\Adapters\DelegationAdapter.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\AuthorityViewModel.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\ResourceEditorViewModel.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\DelegationViewModel.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\AssignedEmployeeViewModel.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\EmployeeContactViewModel.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\EmployeeViewModel.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\NumericKeyValuePair.cs" />
+    <Compile Include="Areas\Services\DTO\ViewModels\RoleViewModel.cs" />
+    <Compile Include="Areas\Services\ServicesAreaRegistration.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DropDownListsController.cs" />
+    <Compile Include="Controllers\IndexesController.cs" />
+    <Compile Include="Controllers\PermissionController.cs" />
+    <Compile Include="Controllers\TreeController.cs" />
+    <Compile Include="DependencyResolution\IoC.cs" />
+    <Compile Include="DependencyResolution\SmDependencyResolver.cs" />
+    <Compile Include="Extensions\LabelExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\SelectFromListHelper.cs" />
+    <Compile Include="Areas\Personnel\PersonnelAreaRegistration.cs" />
+    <Compile Include="Filters\SecurityActionAttribute.cs" />
+    <Compile Include="Filters\SessionExpireFilterAttribute.cs" />
+    <Compile Include="Filters\SourceCodeFileAttribute.cs" />
+    <Compile Include="Helpers\Cache\CacheKeys.cs" />
+    <Compile Include="Helpers\Configuration\WebConfigHelper.cs" />
+    <Compile Include="Helpers\Controllers\IModuleController.cs" />
+    <Compile Include="Helpers\DropDownListHelpers.cs" />
+    <Compile Include="Helpers\Localization\LocalizationAttribute.cs" />
+    <Compile Include="Helpers\Localization\LocalizationController.cs" />
+    <Compile Include="Helpers\Localization\SwitchLanguage.cs" />
+    <Compile Include="Helpers\Security\SecurityKeyStatus.cs" />
+    <Compile Include="Helpers\Security\Key.cs" />
+    <Compile Include="Controllers\AccountControllerOld.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Extensions\ControllerExtension.cs" />
+    <Compile Include="Extensions\JQueryExtensions.cs" />
+    <Compile Include="Extensions\ResourceTracker.cs" />
+    <Compile Include="Extensions\ScriptExtensions.cs" />
+    <Compile Include="Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Attributes\AutoCompleteAttribute.cs" />
+    <Compile Include="Helpers\Attributes\MetaDataAttribute.cs" />
+    <Compile Include="Helpers\Cache\CacheProvider.cs" />
+    <Compile Include="Helpers\Controllers\PartialViewToStringController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helpers\Controllers\RootEntityController.cs" />
+    <Compile Include="Helpers\Model\ModelStateHelpers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helpers\Providers\CustomModelMetadataProvider.cs" />
+    <Compile Include="Helpers\Route\Route.cs" />
+    <Compile Include="Helpers\Session\SessionKeyStatus.cs" />
+    <Compile Include="Helpers\Views\ErrorResult.cs" />
+    <Compile Include="Helpers\Views\ReadOnlyTextBox.cs" />
+    <Compile Include="Initializers\SecurityInitializer.cs" />
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\CustomFormsAuthentication.cs" />
+    <Compile Include="Models\Template.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\MasterRecordOrder.cs" />
+    <Compile Include="Utilities\MvcPathNavigator.cs" />
+    <Compile Include="Utilities\PathStep.cs" />
+    <Compile Include="Utilities\RibbonLevels.cs" />
+    <Compile Include="WebSiteContext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\MasterGrid.ascx" />
+    <Content Include="Areas\JobDesc\Views\Role\MasterGrid.ascx" />
+    <Content Include="Areas\JobDesc\Views\Specification\MasterGrid.ascx" />
+    <Content Include="Areas\Objective\Views\Dimension\Index.aspx" />
+    <Content Include="Areas\Objective\Views\EvaluatedObjectiveStep\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluatedObjectiveStep\Index.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluatedObjectiveStep\List.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluatedObjectiveStep\Select.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluationCriteria\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluationCriteria\Index.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluationCriteria\List.ascx" />
+    <Content Include="Areas\Objective\Views\EvaluationCriteria\Select.ascx" />
+    <Content Include="Areas\Objective\Views\Evaluation\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\Evaluation\Index.ascx" />
+    <Content Include="Areas\Objective\Views\Evaluation\List.ascx" />
+    <Content Include="Areas\Objective\Views\Evaluation\MasterGrid.ascx" />
+    <Content Include="Areas\Objective\Views\Evaluation\MasterIndex.aspx" />
+    <Content Include="Areas\Objective\Views\Evaluation\Select.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveConstraint\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveConstraint\Index.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveConstraint\List.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveConstraint\Select.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\BasicInfo.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\MasterGrid.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveKpiType\Index.aspx" />
+    <Content Include="Areas\Objective\Views\ObjectiveKpi\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveKpi\Index.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveKpi\List.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveKpi\Select.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveStep\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveStep\Index.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveStep\List.ascx" />
+    <Content Include="Areas\Objective\Views\ObjectiveStep\Select.ascx" />
+    <Content Include="Areas\Objective\Views\StrategicObjective\MasterGrid.ascx" />
+    <Content Include="Areas\Objective\Views\SharedWith\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\SharedWith\Index.ascx" />
+    <Content Include="Areas\Objective\Views\SharedWith\List.ascx" />
+    <Content Include="Areas\Objective\Views\SharedWith\Select.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\DropDownLists\NodePositionsList.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\DropDownLists\PositionEmployeesList.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Error.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\OrgTree\NodesTree.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\OrgTree\Tree.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\1stLevel\Functions.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\3edLevel\Functions.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\3edLevel\Indexes.ascx" />
+    <Content Include="Areas\Objective\Views\StepStatus\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionFulfillment\Grid.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Grade\Create.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Grade\Insert.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Grade\MasterGrid.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\InsuranceCompany\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\JobGroup\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\MasterGrid.ascx" />
+    <Content Include="Areas\Personnel\Views\Employee\MasterGrid.ascx" />
+    <Content Include="Areas\Personnel\Views\Shared\Assign.aspx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\AppraisalInfo.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\CompetencySection.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\CustomizedSection.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\CustomizedSectionItemKPI.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\Index.aspx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\JobDescriptionSection.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\JobDescriptionSectionItemKPI.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\JobSection.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\ObjectiveSection.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\ObjectiveSectionItemKPI.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\LiveAppraisal\SectionsMenu.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\ProjectSection\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\ProjectSection\Index.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\ProjectSection\List.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\ProjectSection\MasterGrid.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\ProjectSection\Select.ascx" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\Shared\OperationsWindow.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalPeriod\Index.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalPhase\Create.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalPhase\Index.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalPhase\Insert.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalPhase\MasterGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSectionItemKpi\AppraisalSectionItemKpiGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSectionItem\AppraisalSectionItemGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSection\Create.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalTemplate\Create.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalTemplate\Index.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalTemplate\Insert.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalTemplate\MasterGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalType\Index.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\Appraisal\BasicInfo.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Appraisal\Create.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Appraisal\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Appraisal\Index.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\Appraisal\Insert.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\Appraisal\MasterGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencyJobDescription\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencyJobDescription\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencyJobDescription\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencyJobDescription\MasterGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencyJobDescription\MasterIndex.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencyJobDescription\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySectionItem\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySectionItem\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySectionItem\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySectionItem\ReadOnly.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySectionItem\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySection\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySection\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySection\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\CompetencySection\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItemKpi\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItemKpi\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItemKpi\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItemKpi\ReadOnly.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItemKpi\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItem\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItem\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItem\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItem\MasterGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItem\MasterIndex.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionItem\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionTask\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionTask\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionTask\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSectionTask\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSection\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSection\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSection\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\JobDescriptionSection\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItemKpi\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItemKpi\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItemKpi\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItemKpi\ReadOnly.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItemKpi\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItem\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItem\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItem\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSectionItem\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSection\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSection\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSection\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ObjectiveSection\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSectionItem\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSectionItem\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSectionItem\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSectionItem\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSection\Edit.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSection\Index.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSection\List.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\ProjectSection\Select.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Error.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\IndexesNavigator.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\AppraisalTemplate\Functions.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\AppraisalTemplate\Indexes.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\Appraisal\Functions.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\Appraisal\Indexes.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\Ribbon.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\TemplateCustomizedSection\Functions.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\Ribbon\TemplateCustomizedSection\Indexes.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSection\Index.aspx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSection\AppraisalSectionGrid.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSectionItemKpi\Create.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\AppraisalSectionItem\Create.ascx" />
+    <Content Include="Areas\PMSComprehensive\Views\TemplateType\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedPhase\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedPhase\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedPhase\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedPhase\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedTask\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedTask\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedTask\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\EvaluatedTask\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseStatus\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseTask\Components\TeamMemberList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseTask\Components\TeamRoleList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseTask\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseTask\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseTask\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\PhaseTask\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectConstraint\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectConstraint\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectConstraint\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectConstraint\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectEvaluation\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectEvaluation\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectEvaluation\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectEvaluation\MasterGrid.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectEvaluation\MasterIndex.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectEvaluation\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectKpiType\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectKpi\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectKpi\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectKpi\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectKpi\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\Components\TeamMemberList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\Components\TeamRoleList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\MasterGrid.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\MasterIndex.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectPhase\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectResourceType\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectResource\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectResource\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectResource\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectResource\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectSuccessFactor\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectSuccessFactor\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectSuccessFactor\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectSuccessFactor\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeamRole\Components\TeamMemberList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeamRole\Components\TeamRoleList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\ProjectEvaluation\Functions.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\ProjectEvaluation\Indexes.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\ProjectTeam\Functions.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\ProjectTeam\Indexes.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Components\NodePositionList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Components\PositionEmployeesList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Comp\PositionEmployeesList.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Components\Tree.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeamRole\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeamRole\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeamRole\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeamRole\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeam\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeam\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeam\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeam\MasterGrid.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeam\MasterIndex.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectTeam\Select.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectType\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\Project\BasicInfo.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Project\Create.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Project\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Project\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\Project\Insert.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\Project\MasterGrid.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ResourceStatus\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Error.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\IndexesNavigator.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\Project\Functions.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\Project\Indexes.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\ProjectPhase\Functions.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\ProjectPhase\Indexes.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\Ribbon\Ribbon.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\ProjectRole\Index.aspx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Edit.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Index.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\List.ascx" />
+    <Content Include="Areas\ProjectManagement\Views\TeamMember\Select.ascx" />
+    <Content Include="Areas\Reporting\Views\DynamicReport\Index.aspx" />
+    <Content Include="Areas\Reporting\Views\DynamicReport\ReportViewerPartial.ascx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\AggregateFilterRow.ascx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\FilterRow.ascx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\Insert.aspx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\MasterGrid.ascx" />
+    <Content Include="Areas\Reporting\Views\ReportTemplate\Create.ascx" />
+    <Content Include="Areas\Reporting\Views\ReportTemplate\Index.aspx" />
+    <Content Include="Areas\Reporting\Views\ReportTemplate\Insert.aspx" />
+    <Content Include="Areas\Reporting\Views\ReportTemplate\MasterGrid.ascx" />
+    <Content Include="Areas\Reporting\Views\JobDescReport\Index.aspx" />
+    <Content Include="Areas\Reporting\Views\JobDescReport\ReportViewerPartial.ascx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\TreeLeaf.ascx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\Index.aspx" />
+    <Content Include="Areas\Reporting\Views\QueryBuilder\Tree.ascx" />
+    <Content Include="Areas\Services\Views\AssignEmployeeToPosition\Container.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\AssignedEmployee.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\Authorities.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\BasicInfo.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\Create.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\DelegationService.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\Edit.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\Index.aspx" />
+    <Content Include="Areas\Services\Views\Delegation\Insert.aspx" />
+    <Content Include="Areas\Services\Views\Delegation\MasterGrid.ascx" />
+    <Content Include="Areas\Services\Views\Delegation\Roles.ascx" />
+    <Content Include="Areas\Services\Views\AssignEmployeeToPosition\DropDownLists\PositionEmployeesList.ascx" />
+    <Content Include="Areas\Services\Views\AssignEmployeeToPosition\Index.aspx" />
+    <Content Include="Areas\Services\Views\AssignEmployeeToPosition\Tree\NodePositionsTree.ascx" />
+    <Content Include="Areas\Services\Views\AssignEmployeeToPosition\WeightTextBox.ascx" />
+    <Content Include="Areas\Services\Views\EmployeeOnline\DisplayTemplates\Nationalties.ascx" />
+    <Content Include="Areas\Services\Views\EmployeeOnline\EditorTemplates\Nationalties.ascx" />
+    <Content Include="Areas\Services\Views\EmployeeOnline\Index.aspx" />
+    <Content Include="Areas\Services\Views\ResourceEditor\Container.ascx" />
+    <Content Include="Areas\Services\Views\ResourceEditor\DropDownLists\SoftwareLanguagesList.ascx" />
+    <Content Include="Areas\Services\Views\ResourceEditor\DropDownLists\ResourceFilesList.ascx" />
+    <Content Include="Areas\Services\Views\ResourceEditor\Grid.ascx" />
+    <Content Include="Areas\Services\Views\ResourceEditor\Index.aspx" />
+    <Content Include="Areas\Services\Views\ResourceFileTranslate\Container.ascx" />
+    <Content Include="Areas\Services\Views\ResourceFileTranslate\DropDownLists\ResourceFilesList.ascx" />
+    <Content Include="Areas\Services\Views\ResourceFileTranslate\DropDownLists\SoftwareLanguagesList.ascx" />
+    <Content Include="Areas\Services\Views\ResourceFileTranslate\Index.aspx" />
+    <Content Include="Binaries\Antlr3.Runtime.dll" />
+    <Content Include="Binaries\ar\Resources.resources.dll" />
+    <Content Include="Binaries\AutoMapper.dll" />
+    <Content Include="Binaries\Castle.Core.dll" />
+    <Content Include="Binaries\Castle.DynamicProxy2.dll" />
+    <Content Include="Binaries\Castle.Windsor.dll" />
+    <Content Include="Binaries\Elmah.dll" />
+    <Content Include="Binaries\FastReport.Bars.dll" />
+    <Content Include="Binaries\FastReport.dll" />
+    <Content Include="Binaries\FastReport.Web.dll" />
+    <Content Include="Binaries\FizzWare.NBuilder.dll" />
+    <Content Include="Binaries\FluentNHibernate.dll" />
+    <Content Include="Binaries\HibernatingRhinos.Profiler.Appender.dll" />
+    <Content Include="Binaries\HRIS.Domain.dll" />
+    <Content Include="Binaries\HRIS.Mapping.dll" />
+    <Content Include="Binaries\HRIS.WorkFlow.dll" />
+    <Content Include="Binaries\Iesi.Collections.dll" />
+    <Content Include="Binaries\LinqToExcel.dll" />
+    <Content Include="Binaries\log4net.dll" />
+    <Content Include="Binaries\Newtonsoft.Json.dll" />
+    <Content Include="Binaries\NHibernate.ByteCode.Castle.dll" />
+    <Content Include="Binaries\NHibernate.dll" />
+    <Content Include="Binaries\NHibernate.Linq.dll" />
+    <Content Include="Binaries\Remotion.Data.Linq.dll" />
+    <Content Include="Binaries\Remotion.dll" />
+    <Content Include="Binaries\Remotion.Interfaces.dll" />
+    <Content Include="Binaries\Reporting.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Charts.v11.2.Core.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Data.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.PivotGrid.v11.2.Core.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Printing.v11.2.Core.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.RichEdit.v11.2.Core.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.SpellChecker.v11.2.Core.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Utils.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxEditors.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxGridView.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxGridView.v11.2.Export.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxHtmlEditor.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxPivotGrid.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxPivotGrid.v11.2.Export.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxSpellChecker.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.ASPxThemes.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.Mvc.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.Web.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraCharts.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraCharts.v11.2.UI.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraCharts.v11.2.Web.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraEditors.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraPivotGrid.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraReports.v11.2.dll" />
+    <Content Include="Binaries\Reporting\DevExpress.XtraReports.v11.2.Web.dll" />
+    <Content Include="Binaries\Reporting\Telerik.Reporting.dll" />
+    <Content Include="Binaries\Reporting\Telerik.Reporting.OpenXmlRendering.dll" />
+    <Content Include="Binaries\Reporting\Telerik.Reporting.Service.dll" />
+    <Content Include="Binaries\Reporting\Telerik.Reporting.XpsRendering.dll" />
+    <Content Include="Binaries\Reporting\Telerik.ReportViewer.WebForms.dll" />
+    <Content Include="Binaries\Repository.dll" />
+    <Content Include="Binaries\Service.dll" />
+    <Content Include="Binaries\Souccar.Core.dll" />
+    <Content Include="Binaries\Souccar.dll" />
+    <Content Include="Binaries\Souccar.Infrastructure.dll" />
+    <Content Include="Binaries\Souccar.NHibernate.dll" />
+    <Content Include="Binaries\Souccar.Reflector.dll" />
+    <Content Include="Binaries\Souccar.ReportGenerator.DataAccess.dll" />
+    <Content Include="Binaries\Souccar.ReportGenerator.Domain.dll" />
+    <Content Include="Binaries\Souccar.ReportGenerator.Services.dll" />
+    <Content Include="Binaries\Souccar.Security.DataAccess.dll" />
+    <Content Include="Binaries\Souccar.Security.Domain.dll" />
+    <Content Include="Binaries\Souccar.Security.Mapping.dll" />
+    <Content Include="Binaries\Souccar.Security.Provider.dll" />
+    <Content Include="Binaries\Souccar.Web.Mvc.dll" />
+    <Content Include="Binaries\SpecExpress.dll" />
+    <Content Include="Binaries\StructureMap.dll" />
+    <Content Include="Binaries\System.Web.Mvc.dll" />
+    <Content Include="Binaries\System.Web.Routing.dll" />
+    <Content Include="Binaries\System.Web.WebPages.Deployment.dll" />
+    <Content Include="Binaries\System.Web.WebPages.dll" />
+    <Content Include="Binaries\System.Web.WebPages.Razor.dll" />
+    <Content Include="Binaries\Telerik.Web.Mvc.dll" />
+    <Content Include="Binaries\WebActivator.dll" />
+    <Content Include="Binaries\WebGrease.dll" />
+    <Content Include="Content\2011.3.1115\Black\editor.png" />
+    <Content Include="Content\2011.3.1115\Black\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Black\loading.gif" />
+    <Content Include="Content\2011.3.1115\Black\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Black\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Black\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Black\sprite.png" />
+    <Content Include="Content\2011.3.1115\Black\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Black\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Black\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Default\editor.png" />
+    <Content Include="Content\2011.3.1115\Default\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Default\loading.gif" />
+    <Content Include="Content\2011.3.1115\Default\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Default\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Default\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Default\sprite.png" />
+    <Content Include="Content\2011.3.1115\Default\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Default\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Default\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Forest\editor.png" />
+    <Content Include="Content\2011.3.1115\Forest\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Forest\loading.gif" />
+    <Content Include="Content\2011.3.1115\Forest\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Forest\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Forest\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Forest\sprite.png" />
+    <Content Include="Content\2011.3.1115\Forest\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Forest\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Forest\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Hay\editor.png" />
+    <Content Include="Content\2011.3.1115\Hay\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Hay\loading.gif" />
+    <Content Include="Content\2011.3.1115\Hay\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Hay\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Hay\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Hay\sprite.png" />
+    <Content Include="Content\2011.3.1115\Hay\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Hay\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Hay\treeview-nodes.png" />
+    <Content Include="Content\default\general.css" />
+    <Content Include="Content\default\home.css" />
+    <Content Include="Content\default\imgs\chart_img.jpg" />
+    <Content Include="Content\default\imgs\icons.png" />
+    <Content Include="Content\default\imgs\job_description.jpg" />
+    <Content Include="Content\default\imgs\objective.jpg" />
+    <Content Include="Content\default\imgs\pa.jpg" />
+    <Content Include="Content\default\imgs\pageBg.png" />
+    <Content Include="Content\default\imgs\pat.jpg" />
+    <Content Include="Content\default\imgs\personnel_img.jpg" />
+    <Content Include="Content\default\imgs\pm.jpg" />
+    <Content Include="Content\default\imgs\rs.jpg" />
+    <Content Include="Content\default\imgs\ss.jpg" />
+    <Content Include="Content\default\imgs\td.jpg" />
+    <Content Include="Content\default\login.css" />
+    <Content Include="Content\Treecss\bootstrap.min.css" />
+    <Content Include="Content\Treecss\custom.css" />
+    <Content Include="Content\Treecss\imgs\person_icon.png" />
+    <Content Include="Content\Treecss\jquery.jOrgChart.css" />
+    <Content Include="Content\Treecss\prettify.css" />
+    <Content Include="Content\custom.css" />
+    <Content Include="Content\Home.css" />
+    <Content Include="Content\2011.3.1115\Metro\editor.png" />
+    <Content Include="Content\2011.3.1115\Metro\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Metro\loading.gif" />
+    <Content Include="Content\2011.3.1115\Metro\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Metro\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Metro\sprite.png" />
+    <Content Include="Content\2011.3.1115\Office2007\editor.png" />
+    <Content Include="Content\2011.3.1115\Office2007\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Office2007\loading.gif" />
+    <Content Include="Content\2011.3.1115\Office2007\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Office2007\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Office2007\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Office2007\sprite.png" />
+    <Content Include="Content\2011.3.1115\Office2007\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Office2007\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Office2007\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\editor.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\loading.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Black\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Black\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Black\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\sprite.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Office2010Black\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\editor.png" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\gradient.png" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\loading.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Office2010Blue\sprite.png" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\editor.png" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\gradient.png" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\loading.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Office2010Silver\sprite.png" />
+    <Content Include="Content\2011.3.1115\Outlook\editor.png" />
+    <Content Include="Content\2011.3.1115\Outlook\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Outlook\loading.gif" />
+    <Content Include="Content\2011.3.1115\Outlook\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Outlook\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Outlook\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Outlook\sprite.png" />
+    <Content Include="Content\2011.3.1115\Outlook\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Outlook\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Outlook\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Simple\editor.png" />
+    <Content Include="Content\2011.3.1115\Simple\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Simple\loading.gif" />
+    <Content Include="Content\2011.3.1115\Simple\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Simple\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Simple\sprite.png" />
+    <Content Include="Content\2011.3.1115\Simple\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Simple\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Simple\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\editor.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\loading.gif" />
+    <Content Include="Content\2011.3.1115\Sitefinity\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Sitefinity\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Sitefinity\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\sprite.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Sitefinity\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Sunset\editor.png" />
+    <Content Include="Content\2011.3.1115\Sunset\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Sunset\loading.gif" />
+    <Content Include="Content\2011.3.1115\Sunset\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Sunset\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Sunset\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Sunset\sprite.png" />
+    <Content Include="Content\2011.3.1115\Sunset\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Sunset\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Sunset\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\telerik.black.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.common.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.default.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.forest.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.hay.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.metro.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.office2007.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.office2010black.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.office2010blue.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.office2010silver.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.outlook.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.rtl.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.simple.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.sitefinity.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.sunset.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.telerik.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.transparent.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.vista.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.web20.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.webblue.min.css" />
+    <Content Include="Content\2011.3.1115\telerik.windows7.min.css" />
+    <Content Include="Content\2011.3.1115\Telerik\editor.png" />
+    <Content Include="Content\2011.3.1115\Telerik\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Telerik\loading.gif" />
+    <Content Include="Content\2011.3.1115\Telerik\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Telerik\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Telerik\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Telerik\sprite.png" />
+    <Content Include="Content\2011.3.1115\Telerik\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Telerik\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Telerik\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Transparent\active.png" />
+    <Content Include="Content\2011.3.1115\Transparent\editor.png" />
+    <Content Include="Content\2011.3.1115\Transparent\gradient.png" />
+    <Content Include="Content\2011.3.1115\Transparent\group.png" />
+    <Content Include="Content\2011.3.1115\Transparent\hover.png" />
+    <Content Include="Content\2011.3.1115\Transparent\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Transparent\loading.gif" />
+    <Content Include="Content\2011.3.1115\Transparent\selected.png" />
+    <Content Include="Content\2011.3.1115\Transparent\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Transparent\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Transparent\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Transparent\sprite.png" />
+    <Content Include="Content\2011.3.1115\Transparent\toolbar.png" />
+    <Content Include="Content\2011.3.1115\Transparent\widget.png" />
+    <Content Include="Content\2011.3.1115\Vista\editor.png" />
+    <Content Include="Content\2011.3.1115\Vista\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Vista\loading.gif" />
+    <Content Include="Content\2011.3.1115\Vista\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Vista\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Vista\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Vista\sprite.png" />
+    <Content Include="Content\2011.3.1115\Web20\editor.png" />
+    <Content Include="Content\2011.3.1115\Web20\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Web20\loading.gif" />
+    <Content Include="Content\2011.3.1115\Web20\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Web20\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Web20\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Web20\sprite.png" />
+    <Content Include="Content\2011.3.1115\Web20\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\Web20\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\Web20\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\editor.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\loading.gif" />
+    <Content Include="Content\2011.3.1115\WebBlue\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\WebBlue\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\WebBlue\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\sprite.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\treeview-line.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\treeview-nodes-rtl.png" />
+    <Content Include="Content\2011.3.1115\WebBlue\treeview-nodes.png" />
+    <Content Include="Content\2011.3.1115\Windows7\editor.png" />
+    <Content Include="Content\2011.3.1115\Windows7\imagebrowser.png" />
+    <Content Include="Content\2011.3.1115\Windows7\loading.gif" />
+    <Content Include="Content\2011.3.1115\Windows7\slider-h.gif" />
+    <Content Include="Content\2011.3.1115\Windows7\slider-v.gif" />
+    <Content Include="Content\2011.3.1115\Windows7\sprite-vertical.png" />
+    <Content Include="Content\2011.3.1115\Windows7\sprite.png" />
+    <Content Include="Content\favicon.ico" />
+    <Content Include="Content\Global.css" />
+    <Content Include="Content\images\01.png" />
+    <Content Include="Content\images\02.png" />
+    <Content Include="Content\images\03.png" />
+    <Content Include="Content\images\blockcontentbullets.png" />
+    <Content Include="Content\images\Bottom_texture.jpg" />
+    <Content Include="Content\images\button.png" />
+    <Content Include="Content\images\contact.jpg" />
+    <Content Include="Content\images\edit.png" />
+    <Content Include="Content\images\footer_b.png" />
+    <Content Include="Content\images\footer_s.png" />
+    <Content Include="Content\images\footer_t.png" />
+    <Content Include="Content\images\link photo.txt" />
+    <Content Include="Content\images\menuitem.png" />
+    <Content Include="Content\images\menuseparator.png" />
+    <Content Include="Content\images\nav.png" />
+    <Content Include="Content\images\NodePositionsTree\227.png" />
+    <Content Include="Content\images\NodePositionsTree\Accountant 2 WorkPlace.png" />
+    <Content Include="Content\images\NodePositionsTree\Bank Teller.png" />
+    <Content Include="Content\images\NodePositionsTree\Bank User.png" />
+    <Content Include="Content\images\NodePositionsTree\folder.ico" />
+    <Content Include="Content\images\NodePositionsTree\generic.png" />
+    <Content Include="Content\images\NodePositionsTree\Generic2.png" />
+    <Content Include="Content\images\NodePositionsTree\generics.png" />
+    <Content Include="Content\images\NodePositionsTree\generic_alt.png" />
+    <Content Include="Content\images\NodePositionsTree\lock-folder.png" />
+    <Content Include="Content\images\NodePositionsTree\lock.png" />
+    <Content Include="Content\images\NodePositionsTree\male_ueser.png" />
+    <Content Include="Content\images\NodePositionsTree\male_user.png" />
+    <Content Include="Content\images\NodePositionsTree\mawle_user.png" />
+    <Content Include="Content\images\NodePositionsTree\shared.png" />
+    <Content Include="Content\images\NodePositionsTree\smile.png" />
+    <Content Include="Content\images\postbullets.png" />
+    <Content Include="Content\images\postquote.png" />
+    <Content Include="Content\images\post_h.png" />
+    <Content Include="Content\images\post_s.png" />
+    <Content Include="Content\images\post_v.png" />
+    <Content Include="Content\images\preview.jpg" />
+    <Content Include="Content\images\rssicon.png" />
+    <Content Include="Content\images\pie-chart.jpg" />
+    <Content Include="Content\images\sheet_h.png" />
+    <Content Include="Content\images\sheet_s.png" />
+    <Content Include="Content\images\sheet_v.png" />
+    <Content Include="Content\images\spacer.gif" />
+    <Content Include="Content\images\subitem.png" />
+    <Content Include="Content\images\VS.png" />
+    <Content Include="Content\ModulesMenu\pms.png" />
+    <Content Include="Content\styleX.css" />
+    <Content Include="Content\TempStyle.css" />
+    <Content Include="Scripts\2011.3.1115\jquery-1.6.4.min.js" />
+    <Content Include="Scripts\2011.3.1115\jquery.validate.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.autocomplete.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.calendar.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.chart.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.combobox.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.common.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.datepicker.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.datetimepicker.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.draganddrop.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.editor.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.grid.editing.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.grid.filtering.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.grid.grouping.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.grid.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.grid.reordering.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.grid.resizing.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.imagebrowser.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.list.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.menu.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.panelbar.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.slider.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.splitter.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.tabstrip.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.textbox.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.timepicker.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.treeview.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.upload.min.js" />
+    <Content Include="Scripts\2011.3.1115\telerik.window.min.js" />
+    <Content Include="Scripts\jquery.jOrgChart.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\prettify.js" />
+    <Content Include="Scripts\tooltip.js" />
+    <Content Include="Views\Account\ChangePassword.aspx" />
+    <Content Include="Views\Account\ChangePasswordSuccess.aspx" />
+    <Content Include="Views\Account\LogOn.ascx" />
+    <Content Include="Views\Account\LogOn1.aspx" />
+    <Content Include="Views\Account\Register.aspx" />
+    <Content Include="Views\Home\Index.ascx" />
+    <Content Include="Views\Permission\Info.aspx" />
+    <Content Include="Views\Shared\EventLog.ascx" />
+    <Content Include="Views\Shared\CultureChooser.ascx" />
+    <Content Include="Views\Shared\DropDownLists\NodePositionsList.ascx" />
+    <Content Include="Areas\JobDesc\Views\AuthorityType\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\Authority\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\Authority\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\Authority\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\Authority\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\CareerLevel\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\CompetencyType\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\Competency\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\Competency\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\Competency\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\Competency\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\ComputerSkillType\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\ComputerSkill\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\ComputerSkill\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\ComputerSkill\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\ComputerSkill\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\ConditionType\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\Condition\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\Condition\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\Condition\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\Condition\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\JEducation\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\JEducation\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\JEducation\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\JEducation\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\JExperience\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\JExperience\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\JExperience\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\JExperience\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\JLanguage\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\JLanguage\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\JLanguage\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\JLanguage\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\BasicInfo.ascx" />
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\Create.ascx" />
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\InfoPanel.ascx" />
+    <Content Include="Areas\JobDesc\Views\JobDescEntity\Insert.aspx" />
+    <Content Include="Areas\JobDesc\Views\JSkill\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\JSkill\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\JSkill\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\JSkill\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\Knowledge\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\Knowledge\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\Knowledge\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\Knowledge\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\LanguageName\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\Priority\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\ResponsibilityKpi\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\ResponsibilityKpi\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\ResponsibilityKpi\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\ResponsibilityKpi\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\Responsibility\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\Responsibility\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\Responsibility\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\Responsibility\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\RoleKpi\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\RoleKpi\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\RoleKpi\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\RoleKpi\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\Role\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\Role\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\Role\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\Role\MasterIndex.aspx" />
+    <Content Include="Areas\JobDesc\Views\Role\Select.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Error.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\IndexesNavigator.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\JobDesc.master" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\1stLevel\Functions.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\1stLevel\Indexes.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\2ndLevel-A\Functions.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\2ndLevel-A\Indexes.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\2ndLevel-B\Functions.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\2ndLevel-B\Indexes.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\2ndLevel-C\Functions.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\2ndLevel-C\Indexes.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\Ribbon\Ribbon.ascx" />
+    <Content Include="Areas\JobDesc\Views\Shared\SelectedMasterInfo.ascx" />
+    <Content Include="Areas\JobDesc\Views\Specification\Index.aspx" />
+    <Content Include="Areas\JobDesc\Views\Web.config" />
+    <Content Include="Areas\JobDesc\Views\WorkingCondition\Edit.ascx" />
+    <Content Include="Areas\JobDesc\Views\WorkingCondition\Index.ascx" />
+    <Content Include="Areas\JobDesc\Views\WorkingCondition\List.ascx" />
+    <Content Include="Areas\JobDesc\Views\WorkingCondition\Select.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\Create.ascx" />
+    <Content Include="Areas\Objective\Views\Objective\Index.aspx" />
+    <Content Include="Areas\Objective\Views\Objective\Insert.aspx" />
+    <Content Include="Areas\Objective\Views\ObjectiveType\Index.aspx" />
+    <Content Include="Areas\Objective\Views\StrategicObjective\BasicInfo.ascx" />
+    <Content Include="Areas\Objective\Views\StrategicObjective\Create.ascx" />
+    <Content Include="Areas\Objective\Views\StrategicObjective\Edit.ascx" />
+    <Content Include="Areas\Objective\Views\StrategicObjective\Index.aspx" />
+    <Content Include="Areas\Objective\Views\StrategicObjective\Insert.aspx" />
+    <Content Include="Areas\Objective\Views\Shared\IndexesNavigator.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\1stLevel\Indexes.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\2ndLevel\Functions.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\2ndLevel\Indexes.ascx" />
+    <Content Include="Areas\Objective\Views\Shared\Ribbon\Ribbon.ascx" />
+    <Content Include="Areas\Objective\Views\Web.config" />
+    <Content Include="Areas\OrganizationChart\Views\CurrencyType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Grade\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\NodeType\BasicInfo.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\NodeType\Create.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\NodeType\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\ContextMenu.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\Tree.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\IndexesNavigator.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Organization\Functions.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Organization\Indexes.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Empty.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Tree\Functions.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Tree\Indexes.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Grade\Functions.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Grade\Indexes.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Position\Functions.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Position\Indexes.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Ribbon\Ribbon.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\GridForeignKey.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\Percent.ascx" />
+    <Content Include="Views\Shared\Error.ascx" />
+    <Content Include="Views\Shared\Error.aspx" />
+    <Content Include="Views\Shared\ExpiredRules.ascx" />
+    <Content Include="Areas\Personnel\Views\Contact\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Contact\List.ascx" />
+    <Content Include="Areas\Personnel\Views\DrivingLicense\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\DrivingLicense\List.ascx" />
+    <Content Include="Areas\Personnel\Views\MilitaryService\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\MilitaryService\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Shared\IndexesNavigator.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssetStatus\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Assets\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Assets\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Assets\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Assets\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssetType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedAsset\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedAsset\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedAsset\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedAsset\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashBenefit\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashBenefit\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashBenefit\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashBenefit\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashDeduction\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashDeduction\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashDeduction\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedCashDeduction\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedInsurance\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedInsurance\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedInsurance\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedInsurance\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedNonCashBenefit\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedNonCashBenefit\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedNonCashBenefit\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\AssignedNonCashBenefit\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashBenefit\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashBenefit\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashBenefit\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashBenefit\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashBenefitType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\CashDeductionType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\CashDeduction\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashDeduction\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashDeduction\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CashDeduction\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\CostCenter\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\DisabilityStatus\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Grade\BasicInfo.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Grade\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\GroupSalaryScale\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\InsuranceType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Insurance\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Insurance\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Insurance\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Insurance\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\JobRole\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\JobTitle\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\NodeType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\OperationWindow.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\New.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\NodesTree.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\ReassignNodesPositions.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\NodesTreeReorder.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Node\ReassignPositions.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Organization\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionGrade\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionGrade\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionGrade\Empty.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\Create.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\InfoPanel.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\Position2Grade.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\ReadOnly.ascx" />
+    <Content Include="Areas\Personnel\Uploads\no.jpg" />
+    <Content Include="Areas\Personnel\Views\BoolCondition\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\ScoreType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Shared\Ribbon\1stLevel\Functions.ascx" />
+    <Content Include="Areas\Personnel\Views\Shared\Ribbon\1stLevel\Indexes.ascx" />
+    <Content Include="Areas\Personnel\Views\Shared\Ribbon\Ribbon.ascx" />
+    <Content Include="Areas\Personnel\Views\Spouse\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Spouse\List.ascx" />
+    <Content Include="Content\FunctionsMenu.css" />
+    <Content Include="Content\icon_picture.png" />
+    <Content Include="Content\images\add.png" />
+    <Content Include="Content\images\cut.png" />
+    <Content Include="Content\images\door.png" />
+    <Content Include="Content\images\page_white_copy.png" />
+    <Content Include="Content\images\page_white_delete.png" />
+    <Content Include="Content\images\page_white_edit.png" />
+    <Content Include="Content\images\page_white_paste.png" />
+    <Content Include="Content\jquery.contextMenu.css" />
+    <Content Include="Content\ModulesMenu\back.png" />
+    <Content Include="Content\ModulesMenu\comments.png" />
+    <Content Include="Content\ModulesMenu\computer.png" />
+    <Content Include="Content\ModulesMenu\home.png" />
+    <Content Include="Content\ModulesMenu\male_user.png" />
+    <Content Include="Content\ModulesMenu\red_heart.png" />
+    <Content Include="Content\ModulesMenu\yellow_mail.png" />
+    <Content Include="Content\jit\base.css" />
+    <Content Include="Content\jit\Spacetree.css" />
+    <Content Include="Content\overcast\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\overcast\images\ui-bg_flat_0_eeeeee_40x100.png" />
+    <Content Include="Content\overcast\images\ui-bg_flat_55_c0402a_40x100.png" />
+    <Content Include="Content\overcast\images\ui-bg_flat_55_eeeeee_40x100.png" />
+    <Content Include="Content\overcast\images\ui-bg_glass_100_f8f8f8_1x400.png" />
+    <Content Include="Content\overcast\images\ui-bg_glass_35_dddddd_1x400.png" />
+    <Content Include="Content\overcast\images\ui-bg_glass_60_eeeeee_1x400.png" />
+    <Content Include="Content\overcast\images\ui-bg_inset-hard_75_999999_1x100.png" />
+    <Content Include="Content\overcast\images\ui-bg_inset-soft_50_c9c9c9_1x100.png" />
+    <Content Include="Content\overcast\images\ui-icons_3383bb_256x240.png" />
+    <Content Include="Content\overcast\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\overcast\images\ui-icons_70b2e1_256x240.png" />
+    <Content Include="Content\overcast\images\ui-icons_999999_256x240.png" />
+    <Content Include="Content\overcast\images\ui-icons_fbc856_256x240.png" />
+    <Content Include="Content\overcast\jquery-ui-1.8.7.custom.css" />
+    <Content Include="Content\Ribbon\application-icon-48.png" />
+    <Content Include="Content\Ribbon\application-icon.png" />
+    <Content Include="Content\Ribbon\create-new-folder-icon-48.png" />
+    <Content Include="Content\Ribbon\create-new-page-icon-48.png" />
+    <Content Include="Content\Ribbon\home-page-icon-48.png" />
+    <Content Include="Content\Ribbon\home-page-icon.png" />
+    <Content Include="Content\Ribbon\home-page.ico" />
+    <Content Include="Content\Ribbon\Icons\48\1.png" />
+    <Content Include="Content\Ribbon\Icons\48\10.png" />
+    <Content Include="Content\Ribbon\Icons\48\100.png" />
+    <Content Include="Content\Ribbon\Icons\48\101.png" />
+    <Content Include="Content\Ribbon\Icons\48\102.png" />
+    <Content Include="Content\Ribbon\Icons\48\103.png" />
+    <Content Include="Content\Ribbon\Icons\48\104.png" />
+    <Content Include="Content\Ribbon\Icons\48\105.png" />
+    <Content Include="Content\Ribbon\Icons\48\106.png" />
+    <Content Include="Content\Ribbon\Icons\48\107.png" />
+    <Content Include="Content\Ribbon\Icons\48\108.png" />
+    <Content Include="Content\Ribbon\Icons\48\109.png" />
+    <Content Include="Content\Ribbon\Icons\48\11.png" />
+    <Content Include="Content\Ribbon\Icons\48\110.png" />
+    <Content Include="Content\Ribbon\Icons\48\111.png" />
+    <Content Include="Content\Ribbon\Icons\48\112.png" />
+    <Content Include="Content\Ribbon\Icons\48\113.png" />
+    <Content Include="Content\Ribbon\Icons\48\114.png" />
+    <Content Include="Content\Ribbon\Icons\48\115.png" />
+    <Content Include="Content\Ribbon\Icons\48\116.png" />
+    <Content Include="Content\Ribbon\Icons\48\117.png" />
+    <Content Include="Content\Ribbon\Icons\48\118.png" />
+    <Content Include="Content\Ribbon\Icons\48\119.png" />
+    <Content Include="Content\Ribbon\Icons\48\12.png" />
+    <Content Include="Content\Ribbon\Icons\48\120.png" />
+    <Content Include="Content\Ribbon\Icons\48\121.png" />
+    <Content Include="Content\Ribbon\Icons\48\122.png" />
+    <Content Include="Content\Ribbon\Icons\48\123.png" />
+    <Content Include="Content\Ribbon\Icons\48\124.png" />
+    <Content Include="Content\Ribbon\Icons\48\125.png" />
+    <Content Include="Content\Ribbon\Icons\48\126.png" />
+    <Content Include="Content\Ribbon\Icons\48\127.png" />
+    <Content Include="Content\Ribbon\Icons\48\128.png" />
+    <Content Include="Content\Ribbon\Icons\48\129.png" />
+    <Content Include="Content\Ribbon\Icons\48\13.png" />
+    <Content Include="Content\Ribbon\Icons\48\130.png" />
+    <Content Include="Content\Ribbon\Icons\48\131.png" />
+    <Content Include="Content\Ribbon\Icons\48\14.png" />
+    <Content Include="Content\Ribbon\Icons\48\15.png" />
+    <Content Include="Content\Ribbon\Icons\48\16.png" />
+    <Content Include="Content\Ribbon\Icons\48\17.png" />
+    <Content Include="Content\Ribbon\Icons\48\18.png" />
+    <Content Include="Content\Ribbon\Icons\48\19.png" />
+    <Content Include="Content\Ribbon\Icons\48\2.png" />
+    <Content Include="Content\Ribbon\Icons\48\20.png" />
+    <Content Include="Content\Ribbon\Icons\48\21.png" />
+    <Content Include="Content\Ribbon\Icons\48\22.png" />
+    <Content Include="Content\Ribbon\Icons\48\23.png" />
+    <Content Include="Content\Ribbon\Icons\48\24.png" />
+    <Content Include="Content\Ribbon\Icons\48\25.png" />
+    <Content Include="Content\Ribbon\Icons\48\26.png" />
+    <Content Include="Content\Ribbon\Icons\48\27.png" />
+    <Content Include="Content\Ribbon\Icons\48\28.png" />
+    <Content Include="Content\Ribbon\Icons\48\29.png" />
+    <Content Include="Content\Ribbon\Icons\48\3.png" />
+    <Content Include="Content\Ribbon\Icons\48\30.png" />
+    <Content Include="Content\Ribbon\Icons\48\31.png" />
+    <Content Include="Content\Ribbon\Icons\48\32.png" />
+    <Content Include="Content\Ribbon\Icons\48\33.png" />
+    <Content Include="Content\Ribbon\Icons\48\34.png" />
+    <Content Include="Content\Ribbon\Icons\48\35.png" />
+    <Content Include="Content\Ribbon\Icons\48\36.png" />
+    <Content Include="Content\Ribbon\Icons\48\37.png" />
+    <Content Include="Content\Ribbon\Icons\48\38.png" />
+    <Content Include="Content\Ribbon\Icons\48\39.png" />
+    <Content Include="Content\Ribbon\Icons\48\4.png" />
+    <Content Include="Content\Ribbon\Icons\48\40.png" />
+    <Content Include="Content\Ribbon\Icons\48\41.png" />
+    <Content Include="Content\Ribbon\Icons\48\42.png" />
+    <Content Include="Content\Ribbon\Icons\48\43.png" />
+    <Content Include="Content\Ribbon\Icons\48\44.png" />
+    <Content Include="Content\Ribbon\Icons\48\45.png" />
+    <Content Include="Content\Ribbon\Icons\48\46.png" />
+    <Content Include="Content\Ribbon\Icons\48\47.png" />
+    <Content Include="Content\Ribbon\Icons\48\48.png" />
+    <Content Include="Content\Ribbon\Icons\48\49.png" />
+    <Content Include="Content\Ribbon\Icons\48\5.png" />
+    <Content Include="Content\Ribbon\Icons\48\50.png" />
+    <Content Include="Content\Ribbon\Icons\48\51.png" />
+    <Content Include="Content\Ribbon\Icons\48\52.png" />
+    <Content Include="Content\Ribbon\Icons\48\53.png" />
+    <Content Include="Content\Ribbon\Icons\48\54.png" />
+    <Content Include="Content\Ribbon\Icons\48\55.png" />
+    <Content Include="Content\Ribbon\Icons\48\56.png" />
+    <Content Include="Content\Ribbon\Icons\48\57.png" />
+    <Content Include="Content\Ribbon\Icons\48\58.png" />
+    <Content Include="Content\Ribbon\Icons\48\59.png" />
+    <Content Include="Content\Ribbon\Icons\48\6.png" />
+    <Content Include="Content\Ribbon\Icons\48\60.png" />
+    <Content Include="Content\Ribbon\Icons\48\61.png" />
+    <Content Include="Content\Ribbon\Icons\48\62.png" />
+    <Content Include="Content\Ribbon\Icons\48\63.png" />
+    <Content Include="Content\Ribbon\Icons\48\64.png" />
+    <Content Include="Content\Ribbon\Icons\48\65.png" />
+    <Content Include="Content\Ribbon\Icons\48\66.png" />
+    <Content Include="Content\Ribbon\Icons\48\67.png" />
+    <Content Include="Content\Ribbon\Icons\48\68.png" />
+    <Content Include="Content\Ribbon\Icons\48\69.png" />
+    <Content Include="Content\Ribbon\Icons\48\7.png" />
+    <Content Include="Content\Ribbon\Icons\48\70.png" />
+    <Content Include="Content\Ribbon\Icons\48\71.png" />
+    <Content Include="Content\Ribbon\Icons\48\72.png" />
+    <Content Include="Content\Ribbon\Icons\48\73.png" />
+    <Content Include="Content\Ribbon\Icons\48\74.png" />
+    <Content Include="Content\Ribbon\Icons\48\75.png" />
+    <Content Include="Content\Ribbon\Icons\48\76.png" />
+    <Content Include="Content\Ribbon\Icons\48\77.png" />
+    <Content Include="Content\Ribbon\Icons\48\78.png" />
+    <Content Include="Content\Ribbon\Icons\48\79.png" />
+    <Content Include="Content\Ribbon\Icons\48\8.png" />
+    <Content Include="Content\Ribbon\Icons\48\80.png" />
+    <Content Include="Content\Ribbon\Icons\48\81.png" />
+    <Content Include="Content\Ribbon\Icons\48\82.png" />
+    <Content Include="Content\Ribbon\Icons\48\83.png" />
+    <Content Include="Content\Ribbon\Icons\48\84.png" />
+    <Content Include="Content\Ribbon\Icons\48\85.png" />
+    <Content Include="Content\Ribbon\Icons\48\86.png" />
+    <Content Include="Content\Ribbon\Icons\48\87.png" />
+    <Content Include="Content\Ribbon\Icons\48\88.png" />
+    <Content Include="Content\Ribbon\Icons\48\89.png" />
+    <Content Include="Content\Ribbon\Icons\48\9.png" />
+    <Content Include="Content\Ribbon\Icons\48\90.png" />
+    <Content Include="Content\Ribbon\Icons\48\91.png" />
+    <Content Include="Content\Ribbon\Icons\48\92.png" />
+    <Content Include="Content\Ribbon\Icons\48\93.png" />
+    <Content Include="Content\Ribbon\Icons\48\94.png" />
+    <Content Include="Content\Ribbon\Icons\48\95.png" />
+    <Content Include="Content\Ribbon\Icons\48\96.png" />
+    <Content Include="Content\Ribbon\Icons\48\97.png" />
+    <Content Include="Content\Ribbon\Icons\48\98.png" />
+    <Content Include="Content\Ribbon\Icons\48\99.png" />
+    <Content Include="Content\Ribbon\Icons\64\1.png" />
+    <Content Include="Content\Ribbon\Icons\64\10.png" />
+    <Content Include="Content\Ribbon\Icons\64\100.png" />
+    <Content Include="Content\Ribbon\Icons\64\101.png" />
+    <Content Include="Content\Ribbon\Icons\64\102.png" />
+    <Content Include="Content\Ribbon\Icons\64\103.png" />
+    <Content Include="Content\Ribbon\Icons\64\104.png" />
+    <Content Include="Content\Ribbon\Icons\64\105.png" />
+    <Content Include="Content\Ribbon\Icons\64\106.png" />
+    <Content Include="Content\Ribbon\Icons\64\107.png" />
+    <Content Include="Content\Ribbon\Icons\64\108.png" />
+    <Content Include="Content\Ribbon\Icons\64\109.png" />
+    <Content Include="Content\Ribbon\Icons\64\11.png" />
+    <Content Include="Content\Ribbon\Icons\64\110.png" />
+    <Content Include="Content\Ribbon\Icons\64\111.png" />
+    <Content Include="Content\Ribbon\Icons\64\112.png" />
+    <Content Include="Content\Ribbon\Icons\64\113.png" />
+    <Content Include="Content\Ribbon\Icons\64\114.png" />
+    <Content Include="Content\Ribbon\Icons\64\115.png" />
+    <Content Include="Content\Ribbon\Icons\64\116.png" />
+    <Content Include="Content\Ribbon\Icons\64\117.png" />
+    <Content Include="Content\Ribbon\Icons\64\118.png" />
+    <Content Include="Content\Ribbon\Icons\64\119.png" />
+    <Content Include="Content\Ribbon\Icons\64\12.png" />
+    <Content Include="Content\Ribbon\Icons\64\120.png" />
+    <Content Include="Content\Ribbon\Icons\64\121.png" />
+    <Content Include="Content\Ribbon\Icons\64\122.png" />
+    <Content Include="Content\Ribbon\Icons\64\123.png" />
+    <Content Include="Content\Ribbon\Icons\64\124.png" />
+    <Content Include="Content\Ribbon\Icons\64\125.png" />
+    <Content Include="Content\Ribbon\Icons\64\126.png" />
+    <Content Include="Content\Ribbon\Icons\64\127.png" />
+    <Content Include="Content\Ribbon\Icons\64\128.png" />
+    <Content Include="Content\Ribbon\Icons\64\129.png" />
+    <Content Include="Content\Ribbon\Icons\64\13.png" />
+    <Content Include="Content\Ribbon\Icons\64\130.png" />
+    <Content Include="Content\Ribbon\Icons\64\131.png" />
+    <Content Include="Content\Ribbon\Icons\64\14.png" />
+    <Content Include="Content\Ribbon\Icons\64\15.png" />
+    <Content Include="Content\Ribbon\Icons\64\16.png" />
+    <Content Include="Content\Ribbon\Icons\64\17.png" />
+    <Content Include="Content\Ribbon\Icons\64\18.png" />
+    <Content Include="Content\Ribbon\Icons\64\19.png" />
+    <Content Include="Content\Ribbon\Icons\64\2.png" />
+    <Content Include="Content\Ribbon\Icons\64\20.png" />
+    <Content Include="Content\Ribbon\Icons\64\21.png" />
+    <Content Include="Content\Ribbon\Icons\64\22.png" />
+    <Content Include="Content\Ribbon\Icons\64\23.png" />
+    <Content Include="Content\Ribbon\Icons\64\24.png" />
+    <Content Include="Content\Ribbon\Icons\64\25.png" />
+    <Content Include="Content\Ribbon\Icons\64\26.png" />
+    <Content Include="Content\Ribbon\Icons\64\27.png" />
+    <Content Include="Content\Ribbon\Icons\64\28.png" />
+    <Content Include="Content\Ribbon\Icons\64\29.png" />
+    <Content Include="Content\Ribbon\Icons\64\3.png" />
+    <Content Include="Content\Ribbon\Icons\64\30.png" />
+    <Content Include="Content\Ribbon\Icons\64\31.png" />
+    <Content Include="Content\Ribbon\Icons\64\32.png" />
+    <Content Include="Content\Ribbon\Icons\64\33.png" />
+    <Content Include="Content\Ribbon\Icons\64\34.png" />
+    <Content Include="Content\Ribbon\Icons\64\35.png" />
+    <Content Include="Content\Ribbon\Icons\64\36.png" />
+    <Content Include="Content\Ribbon\Icons\64\37.png" />
+    <Content Include="Content\Ribbon\Icons\64\38.png" />
+    <Content Include="Content\Ribbon\Icons\64\39.png" />
+    <Content Include="Content\Ribbon\Icons\64\4.png" />
+    <Content Include="Content\Ribbon\Icons\64\40.png" />
+    <Content Include="Content\Ribbon\Icons\64\41.png" />
+    <Content Include="Content\Ribbon\Icons\64\42.png" />
+    <Content Include="Content\Ribbon\Icons\64\43.png" />
+    <Content Include="Content\Ribbon\Icons\64\44.png" />
+    <Content Include="Content\Ribbon\Icons\64\45.png" />
+    <Content Include="Content\Ribbon\Icons\64\46.png" />
+    <Content Include="Content\Ribbon\Icons\64\47.png" />
+    <Content Include="Content\Ribbon\Icons\64\48.png" />
+    <Content Include="Content\Ribbon\Icons\64\49.png" />
+    <Content Include="Content\Ribbon\Icons\64\5.png" />
+    <Content Include="Content\Ribbon\Icons\64\50.png" />
+    <Content Include="Content\Ribbon\Icons\64\51.png" />
+    <Content Include="Content\Ribbon\Icons\64\52.png" />
+    <Content Include="Content\Ribbon\Icons\64\53.png" />
+    <Content Include="Content\Ribbon\Icons\64\54.png" />
+    <Content Include="Content\Ribbon\Icons\64\55.png" />
+    <Content Include="Content\Ribbon\Icons\64\56.png" />
+    <Content Include="Content\Ribbon\Icons\64\57.png" />
+    <Content Include="Content\Ribbon\Icons\64\58.png" />
+    <Content Include="Content\Ribbon\Icons\64\59.png" />
+    <Content Include="Content\Ribbon\Icons\64\6.png" />
+    <Content Include="Content\Ribbon\Icons\64\60.png" />
+    <Content Include="Content\Ribbon\Icons\64\61.png" />
+    <Content Include="Content\Ribbon\Icons\64\62.png" />
+    <Content Include="Content\Ribbon\Icons\64\63.png" />
+    <Content Include="Content\Ribbon\Icons\64\64.png" />
+    <Content Include="Content\Ribbon\Icons\64\65.png" />
+    <Content Include="Content\Ribbon\Icons\64\66.png" />
+    <Content Include="Content\Ribbon\Icons\64\67.png" />
+    <Content Include="Content\Ribbon\Icons\64\68.png" />
+    <Content Include="Content\Ribbon\Icons\64\69.png" />
+    <Content Include="Content\Ribbon\Icons\64\7.png" />
+    <Content Include="Content\Ribbon\Icons\64\70.png" />
+    <Content Include="Content\Ribbon\Icons\64\71.png" />
+    <Content Include="Content\Ribbon\Icons\64\72.png" />
+    <Content Include="Content\Ribbon\Icons\64\73.png" />
+    <Content Include="Content\Ribbon\Icons\64\74.png" />
+    <Content Include="Content\Ribbon\Icons\64\75.png" />
+    <Content Include="Content\Ribbon\Icons\64\76.png" />
+    <Content Include="Content\Ribbon\Icons\64\77.png" />
+    <Content Include="Content\Ribbon\Icons\64\78.png" />
+    <Content Include="Content\Ribbon\Icons\64\79.png" />
+    <Content Include="Content\Ribbon\Icons\64\8.png" />
+    <Content Include="Content\Ribbon\Icons\64\80.png" />
+    <Content Include="Content\Ribbon\Icons\64\81.png" />
+    <Content Include="Content\Ribbon\Icons\64\82.png" />
+    <Content Include="Content\Ribbon\Icons\64\83.png" />
+    <Content Include="Content\Ribbon\Icons\64\84.png" />
+    <Content Include="Content\Ribbon\Icons\64\85.png" />
+    <Content Include="Content\Ribbon\Icons\64\86.png" />
+    <Content Include="Content\Ribbon\Icons\64\87.png" />
+    <Content Include="Content\Ribbon\Icons\64\88.png" />
+    <Content Include="Content\Ribbon\Icons\64\89.png" />
+    <Content Include="Content\Ribbon\Icons\64\9.png" />
+    <Content Include="Content\Ribbon\Icons\64\90.png" />
+    <Content Include="Content\Ribbon\Icons\64\91.png" />
+    <Content Include="Content\Ribbon\Icons\64\92.png" />
+    <Content Include="Content\Ribbon\Icons\64\93.png" />
+    <Content Include="Content\Ribbon\Icons\64\94.png" />
+    <Content Include="Content\Ribbon\Icons\64\95.png" />
+    <Content Include="Content\Ribbon\Icons\64\96.png" />
+    <Content Include="Content\Ribbon\Icons\64\97.png" />
+    <Content Include="Content\Ribbon\Icons\64\98.png" />
+    <Content Include="Content\Ribbon\Icons\64\99.png" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\SiteNative.css" />
+    <Content Include="Content\SlidingPanel.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Scripts\Dashboard\dashboard.js" />
+    <Content Include="Scripts\Dashboard\draggable.jquery.ui.js" />
+    <Content Include="Scripts\Dashboard\jquery-1.2.6.min.js" />
+    <Content Include="Scripts\Dashboard\jquery.jqDock.min.js" />
+    <Content Include="Scripts\Dashboard\style.css" />
+    <Content Include="Scripts\FunctionsMenu.js" />
+    <Content Include="Scripts\jit\jit-yc.js" />
+    <Content Include="Scripts\jit\jit.js" />
+    <Content Include="Scripts\jit\MainOrgChartTree.js" />
+    <Content Include="Scripts\jquery-1.4.3.js" />
+    <Content Include="Scripts\jquery-1.4.3.min.js" />
+    <Content Include="Scripts\jquery-1.4.4-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.4.4.js" />
+    <Content Include="Scripts\jquery-1.4.4.min.js" />
+    <Content Include="Scripts\jquery-1.5.js" />
+    <Content Include="Scripts\jquery-1.5.min.js" />
+    <Content Include="Scripts\jquery-ui-1.8.7.custom.min.js" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.contextMenu.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\MicrosoftAjax.debug.js" />
+    <Content Include="Scripts\MicrosoftAjax.js" />
+    <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
+    <Content Include="Scripts\MicrosoftMvcAjax.js" />
+    <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
+    <Content Include="Scripts\MicrosoftMvcValidation.js" />
+    <Content Include="Scripts\ModulesMenu\jquery.easing.js" />
+    <Content Include="Scripts\ModulesMenu\jquery.sweet-menu-1.0.js" />
+    <Content Include="Scripts\ModulesMenu\jquery.sweet-menu-min-1.0.js" />
+    <Content Include="Scripts\UI.js" />
+    <Content Include="Areas\OrganizationChart\Views\NonCashBenefitType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\NonCashBenefit\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\NonCashBenefit\Index.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\NonCashBenefit\List.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\NonCashBenefit\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\OrganizationChart\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Organization\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Organization\Select.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\Edit.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\Position\BasicInfo.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionLevel\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionStatus\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\PositionType\Index.aspx" />
+    <Content Include="Areas\OrganizationChart\Views\Shared\Error.ascx" />
+    <Content Include="Areas\OrganizationChart\Views\TimeInterval\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\BloodType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Certification\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Certification\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Certification\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Certification\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\CertificationType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Children\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Children\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Children\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Children\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Contact\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Contact\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\ConvictionRule\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Conviction\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Conviction\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Conviction\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Conviction\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Country\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Dependent\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Dependent\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Dependent\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Dependent\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\DrivingLicenseType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\DrivingLicense\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\DrivingLicense\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Education\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Education\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Education\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Education\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Employee\EmployeeUserControl.ascx" />
+    <Content Include="Areas\Personnel\Views\Employee\EmployeeUserControlEdit.ascx" />
+    <Content Include="Areas\Personnel\Views\Employee\EmployeeUserControlNew.ascx" />
+    <Content Include="Areas\Personnel\Views\Employee\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Employee\Insert.aspx" />
+    <Content Include="Areas\Personnel\Views\Experience\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Experience\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Experience\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Experience\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Gender\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Language\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Language\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Language\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Language\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Level\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Major\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\MajorType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\MaritalStatus\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\MilitaryService\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\MilitaryService\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\MilitaryStatus\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Nationality\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Passport\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Passport\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Passport\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Passport\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Personnel\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Race\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Religion\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\ResidencyType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Residency\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Residency\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Residency\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Residency\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Shared\Error.ascx" />
+    <Content Include="Areas\Personnel\Views\Shared\PersonnelMenu.ascx" />
+    <Content Include="Areas\Personnel\Views\SkillType\Index.aspx" />
+    <Content Include="Areas\Personnel\Views\Skill\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Skill\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Skill\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Skill\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Spouse\Select.ascx" />
+    <Content Include="Areas\Personnel\Views\Spouse\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Training\Edit.ascx" />
+    <Content Include="Areas\Personnel\Views\Training\Index.ascx" />
+    <Content Include="Areas\Personnel\Views\Training\List.ascx" />
+    <Content Include="Areas\Personnel\Views\Training\Select.ascx" />
+    <Content Include="Content\Uploads\2.jpg" />
+    <Content Include="Content\Uploads\NoPhotoAvailable.jpg" />
+    <Content Include="Global.asax" />
+    <Content Include="Views\Shared\DropDownLists\PositionEmployeesList.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\AutoComplete.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\Currency.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\Date.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\DateTime.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\Integer.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\Number.ascx" />
+    <Content Include="Views\Shared\EditorTemplates\Time.ascx" />
+    <Content Include="Views\Shared\GlobalError.ascx" />
+    <Content Include="Views\Shared\LogOnUserControl.ascx" />
+    <Content Include="Views\Shared\ModulesMenu.ascx" />
+    <Content Include="Views\Shared\Navigator.ascx" />
+    <Content Include="Views\Shared\NodeChooser.ascx" />
+    <Content Include="Views\Shared\OrgTree\NodesTree.ascx" />
+    <Content Include="Views\Shared\OrgTree\Tree.ascx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Home\About.aspx" />
+    <Content Include="Views\Home\Index1.aspx" />
+    <Content Include="Views\Shared\Site.Master" />
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Areas\JobDesc\Content\Objectives\Entities\" />
+    <Folder Include="Areas\JobDesc\Content\Objectives\Indexes\" />
+    <Folder Include="Areas\JobDesc\Content\Objectives\Services\" />
+    <Folder Include="Areas\JobDesc\Content\Objectives\ValueObjects\" />
+    <Folder Include="Areas\Personnel\App_LocalResources\" />
+    <Folder Include="Areas\Personnel\Controllers\Service\" />
+    <Folder Include="Areas\Personnel\Scripts\" />
+    <Folder Include="Areas\PMSComprehensiveLive\Controllers\Indexes\" />
+    <Folder Include="Areas\PMSComprehensiveLive\Controllers\ValueObjects\" />
+    <Folder Include="Areas\PMSComprehensiveLive\Models\" />
+    <Folder Include="Areas\PMSComprehensive\Controllers\ValueObjects\" />
+    <Folder Include="Areas\Reporting\Views\EmployeeReport\" />
+    <Folder Include="Areas\Reporting\Views\Shared\Ribbon\" />
+    <Folder Include="Areas\Services\Controllers\Entities\" />
+    <Folder Include="Areas\Services\Models\" />
+    <Folder Include="Helpers\IOC\Installers\" />
+    <Folder Include="Helpers\Workflow\" />
+    <Folder Include="Uploads\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\OrganizationChart\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Personnel\Views\Shared\Personnel.master" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Personnel\Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\OrganizationChart\Views\Shared\OrganizationChart.master" />
+    <Content Include="Areas\Objective\Views\Shared\Objective.master" />
+    <Content Include="Areas\ProjectManagement\Views\Web.config" />
+    <Content Include="Areas\ProjectManagement\Views\Shared\ProjectManagement.master" />
+    <Content Include="Areas\PMSComprehensive\Views\Web.config" />
+    <Content Include="Areas\PMSComprehensive\Views\Shared\PMSComprehensive.master" />
+    <Content Include="Areas\Services\Views\Web.config" />
+    <Content Include="Areas\Services\Views\Shared\Services.master" />
+    <Content Include="Areas\Reporting\Views\Web.config" />
+    <Content Include="Areas\Reporting\Views\Shared\ReportingViewers.Master" />
+    <Content Include="Areas\OrganizationChart\Views\Node\JqueryTree.cshtml" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\Shared\PMSComprehensiveLive.master" />
+    <Content Include="Areas\PMSComprehensiveLive\Views\Web.config" />
+    <None Include="Content\Ribbon\Icons\48\Thumbs.db" />
+    <None Include="Content\Ribbon\Icons\64\Thumbs.db" />
+    <None Include="Content\Ribbon\Icons\Thumbs.db" />
+    <None Include="Diagrams\EmployeeInfo\Entities\ClassDiagram.cd" />
+    <None Include="Diagrams\EmployeeInfo\Indexes\ClassDiagram.cd" />
+    <None Include="Diagrams\EmployeeInfo\ValueObjects\ClassDiagram.cd" />
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.bg-BG.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.bg-BG.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.de-DE.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.de-DE.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.en-US.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.fr-FR.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.fr-FR.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.pl-PL.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.pl-PL.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.pt-BR.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.pt-BR.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.ru-RU.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.ru-RU.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.uk-UA.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.uk-UA.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.bg-BG.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.bg-BG.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.de-DE.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.de-DE.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.en-US.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.es-ES.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.es-ES.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.fr-FR.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.fr-FR.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.pl-PL.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.pl-PL.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.pt-BR.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.pt-BR.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.pt-PT.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.pt-PT.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.ru-RU.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.ru-RU.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.uk-UA.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.uk-UA.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\UploadLocalization.bg-BG.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>UploadLocalization.bg-BG.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\UploadLocalization.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>UploadLocalization.en-US.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.ar-SY.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.ar-SY.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.nl-NL.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.nl-NL.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\EditorLocalization.zh-CN.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>EditorLocalization.zh-CN.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.nl-NL.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.nl-NL.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\GridLocalization.zh-CN.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.zh-CN.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\UploadLocalization.pl-PL.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>UploadLocalization.pl-PL.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\UploadLocalization.ru-RU.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>UploadLocalization.ru-RU.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\UploadLocalization.zh-CN.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>UploadLocalization.zh-CN.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\UploadLocalization.fr-FR.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>UploadLocalization.fr-FR.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Resources\Resources.csproj">
+      <Project>{0D230E47-2FAD-4CDD-B51E-83E55BF1C76C}</Project>
+      <Name>Resources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service\Service.csproj">
+      <Project>{314D23A0-FC36-4EBC-9EF0-48AD2E370A43}</Project>
+      <Name>Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Validation\Validation.csproj">
+      <Project>{10EE6846-031C-4A89-A9CE-B2BBFEFB3B92}</Project>
+      <Name>Validation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target> -->
+  <Target Name="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(ProjectDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>62466</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/HR</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

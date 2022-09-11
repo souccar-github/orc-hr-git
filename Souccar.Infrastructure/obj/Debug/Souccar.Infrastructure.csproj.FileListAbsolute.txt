@@ -1,0 +1,10 @@
+D:\Projects\ORC-HR\HR System\ui\binaries\Souccar.Infrastructure.dll
+D:\Projects\ORC-HR\HR System\ui\binaries\Souccar.Infrastructure.pdb
+D:\Projects\ORC-HR\HR System\Souccar.Infrastructure\obj\Debug\Souccar.Infrastructure.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\Souccar.Infrastructure\obj\Debug\Souccar.Infrastructure.dll
+D:\Projects\ORC-HR\HR System\Souccar.Infrastructure\obj\Debug\Souccar.Infrastructure.pdb
+D:\Projects\ORC-HR\HR System-git\ui\binaries\Souccar.Infrastructure.dll
+D:\Projects\ORC-HR\HR System-git\ui\binaries\Souccar.Infrastructure.pdb
+D:\Projects\ORC-HR\HR System-git\Souccar.Infrastructure\obj\Debug\Souccar.Infrastructure.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System-git\Souccar.Infrastructure\obj\Debug\Souccar.Infrastructure.dll
+D:\Projects\ORC-HR\HR System-git\Souccar.Infrastructure\obj\Debug\Souccar.Infrastructure.pdb

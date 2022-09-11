@@ -1,0 +1,162 @@
+﻿
+<script>
+
+    function AcceptPenalty(entityId) {
+
+        var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                        { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+        var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+            width: "300px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+        });
+        var objWindow = kendoWindow.data("kendoWindow");
+        objWindow.open();
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+        objWindow
+            .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.AreYouSureYouWantToAcceptPenalty", IconClass: "k-icon w-b-question", Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+                for (var i = 0; i < commands.length - 1; i++) {
+                    if ($(this).hasClass("Accept")) {
+                        AcceptPenaltyFun(entityId);
+                    }
+                }
+                objWindow.close();
+            })
+            .end();
+
+    }
+
+
+    function AcceptNonAttendancePenalty(entityId) {
+
+        var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                        { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+        var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+            width: "300px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+        });
+        var objWindow = kendoWindow.data("kendoWindow");
+        objWindow.open();
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+        objWindow
+            .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.AreYouSureYouWantToAcceptPenalty", IconClass: "k-icon w-b-question", Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+                for (var i = 0; i < commands.length - 1; i++) {
+                    if ($(this).hasClass("Accept")) {
+                        AcceptNonAttendancePenaltyFun(entityId);
+                    }
+                }
+                objWindow.close();
+            })
+            .end();
+
+    }
+    function AcceptLatenessPenalty(entityId) {
+
+        var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                        { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+        var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+            width: "300px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+        });
+        var objWindow = kendoWindow.data("kendoWindow");
+        objWindow.open();
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+        objWindow
+            .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.AreYouSureYouWantToAcceptPenalty", IconClass: "k-icon w-b-question", Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+                for (var i = 0; i < commands.length - 1; i++) {
+                    if ($(this).hasClass("Accept")) {
+                        AcceptLatenessPenaltyFun(entityId);
+                    }
+                }
+                objWindow.close();
+            })
+            .end();
+
+    }
+    function AcceptPenaltyFun(entityId) {
+        var entityType = window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 1].TypeName;
+       
+        console.log(entityType);
+        console.log(entityId);
+        $.ajax({
+            url: "AttendanceForm/AcceptPenalty",
+            type: "POST",
+            data: JSON.stringify({ entityType: entityType, entityId: entityId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                } else {
+                    ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+    function AcceptLatenessPenaltyFun(entityId) {
+        var entityType = window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 1].TypeName;
+
+        console.log(entityType);
+        console.log(entityId);
+        $.ajax({
+            url: "AttendanceForm/AcceptLatenessPenalty",
+            type: "POST",
+            data: JSON.stringify({ entityType: entityType, entityId: entityId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                } else {
+                    ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+    function AcceptNonAttendancePenaltyFun(entityId) {
+        var entityType = window.requestInformation.NavigationInfo.Previous[window.requestInformation.NavigationInfo.Previous.length - 1].TypeName;
+
+        console.log(entityType);
+        console.log(entityId);
+        $.ajax({
+            url: "AttendanceForm/AcceptNonAttendancePenalty",
+            type: "POST",
+            data: JSON.stringify({ entityType: entityType, entityId: entityId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                } else {
+                    ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+</script>

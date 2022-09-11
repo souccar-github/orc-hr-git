@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>SharedDataSource</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>eab1e084-b509-454d-8fe6-97d24f65d6d8</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="MonthlyEmployeeBenefiDataSet">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>WITH DailyDetails AS 
+(
+SELECT	AttendanceDailyAdjustment.EmployeeAttendanceCard_id AS EmpAttCardID, 
+		AttendanceDailyAdjustmentDetail.AttendanceDailyAdjustment_id,
+		AttendanceDailyAdjustmentDetail.HasVacation, 
+		AttendanceDailyAdjustmentDetail.HasMission, 
+		AttendanceDailyAdjustmentDetail.IsWorkDay, 
+		AttendanceDailyAdjustmentDetail.ActualWorkHoursValue, 
+		AttendanceDailyAdjustmentDetail.HolidayOvertimeValue, 
+		AttendanceDailyAdjustmentDetail.NormalOvertimeValue, 
+		AttendanceDailyAdjustment.FinalOvertimeValue, 
+		AttendanceDailyAdjustment.FinalNonAttendanceValue, 
+		MONTH(AttendanceRecord.Date) AS monthnumber, 
+		AttendanceRecord.Id AS MonthId, 
+		AttendanceDailyAdjustmentDetail.WorkHoursValue - AttendanceDailyAdjustmentDetail.VacationValue - AttendanceDailyAdjustmentDetail.MissionValue
+		AS RequiredWorkHoursValue, 
+		AttendanceDailyAdjustment.Penalty_id
+FROM	AttendanceDailyAdjustment 
+		INNER JOIN AttendanceDailyAdjustmentDetail ON AttendanceDailyAdjustment.Id = AttendanceDailyAdjustmentDetail.AttendanceDailyAdjustment_id 
+		INNER JOIN AttendanceRecord ON AttendanceRecord.Id = AttendanceDailyAdjustment.AttendanceRecord_id
+WHERE	(AttendanceDailyAdjustment.IsVertualDeleted = 0) AND 
+		(AttendanceDailyAdjustmentDetail.IsVertualDeleted = 0) AND 
+		(AttendanceRecord.IsVertualDeleted = 0)
+)
+SELECT        
+ISNULL((SELECT COUNT(*) AS Expr1 
+		FROM AttendanceDailyAdjustment AS AttendanceDailyAdjustment_2 
+		INNER JOIN AttendanceDailyAdjustmentDetail AS AttendanceDailyAdjustmentDetail_2 
+		ON AttendanceDailyAdjustment_2.Id = AttendanceDailyAdjustmentDetail_2.AttendanceDailyAdjustment_id
+		WHERE	(AttendanceDailyAdjustment_2.IsVertualDeleted = 0) AND 
+				(AttendanceDailyAdjustmentDetail_2.IsVertualDeleted = 0) AND 
+				(AttendanceDailyAdjustmentDetail_2.ActualWorkHoursValue = 0) AND 
+				(AttendanceDailyAdjustmentDetail_2.IsWorkDay = 1) AND 
+				(AttendanceDailyAdjustmentDetail_2.HasMission = 0) AND 
+				(AttendanceDailyAdjustmentDetail_2.HasVacation = 0) AND 
+				(AttendanceDailyAdjustment_2.EmployeeAttendanceCard_id = DailyDetails_1.EmpAttCardID) AND 
+				(MONTH(AttendanceDailyAdjustmentDetail_2.Date) = DailyDetails_1.monthnumber)), 0) AS CountAbsence, 
+(SELECT        RIGHT('00' + CONVERT(varchar(8), FLOOR(ROUND
+                                                                  ((SELECT        SUM(AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue) AS Expr1
+                                                                      FROM            AttendanceDailyAdjustment AS AttendanceDailyAdjustment_1 INNER JOIN
+                                                                                                AttendanceDailyAdjustmentDetail AS AttendanceDailyAdjustmentDetail_1 ON 
+                                                                                                AttendanceDailyAdjustment_1.Id = AttendanceDailyAdjustmentDetail_1.AttendanceDailyAdjustment_id
+                                                                      WHERE        (AttendanceDailyAdjustment_1.IsVertualDeleted = 0) AND (AttendanceDailyAdjustmentDetail_1.IsVertualDeleted = 0) AND 
+                                                                                                (AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue &gt; 0) AND 
+                                                                                                (AttendanceDailyAdjustment_1.EmployeeAttendanceCard_id = DailyDetails_1.EmpAttCardID) AND 
+                                                                                                (MONTH(AttendanceDailyAdjustmentDetail_1.Date) = DailyDetails_1.monthnumber)), 2))), CASE WHEN LEN(CONVERT(varchar(8), FLOOR(ROUND
+                                                                  ((SELECT        SUM(AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue) AS Expr1
+                                                                      FROM            AttendanceDailyAdjustment AS AttendanceDailyAdjustment_1 INNER JOIN
+                                                                                                AttendanceDailyAdjustmentDetail AS AttendanceDailyAdjustmentDetail_1 ON 
+                                                                                                AttendanceDailyAdjustment_1.Id = AttendanceDailyAdjustmentDetail_1.AttendanceDailyAdjustment_id
+                                                                      WHERE        (AttendanceDailyAdjustment_1.IsVertualDeleted = 0) AND (AttendanceDailyAdjustmentDetail_1.IsVertualDeleted = 0) AND 
+                                                                                                (AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue &gt; 0) AND 
+                                                                                                (AttendanceDailyAdjustment_1.EmployeeAttendanceCard_id = DailyDetails_1.EmpAttCardID) AND 
+                                                                                                (MONTH(AttendanceDailyAdjustmentDetail_1.Date) = DailyDetails_1.monthnumber)), 2))))&gt;2 THEN 3 ELSE 2 END) 
+                                                              + ':' + RIGHT('00' + CONVERT(varchar(8),
+                                                                  (SELECT        CONVERT(int, (ROUND
+                                                                                                  ((SELECT        SUM(AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue) AS Expr1
+                                                                                                      FROM            AttendanceDailyAdjustment AS AttendanceDailyAdjustment_1 INNER JOIN
+                                                                                                                                AttendanceDailyAdjustmentDetail AS AttendanceDailyAdjustmentDetail_1 ON 
+                                                                                                                                AttendanceDailyAdjustment_1.Id = AttendanceDailyAdjustmentDetail_1.AttendanceDailyAdjustment_id
+                                                                                                      WHERE        (AttendanceDailyAdjustment_1.IsVertualDeleted = 0) AND (AttendanceDailyAdjustmentDetail_1.IsVertualDeleted = 0) 
+                                                                                                                                AND 
+                                                                                                                                (AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue &gt; 0) AND 
+                                                                                                                                (AttendanceDailyAdjustment_1.EmployeeAttendanceCard_id = DailyDetails_1.EmpAttCardID) AND 
+                                                                                                                                (MONTH(AttendanceDailyAdjustmentDetail_1.Date) = DailyDetails_1.monthnumber)), 2) - FLOOR(ROUND
+                                                                                                  ((SELECT        SUM(AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue) AS Expr1
+                                                                                                      FROM            AttendanceDailyAdjustment AS AttendanceDailyAdjustment_1 INNER JOIN
+                                                                                                                                AttendanceDailyAdjustmentDetail AS AttendanceDailyAdjustmentDetail_1 ON 
+                                                                                                                                AttendanceDailyAdjustment_1.Id = AttendanceDailyAdjustmentDetail_1.AttendanceDailyAdjustment_id
+                                                                                                      WHERE        (AttendanceDailyAdjustment_1.IsVertualDeleted = 0) AND (AttendanceDailyAdjustmentDetail_1.IsVertualDeleted = 0) 
+                                                                                                                                AND 
+                                                                                                                                (AttendanceDailyAdjustmentDetail_1.WorkHoursValue - AttendanceDailyAdjustmentDetail_1.VacationValue - AttendanceDailyAdjustmentDetail_1.MissionValue
+                                                                                                                                 - AttendanceDailyAdjustmentDetail_1.ActualWorkHoursValue &gt; 0) AND 
+                                                                                                                                (AttendanceDailyAdjustment_1.EmployeeAttendanceCard_id = DailyDetails_1.EmpAttCardID) AND 
+                                                                                                                                (MONTH(AttendanceDailyAdjustmentDetail_1.Date) = DailyDetails_1.monthnumber)), 2))) * 60, 0) AS Expr1)), 2) 
+                                                              AS Expr1) AS InitialNonAttendanceValue, 
+				MonthId, 
+				EmpAttCardID,
+				AttendanceDailyAdjustment_id,
+		(SELECT	Employee.FirstName + ' ' + Employee.FatherName + ' ' + Employee.LastName AS FullName
+		 FROM EmployeeCard INNER JOIN Employee ON EmployeeCard.Employee_id = Employee.Id
+		 WHERE (EmployeeCard.IsVertualDeleted = 0) AND 
+		 (Employee.IsVertualDeleted = 0) AND 
+		 (EmployeeCard.Id = DailyDetails_1.EmpAttCardID)) AS FullName, 
+		(SELECT dbo.Employee.Id AS EmployeeId
+		 FROM dbo.EmployeeCard INNER JOIN dbo.Employee ON dbo.EmployeeCard.Employee_id = dbo.Employee.Id
+		 WHERE EmployeeCard.IsVertualDeleted = 0 AND Employee.IsVertualDeleted = 0 AND dbo.EmployeeCard.Id = EmpAttCardID) EmployeeId,
+		monthnumber, 
+		(SELECT        RIGHT('00' + CONVERT(varchar(8), FLOOR(ROUND(FinalOvertimeValue, 2))), CASE WHEN LEN(CONVERT(varchar(8), FLOOR(ROUND(FinalOvertimeValue, 2))))&gt;2 THEN 3 ELSE 2 END) + ':' + RIGHT('00' + CONVERT(varchar(8),
+                                                                  (SELECT        CONVERT(int, (ROUND(FinalOvertimeValue, 2) - FLOOR(ROUND(FinalOvertimeValue, 2))) * 60, 0) 
+                                                                                              AS Expr1)), 2) AS Expr1) AS FinalOvertimeValue, 
+		(SELECT        RIGHT('00' + CONVERT(varchar(8), FLOOR(ROUND(FinalNonAttendanceValue, 2))), CASE WHEN LEN(CONVERT(varchar(8), FLOOR(ROUND(FinalNonAttendanceValue, 2))))&gt;2 THEN 3 ELSE 2 END) + ':' + RIGHT('00' + CONVERT(varchar(8),
+                                                                  (SELECT        CONVERT(int, (ROUND(FinalNonAttendanceValue, 2) - FLOOR(ROUND(FinalNonAttendanceValue, 2))) * 60, 0) 
+                                                                                              AS Expr1)), 2) AS Expr1) AS FinalNonAttendanceValue, 
+		Penalty_id,
+		(SELECT Name
+		 FROM DisciplinarySetting AS N
+		 WHERE (Id = DailyDetails_1.Penalty_id)) AS Penalty, 
+		 (SELECT        RIGHT('00' + CONVERT(varchar(8), FLOOR(ROUND(ISNULL(SUM(HolidayOvertimeValue), 0), 2))), CASE WHEN LEN(CONVERT(varchar(8), FLOOR(ROUND(ISNULL(SUM(HolidayOvertimeValue), 0), 2))))&gt;2 THEN 3 ELSE 2 END) 
+                                                              + ':' + RIGHT('00' + CONVERT(varchar(8),
+                                                                  (SELECT        CONVERT(int, (ROUND(ISNULL(SUM(HolidayOvertimeValue), 0), 2) 
+                                                                                              - FLOOR(ROUND(ISNULL(SUM(HolidayOvertimeValue), 0), 2))) * 60, 0) AS Expr1)), 2) AS Expr1) AS TotalHolidayOvertimeValue, 
+		 (SELECT        RIGHT('00' + CONVERT(varchar(8), FLOOR(ROUND(ISNULL(SUM(NormalOvertimeValue), 0), 2))), CASE WHEN LEN(CONVERT(varchar(8), FLOOR(ROUND(ISNULL(SUM(NormalOvertimeValue), 0), 2))))&gt;2 THEN 3 ELSE 2 END) 
+                                                              + ':' + RIGHT('00' + CONVERT(varchar(8),
+                                                                  (SELECT        CONVERT(int, (ROUND(ISNULL(SUM(NormalOvertimeValue), 0), 2) 
+                                                                                              - FLOOR(ROUND(ISNULL(SUM(NormalOvertimeValue), 0), 2))) * 60, 0) AS Expr1)), 2) AS Expr1) AS TotalNormalOvertimeValue
+		FROM DailyDetails AS DailyDetails_1
+GROUP BY	monthnumber, 
+			EmpAttCardID, 
+			AttendanceDailyAdjustment_id,
+			MonthId, 
+			Penalty_id, 
+			FinalOvertimeValue, 
+			FinalNonAttendanceValue</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="CountAbsence">
+          <DataField>CountAbsence</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="InitialNonAttendanceValue">
+          <DataField>InitialNonAttendanceValue</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="MonthId">
+          <DataField>MonthId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="EmpAttCardID">
+          <DataField>EmpAttCardID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="AttendanceDailyAdjustment_id">
+          <DataField>AttendanceDailyAdjustment_id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="FullName">
+          <DataField>FullName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="EmployeeId">
+          <DataField>EmployeeId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="monthnumber">
+          <DataField>monthnumber</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="FinalOvertimeValue">
+          <DataField>FinalOvertimeValue</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="FinalNonAttendanceValue">
+          <DataField>FinalNonAttendanceValue</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Penalty_id">
+          <DataField>Penalty_id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Penalty">
+          <DataField>Penalty</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TotalHolidayOvertimeValue">
+          <DataField>TotalHolidayOvertimeValue</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TotalNormalOvertimeValue">
+          <DataField>TotalNormalOvertimeValue</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+      <Filters>
+        <Filter>
+          <FilterExpression>=Fields!MonthId.Value</FilterExpression>
+          <Operator>Equal</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!mcid.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+        <Filter>
+          <FilterExpression>=Fields!EmployeeId.Value</FilterExpression>
+          <Operator>Equal</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!empId.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+      </Filters>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix2">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.44281cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.07781cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.8926cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.8926cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.05135cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.34239cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.31051cm</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.9175cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0CalculationMethod0DailyAdjustment">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value> Daily Adjustment</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>Silver</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>7</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.6cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0AttendanceDailyAdjustment0TotalAbsenceDays">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Total Absence Days</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0AttendanceDailyAdjustment0TotalHolidayOvertimeValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Total Holiday Overtime Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0AttendanceDailyAdjustment0TotalNormalOvertimeValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Total Normal Overtime Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0AttendanceMonthlyAdjustment0FinalOvertimeValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Final Overtime Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0AttendanceMonthlyAdjustment0InitialNonAttendanceValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Initial Non Attendance Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0AttendanceMonthlyAdjustment0FinalNonAttendanceValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Final Non Attendance Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelAttendanceSystem0InfractionSlice0Penalty">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Penalty</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ToolTip>Gender</ToolTip>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>1.20854cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="FullName7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!CountAbsence.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>FullName1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="FullName10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TotalHolidayOvertimeValue.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>FullName1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="FullName12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TotalNormalOvertimeValue.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>FullName1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="FinalOvertimeValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!FinalOvertimeValue.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>FinalOvertimeValue</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="InitialNonAttendanceValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!InitialNonAttendanceValue.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>InitialNonAttendanceValue</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="FinalNonAttendanceValue">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!FinalNonAttendanceValue.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>FinalNonAttendanceValue</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="FullName17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Penalty.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>FullName1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <Direction>RTL</Direction>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.6cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport1">
+                          <ReportName>PSAttendanceSystemReport6_SubReport_DailyAdj_Detail</ReportName>
+                          <Parameters>
+                            <Parameter Name="amadId">
+                              <Value>=Fields!AttendanceDailyAdjustment_id.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                        <ColSpan>7</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details2" />
+                  <TablixMembers>
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>MonthlyEmployeeBenefiDataSet</DataSetName>
+            <Height>3.32604cm</Height>
+            <Width>20.01007cm</Width>
+            <Visibility>
+              <Hidden>=CountRows("MonthlyEmployeeBenefiDataSet")&lt;1</Hidden>
+            </Visibility>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>1.30946in</Height>
+        <Style />
+      </Body>
+      <Width>7.90923in</Width>
+      <Page>
+        <PageHeight>21cm</PageHeight>
+        <PageWidth>29.7cm</PageWidth>
+        <LeftMargin>2cm</LeftMargin>
+        <RightMargin>2cm</RightMargin>
+        <TopMargin>2cm</TopMargin>
+        <BottomMargin>2cm</BottomMargin>
+        <ColumnSpacing>0.13cm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="mcid">
+      <DataType>Integer</DataType>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="empId">
+      <DataType>Integer</DataType>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>mcid</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>empId</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>f4004064-847d-4c0b-9251-c6cb910f6fa6</rd:ReportID>
+</Report>

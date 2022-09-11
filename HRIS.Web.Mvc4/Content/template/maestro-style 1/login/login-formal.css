@@ -1,0 +1,303 @@
+﻿/* -------------------- Resets -----------------------*/
+
+body,h1,h2,h3,h4,h5,h6,p,ul,li,hr {
+	margin:0;
+	padding:0;
+	font-weight:normal;
+ 	font-size:100%;
+}
+
+
+li {
+	list-style-type:none; 
+}
+
+img {border:0;}
+
+hr {
+    border:none;
+}
+
+
+a:link
+{
+	text-decoration:none;
+}
+
+body {
+    min-width: 800px;
+}
+
+/* -------------------- web fonts -----------------------*/
+
+
+
+@font-face{
+    font-family: 'su';
+    src: url('../../../maestro-webfonts/su/su.eot');
+    src: url('../../../maestro-webfonts/su/su.eot?#iefix') format('embedded-opentype'),
+         url('../../../maestro-webfonts/su/su.woff') format('woff'),
+         url('../../../maestro-webfonts/su/su.ttf') format('truetype');
+}
+
+
+@font-face{
+    font-family: 'sub';
+    src: url('../../../maestro-webfonts/su-b/sub.eot');
+    src: url('../../../maestro-webfonts/su-b/sub.eot?#iefix') format('embedded-opentype'),
+         url('../../../maestro-webfonts/su-b/sub.woff') format('woff'),
+         url('../../../maestro-webfonts/su-b/sub.ttf') format('truetype');
+}
+
+
+@font-face{
+    font-family: 'sul';
+    src: url('../../../maestro-webfonts/su-l/sul.eot');
+    src: url('../../../maestro-webfonts/su-l/sul.eot?#iefix') format('embedded-opentype'),
+         url('../../../maestro-webfonts/su-l/sul.woff') format('woff'),
+         url('../../../maestro-webfonts/su-l/sul.ttf') format('truetype');
+}
+
+
+
+/* --------------------------------- global stuff (identity) --------------------- */
+
+/* --------------------------------- styles -------------------------------------- */
+
+body {
+    background-color:#c2d4e5;
+    font-family:'su', 'Segoe UI' ,'Arial', 'sans-serif';
+}
+
+#login_container {
+    width:960px;
+    margin-right:auto;
+    margin:auto;
+    position:relative;
+}
+
+
+#identity_holder {
+    opacity: 0.5;
+    position:absolute;
+    bottom:-10px;
+    z-index:-10;
+    left:-50px;
+    width:1027px;
+    height:333px;
+    background-image:url(../../../images/theme-formal/login/identity.png);
+    background-repeat:no-repeat;
+    -webkit-transform: rotate(4deg);
+}
+
+
+
+#glow_holder {
+    position:absolute;
+    width:900px;
+    height:900px;
+    top:-400px;
+    left:30px;
+    z-index:-20;
+background: -moz-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 50%); /* FF3.6+ */
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(50%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+background: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 50%); /* Chrome10+,Safari5.1+ */
+background: -o-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 50%); /* Opera 12+ */
+background: -ms-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 50%); /* IE10+ */
+background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 50%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+
+div {
+    margin-left:auto;
+    margin-right:auto;
+    width:294px;
+}
+
+#logo {
+    width:220px;
+    height:187px;
+    background-size: 100% 100%;
+    margin-top:70px;
+    background: url(../../../images/theme-formal/login/logo.png) no-repeat center;
+}
+.local-rtl #logo {
+    background-size: 100% 100%;
+    background-image:url(../../../images/theme-formal/login/logo-ar.png);
+}
+
+
+#login-form {
+    margin-top:70px;
+}
+input {
+    margin-bottom:0;
+    padding:0;
+    width:232px;
+    height:45px;
+    margin-bottom:6px;
+    border-radius:12px;
+    padding-left:40px;
+    padding-right:20px;
+    font-family:'su', 'Segoe UI' ,'Arial', 'sans-serif';
+    font-size:18px;
+    /*color:#cfd6cf;*/
+    border: 1px #005fbd solid;
+    outline:none;
+}
+.local-rtl input {
+    padding-left:20px;
+    padding-right:40px;
+}
+
+.local-rtl #username_textbox,
+.local-rtl #password_textbox
+{
+    font-size:14px;
+}
+
+
+#username_textbox {
+    background: #fff url(../../../images/theme-formal/login/username-field-icon.png) no-repeat 12px 13px;
+}
+.local-rtl #username_textbox {
+    background-position: 260px 13px;
+}
+
+#password_textbox {
+    background: #fff url(../../../images/theme-formal/login/password-field-icon.png) no-repeat 12px 13px;
+}
+.local-rtl #password_textbox {
+    background-position: 260px 13px;
+}
+
+#remember_password_checkbox {
+    height:20px;
+    width:20px;
+    padding:0;
+    display:none;
+}
+
+label {
+    color:#004757;
+}
+
+label[for="remember_password_checkbox"] span{
+    display:inline-block;
+    width:22px;
+    height:20px;
+    background-image: url(../../../images/theme-formal/login/sprite.png);
+    background-position:top left;
+    margin-right:5px;
+    padding-top:1px;
+}
+.local-rtl label[for="remember_password_checkbox"] span{
+    padding-top:0;
+}
+
+label[for="remember_password_checkbox"] {
+    cursor:pointer;
+}
+.local-rtl label[for="remember_password_checkbox"] {
+    cursor:pointer;
+    font-size:14px;
+}
+
+
+input[type="checkbox"]:checked + label span{
+    background-position:-20px 0;
+}
+
+
+/* classess assigned on the fly using jquery  */
+
+/* use this class to specify the color of the text that the user enters */
+.inputted-text {
+    color:#004757;
+}
+
+
+/* styling placeholder */
+
+::-webkit-input-placeholder {
+   color: #c3e2de;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: #c3e2de;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: #c3e2de;  
+}
+
+:-ms-input-placeholder {  
+   color: #c3e2de;  
+}
+
+
+#login-form input[type="text"]:focus,
+#login-form input[type="password"]:focus{
+    border: solid 1px #005fbd;
+    background-color:#FFF;
+}
+
+
+input[type="submit"] {
+    border: none;
+    margin-top: 50px;
+    background-color: #005fbd;
+    color: #FFF;
+    cursor: pointer;
+    width: 100%;
+    font-family: sul;
+    padding-left: 0;
+    padding-right: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition-property:all;
+    transition-duration:0.3s;
+}
+
+
+input[type="submit"]:hover {
+    background-color:#005fbd;
+}
+
+
+
+.copyright {
+    margin-top:90px;
+    color:#818285;
+    text-align:center;
+    font-size:14px;
+}
+
+
+
+.validation-summary-errors li {
+    color: #A5192A;
+    font-size: 13px;
+    height:0;
+}
+
+html[dir="rtl"] .validation-summary-errors li {
+    font-size:12px;
+}
+
+.validation-summary-errors li:before {
+    content:"";
+    width:14px;
+    height:14px;
+    display:inline-block;
+    margin-right:4px;
+    background-image:url(../../../images/theme-formal/sprite_small.png);
+    background-position:-129px -1px; 
+    margin-bottom:-2px;
+}
+
+.local-rtl .validation-summary-errors li:before {
+    margin-right:0;
+    margin-left:4px;
+}

@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 14:27:12" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {  
+    private void CheckBox1_Click(object sender, EventArgs e)
+    { 
+      if (CheckBox1.Checked)
+      {
+        JobDescriptionComboBox.SelectedIndex=-1;		 
+        JobDescriptionComboBox.AutoFilter=false;
+        JobDescriptionComboBox.Enabled=false;
+        JobDescriptionComboBox.AutoFill=false;
+      }else
+      {	 
+        JobDescriptionComboBox.AutoFilter=true;
+        JobDescriptionComboBox.Enabled=true;
+        JobDescriptionComboBox.AutoFill=true;        
+      } 
+      
+    }
+
+    private void CheckBox3_Click(object sender, EventArgs e)
+    {  
+      if (CheckBox3.Checked)
+      {
+        PositionCodeComboBox.SelectedIndex=-1;		 
+        PositionCodeComboBox.AutoFilter=false;
+        PositionCodeComboBox.Enabled=false;
+        PositionCodeComboBox.AutoFill=false; 
+      }else
+      {       
+        PositionCodeComboBox.AutoFilter=true;
+        PositionCodeComboBox.Enabled=true;
+        PositionCodeComboBox.AutoFill=true;          
+      } 
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvuiVbTDJqq8sg6uRZMLNPwg==">
+      <TableDataSource Name="Table1" Alias="JobDescriptionDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="WITH Temp AS(&#13;&#10;SELECT        &#13;&#10;Ass.Id, &#13;&#10;Ass.JobTitle_id, &#13;&#10;(SELECT top(1) Id FROM dbo.JobDescription JD WHERE JD.JobTitle_id=Ass.JobTitle_id AND JD.IsVertualDeleted=0) AS JobDescriptionId,&#13;&#10;Ass.Position_id, &#13;&#10;(SELECT top(1) Code FROM dbo.Position WHERE Id=Position_id AND Position.IsVertualDeleted=0) AS PositionCode,&#13;&#10;Ass.EmployeeCard_id, &#13;&#10;(SELECT top(1) EC.Employee_id FROM dbo.EmployeeCard EC WHERE EC.Id=Ass.EmployeeCard_id AND Ass.IsVertualDeleted=0) AS EmployeeId,&#13;&#10;Ass.CreationDate, &#13;&#10;Ass.AssigningEmployeeToPosition_id&#13;&#10;FROM            &#13;&#10;dbo.Assignment Ass WHERE Ass.IsVertualDeleted=0&#13;&#10;)&#13;&#10;SELECT &#13;&#10;JobDescriptionId,&#13;&#10;(SELECT FirstName+' '+LastName+' '+FatherName FROM Employee WHERE Employee.Id=EmployeeId AND Employee.IsVertualDeleted=0) AS FullName,&#13;&#10;(SELECT Code FROM Employee WHERE Employee.Id=EmployeeId AND Employee.IsVertualDeleted=0) AS EmployeeCode,&#13;&#10;CreationDate,&#13;&#10;(SELECT Code FROM Position WHERE Position.Id=Position_id AND Position.IsVertualDeleted=0) AS PositionCode,&#13;&#10;(SELECT Id FROM Position WHERE Position.Id=Position_id AND Position.IsVertualDeleted=0) AS PositionCodeID&#13;&#10;FROM Temp&#13;&#10;ORDER BY CreationDate DESC">
+        <Column Name="EmployeeCode" DataType="System.String"/>
+        <Column Name="JobDescriptionId" DataType="System.Int32"/>
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="CreationDate" DataType="System.DateTime"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="PositionCodeID" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="JobDescription" DataType="System.Int32" Enabled="true" TableName="JobDescription" SelectCommand="SELECT J.Id, J.IsVertualDeleted, J.Name, J.Summary, J.JobTitle_id, J.Node_id&#13;&#10;FROM &quot;JobDescription&quot; J&#13;&#10;WHERE J.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Summary" DataType="System.String"/>
+        <Column Name="JobTitle_id" DataType="System.Int32"/>
+        <Column Name="Node_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="PositionCodeTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT	Id,Code&#13;&#10;FROM	dbo.Position&#13;&#10;WHERE	Position.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Code" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table1" ParentDataSource="JobDescription" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescriptionId" Enabled="true"/>
+    <Relation Name="Table_Table1" ParentDataSource="Table" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="PositionCodeID" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="132.3">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير تاريخ الموقع الوظيفي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text52" Top="56.7" Width="718.2" Height="37.8" Text="[JobDescriptionComboBox.Text]:الوصف الوظيفي المختار" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text54" Top="94.5" Width="718.2" Height="37.8" Text="[PositionCodeComboBox.Text]:كود الموقع الوظيفي المختار" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="138.65" Width="718.2" Height="18.9">
+      <TextObject Name="Text30" Left="528.2" Width="190" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="301.4" Width="227.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text53" Left="179.55" Width="123.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التاريخ" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text55" Width="180.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="163.9" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text2" Left="179.55" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [JobDescriptionDataSourse.CreationDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[JobDescriptionDataSourse.CreationDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.EmployeeCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="302.4" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.FullName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="189.15" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="529.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="214.4" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="306" Height="234" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="94" Top="159" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="168" Top="52" Width="79" Height="13" TabIndex="2" Text="الوصف الوظيفي"/>
+    <ComboBoxControl Name="JobDescriptionComboBox" Left="44" Top="48" TabIndex="3" ClickEvent="" DataColumn="JobDescriptionDataSourse.JobDescription.Name" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="152" Top="76" Width="46" Height="17" TabIndex="4" Text="الكل" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+    <LabelControl Name="Label2" Left="168" Top="104" Width="96" Height="13" TabIndex="2" Text="كود الموقع الوظيفي"/>
+    <ComboBoxControl Name="PositionCodeComboBox" Left="44" Top="100" TabIndex="3" ClickEvent="" DataColumn="JobDescriptionDataSourse.PositionCodeTable.Code" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox3" Left="152" Top="132" Width="46" Height="17" TabIndex="4" Text="الكل" ClickEvent="CheckBox3_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

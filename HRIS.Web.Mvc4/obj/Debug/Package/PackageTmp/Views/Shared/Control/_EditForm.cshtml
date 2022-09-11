@@ -1,0 +1,313 @@
+@using  Project.Web.Mvc4.Helpers
+<script>
+     function getEnumDatasource(type, isRequired) {
+         return {
+             type: "json",
+             serverFiltering: false,
+             requestEnd: function(e) {
+                 if (e.type == "read") {
+                     if (isRequired != null && !isRequired) {
+                         e.response.Data.unshift({ Id: -1, Name: "" });
+                     }
+                 }
+             },
+             transport: {
+                 read: {
+                     cache: true,
+                     url: window.applicationpath + "Enum/ReadToList/",
+                     type: "POST",
+                     dataType: "json",
+                     data: { requestInformation: window.requestInformation, typeName: type },
+                     contentType: "application/json; charset=utf-8"
+                 },
+                 parameterMap: function(innerData, operation) {
+                     if (operation == "read") {
+                         return JSON.stringify(innerData);
+                     }
+                     return JSON.stringify(innerData);
+                 }
+             },
+             schema: {
+                 model: {
+                     id: "Id"
+                 },
+                 data: "Data"
+             }
+         };
+     }
+
+     function getIndexDatasource(name, key, type, isRequired) {
+         return getDatasource(name, key, type, "Index/ReadToList/", isRequired);
+     }
+
+     function getReferenceDatasource(name, key, type, isRequired) {
+         return getDatasource(name, key, type, "Reference/ReadToList/", isRequired);
+     }
+
+     function getDatasource(name, key, type,readUrl, isRequired) {
+         return {
+             type: "json",
+             serverFiltering: false,
+             requestEnd: function (e) {
+                 if (e.type == "read") {
+                     e.response.Data.unshift({ Id: 0, Name: "" });
+                 } else if (e.type == "create") {
+                     if (e.response.Errors != null) {
+                         if (e.response.Errors.Exception != null) {
+                             ShowMessageBox("Error", e.response.Errors.Exception, "k-icon w-b-error", [{ Title: "Ok", ClassName: "k-icon k-update" }]);
+                         } else {
+                             ShowMessageBox("Error", e.response.Errors[0].Message, "k-icon w-b-error", [{ Title: "Ok", ClassName: "k-icon k-update" }]);
+                         }
+                     } else {
+                         window[key + "ViewModel"][name] = e.response.Data.Id;
+                         var dropDownList = $("#" + name + "_" + key).data("kendoDropDownList");
+                         dropDownList.select(function (dataItem) {
+                             if (dataItem.Name == e.response.Data.Name) {
+                                 dataItem.Id = e.response.Data.Id;
+                                 return dataItem.Name;
+                             }
+                             return null;
+                         });
+                         $('#custom_view_add_index_window').data('kendoWindow').close();
+                     }
+                 }
+             },
+             transport: {
+                 read: {
+                     cache: true,
+                     url: window.applicationpath + readUrl,
+                     type: "POST",
+                     dataType: "json",
+                     data: { requestInformation: window.requestInformation, typeName: type },
+                     contentType: "application/json; charset=utf-8"
+                 },
+                 create: {
+                     url: window.applicationpath + "Index/CreateSingle",
+                     type: "POST",
+                     dataType: "json",
+                     contentType: "application/json; charset=utf-8"
+                 },
+                 parameterMap: function (innerData, operation) {
+                     if (operation == "read") {
+                         return JSON.stringify(innerData);
+                     }
+
+                     var finalResult = {};
+                     finalResult["indexName"] = type;
+                     finalResult["value"] = innerData.Name;
+
+                     return JSON.stringify(finalResult);
+                 }
+             },
+             schema: {
+                 model: {
+                     id: "Id"
+                 },
+                 data: "Data",
+                 errors: "Errors"
+             },
+             error: function (e) {
+                 this.cancelChanges();
+             }
+         };
+     }
+
+
+     function openAddIndexCustomView(name, key, inputType, type) {
+         $("#custom_view_add_index_window").html(kendo.template($("#customAddIndexWindowTemplate").html())(
+             {
+                 LabelText: "@GlobalResource.Name",
+                 ButtonText: "@GlobalResource.Add",
+                 InputType: inputType,
+                 Name: name,
+                 Key: key,
+                 ValueTextBoxId: "new_index_name_custom_text_" + name
+             }));
+         $("#custom_view_add_index_window").kendoWindow({
+             width: "440px",
+             height: "160px",
+             modal: true,
+             resizable: false,
+             title: "@GlobalResource.Add",
+             open: function() {
+                 $("#custom_view_add_index_window").data("kendoWindow").center();
+             },
+             close: function() {
+             }
+         });
+         $("#custom_view_add_index_window").data("kendoWindow").open();
+     }
+
+     function addIndexCustomViewClick(name, key, inputType) {
+         var dataSource = null;
+         if (inputType == "dropDownList") {
+             dataSource = $('#' + name + '_' + key).data("kendoDropDownList").dataSource;
+         } else if (inputType == "autoComplete") {
+             dataSource = $('#' + name + '_' + key).data("kendoAutoComplete").dataSource;
+         }
+
+         dataSource.add({ Name: $("#new_index_name_custom_text_" + name).val() });
+         dataSource.sync();
+     }
+
+     function getCustomEditFormHTML(data) {
+         var template = kendo.template($("#customEditorFormTemplate").html());
+         return template(data);
+     }
+
+     function createCustomEditForm(container, data, viewModel) {
+         container.html(getCustomEditFormHTML(data));
+         kendo.init(container);
+         container.kendoValidator();
+         window[data.Key + "ViewModel"] = viewModel;
+         kendo.bind(container, viewModel);
+         for (var i = 0; i < data.Fields.length; i++) {
+             if ((data.Fields[i].Type == "Index" || data.Fields[i].Type == "Reference") && viewModel[data.Fields[i].Name] == null) {
+                 viewModel[data.Fields[i].Name] = 0;
+             } else if (data.Fields[i].Type == "Enum" && viewModel[data.Fields[i].Name] == null) {
+                 if (data.Fields[i].IsRequired != null && !data.Fields[i].IsRequired)
+                     viewModel[data.Fields[i].Name] = -1;
+                 else
+                     viewModel[data.Fields[i].Name] = 0;
+             }
+         }
+         $('.clockpicker').clockpicker()
+	.find('input').change(function () {
+	    console.log(this.value);
+	});
+     }
+
+     function AddTwoColumnsClass(container) {
+         var contols = container.find(".control");
+         for (var i = 0; i < contols.length; i++) {
+             if (i % 2 == 0) {
+                 contols[i].addClass("second-column");
+             }
+             else {
+                 contols[i].addClass("first-column");
+             }
+         }
+     }
+ </script>
+
+<div id="custom_view_add_index_window"></div>
+
+<script type="text/x-kendo-template" id="customAddIndexWindowTemplate">
+    <div class="add-index-popup">
+        <label for="#=ValueTextBoxId#"> #=LabelText# </label>
+        <input class="k-textbox" id="#=ValueTextBoxId#" type="text"/>
+        <span class="k-button" onclick="addIndexCustomViewClick('#=Name#','#=Key#','#=InputType#')">
+            #=ButtonText#
+        </span>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="customEditorFormTemplate">
+
+    # for (var i = 0; i <data.Fields.length; i++) { #
+        #var requiredMessage="";#
+        #var readonlyAttr="";#
+        #var requiredStar="";#
+        #var requiredTooltip="";#
+        #if(data.Fields[i].IsRequired){#
+            # requiredMessage='required="required" data-required-msg="'+data.Fields[i].Title+' @GlobalResource.RequiredMessage"';#
+            # requiredStar='<span class="equired-star">*</span>';#
+         #}#
+        #if(data.Fields[i].IsReadonly){#
+            # readonlyAttr='disabled="disabled"';#
+        #}#
+        <div class="control control-#=data.Fields[i].Name#" >
+            # if(data.Fields[i].Type == "Text") { #
+                <div class="k-edit-label">
+	                <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+                </div>
+                <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                    <input type="text" id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage# class="k-input k-textbox" data-bind="value:#=data.Fields[i].Name#" />  
+                </div>
+        # } else if(data.Fields[i].Type == "Number") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+	            <input type="text" id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  data-type="number" data-role="numerictextbox" class="k-input"  data-bind="value:#=data.Fields[i].Name#">
+            </div>
+    
+    
+       # } else if(data.Fields[i].Type == "Textarea") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                <textarea id="#=data.Fields[i].Name#_#=data.Key#" data-bind="value: #=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  name="#=data.Fields[i].Name#" class="k-textbox">
+                </textarea>
+            </div>
+        # } else if(data.Fields[i].Type == "Boolean") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+	            <input type="checkbox" id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  data-type="boolean" data-bind="checked:#=data.Fields[i].Name#">
+            </div>
+        # } else if(data.Fields[i].Type == "Date") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                <input id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  data-format= "dd/MM/yyyy" data-role="datepicker" data-bind="value: #=data.Fields[i].Name#"/>
+            </div>
+            # } else if(data.Fields[i].Type == "Time") {#
+            <div class="k-edit-label">
+                <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                @*<input id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" data-format="hh:mm tt" data-role="timepicker" data-bind="value: #=data.Fields[i].Name#" />*@
+                <div class="input-group clockpicker" data-placement="bottom" data-align="left" data-autoclose="true">
+                    <input type="text" class="form-control" id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" data-bind="value: #=data.Fields[i].Name#">
+                    <span class="input-group-addon">
+                        <span class="k-icon k-i-clock"></span>
+                    </span>
+                </div>
+            </div>
+         # } else if(data.Fields[i].Type == "Dropdown") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                <input id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" data-source=#=data.Fields[i].DataSource# data-bind="value: #=data.Fields[i].Name#" />
+            </div>
+        # } else if(data.Fields[i].Type == "Enum") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                <input id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" data-source="getEnumDatasource('#=data.Fields[i].TypeName#',#=data.Fields[i].IsRequired#)" data-bind="value: #=data.Fields[i].Name#" />
+            </div>
+        # } else if(data.Fields[i].Type == "Index") {#
+            <div class="k-edit-label">
+	            <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                <input id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=readonlyAttr# #=requiredMessage#  data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" data-source="getIndexDatasource('#=data.Fields[i].Name#','#=data.Key#','#=data.Fields[i].TypeName#',#=data.Fields[i].IsRequired#)" data-bind="value: #=data.Fields[i].Name#" />&nbsp;&nbsp;
+                #if(data.Fields[i].Creatable != null && data.Fields[i].Creatable ){#
+                    <button  class="k-button" onclick="openAddIndexCustomView('#=data.Fields[i].Name#','#=data.Key#','dropDownList','#=data.Fields[i].TypeName#');">
+                        <span class="k-icon k-add" style="vertical-align: sub;"></span>
+                    </button>
+                 # } #
+            </div>
+            # } else if(data.Fields[i].Type == "Reference") {#
+            #if(data.Fields[i].IsRequired){#
+            # requiredMessage='required="required" data-required-msg="'+data.Fields[i].Title+' @GlobalResource.RequiredMessage"';#
+            # requiredStar='<span class="equired-star">*</span>';#
+            #}#
+            <div class="k-edit-label">
+                <label for="#=data.Fields[i].Name#">#=data.Fields[i].Title##=requiredStar#</label>
+            </div>
+            <div data-container-for="#=data.Fields[i].Name#" class="k-edit-field">
+                <input id="#=data.Fields[i].Name#_#=data.Key#" name="#=data.Fields[i].Name#" #=requiredMessage# data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" data-source="getReferenceDatasource('#=data.Fields[i].Name#','#=data.Key#','#=data.Fields[i].TypeName#',#=data.Fields[i].IsRequired#)" data-bind="value: #=data.Fields[i].Name#" />&nbsp;&nbsp;
+            </div>
+            # } #
+        </div>
+    # } #
+        
+</script>
+

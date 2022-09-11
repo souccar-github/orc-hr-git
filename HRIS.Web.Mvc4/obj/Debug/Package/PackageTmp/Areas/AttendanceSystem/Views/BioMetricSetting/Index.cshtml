@@ -1,0 +1,43 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<script type="text/javascript">
+    function BioMetricSettingAfterRequestEnd(e) {
+        $(".SyncSupportedBioMetricDevicesButton").off("click").on("click", function () {
+            $.ajax({
+                url: '@Url.Action("SyncSupportedBioMetricDevices", "BioMetricInteraction")',
+                type: "POST",
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                    if (data.Success) {
+                        ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    } else {
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                }
+            });
+        });
+    }
+    function CheckDeviceStatus(e) {
+        var bioMetricDeviceId = e;
+        console.log(e);      
+
+         $.ajax({
+             url: '@Url.Action("CheckDeviceStatus", "BioMetricInteraction")',
+             type: "POST",
+             data: JSON.stringify({ bioMetricDeviceId: bioMetricDeviceId }),
+             contentType: 'application/json',
+             async: false,
+             success: function (data) {
+                 var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                 if (data.Success) {
+                     ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                 } else {
+                     ShowMessageBox("info", data.Msg, "k-icon w-b-error", commands);
+                 }
+                 $("#grid").data("kendoGrid").dataSource.fetch();
+             }
+         });
+    }
+</script>

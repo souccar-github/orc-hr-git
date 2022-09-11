@@ -1,0 +1,40 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+<script type="text/javascript">
+
+    function courseEditHandler(e) {
+        
+        if (!e.model.isNew() && e.model.Status.Id == 1) {
+            addRequiredToAdditionalCourseFields(e);
+        } else {
+            hideAdditionalCourseFields(e);
+        }
+    }
+
+    function hideAdditionalCourseFields(e) {
+
+        $('.fieldset-TrainingGroupsNames_TrainingPlaceInfo').remove();
+
+        $('.control-StartDate').remove();
+        $('.control-EndDate').remove();
+        $('.control-StartHour').remove();
+        $('.control-Saturday').remove();
+        $('.control-Sunday').remove();
+        $('.control-Monday').remove();
+        $('.control-Wednesday').remove();
+        $('.control-Tuesday').remove();
+        $('.control-Thursday').remove();
+        $('.control-Friday').remove();
+    }
+
+    function addRequiredToAdditionalCourseFields(e) {
+        addRequiredStar("StartDate");
+        addRequiredStar("EndDate");
+        addRequiredStar("Sponsor");
+        addRequiredStar("TrainingCenterName");
+        addRequiredStar("TrainingPlace");
+        addRequiredStar("Trainer");
+    }
+</script>

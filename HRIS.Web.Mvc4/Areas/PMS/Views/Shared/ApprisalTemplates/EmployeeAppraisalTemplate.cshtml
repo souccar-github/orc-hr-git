@@ -1,0 +1,311 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+@Html.Partial("ApprisalTemplates/JobDescriptionTemplate")
+@Html.Partial("ApprisalTemplates/CompetencyTemplate")
+@Html.Partial("ApprisalTemplates/ObjectiveTemplate")
+@Html.Partial("ApprisalTemplates/CustomSectionTemplate")
+@Html.Partial("ApprisalTemplates/JobDescriptionSectionWorkflowApprovalTemplate")
+@Html.Partial("ApprisalTemplates/ObjectiveSectionWorkflowApprovalTemplate")
+@Html.Partial("ApprisalTemplates/CustomSectionWorkflowApprovalTemplate")
+@Html.Partial("ApprisalTemplates/CompetencySectionWorkflowApprovalTemplate")
+@*@Html.Partial("EmployeeViewHandler")*@
+
+<script id="appraisal-workflow-template" type="text/x-kendo-template">
+<div class="appraisal-form">
+    <ul>
+        #if(!IsHiddenJobDescriptionSection){#
+            <li class="k-state-active">@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.AppraisalJobDescriptionSection)</li>
+        #}#
+        #if(!IsHiddenCompetanceSection){#
+            <li >@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.AppraisalCompetenceSection)</li>
+        #}#
+        #if(!data.IsHiddenObjectiveSection){#
+            <li>@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.AppraisalObjectiveSection)</li>
+        #}#
+        #for (var i = 0; i < CustomSections.length; i++) {#
+            <li>#=CustomSections[i].Name#</li>
+        #}#
+    </ul>
+   
+    #if(!IsHiddenJobDescriptionSection){#
+        <div class="appraisal-tab-div appraisal-tab-job-description-section"></div>
+    #}#
+     #if(!IsHiddenCompetanceSection){#
+        <div class="appraisal-tab-div appraisal-tab-competence-section"></div>
+    #}#
+    #if(!IsHiddenObjectiveSection){#
+        <div class="appraisal-tab-div appraisal-tab-obective-section"></div>
+    #}#
+    #for (var i = 0; i < CustomSections.length; i++) {#
+        <div class="appraisal-tab-div appraisal-tab-custom-section-#=CustomSections[i].Id#"></div>
+    #}#
+   </div>
+</script>
+
+<script id="approval-workflow-template" type="text/x-kendo-template">
+    <div class="approval-form">
+        <ul>
+            #if(!IsHiddenJobDescriptionSection){#
+            <li class="k-state-active">@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.AppraisalJobDescriptionSection)</li>
+            #}#
+            #if(!IsHiddenCompetanceSection){#
+            <li>@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.AppraisalCompetenceSection)</li>
+            #}#
+            #if(!data.IsHiddenObjectiveSection){#
+            <li>@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.AppraisalObjectiveSection)</li>
+            #}#
+            #for (var i = 0; i < CustomSections.length; i++) {#
+            <li>#=CustomSections[i].Name#</li>
+            #}#
+        </ul>
+
+        #if(!IsHiddenJobDescriptionSection){#
+        <div class="appraisal-tab-div approval-tab-job-description-section"></div>
+        #}#
+        #if(!IsHiddenCompetanceSection){#
+        <div class="appraisal-tab-div approval-tab-competence-section"></div>
+        #}#
+        #if(!IsHiddenObjectiveSection){#
+        <div class="appraisal-tab-div approval-tab-obective-section"></div>
+        #}#
+        #for (var i = 0; i < CustomSections.length; i++) {#
+        <div class="appraisal-tab-div approval-tab-custom-section-#=CustomSections[i].Id#"></div>
+        #}#
+    </div>
+      @*<table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.Section</th><th>@GlobalResource.Weight</th><th>@GlobalResource.Value</th>
+            </tr>
+        </thead>
+        <tbody>
+             #for(var i=0;i<data.AppraisalMarks.length;i++){#
+                #var section=data.AppraisalMarks[i];#
+                <tr>
+                    <td>#=section.SectionName#</td>
+                    <td>#=section.SectionWeight# %</td>
+                    <td>#=section.SectionValue#</td>
+                </tr>
+            #}#
+        </tbody>
+    </table>
+    <div>Total:#=data.Total#</div>*@
+</script>
+<script>
+    //approval
+    function generateApprovalView(approvalViewModel, container) {
+        //$("#RejectButton").remove();
+        //$(".workflow_related_info .k-icon.k-i-calendar").remove();
+        //var template = kendo.template($("#approval-workflow-template").html());
+        //container.html(template(approvalViewModel));
+        //kendo.init(container);
+        
+        $(".workflow_related_info .k-icon.k-i-calendar").remove();
+        var template = kendo.template($("#approval-workflow-template").html());
+        container.html(template(approvalViewModel));
+        container.find(".approval-form").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
+        if (!approvalViewModel.IsHiddenJobDescriptionSection) {
+            template = kendo.template($("#jobDescriptionSection-Workflow-Approval-Template").html());
+
+            container.find(".approval-form .approval-tab-job-description-section").html(template(approvalViewModel.JobDescriptionSection));
+        }
+        
+        if (!approvalViewModel.IsHiddenCompetanceSection) {
+            template = kendo.template($("#competencySection-Workflow-Approval-Template").html());
+            container.find(".approval-form .approval-tab-competence-section").html(template(approvalViewModel.CompetenceSection));
+        }
+        if (!approvalViewModel.IsHiddenObjectiveSection) {
+            template = kendo.template($("#objectiveSection-Workflow-Approval-Template").html());
+            container.find(".approval-form .approval-tab-obective-section").html(template(approvalViewModel.ObjectiveSection));
+        }
+        for (var i = 0; i < approvalViewModel.CustomSections.length; i++) {
+            template = kendo.template($("#customSection-Workflow-Approval-Template").html());
+            container.find(".approval-form .approval-tab-custom-section-" + approvalViewModel.CustomSections[i].Id).html(template(approvalViewModel.CustomSections[i]));
+        }
+        var workflowInfo = $("#workflow_description").find(".workflow-custom-related-info");
+        workflowInfo.append("<span class='separator'>|</span>");
+        workflowInfo.append("<a href='#'><span class='k-icon k-i-employee-info phase-employee-info-but'></span></a>");
+        $("#workflow_description").append("<pre style='padding-left:50px;font-size: 16px;font-weight:  600;'>" + approvalViewModel.EmployeeName + "        Mark: " + approvalViewModel.TotalMark + "</pre>");
+        workflowInfo.find('.phase-employee-info-but').click(function (e) {
+            openViewWindow("HRIS.Domain.Personnel.RootEntities.Employee", "@GlobalResource.EmployeeInfo", approvalViewModel.EmployeeId);
+        });
+
+        $(".appraisal-form").data("kendoTabStrip").select(0);
+    }
+    //end approval
+    //appraisal
+    function generateAppraisalView(appraisalViewModel,container) {
+        if (appraisalViewModel.ShowRejectButton) {
+            $("#RejectButton").remove();
+        }
+        $(".workflow_related_info .k-icon.k-i-calendar").remove();
+        var template = kendo.template($("#appraisal-workflow-template").html());
+        container.html(template(appraisalViewModel));
+
+        container.find(".appraisal-form").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
+        if (!appraisalViewModel.IsHiddenJobDescriptionSection) {
+            template = kendo.template($("#jobDescriptionSection-workflow-template").html());
+            container.find(".appraisal-form .appraisal-tab-job-description-section").html(template(appraisalViewModel.JobDescriptionSection));
+        }
+
+        if (!appraisalViewModel.IsHiddenCompetanceSection) {
+            template = kendo.template($("#competenceSection-workflow-template").html());
+            container.find(".appraisal-form .appraisal-tab-competence-section").html(template(appraisalViewModel.CompetenceSection));
+        }
+
+        if (!appraisalViewModel.IsHiddenObjectiveSection) {
+            template = kendo.template($("#objectiveSection-workflow-template").html());
+            container.find(".appraisal-form .appraisal-tab-obective-section").html(template(appraisalViewModel.ObjectiveSection));
+        }
+
+        for (var i = 0; i < appraisalViewModel.CustomSections.length; i++) {
+            template = kendo.template($("#customSection-workflow-template").html());
+            container.find(".appraisal-form .appraisal-tab-custom-section-" + appraisalViewModel.CustomSections[i].Id).html(template(appraisalViewModel.CustomSections[i]));
+        }
+
+        kendo.init(container.find(".appraisal-form"));
+        container.find(".appraisal-rate").kendoDropDownList({
+            dataSource: {
+                data: getStepsDataSource(appraisalViewModel)
+            }
+        });
+
+        for (var i = 0; i < $(".show-incentive-item").length; i++) {
+            $(".show-incentive-item").eq(i).kendoTooltip({
+                content: $(".tooltip-wrapper").eq(i),
+                width: 400,
+                position: "top",
+            });
+
+        }
+        
+        var workflowInfo = $("#workflow_description").find(".workflow-custom-related-info");
+        workflowInfo.append("<span class='separator'>|</span>");
+        workflowInfo.append("<a href='#'><span class='k-icon k-i-employee-info phase-employee-info-but'></span></a>");
+        workflowInfo.append("<a href='#'><span class='k-icon k-i-setting phase-setting-but'></span></a>");
+        $("#workflow_description").append("<h4 style='margin-top: -5px;'>" + appraisalViewModel.EmployeeName + "</h4>");//EmployeeId
+              
+        workflowInfo.find('.phase-employee-info-but').click(function (e) {
+            openViewWindow("HRIS.Domain.Personnel.RootEntities.Employee", "@GlobalResource.EmployeeInfo", appraisalViewModel.EmployeeId);
+        });
+        workflowInfo.find('.phase-setting-but').click(function (e) {
+            openViewWindow(appraisalViewModel.PhaseSettingTypeName, "@GlobalResource.PhaseInfo", appraisalViewModel.PhaseSettingId);
+        });
+
+        $(".appraisal-form").data("kendoTabStrip").select(0);
+    }
+
+    function checkAppraisalViewModelWeight(appraisalViewModel) {
+        if (!appraisalViewModel.IsHiddenCompetanceSection) {
+            if (!checkTotalWeight(appraisalViewModel.CompetenceSection.AppraisalItems)) {
+                return "@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.TotalCompetenceSectionWeightNotEqualTo100)";
+            }
+        }
+        if (!appraisalViewModel.IsHiddenObjectiveSection) {
+            if (!checkTotalWeight(appraisalViewModel.ObjectiveSection.AppraisalItems)) {
+                return "@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.TotalObjectiveSectionWeightNotEqualTo100)";
+            }
+        }
+        if (!appraisalViewModel.IsHiddenJobDescriptionSection) {
+
+            for (var i = 0; i < appraisalViewModel.JobDescriptionSection.Roles.length; i++) {
+                if (!checkTotalWeight(appraisalViewModel.JobDescriptionSection.Roles[i].AppraisalItems)) {
+                    return "@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.TotalJobDescriptionSectionWeightNotEqualTo100)";
+                }
+            }
+        }
+        for (var j = 0; j < appraisalViewModel.CustomSections.length; j++) {
+            if (!checkTotalWeight(appraisalViewModel.CustomSections[j].AppraisalItems)) {
+                return "@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.TotalCustomSectionWeightNotEqualTo100)";
+            }
+        }
+        return null;
+    }
+
+    function checkTotalWeight(appraisalItems) {
+        if (appraisalItems.length == 0)
+            return true;
+        var sumWeight = 0;
+        for (var j = 0; j < appraisalItems.length; j++) {
+            sumWeight += Number(appraisalItems[j].Weight);
+        }
+        return sumWeight == 100;
+    }
+
+    function updateAppraisalWeightAndRate(appraisalViewModel, container) {
+        if (!appraisalViewModel.IsHiddenCompetanceSection) {
+            updateCompetenceAppraisalWeightAndRate(appraisalViewModel.CompetenceSection, container);
+        }
+        if (!appraisalViewModel.IsHiddenObjectiveSection) {
+            updateObjectiveAppraisalWeightAndRate(appraisalViewModel.ObjectiveSection, container);
+        }
+        if (!appraisalViewModel.IsHiddenJobDescriptionSection) {
+            updateJobDescriptionAppraisalWeightAndRate(appraisalViewModel.JobDescriptionSection, container);
+        }
+        for (var j = 0; j < appraisalViewModel.CustomSections.length; j++) {
+            updateCustomSectionAppraisalWeightAndRate(appraisalViewModel.CustomSections[j], container);
+        }
+    }
+
+    function updateCompetenceAppraisalWeightAndRate(competenceSectionViewModel, container) {
+        for (var i = 0; i < competenceSectionViewModel.AppraisalItems.length; i++) {
+            var item = competenceSectionViewModel.AppraisalItems[i];
+            item.Weight = container.find("[name='appraisal-competence-weight-" + item.Id + "']").val();
+            item.Rate = container.find("[name='appraisal-competence-rate-" + item.Id + "']").val();
+            item.Note = container.find("[name='appraisal-competence-note" + item.Id + "']").val();
+        }
+    }
+
+    function updateObjectiveAppraisalWeightAndRate(objectiveSectionViewModel, container) {
+        for (var i = 0; i < objectiveSectionViewModel.AppraisalItems.length; i++) {
+            var item = objectiveSectionViewModel.AppraisalItems[i];
+            item.Weight = container.find("[name='appraisal-objective-weight-" + item.Id + "']").val();
+            item.Rate = container.find("[name='appraisal-objective-rate-" + item.Id + "']").val();
+            item.Note = container.find("[name='appraisal-objective-note" + item.Id + "']").val();
+        }
+    }
+
+    function updateJobDescriptionAppraisalWeightAndRate(jobDescriptionViewModel, container) {
+        for (var i = 0; i < jobDescriptionViewModel.Roles.length; i++) {
+            var role = jobDescriptionViewModel.Roles[i];
+            for (var j = 0; j < role.AppraisalItems.length; j++) {
+                var item = role.AppraisalItems[j];
+                item.Weight = container.find("[name='appraisal-res-weight-" + item.Id + "']").val();
+                item.Rate = container.find("[name='appraisal-res-rate-" + item.Id + "']").val();
+                item.Note = container.find("[name='appraisal-res-note" + item.Id + "']").val();
+            }
+        }
+    }
+
+    function updateCustomSectionAppraisalWeightAndRate(customSectionViewModel, container) {
+        for (var i = 0; i < customSectionViewModel.AppraisalItems.length; i++) {
+            var item = customSectionViewModel.AppraisalItems[i];
+            item.Weight = container.find("[name='appraisal-custom-section-weight-" + item.Id + "']").val();
+            item.Rate = container.find("[name='appraisal-custom-section-rate-" + item.Id + "']").val();
+            item.Note = container.find("[name='appraisal-custom-section-note" + item.Id + "']").val();
+        }
+    }
+
+    function getStepsDataSource(appraisalViewModel) {
+        var result = [];
+        for (var i = appraisalViewModel.MinMark; i < appraisalViewModel.MaxMark; i += appraisalViewModel.Step) {
+            result.push(i);
+        }
+        if (result[result.length - 1] != appraisalViewModel.MaxMark)
+            result.push(appraisalViewModel.MaxMark);
+
+        return result;
+    }
+</script>

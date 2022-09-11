@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="11/13/2016 10:15:30" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVFlnkXqzD1VNqRCkSavrdXiIf+lj0vOFUlkMzi4+Olo92l+WuZ/TRneJ8XO81bLaaSB2QluU3h+Lwl6EM5c+0NgZ8NLhSO9QaUeH+VouE2amr2w4rwcyaUyVk4a0OL4r4Q">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;dbo.JobDescription.Name AS JobDescriptionName,&#13;&#10;dbo.EmployeeCard.InsuranceSalary, &#13;&#10;ISNULL(dbo.EmployeeCard.SocialSecurityNo,'') AS SocialSecurityNo, &#13;&#10;dbo.EmployeeCard.SocialSecurityStartingDate&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobDescription.Id = dbo.Position.JobDescription_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE	dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;		dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;		SocialSecurityNo IS NULL AND&#13;&#10;		AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;		Position.IsVertualDeleted = 0 AND&#13;&#10;		Employee.IsVertualDeleted = 0 AND&#13;&#10;		EmployeeCard.IsVertualDeleted = 0&#13;&#10;ORDER BY dbo.EmployeeCard.SocialSecurityNo">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="InsuranceSalary" DataType="System.Single"/>
+        <Column Name="SocialSecurityNo" DataType="System.String"/>
+        <Column Name="SocialSecurityStartingDate" DataType="System.DateTime"/>
+        <Column Name="JobDescriptionName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="75.6">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين الغير مسجلين بالتأمينات الاجتماعية " HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="79.6" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="168.1" Width="332.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="500.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Width="167.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="102.5" Width="718.2" Height="37.8" CanGrow="true" CanBreak="true" DataSource="Table1">
+      <TextObject Name="Text4" Left="170.1" Width="330.75" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="500.85" Width="217.35" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeesDataSourse.Code]" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Width="170.1" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeesDataSourse.JobDescriptionName]" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="144.3" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="500.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="500.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="167.2" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="633.15" Top="9.45" Width="85.05" Height="18.9" Text="الصفحة [Page]" HorzAlign="Right" RightToLeft="true" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

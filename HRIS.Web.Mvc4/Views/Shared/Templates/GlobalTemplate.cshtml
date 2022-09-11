@@ -1,0 +1,28 @@
+﻿@using  Project.Web.Mvc4.Helpers
+
+
+<script id="label-template" type="text/x-kendo-template">
+  <div class="control control-#=Name#">
+        <div class="k-edit-label">
+            <label for="#=Name#">#=Title#</label></div>
+        <div data-container-for="#=Name#" class="k-edit-field">
+            <input type="text" class="k-input k-textbox" name="#=Name#" value="#=Value#" disabled="disabled" />
+        </div>
+    </div>
+</script>
+<script type="text/javascript">
+    function showLabelControl(name, title, value, type) {
+        //type{Text,Date,Textarea,Number}
+        var template = kendo.template($("#label-template").html());
+        return template({ Name: name, Title: title, Value: value });
+    }
+    function addLabelAfterControl(control, name, title, value, type) {
+        control.after(showLabelControl(name, title, value, type));
+    }
+    function addLabelBeforeControl(control, name, title, value, type) {
+        control.before(showLabelControl(name, title, value, type));
+    }
+    function addLabelInControl(control, name, title, value, type) {
+        control.append(showLabelControl(name, title, value, type));
+    }
+</script>

@@ -1,0 +1,339 @@
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers.Resource
+<style>
+    .k-icon.k-clear-value.k-i-close {
+        display: none !important;
+    }
+
+    #chart-container {
+        height: 620px;
+    }
+
+    #chart-container {
+        position: relative;
+        height: 500px;
+        border-top: 1px solid #aaa;
+        margin: 0.5rem;
+        overflow: auto;
+        text-align: center;
+    }
+
+    .orgchart .middle-level .title {
+        background-color: #006699;
+    }
+
+    .orgchart .middle-level .content {
+        border-color: #006699;
+    }
+
+    .orgchart .node.matched {
+        background-color: rgba(238, 217, 54, 0.5);
+    }
+
+    .orgchart .hierarchy.first-shown::before {
+        left: calc(50% - 1px);
+        width: calc(50% + 1px);
+    }
+
+    .orgchart .hierarchy.last-shown::before {
+        width: calc(50% + 1px);
+    }
+
+    .orgchart .hierarchy.first-shown.last-shown::before {
+        width: 2px;
+    }
+
+    #edit-panel {
+        text-align: center;
+        margin: 0.5rem;
+        padding: 0.5rem;
+        border: 1px solid #aaa;
+    }
+
+        #edit-panel * {
+            font-size: 1rem;
+        }
+
+    .orgchart .second-menu-icon {
+        transition: opacity .5s;
+        opacity: 0;
+        right: -5px;
+        top: -5px;
+        z-index: 2;
+        position: absolute;
+    }
+
+        .orgchart .second-menu-icon::before {
+            background-color: rgba(68, 157, 68, 0.5);
+        }
+
+        .orgchart .second-menu-icon:hover::before {
+            background-color: #449d44;
+        }
+
+    .orgchart .node:hover .second-menu-icon {
+        opacity: 1;
+    }
+
+    .orgchart .node .second-menu {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: -70px;
+        border-radius: 35px;
+        box-shadow: 0 0 10px 1px #999;
+        background-color: #fff;
+        z-index: 1;
+    }
+
+        .orgchart .node .second-menu .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            float: left;
+            margin: 5px;
+        }
+</style>
+
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming.ToString();
+}
+
+<div class="chart chart-width-full">
+
+    @*<div id="edit-panel" class="view-state">
+            <input type="text" id="key-word">
+            <button type="button" id="btn-filter-node">Filter</button>
+            <button type="button" id="btn-cancel">Cancel</button>
+        </div>*@
+    <div id="chart-container" dir="ltr"></div>
+</div>
+<script>
+    function loopChart($hierarchy) {
+        var $siblings = $hierarchy.children('.nodes').children('.hierarchy');
+        if ($siblings.length) {
+            $siblings.filter(':not(.hidden)').first().addClass('first-shown')
+                .end().last().addClass('last-shown');
+        }
+        $siblings.each(function (index, sibling) {
+            loopChart($(sibling));
+        });
+    }
+    function filterNodes(keyWord) {
+        if (!keyWord.length) {
+            window.alert('Please type key word firstly.');
+            return;
+        } else {
+            var $chart = $('.orgchart');
+            // disalbe the expand/collapse feture
+            $chart.addClass('noncollapsable');
+            // distinguish the matched nodes and the unmatched nodes according to the given key word
+            $chart.find('.node').filter(function (index, node) {
+                return $(node).text().toLowerCase().indexOf(keyWord) > -1;
+            }).addClass('matched')
+                .closest('.hierarchy').parents('.hierarchy').children('.node').addClass('retained');
+            // hide the unmatched nodes
+            $chart.find('.matched,.retained').each(function (index, node) {
+                $(node).removeClass('slide-up')
+                    .closest('.nodes').removeClass('hidden')
+                    .siblings('.hierarchy').removeClass('isChildrenCollapsed');
+                var $unmatched = $(node).closest('.hierarchy').siblings().find('.node:first:not(.matched,.retained)')
+                    .closest('.hierarchy').addClass('hidden');
+            });
+            // hide the redundant descendant nodes of the matched nodes
+            $chart.find('.matched').each(function (index, node) {
+                if (!$(node).siblings('.nodes').find('.matched').length) {
+                    $(node).siblings('.nodes').addClass('hidden')
+                        .parent().addClass('isChildrenCollapsed');
+                }
+            });
+            // loop chart and adjust lines
+            loopChart($chart.find('.hierarchy:first'));
+        }
+    }
+    function clearFilterResult() {
+        $('.orgchart').removeClass('noncollapsable')
+            .find('.node').removeClass('matched retained')
+            .end().find('.hidden, .isChildrenCollapsed, .first-shown, .last-shown').removeClass('hidden isChildrenCollapsed first-shown last-shown')
+            .end().find('.slide-up, .slide-left, .slide-right').removeClass('slide-up slide-right slide-left');
+    }
+    $('#btn-filter-node').on('click', function () {
+        filterNodes($('#key-word').val());
+    });
+    $('#btn-cancel').on('click', function () {
+        clearFilterResult();
+    });
+    $(function () {
+        window.Souccar.ajax('@Url.Action("GetOrgChartTreeData", "Dashboard", new { area = "OrganizationChart" })', {}, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                initialzeOrgTreeData(data);
+            }, 500);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getOrgChartData');
+        }
+        function getOrgChartDetails(data) {
+            var orgDetails = [];
+            for (var i in data) {
+                orgDetails.push({
+                    'name': data[i].Name,
+                    'title': data[i].Title,
+                    'imgURL': data[i].ImgURL,
+                    'children': data[i].Children != undefined ? getOrgChartDetails(data[i].Children.Data) : [],
+                });
+            }
+            return orgDetails;
+        }
+        function initialzeOrgTreeData(data) {
+            var datascource = {
+                'name': '',
+                'title': '',
+                'childern': []
+            }
+        var result = getOrgChartDetails(data.Data);
+            if (data.Data.length > 1)
+                datascource.children = result;
+            else
+                datascource = result;
+        debugger;
+        var oc = $('#chart-container').orgchart({
+            'data': datascource,
+            'nodeContent': 'title',
+            'exportFilename': 'MyOrgChart',
+            'toggleSiblingsResp': true,
+            'createNode': function ($node, data) {
+                var secondMenuIcon = $('<i>', {
+                    'class': 'oci oci-info-circle second-menu-icon',
+                    click: function () {
+                        $(this).siblings('.second-menu').toggle();
+                    }
+                });
+                var secondMenu = '<div class="second-menu"><img class="avatar" src="img/avatar/' + data.imgURL + '.jpg"></div>';
+                $node.append(secondMenuIcon).append(secondMenu);
+            }
+        });
+        $(window).resize(function () {
+            var width = $(window).width();
+            if (width > 576) {
+                oc.init({ 'verticalLevel': undefined });
+            } else {
+                oc.init({ 'verticalLevel': 2 });
+            }
+        });
+    }
+  });
+</script>
+<script type="text/javascript">
+    @{
+        var dir = "ltr";
+        var pageDir = "left";
+        if (CurrentLocale.Language == Locale.Rtl)
+        {
+            pageDir = "right";
+            dir = "rtl";
+        }
+    }
+    var $dir = '@dir';
+    var $pageDir = '@pageDir';
+    var $themeName = '@themingName';
+    $(function () {
+        getOrgChartData();
+    });
+    function getOrgChartData() {
+        window.Souccar.ajax('@Url.Action("GetOrgCharts", "Dashboard", new { area = "OrganizationChart" })', {}, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateMultiLevelOrgChart(data);
+            }, 500);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getOrgChartData');
+        }
+    }
+    function generateMultiLevelOrgChart(data) {
+        Highcharts.getOptions().colors.splice(0, 0, 'transparent');
+        var colors = getDashboardColors();
+        Highcharts.setOptions({
+            colors: colors
+        });
+        Highcharts.chart('multilevel-org-chart', {
+            chart: {
+                height: '48%'
+            },
+            title: {
+                text: '@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.OrganizationChart)'
+            },
+            colors: colors,
+            series: [{
+                type: "sunburst",
+                data: data,
+                allowDrillToNode: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    format: '{point.name}',
+                    filter: {
+                        property: 'innerArcLength',
+                        operator: '>',
+                        value: 16
+                    }
+                },
+                levels: [{
+                    level: 1,
+                    levelIsConstant: false,
+                    dataLabels: {
+                        filter: {
+                            property: 'outerArcLength',
+                            operator: '>',
+                            value: 64
+                        }
+                    }
+                }, {
+                    level: 2,
+                    colorByPoint: true
+                },
+                {
+                    level: 3,
+                    colorVariation: {
+                        key: 'brightness',
+                        to: -0.5
+                    }
+                }, {
+                    level: 4,
+                    colorVariation: {
+                        key: 'brightness',
+                        to: 0.5
+                    }
+                }]
+            }],
+            tooltip: {
+                headerFo0rmat: "",
+                pointFormat: 'Employee count of <b>{point.name} : {point.value}</b>'
+            }
+        });
+    }
+    function getDashboardColors() {
+        return [
+            getDefaultThemeColor(),
+             '#7CB5EC', '#F45B5B', '#434348',
+            '#2f7ed8', '#0d233a', '#8bbc21',
+            '#910000', '#1aadce', '#492970',
+            '#f28f43', '#77a1e5', '#c42525',
+            '#a6c96a', '#0000FF', '#008000'
+        ];
+    }
+    function getDefaultThemeColor() {
+        switch ($themeName) {
+        case 'lightblue':
+            return '#86c4bc';
+        case 'sepia':
+            return '#c0a48c';
+        case 'formal':
+            return '#87adc4';
+        case 'lady':
+            return '#9c8bc1';
+        default:
+            return '#818285';
+        }
+    }
+</script>

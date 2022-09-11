@@ -1,0 +1,210 @@
+﻿<div id="payroll-browse-employees-filters">
+    <table>
+        <tr>
+            <td>
+                <span>Yaseen</span>                
+            </td>
+            <td>
+                <div id="test-dropdownlist"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Recruitment System</span>
+            </td>
+            <td>
+                <div id="RecruitmentSystem-dropdownlist"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>without Bank Account</span>
+            </td>
+            <td>
+                <input type="checkbox" id="NotHaveBankAcc-checkbox"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Start Date After</span>
+            </td>
+            <td>
+                <div id="StartDate-DatePicker"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Left Date After</span>
+            </td>
+            <td>
+                <div id="LeftDate-DatePicker"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Employment State</span>
+            </td>
+            <td>
+                <div id="EmploymentState-dropdownlist"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>How Have Loans</span>
+            </td>
+            <td>
+                <input type="checkbox" id="HaveLoans-checkbox" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Category</span>
+            </td>
+            <td>
+                <div id="Category-dropdownlist"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Employee Num</span>
+            </td>
+            <td>
+                <input type="number" id="EmpNum-numedit" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>Employees in specific payroll table</span>
+            </td>
+            <td>
+                <div id="EmpPayRoll-dropdownlist"></div>
+            </td>
+        </tr>
+    </table>
+    <input type="button" value="Browse" id="Payroll-browse-but"/>   
+</div>
+
+<div id="payroll-browse-employees" style="display: none">
+    <div id="payroll-browse-employees-grid"></div>
+    <input type="button" value="Filter" id="Payroll-filter-but"/> 
+</div>
+<script>
+    $("#test-dropdownlist").kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        value:2,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetData","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        }
+    });
+    $("#RecruitmentSystem-dropdownlist").kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        value: 1,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetRecruitmentSystem","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        }
+    });
+    $("#Category-dropdownlist").kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        value: 1,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetCategory","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        }
+    });
+    $("#EmploymentState-dropdownlist").kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        value: 1,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetEmploymentState","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        }
+    });
+    
+    $("#EmpPayRoll-dropdownlist").kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        value: 1,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetPayrollNo","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        }
+    });    
+    $("#StartDate-DatePicker").kendoDatePicker();
+    $("#LeftDate-DatePicker").kendoDatePicker();
+
+    $("#payroll-browse-employees-grid").kendoGrid({
+        height: 185,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetEmployeeByFilter","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        },
+        selectable: "multiple, row",
+        sortable: true,        
+        pageable: {
+            refresh: true,
+            pageSizes: true,
+            messages: {
+                display: "{2} items"
+            }
+        },
+        columns: [{
+            field: "Id",
+            width: 50,
+            title: "Id"
+        }, {
+            field: "SocialInsuranceNo",
+            width: 100,
+            title: "SocialInsuranceNo"
+        }, {
+            field: "FirstName",
+            width: 100,
+            title: "First Name"
+        }, {
+            field: "LastName",
+            width: 100,
+            title: "Last Name"
+        }
+        ]
+    });
+    
+    $("#Payroll-browse-but").click(function () {
+        alert("rr");
+        $("#payroll-browse-employees-filters").hide();
+        $("#payroll-browse-employees").show();
+    });
+    
+    $("#Payroll-filter-but").click(function () {
+        $("#payroll-browse-employees-filters").show();
+        $("#payroll-browse-employees").hide();
+    });
+</script>

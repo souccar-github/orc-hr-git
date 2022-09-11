@@ -1,0 +1,142 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="chart chart-width-half">
+    <div class="chart-params">
+        @* Nationality Type *@
+        <div id="nationality-type" style="width:48%;">
+            <div class="control control-nationality-type">
+                <div class="k-edit-label">
+                    <label for="nationalityType">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.NationalityType)</label>
+                </div>
+                <div data-container-for="nationalityType" class="k-edit-field">
+                    <input id="nationalityType" name="nationalityType" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+    </div>
+
+    <div id="nationality-type-percentage-chart" class="container-chart"></div>
+
+    <div id="nationality-type-percentage-table"></div>
+</div>
+
+<script type="text/javascript">
+
+    function generateNationalityPercentageSection() {
+
+        $('#nationalityType').kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            autoWidth: false,
+            dataSource: [
+                { Id: 'BasicNationality', Name: "@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.BasicNationality)" },
+                { Id: 'OtherNationality', Name: "@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.OtherNationality)" }
+            ],
+            change: function (e) { onChangeNationalityType(e); }
+        });
+
+        $('#nationality-type').css('float', $pageDir);
+
+        getNationalityPercentageChartData("BasicNationality");
+    }
+
+    function onChangeNationalityType(e) {
+        getNationalityPercentageChartData(e.sender.value());
+    }
+
+    function getNationalityPercentageChartData(nationalityType) {
+
+        window.Souccar.ajax('@Url.Action("GetNationalityPercentageData", "Dashboard", new { area = "Personnel" })', { type: nationalityType }, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateNationalityPercentageChart(data);
+                generateNationalityPercentageTable(data);
+            }, 500);
+            
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getNationalityPercentageChartData');
+        }
+    }
+
+    function generateNationalityPercentageChart(data) {
+
+        var nationalityPercentages = new Array();
+
+        for (var i = 0; i < data.NationalityPercentages.length; i++) {
+            nationalityPercentages.push({ name: data.NationalityNames[i], y: data.NationalityPercentages[i] })
+        }
+        //var colors = Highcharts.getOptions().colors;
+        //colors.unshift(getDefaultThemeColor());
+
+        Highcharts.chart('nationality-type-percentage-chart', {
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            title: {
+                text: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Nationality)'
+            },
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '<div style="color:{point.color};><b>{point.y:.2f} %</b></div> ',
+            },
+            plotOptions: {
+                pie: {
+                    size: 220,
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 35,
+                    dataLabels: {
+                        enabled: true,
+                        format: $dir == 'ltr' ? '<span>{point.name}: {point.percentage:.1f} <span> %' : '% <span>{point.name}: {point.percentage:.1f} <span>',
+                        useHTML: "hasBidiBug"
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                type: 'pie',
+                name: 'NationalityPercentage',
+                point: {
+                    events: {
+                        click: function (event) {
+                            //alert(this.y);
+                        }
+                    }
+                },
+                data: nationalityPercentages
+            }]
+        });
+    }
+
+    function generateNationalityPercentageTable(data) {
+        var width = 100 / (data.NumberOfEmployees.length);
+        var table = '<table id="socialStatusPercentageTable" dir="' + $dir + '" class="tbl dashboardTable" border="0" cellpadding="0" cellspacing="1" >';
+        table += '<tr>';
+            for (var i = 0; i < data.NationalityNames.length; i++) {
+                table += '<th class="redCell">'+data.NationalityNames[i]+' </th>';
+            }
+        table += '</tr>';
+
+        table += '<tr>';
+            for (var i = 0; i < data.NumberOfEmployees.length; i++) {
+                table += '<td style="background-color:#ffffff;width:' + width + '%;">' + data.NumberOfEmployees[i] + ' </td>';
+            }
+        table += '</tr>';
+
+        table += '</table>';
+
+        $('#nationality-type-percentage-table').html("");
+        $('#nationality-type-percentage-table').html(table);
+    }
+
+</script>

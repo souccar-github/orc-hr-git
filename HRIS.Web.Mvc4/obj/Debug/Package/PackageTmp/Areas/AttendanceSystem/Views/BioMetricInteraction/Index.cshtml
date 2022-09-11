@@ -1,0 +1,95 @@
+﻿@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Core
+
+<fieldset>
+    <legend>
+        @GlobalResource.BiometricInteraction
+    </legend>
+    <div id="BioMetricInteractionInfo"></div>
+</fieldset>
+<div class="top-commands">
+    <button class="k-button primary-command" onclick="PerformBioMetricInteraction()">
+        @AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.PerformBioMetricInteractionButtonTitle)
+</button>
+</div>
+
+
+<script>
+    var supportedDevicesTitle = '@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.BioMetricInteractionSupportedDevicesTitle)';
+    var transferDataFromBioMetricTitle = '@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.BioMetricInteractionTransferDataFromBioMetricTitle)';
+    var clearDataFromBioMetricTitle = '@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.BioMetricInteractionClearDataFromBioMetricTitle)';
+    var ignoreFingerPrintTypeTitle = '@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.BioMetricInteractionIgnoreFingerPrintTypeTitle)';
+    
+    var supportedBioMetricDevices;
+
+    $.ajax({
+        url: '@Url.Action("GetSupportedBioMetricDevices", "BioMetricInteraction")',
+        type: "POST",
+        contentType: 'application/json',
+        async: false,
+        success: function (data) {
+            supportedBioMetricDevices = data.Data;
+        }
+    });
+
+    var databind = kendo.observable();
+    var tempdata = [
+        { Name: "SupportedBioMetricDevices", Title: supportedDevicesTitle, Type: "Dropdown", DataSource: "supportedBioMetricDevices" },
+        { Name: "TransferDataFromBioMetric", Title: transferDataFromBioMetricTitle, Type: "Boolean" },
+        { Name: "IgnoreFingerPrintType", Title: ignoreFingerPrintTypeTitle, Type: "Boolean" },
+        { Name: "ClearDataFromBioMetric", Title: clearDataFromBioMetricTitle, Type: "Boolean" }];
+
+    createCustomEditForm($("#BioMetricInteractionInfo"), { Fields: tempdata, Key: "" }, databind);
+
+    function PerformBioMetricInteraction() {
+        var chkTransferDataFromBioMetric = $("[name=TransferDataFromBioMetric]").is(':checked');
+        var chkIgnoreFingerPrintType = $("[name=IgnoreFingerPrintType]").is(':checked');
+        var chkClearDataFromBioMetric = $("[name=ClearDataFromBioMetric]").is(':checked');
+        var bioMetricDeviceId = $("[name=SupportedBioMetricDevices]").data("kendoDropDownList").value();
+
+        if (bioMetricDeviceId == "") {
+            bioMetricDeviceId = 0;
+        }
+
+        if (bioMetricDeviceId == 0) {
+            var msg = '@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.SelectBioMetricDeviceBeforeExecuteMessage)';
+            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+            return;
+        }
+
+        if (chkTransferDataFromBioMetric == false && chkClearDataFromBioMetric == false) {
+            var msg = '@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.ChooseBioMetricActionsDeviceBeforeExecuteMessage)';
+            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+            return;
+        }
+
+        $.ajax({
+            url: window.applicationpath + 'AttendanceSystem/BioMetricInteraction/PerformBioMetricInteraction',
+            type: "POST",
+            data: JSON.stringify(
+                {
+                    bioMetricDeviceId: bioMetricDeviceId,
+                    transferDataFromBioMetric: chkTransferDataFromBioMetric,
+                    clearDataFromBioMetricTitle: chkClearDataFromBioMetric,
+                    ignoreFingerPrintType: chkIgnoreFingerPrintType
+                }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+
+
+
+</script>

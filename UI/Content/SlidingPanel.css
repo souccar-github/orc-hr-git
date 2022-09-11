@@ -1,0 +1,147 @@
+﻿.panel
+{
+    position: fixed;
+    
+    top: 0px;    
+    direction: inherit;
+    
+    display: none;
+    background: #7F7F7F;
+    border: 1px solid #ffffff;
+    -moz-border-radius-topright: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -webkit-border-bottom-right-radius: 20px;
+    width: auto;
+    height: auto;
+    padding: 30px 30px 30px 130px;
+    filter: alpha(opacity=85);
+    opacity: 1;
+    z-index: 10001;
+    border-radius: 15px;
+}
+
+.panel p
+{
+    margin: 0 0 15px 0;
+    padding: 0;
+    color: #aliceblue;
+}
+
+.panel a, .panel a:visited
+{
+    margin: 0;
+    padding: 0;
+    color: #9FC54E;
+    text-decoration: none;
+    border-bottom: 1px solid #9FC54E;
+}
+
+.panel a:hover, .panel a:visited:hover
+{
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    text-decoration: none;
+    border-bottom: 1px solid #ffffff;
+}
+
+a.trigger
+{
+    position: fixed;
+    text-decoration: none;
+    
+    top: 0px;
+    direction: inherit;
+    
+    font-size: 10px;
+    letter-spacing: -1px;
+    font-family: verdana, helvetica, arial, sans-serif;
+    color: #fff;
+    padding: 10px 20px 10px 7.5px;
+    font-weight: 700;
+    background: #333333 ;
+    border: 1px solid #444444;
+    -moz-border-radius-topright: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -webkit-border-bottom-right-radius: 20px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+    display: block;
+    z-index: 10001;
+    border-radius: 10px;
+}
+
+a.trigger:hover
+{
+    position: fixed;
+    text-decoration: none;
+    top: 0px;
+    
+    top: 0px;   
+    direction: inherit;
+    
+    font-size: 16px;
+    letter-spacing: -1px;
+    font-family: verdana, helvetica, arial, sans-serif;
+    color: #fff;
+    padding: 20px 40px 20px 20px;
+    font-weight: 700;
+    background: #222222;
+    border: 1px solid #444444;
+    -moz-border-radius-topright: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -webkit-border-bottom-right-radius: 20px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+    display: block;
+}
+
+a.active.trigger
+{
+    background: #222222;
+}
+
+.columns
+{
+    clear: both;
+    width: 330px;
+    padding: 0 0 20px 0;
+    line-height: 22px;
+}
+
+.colleft
+{
+    float: left;
+    width: 130px;
+    line-height: 22px;
+}
+
+.colright
+{
+    float: right;
+    width: 130px;
+    line-height: 22px;
+}
+
+ul
+{
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+ul li
+{
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+hr
+{
+    background-color: #333333;
+    height: 1px;
+}

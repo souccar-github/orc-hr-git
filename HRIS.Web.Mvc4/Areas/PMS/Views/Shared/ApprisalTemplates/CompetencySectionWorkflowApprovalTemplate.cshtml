@@ -1,0 +1,108 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+<script id="competencySection-Workflow-Approval-Template" type="text/x-kendo-template">
+    <div>
+        <fieldset class="competence-info">
+            <legend>@GlobalResource.JobDescriptionInformation</legend>
+
+            <div class="appraisal-meta-info">
+                <div>
+                    <span>@GlobalResource.Name :</span>
+                    <span class="val">#=Name#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.JobTitle :</span>
+                    <span class="val">#=JobTitle#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionWeight :</span>
+                    <span class="val">#=SectionWeight#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionValue :</span>
+                    <span class="val">#=SectionValue#</span>
+                </div>
+            </div>
+
+
+            <div class="appraisal-meta-desc">
+                <span>@GlobalResource.Description:</span>
+                #if(Description==null||Description=="null"){#
+
+                #Description="";#
+                #}#
+                <textarea readonly>#=Description#</textarea>
+            </div>
+
+        </fieldset>
+        #var typesNames=getCompetenceTypesNames(AppraisalItems);#
+
+        #for (var i = 0; i < typesNames.length; i++) {#
+        <div class="responsibilities">
+            <fieldset>
+                <legend>#=typesNames[i]#</legend>
+                <table>
+                    <colgroup>
+                        <col class="column-namecolumn">
+                        #if(AppraisalItems.length!=0){#
+                        #for (var j = 0; j < AppraisalItems[0].Steps.length; j++) {#
+                        #var step=AppraisalItems[0].Steps[j];#
+                        <col style="width: 58px;">
+                        <col style="width: 38px;">
+                        <col style="width: 26px;">
+                        <col style="width: 70px;">
+                        #}#
+                        #}#
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Name)</th>
+                            #if(AppraisalItems.length!=0){#
+                            #for (var j = 0; j < AppraisalItems[0].Steps.length; j++) {#
+                            #var step=AppraisalItems[0].Steps[j];#
+                            <th style=" padding-right: 0; padding-left: 0;">@GlobalResource.Manager</th>
+                            <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Weight)</th>
+                            <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Rate)</th>
+                            <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Description)</th>
+                            #}#
+                            #}#
+                        </tr>
+                    </thead>
+                    <tbody>
+                        #for (var j = 0; j < AppraisalItems.length; j++) {#
+                        #var item=AppraisalItems[j];#
+                        #if(item.Type==typesNames[i]){#
+                        <tr class="responsibility-#=i#">
+                            <td><p>#=item.Name#</p></td>
+                            #for (var u = 0; u < item.Steps.length; u++) {#
+                            #var step=item.Steps[u];#
+                            #if(step.Description==null||step.Description=="null"){#
+                            #step.Description="";#
+                            #}#
+                            <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Manager#</p></td>
+                            <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Weight#</p></td>
+                            <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Rate#</p></td>
+                            <td class="center-column"><textarea readonly>#=step.Description#  </textarea></td>
+                                #}#
+                        </tr>
+                        #}#
+                        #}#
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+        #}#
+    </div>
+</script>
+<script>
+    function getCompetenceTypesNames(data) {
+        var result = [];
+        for (var i = 0; i < data.length; i++) {
+            if (!IsInSet(result, data[i].Type)) {
+                result.push(data[i].Type);
+            }
+        }
+        return result;
+    }
+</script>

@@ -1,0 +1,12 @@
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\HRIS.SDKs.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\HRIS.SDKs.pdb
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\Castle.Core.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\Castle.Windsor.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\Newtonsoft.Json.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\Newtonsoft.Json.xml
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\bin\Debug\Interop.zkemkeeper.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\obj\Debug\Interop.zkemkeeper.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\obj\Debug\HRIS.SDKs.csproj.ResolveComReference.cache
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\obj\Debug\HRIS.SDKs.dll
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\obj\Debug\HRIS.SDKs.pdb
+D:\Projects\ORC-HR\HR System\HRIS.SDKs\obj\Debug\HRIS.SDKs.csprojResolveAssemblyReference.cache

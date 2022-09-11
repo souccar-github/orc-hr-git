@@ -1,0 +1,44 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script>
+    function ManageReportingPosition(id) {
+        $.ajax({
+            url: '@Url.Action("GetReportingTarget", "Position", new { area = "JobDescription" })',
+            type: "POST",
+            data: JSON.stringify({ positionId: parseInt(id) }),
+            contentType: 'application/json',
+            success: function (data) {
+                var title = "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ManageReporting)";
+                var buttons = [
+                    { Name: "Reporting_Target_Position_update", CssClass: "update", Title: "@GlobalResource.Save" },
+                    { Name: "Reporting_Target_Position_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var containerId = "Reporting_Target_Position_container";
+                var bodyHTML = "<div id='Reporting_Target_Position'></div>";
+                var popupDiv = $('<div></div>');
+
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+
+                createDualSelectList("ReportingTargetPosition", data, "Reporting_Target_Position", "Positions", "Selected Positions", true);
+                $("#Reporting_Target_Position_update").off('click').on('click', function () {
+                    $.ajax({
+                        url: '@Url.Action("SaveReportingTarget", "Position", new { area = "JobDescription" })',
+                        type: "POST",
+                        data: JSON.stringify({ positionId: parseInt(id), managers: data }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            popupDiv.data("kendo-window").close();
+                            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                        }
+                    });
+                });
+
+                $("#Reporting_Target_Position_cancel").off('click').on('click', function () {
+                    popupDiv.data("kendo-window").close();
+                });
+            }
+        });
+    }
+</script>

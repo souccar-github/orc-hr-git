@@ -1,0 +1,623 @@
+﻿@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+//*******company name: souccar for electronic industries*******//
+//project manager:
+//supervisor:
+//author: Ammar Alziebak
+//description:
+//start date:
+//end date:
+//last update:
+//update by:
+//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+@using  Project.Web.Mvc4.Helpers
+
+@Html.Partial("AppraisalTemplate")
+@Html.Partial("AppraisalPhasePeriodHandler")
+
+@*----------------------تحديد عدد المستويات الوظيفية الواجب موافقتها على التقييم ضمن اعدادات تدفق العمل لمرحلة تقييم الأداء-----------------------------*@
+
+<div id="appraisalPhaseConfigurationWorkflowWindow"></div>
+<div id="appraisalPhaseConfigurationWorkflowTreeWindow"></div>
+
+<script>
+    var globalAppraisalPhaseConfigurationId = 0;
+    function AppraisalPhaseConfigurationWorkflow(appraisalPhaseConfigurationId) {
+
+        globalAppraisalPhaseConfigurationId = appraisalPhaseConfigurationId;
+        var templateAppraisalWorkflowData = [
+            { Name: "AllOrganizationalLevel", Title: "AllOrganizationalLevel", Type: "Boolean" },
+            { Name: "OrganizationalLevel", Title: "Organizational Level", Type: "Index", TypeName: "HRIS.Domain.OrganizationChart.Indexes.OrganizationalLevel", Creatable: false, IsRequired: true },
+            { Name: "Grade", Title: "Grade", Type: "Dropdown", DataSource: "GradeDataSource" },
+            { Name: "JobTitle", Title: "JobTitle", Type: "Dropdown", DataSource: "GradeDataSource" },
+            { Name: "JobDescription", Title: "Job Description", Type: "Dropdown", DataSource: "JobDescriptionDataSource" },
+            { Name: "Position", Title: "Position", Type: "Dropdown", DataSource: "PositionDataSource" },
+            { Name: "StepCount", Title: "Step Count", Type: "Number" }
+        ];
+
+        var templateAppraisalWorkDatabind = kendo.observable();
+        templateAppraisalWorkDatabind.OrganizationalLevel = -1;
+        templateAppraisalWorkDatabind.Grade = 0;
+        templateAppraisalWorkDatabind.JobTitle = 0;
+        templateAppraisalWorkDatabind.JobDescription = 0;
+        templateAppraisalWorkDatabind.Position = 0;
+        templateAppraisalWorkDatabind.StepCount = 0;
+
+        var title = "appraisalPhase Configuration Tree";
+        var buttons = [
+            { Name: "appraisalPhaseConfigurationWindowCancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "container_div";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow($("#appraisalPhaseConfigurationWorkflowWindow"), "<div class='WorkflowWindow'><fieldset><legend>Appraisal Workflow</legend></fieldset></div>", containerId, title, buttons, isTwoColumns);
+        createCustomEditForm($("#appraisalPhaseConfigurationWorkflowWindow .WorkflowWindow"), { Fields: templateAppraisalWorkflowData, Key: "add_Workflow" }, templateAppraisalWorkDatabind);
+
+        $('[name="AllOrganizationalLevel"]').change(function () {
+
+            if (($('[name="AllOrganizationalLevel"]').prop("checked")) == true) {
+
+            } else {
+
+            }
+        });
+
+        $("[Name='OrganizationalLevel']").data("kendoDropDownList").bind("change", onChange);
+        $("[Name='Grade']").data("kendoDropDownList").bind("change", onChange);
+        $("[Name='JobTitle']").data("kendoDropDownList").bind("change", onChange);
+        $("[Name='JobDescription']").data("kendoDropDownList").bind("change", onChange);
+
+        var organizationalLevelApplyButton = $('<a class="k-button " id="organizationalLevelApplyButton"><span class="k-icon k-update"></span>Applay</a>');
+        $("[data-container-for='OrganizationalLevel']").after(organizationalLevelApplyButton);
+
+        var gradeApplyButton = $('<a class="k-button " id="gradeApplyButton"><span class="k-icon k-update"></span>Applay</a>');
+        $("[data-container-for='Grade']").after(gradeApplyButton);
+
+        var jobTitleApplyButton = $('<a class="k-button " id="jobTitleApplyButton"><span class="k-icon k-update"></span>Applay</a>');
+        $("[data-container-for='JobTitle']").after(jobTitleApplyButton);
+
+        var jobDescriptionApplyButton = $('<a class="k-button " id="jobDescriptionApplyButton"><span class="k-icon k-update"></span>Applay</a>');
+        $("[data-container-for='JobDescription']").after(jobDescriptionApplyButton);
+
+        var positionApplyButton = $('<a class="k-button " id="positionApplyButton"><span class="k-icon k-update"></span>Applay</a>');
+        $("[data-container-for='Position']").after(positionApplyButton);
+
+        var allApplyButton = $('<a class="k-button " id="allApplyButton"><span class="k-icon k-update"></span>Applay all</a>');
+        $("[class='control control-StepCount']").after(allApplyButton);
+
+        //Open view window
+        var workflowTreeButton = $('<a class="k-button " id="workflowTreeButton"><span class="k-icon k-update"></span>Workflow tree</a>');
+        $("#allApplyButton").after(workflowTreeButton);
+
+        $("#organizationalLevelApplyButton").off('click').on('click', function () {
+            var applyViewModel = kendo.observable({
+                Id: $("#OrganizationalLevel_add_Workflow").data("kendoDropDownList").value(),
+                dropDownName: "OrganizationalLevel",
+                stepCount: $("#StepCount_add_Workflow").val()
+            });
+
+            applyButton(applyViewModel);
+        });
+        $("#gradeApplyButton").off('click').on('click', function () {
+            var applyViewModel = kendo.observable({
+                Id: $("#Grade_add_Workflow").data("kendoDropDownList").value(),
+                dropDownName: "Grade",
+                stepCount: $("#StepCount_add_Workflow").val()
+            });
+
+            applyButton(applyViewModel);
+        });
+        $("#jobTitleApplyButton").off('click').on('click', function () {
+            var applyViewModel = kendo.observable({
+                Id: $("#JobTitle_add_Workflow").data("kendoDropDownList").value(),
+                dropDownName: "JobTitle",
+                stepCount: $("#StepCount_add_Workflow").val()
+            });
+
+            applyButton(applyViewModel);
+        });
+        $("#jobDescriptionApplyButton").off('click').on('click', function () {
+            var applyViewModel = kendo.observable({
+                Id: $("#JobDescription_add_Workflow").data("kendoDropDownList").value(),
+                dropDownName: "JobDescription",
+                stepCount: $("#StepCount_add_Workflow").val()
+            });
+
+            applyButton(applyViewModel);
+        });
+        $("#positionApplyButton").off('click').on('click', function () {
+            var applyViewModel = kendo.observable({
+                Id: $("#Position_add_Workflow").data("kendoDropDownList").value(),
+                dropDownName: "Position",
+                stepCount: $("#StepCount_add_Workflow").val()
+            });
+
+            applyButton(applyViewModel);
+        });
+        $("#allApplyButton").off('click').on('click', function () {
+            onAppraisalWorkflowSave();
+        });
+        $("#workflowTreeButton").off('click').on('click', function () {
+            openAppraisalPhaseWorkflowTreeWindow();
+        });
+        $("#appraisalPhaseConfigurationWindowCancel").off('click').on('click', function () {
+            $("#appraisalPhaseConfigurationWorkflowWindow").data("kendo-window").close();
+        });
+    }
+
+    //push an empty item at the first of a JSON array.
+    function setFirstEmptyItem(data) {
+
+        var emptyItem = { Id: 0, Name: '' };
+        if (data.length == 0)
+            return data;
+
+        var temp = data;
+        data = new Array();
+        data.push(emptyItem);
+        for (var i = 0; i < temp.length; i++)
+            data.push(temp[i]);
+        return data;
+    }
+
+    function onChange() {
+        var objectName = this.element.attr("name");
+        var id = this.value();
+        var url = '';
+        var jsonParam = {};
+
+        switch (objectName) {
+            case 'OrganizationalLevel':
+                url = '@Url.Action("GetGradeList", "DropDownListHelper")';
+                jsonParam = { organizationalLevelId: id };
+                break;
+            case 'Grade':
+                url = '@Url.Action("GetJobTitleList", "DropDownListHelper")';
+                jsonParam = { gradeId: id };
+                break;
+            case 'JobTitle':
+                url = '@Url.Action("GetJobDescriptionList", "DropDownListHelper")';
+            jsonParam = { jobTitleId: id };
+            break;
+        case 'JobDescription':
+            url = '@Url.Action("GetPositionList", "DropDownListHelper")';
+            jsonParam = { jobDescriptionId: id };
+            break;
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: JSON.stringify(jsonParam),
+        contentType: 'application/json',
+        success: function (data) {
+
+            switch (objectName) {
+                case 'OrganizationalLevel':
+                    var gradeData = new kendo.data.DataSource(
+                        {
+                            data: setFirstEmptyItem(data.result)
+                        }
+                    );
+                    $("#Grade_add_Workflow").data("kendoDropDownList").setDataSource(gradeData);
+                    break;
+
+                case 'Grade':
+                    var jobTitleData = new kendo.data.DataSource(
+                        {
+                            data: setFirstEmptyItem(data.result)
+                        }
+                    );
+                    $("#JobTitle_add_Workflow").data("kendoDropDownList").setDataSource(jobTitleData);
+                    break;
+
+                case 'JobTitle':
+                    var jobDescriptionData = new kendo.data.DataSource(
+                        {
+                            data: setFirstEmptyItem(data.result)
+                        }
+                    );
+                    $("#JobDescription_add_Workflow").data("kendoDropDownList").setDataSource(jobDescriptionData);
+                    break;
+
+                case 'JobDescription':
+                    var positionData = new kendo.data.DataSource(
+                        {
+                            data: setFirstEmptyItem(data.result)
+                        }
+                    );
+                    $("#Position_add_Workflow").data("kendoDropDownList").setDataSource(positionData);
+                    break;
+            }
+        }
+    });
+}
+
+function applyButton(applyViewModel) {
+
+    $.ajax({
+        url: '@Url.Action("ApplyButton", "Home")',
+        type: "POST",
+        data: JSON.stringify({ model: applyViewModel, appraisalPhaseConfigurationId: globalAppraisalPhaseConfigurationId }),
+        contentType: 'application/json',
+        success: function (data) {
+
+        }
+    });
+}
+
+function onAppraisalWorkflowSave() {
+
+    var viewModel = kendo.observable({
+        organizationalLevelId: Number($("#OrganizationalLevel_add_Workflow").data("kendoDropDownList").value()),
+        gradeId: Number($("#Grade_add_Workflow").data("kendoDropDownList").value()),
+        jobTitleId: Number($("#JobTitle_add_Workflow").data("kendoDropDownList").value()),
+        jobDescriptionId: Number($("#JobDescription_add_Workflow").data("kendoDropDownList").value()),
+        positionId: Number($("#Position_add_Workflow").data("kendoDropDownList").value()),
+        stepCount: Number($("#StepCount_add_Workflow").val()),
+        AllOrganizationalLevel: $('[name="AllOrganizationalLevel"]').is(':checked')
+    });
+
+    $.ajax({
+        url: '@Url.Action("AppraisalWorkflowSave", "Home")',
+        type: "POST",
+        data: JSON.stringify({ model: viewModel, appraisalPhaseConfigurationId: globalAppraisalPhaseConfigurationId }),
+        contentType: 'application/json',
+        success: function (data) {
+
+        }
+    });
+
+}
+
+var treeData;
+var selectedNodeItem;
+
+function openAppraisalPhaseWorkflowTreeWindow() {
+
+    var title = "Appraisal Workflow Tree";
+    var buttons = [
+        { Name: "workflowTreeButtonCancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "AppraisalPhaseWorkflowTreeContainerId";
+        var isTwoColumns = false;
+        createAndOpenCustomWindow($("#appraisalPhaseConfigurationWorkflowTreeWindow"), '<div class="appraisalPhaseWorkflow-tree"><fieldset><legend>Appraisal Workflow Tree</legend></fieldset></div><div></div>', containerId, title, buttons, isTwoColumns);
+
+        initAppraisalPhaseWorkflowTreeWindowContent();
+
+        $("#workflowTreeButtonCancel").off('click').on('click', function () {
+            $("#appraisalPhaseConfigurationWorkflowTreeWindow").data("kendo-window").close();
+        });
+
+    }
+
+    function initAppraisalPhaseWorkflowTreeWindowContent() {
+
+        $.ajax({
+            url: '@Url.Action("AppraisalPhaseConfigurationWorkflowTree", "Home")',
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            data: JSON.stringify({
+                id: globalAppraisalPhaseConfigurationId
+            }),
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+
+                var result = data.Data;
+                //alert(data.Data);
+                treeData = new kendo.data.HierarchicalDataSource({
+                    data: result,
+                    schema: {
+                        model: {
+                            children: "Items"
+                        }
+                    }
+                });
+                $("#AppraisalPhaseWorkflowTreeContainerId .appraisalPhaseWorkflow-tree").kendoTreeView({
+                    dataSource: treeData,
+                    dataTextField: ["Name", "Name"],
+                    dataValueField: ["Id", "Id"],
+                    select: onNodeSelect
+                });
+            }
+        });
+    }
+
+    function RefreshWorkflowTree() {
+
+
+        if (globalAppraisalPhaseConfigurationId) {
+
+            $.ajax({
+                url: '@Url.Action("AppraisalPhaseConfigurationWorkflowTree", "Home")',
+                type: "POST",
+                dataType: 'json',
+                async: false,
+                data: JSON.stringify({
+                    Id: globalAppraisalPhaseConfigurationId
+                }),
+                contentType: 'application/json; charset=utf-8',
+
+                success: function (data) {
+
+                    var tv = $("#AppraisalPhaseWorkflowTreeContainerId .appraisalPhaseWorkflow-tree").data("kendoTreeView");
+                    var result = data.Data;
+
+                    tv.setDataSource(new kendo.data.HierarchicalDataSource({
+                        data: result,
+                        schema: {
+                            model: {
+                                children: "Items"
+                            }
+                        }
+                    }));
+                }
+            });
+        }
+    }
+
+    function onDeleteNode() {
+
+        if (selectedNodeItem) {
+
+            $.ajax({
+                url: '@Url.Action("PhaseConfigurationDeleteWorkflow", "Home")',
+                type: "POST",
+                dataType: 'json',
+                async: false,
+                data: JSON.stringify({
+                    nodeId: selectedNodeItem.Id,
+                    levelNumber: selectedNodeItem.LevelNumber,
+                    Id: ItemId
+                }),
+                contentType: 'application/json; charset=utf-8',
+
+                success: function (data) {
+                    if (data.RowAffected > 1)
+                        alert(data.RowAffected + ' Rows affected');
+                    else
+                        alert(data.RowAffected + ' Row affected');
+                    //Refresh overall tree.
+                    RefreshWorkflowTree();
+                }
+            });
+        }
+    }
+
+    function onNodeSelect(e) {
+
+        var tv = $('#AppraisalPhaseWorkflowTreeContainerId .appraisalPhaseWorkflow-tree').data('kendoTreeView');
+        var item = tv.dataItem(e.node);
+        selectedNodeItem = item;
+    }
+
+</script>
+
+@*------------------الموافقات النهائية لتدفق عمل مرحلة تقييم الأداء----------------*@
+
+<div id="appraisalPhaseConfigurationApprovalsWindow">
+    @*<div id="approvalsGrid"></div>*@
+</div>
+
+
+<script>
+    var globalAppraisalPhaseConfigurationId = 0;
+
+    function AppraisalPhaseConfigurationApprovals(appraisalPhaseConfigurationId) {
+        
+        globalAppraisalPhaseConfigurationId = appraisalPhaseConfigurationId;
+        var approvalsData = [
+            { Name: "JobTitle", Title: "JobTitle", Type: "Dropdown", DataSource: "GradeDataSource" },
+            { Name: "JobDescription", Title: "Job Description", Type: "Dropdown", DataSource: "JobDescriptionDataSource" },
+            { Name: "Position", Title: "Position", Type: "Dropdown", DataSource: "PositionDataSource" },
+            { Name: "Order", Title: "Order", Type: "Number" }
+        ];
+
+        var approvalsDatabind = kendo.observable();
+        approvalsDatabind.JobTitle = 0;
+        approvalsDatabind.JobDescription = 0;
+        approvalsDatabind.Position = 0;
+        approvalsDatabind.Order = 0;
+
+        var title = "appraisal Phase Configuration Approvals";
+        var buttons = [
+            { Name: "approvalsCancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "container_div";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow($("#appraisalPhaseConfigurationApprovalsWindow"), "<div class='ApprovalsWindow'><fieldset><legend>Approvals Window</legend></fieldset></div><div id=approvalsGrid></div>", containerId, title, buttons, isTwoColumns);
+        
+        getAllJobTitleList();
+        
+        createCustomEditForm($("#appraisalPhaseConfigurationApprovalsWindow .ApprovalsWindow"), { Fields: approvalsData, Key: "add_Workflow" }, approvalsDatabind);
+
+        //getAllJobTitleList();
+
+        createAppraisalPhaseConfigurationApprovalsGrid();
+        fillAppraisalPhaseConfigurationApprovalsGrid(appraisalPhaseConfigurationId);
+
+        $("[Name='JobTitle']").data("kendoDropDownList").bind("change", onDropDownChange);
+        $("[Name='JobTitle']").data("kendoDropDownList").bind("change", onDropDownChange);
+        $("[Name='JobDescription']").data("kendoDropDownList").bind("change", onDropDownChange);
+        $(".k-edit-buttons.k-state-default").prepend('<a class="k-button primary-action" id="approvals-custom-update"><span class="k-icon k-add"></span>Applay</a>');
+
+        $("#approvalsCancel").off('click').on('click', function () {
+            $("#appraisalPhaseConfigurationApprovalsWindow").data("kendo-window").close();
+        });
+
+        $("#approvals-custom-update").off('click').on('click', function () {
+            var applyViewModel = kendo.observable({
+                id: Number($("#Position_add_Workflow").data("kendoDropDownList").value()),
+                order: $("#Order_add_Workflow").val()
+            });
+            applyApprovalButton(applyViewModel, appraisalPhaseConfigurationId);
+        });
+    }
+
+    function applyApprovalButton(applyViewModel, appraisalPhaseConfigurationId) {
+        $.ajax({
+            url: '@Url.Action("ApplyApprovalButton", "Home")',
+            type: "POST",
+            data: JSON.stringify({ model: applyViewModel, appraisalPhaseConfigurationId: appraisalPhaseConfigurationId }),
+            contentType: 'application/json',
+            success: function (data) {
+                fillAppraisalPhaseConfigurationApprovalsGrid(appraisalPhaseConfigurationId);
+            }
+        });
+    }
+
+    function getAllJobTitleList() {
+        $.ajax({
+            url: '@Url.Action("GetAllJobTitleList", "DropDownListHelper")',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                var jobTitleData = new kendo.data.DataSource(
+                    {
+                        data: setFirstEmptyItem(data.result)
+                    }
+                );
+                $("#JobTitle_add_Workflow").data("kendoDropDownList").setDataSource(jobTitleData);
+            }
+        });
+    }
+
+    function onDropDownChange() {
+        var objectName = this.element.attr("name");
+        var id = this.value();
+        var url = '';
+        var jsonParam = {};
+
+        switch (objectName) {
+            case 'JobTitle':
+                url = '@Url.Action("GetJobDescriptionList", "DropDownListHelper")';
+                jsonParam = { jobTitleId: id };
+                break;
+            case 'JobDescription':
+                url = '@Url.Action("GetPositionList", "DropDownListHelper")';
+                jsonParam = { jobDescriptionId: id };
+                break;
+        }
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(jsonParam),
+            contentType: 'application/json',
+            success: function (data) {
+
+                switch (objectName) {
+                    case 'JobTitle':
+                        $("#JobDescription_add_Workflow").data("kendoDropDownList").setDataSource(null);
+                        var jobDescriptionData = new kendo.data.DataSource(
+                            {
+                                data: setFirstEmptyItem(data.result)
+                            }
+                        );
+                        $("#JobDescription_add_Workflow").data("kendoDropDownList").setDataSource(jobDescriptionData);
+                        break;
+                    case 'JobDescription':
+                        $("#Position_add_Workflow").data("kendoDropDownList").setDataSource(null);
+                        var positionData = new kendo.data.DataSource(
+                            {
+                                data: setFirstEmptyItem(data.result)
+                            }
+                        );
+                        $("#Position_add_Workflow").data("kendoDropDownList").setDataSource(positionData);
+                        break;
+                }
+            }
+        });
+    }
+
+    //push an empty item at the first of a JSON array.
+    function setFirstEmptyItem(data) {
+
+        var emptyItem = { Id: 0, Name: '' };
+        if (data.length == 0)
+            return data;
+
+        var temp = data;
+        data = new Array();
+        data.push(emptyItem);
+        for (var i = 0; i < temp.length; i++)
+            data.push(temp[i]);
+        return data;
+    }
+
+    function createAppraisalPhaseConfigurationApprovalsGrid() {
+
+        $("#approvalsGrid").kendoGrid({
+            height: 285,
+            selectable: "row",
+            columns: [
+                {
+                    field: "position",
+                    title: "Position Name"
+                },
+                {
+                    field: "order",
+                    title: "Order"
+                },
+                { command: "destroy" }
+            ],
+            editable: true
+        });
+        var grid = $("#approvalsGrid").data("kendoGrid");
+        grid.bind("remove", grid_remove);
+
+    }
+
+    function grid_remove(e) {
+        var grid = $("#approvalsGrid").data("kendoGrid");
+        var data = grid.dataItem("tr:eq(1)");
+        alert(data.id);
+        deleteAppraisalPhaseConfigurationApprovalsItem(data.id, globalAppraisalPhaseConfigurationId);
+    }
+
+    function deleteAppraisalPhaseConfigurationApprovalsItem(positionId, appraisalPhaseConfigurationId) {
+        $.ajax({
+            url: '@Url.Action("DeleteAppraisalPhaseConfigurationApprovalsItem", "Home")',
+        type: "POST",
+        data: JSON.stringify({ positionId: positionId, appraisalPhaseConfigurationId: appraisalPhaseConfigurationId }),
+        contentType: 'application/json',
+        success: function (data) {
+            fillAppraisalPhaseConfigurationApprovalsGrid(appraisalPhaseConfigurationId);
+        }
+    });
+}
+
+function fillAppraisalPhaseConfigurationApprovalsGrid(appraisalPhaseConfigurationId) {
+    $.ajax({
+        url: '@Url.Action("GetAllAppraisalPhaseConfigurationApproval", "Home")',
+        type: "POST",
+        data: JSON.stringify({ appraisalPhaseConfigurationId: appraisalPhaseConfigurationId }),
+        contentType: 'application/json',
+        success: function (data) {
+            var grid = $("#approvalsGrid").data("kendoGrid");
+            grid.setDataSource(new kendo.data.DataSource({ model: { id: "id" }, data: data.result }));
+        }
+    });
+}
+
+
+
+    function initializeAppraisalPhaseWoekflowActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+</script>

@@ -1,0 +1,286 @@
+﻿@using HRIS.Domain.Training.Entities
+@using HRIS.Domain.Training.Enums
+@using HRIS.Domain.Training.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-ar" class="chart-params">
+        @* Training Plan *@
+        <div id="p-training-plan-ntcc" style="float: @pageDir; width: 48%;">
+            <div class="control control-p-training-plan-ntcc">
+                <div class="k-edit-label">
+                    <label for="planNtcc">@typeof(TrainingPlan).GetLocalized()</label>
+                </div>
+                <div data-container-for="planNtcc" class="k-edit-field">
+                    <input id="planNtcc" name="planNtcc" placeholder="@typeof(TrainingPlan).GetLocalized() ..."/>
+                    <input id="hf_planNtcc" type="hidden"/>
+                </div>
+
+            </div>
+        </div>
+        @* Status *@
+        <div id="p-status-ntcc" style="float:@pageDir;width:48%;">
+            <div class="control control-p-status-ntcc">
+                <div class="k-edit-label">
+                    <label for="statusNtcc">@typeof(CourseStatus).GetLocalized()</label>
+                </div>
+                <div data-container-for="statusNtcc" class="k-edit-field">
+                    <input id="statusNtcc" name="statusNtcc" placeholder="@typeof(CourseStatus).GetLocalized() ..." />
+                    <input id="hf_statusNtcc" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Course *@
+        <div id="p-course-ntcc" style="float:@pageDir;width:48%;">
+            <div class="control control-p-course-ntcc">
+                <div class="k-edit-label">
+                    <label for="courseNtcc">@typeof(Course).GetLocalized()</label>
+                </div>
+                <div data-container-for="courseNtcc" class="k-edit-field">
+                    <input id="courseNtcc" name="courseNtcc" placeholder="@typeof(Course).GetLocalized() ..." />
+                    <input id="hf_courseNtcc" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+
+    <div id="number-of-trainees-and-candidates-for-each-course-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    $plansNtcc = null;
+    $coursesNtcc = null;
+    $statusNtcc = null;
+
+    function getNumberOfTraineesAndCandidatesForEachCourse(plans, courses) {
+
+        $plansNtcc = plans;
+        $coursesNtcc = courses;
+        $statusNtcc = getCourseStatus();
+
+        generateComboBox("#planNtcc", "planNtcc", $plansNtcc, onChangePlanNtcc);
+        generateComboBox("#statusNtcc", "statusNtcc", $statusNtcc, onChangeStatusNtcc);
+        generateComboBox("#courseNtcc", "courseNtcc", $coursesNtcc, onChangeCourseNtcc);
+
+        setTimeout(function () { showNumberOfTraineesAndCandidatesForEachCourseChart(); }, 500);
+    }
+
+    function onChangePlanNtcc(e) {
+        onChange(e);
+        updateTrainingPlanNtccComboBox(e);
+    }
+
+    function updateTrainingPlanNtccComboBox(e) {
+        var eleCount = $plansNtcc.length;
+        $plansNtcc.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $plansNtcc.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $plansNtcc.push(items[i]);
+                }
+            }
+        }
+
+        //===Course
+        updateCourseNtcc();
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($coursesNtcc);
+        dataSource.data(data);
+
+        var courseNtccDropDownList = $('#courseNtcc').data("kendoDropDownList");
+        courseNtccDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        courseNtccDropDownList.setDataSource(dataSource);
+
+        var courseTextNtcc = getComboBoxText($coursesNtcc, 'courseNtcc');
+        courseNtccDropDownList.text(courseTextNtcc);
+
+        showNumberOfTraineesAndCandidatesForEachCourseChart();
+    }
+
+    function onChangeStatusNtcc(e) {
+        onChange(e);
+        updateStatusNtccComboBox(e);
+    }
+
+    function updateStatusNtccComboBox(e) {
+
+        var eleCount = $statusNtcc.length;
+        $statusNtcc.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $statusNtcc.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $statusNtcc.push(items[i]);
+                }
+            }
+        }
+
+        //===Course
+        updateCourseNtcc();
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($coursesNtcc);
+        dataSource.data(data);
+
+        var courseNtccDropDownList = $('#courseNtcc').data("kendoDropDownList");
+        courseNtccDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        courseNtccDropDownList.setDataSource(dataSource);
+
+        var courseTextNtcc = getComboBoxText($coursesNtcc, 'courseNtcc');
+        courseNtccDropDownList.text(courseTextNtcc);
+
+        showNumberOfTraineesAndCandidatesForEachCourseChart();
+    }
+
+    function updateCourseNtcc() {
+
+        window.Souccar.ajax('@Url.Action("GetCoursesByPlanAndStatus", "Dashboard", new { area = "Training" })',
+            { plans: $plansNtcc, status: $statusNtcc },
+            successFunc,
+            erorrFunc);
+        function successFunc(data) {
+
+            $coursesNtcc = data;
+            console.log($coursesNtcc);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:updateCourseAr');
+        }
+    }
+
+    function onChangeCourseNtcc(e) {
+        onChange(e);
+        updateCourseNtccComboBox(e);
+    }
+    function updateCourseNtccComboBox(e) {
+        var eleCount = $coursesNtcc.length;
+        $coursesNtcc.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $coursesNtcc.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $coursesNtcc.push(items[i]);
+                }
+            }
+        }
+
+        showNumberOfTraineesAndCandidatesForEachCourseChart();
+    }
+
+    function showNumberOfTraineesAndCandidatesForEachCourseChart() {
+
+        window.Souccar.ajax('@Url.Action("NumberOfTraineesAndCandidates", "Dashboard", new { area = "Training" })', { courseNames: $coursesNtcc }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success)
+                initNumberOfTraineesAndCandidatesForEachCourseChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:showNumberOfTraineesAndCandidatesForEachCourseChart');
+        }
+    }
+
+    function initNumberOfTraineesAndCandidatesForEachCourseChart(data) {
+        var colors = [getDefaultThemeColor(), '#434348', '#7CB5EC', '#F45B5B'];
+        Highcharts.chart('number-of-trainees-and-candidates-for-each-course-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTraineesAndCandidatesForEachTrainingCourse)'
+            },
+            xAxis: {
+                categories: data.CoursesNames
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfEmployees)'
+            }
+        },
+            legend: {
+            enable: false
+            },
+        tooltip: {
+                outside: true,
+                useHTML: true,
+                borderRadius: 5,
+                formatter: function () {
+                    return (
+                        '<div class="chart-tooltip' +
+                            this.x +
+                            '"><span class="tval"><b>' +
+                            this.x +
+                            '</b> </span><span class="tlabel"><p>' + (this.colorIndex == 0 ? '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTrainees)' : '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfCandidates)') + this.y + '</p></span></div>'
+                    );
+
+
+                }
+        },
+        plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+        },
+        colors: colors,
+        series: [{
+            name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTrainees)',
+            data: data.NumberOfTrainees
+        },
+            {
+                name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfCandidates)',
+                data: data.NumberOfCandidates
+            }]
+    });
+    }
+</script>

@@ -1,0 +1,82 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<script id="customSection-Workflow-Approval-Template" type="text/x-kendo-template">
+    <div>
+        <fieldset class="custom-info">
+            <legend>@GlobalResource.Information</legend>
+            <div class="appraisal-meta-info">
+                <div>
+                    <span>@GlobalResource.Name :</span>
+                    <span>#=Name#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionWeight :</span>
+                    <span>#=SectionWeight#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionValue :</span>
+                    <span class="val">#=SectionValue#</span>
+                </div>
+            </div>
+            <div class="appraisal-meta-desc">
+                <span>@GlobalResource.Description:</span>
+                #if(Description==null||Description=="null"){#
+
+                #Description="";#
+                #}#
+                <textarea readonly>#=Description#</textarea>
+            </div>
+
+        </fieldset>
+        <div class="custom">
+            <table>
+                <colgroup>
+                    <col class="column-namecolumn">
+                    #if(AppraisalItems.length!=0){#
+                    #for (var j = 0; j < AppraisalItems[0].Steps.length; j++) {#
+                    #var step=AppraisalItems[0].Steps[j];#
+                    <col style="width: 58px;">
+                    <col style="width: 38px;">
+                    <col style="width: 26px;">
+                    <col style="width: 70px;">
+                    #}#
+                    #}#
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Name)</th>
+                        #if(AppraisalItems.length!=0){#
+                        #for (var j = 0; j < AppraisalItems[0].Steps.length; j++) {#
+                        #var step=AppraisalItems[0].Steps[j];#
+                        <th style=" padding-right: 0; padding-left: 0;">@GlobalResource.Manager</th>
+                        <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Weight)</th>
+                        <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Rate)</th>
+                        <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Description)</th>
+                        #}#
+                        #}#
+                    </tr>
+                </thead>
+                <tbody>
+                    #for (var i = 0; i < AppraisalItems.length; i++) {#
+                    #var item=AppraisalItems[i];#
+                    <tr class="custom-#=i#">
+                        <td><p>#=item.Name#</p></td>
+                        #for (var j = 0; j < item.Steps.length; j++) {#
+                        #var step=item.Steps[j];#
+                        #if(step.Description==null||step.Description=="null"){#
+                        #step.Description="";#
+                        #}#
+                        <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Manager#</p></td>
+                        <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Weight#</p></td>
+                        <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Rate#</p></td>
+                        <td class="center-column"><textarea readonly>#=step.Description#</textarea></td>
+                        #}#
+                    </tr>
+                    #}#
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+
+

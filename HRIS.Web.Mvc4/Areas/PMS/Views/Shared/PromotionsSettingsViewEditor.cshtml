@@ -1,0 +1,52 @@
+﻿    
+<script type="text/javascript" language="javascript">
+
+    function PromotionsSettingsViewEditHandler(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetCustomAppraisalPhasesById", "Promotion", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: e.model.Id
+            }),
+            success: function (appraisalPhases) {
+                e.model.dirty = true;
+                e.model.CustomInformation = appraisalPhases;
+                e.container.find(".fieldset-PMSGoupesNames_PromotionsInfo").append('<div class="appraisalPhase-container first-column control"></div>');
+                var appraisalPhaseTemplate = kendo.template($("#appraisal-phase-editor-template").html());
+                e.container.find(".appraisalPhase-container").html(appraisalPhaseTemplate({ AppraisalPhases: appraisalPhases }));
+            }
+        });
+    }
+
+</script>
+
+<script id="appraisal-phase-editor-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th>OpenDate</th>
+                <th>CloseDate</th>
+                <th>Description</th>
+                <th>Checked</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i < AppraisalPhases.length; i++) {#
+            <tr>
+                #var checkStatus="";#
+                #if(AppraisalPhases[i].IsIncluded){#
+                #checkStatus='checked="checked"';#
+                #}#
+                <td>#=AppraisalPhases[i].Period#</td>
+                <td>#=AppraisalPhases[i].OpenDate#</td>
+                <td>#=AppraisalPhases[i].CloseDate#</td>
+                <td>#=AppraisalPhases[i].Description#</td>
+                <td><input type="checkbox" #=checkStatus# disabled="disabled" class="custom-appraisal-phase-include" name="custom-appraisal-phase" data-index="#=i#" /></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

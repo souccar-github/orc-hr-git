@@ -1,0 +1,41 @@
+﻿
+<script>
+
+    function onEditDependent(e) {
+        $("[name='DeathDate']").data("kendoDatePicker").value(null);
+        e.model.DeathDate = null;
+        e.container.find("[name='IsDeath']").off("click").on("click", controlClick);
+        
+        controlClick();
+        
+        function controlClick() {
+            
+            var container = e.container.find(".controls-div");
+            var isDeath = e.container.find("[name='IsDeath']").is(":checked");
+            dependentUpdateEditView(container, isDeath);
+            e.model.DeathDate = e.container.find("[name='DeathDate']").data("kendoDatePicker").value();
+        }
+        
+    }
+
+    function onViewDependent(e) {
+        
+        var container = $(".customPopupView-body");
+        var isDeath = e.model.IsDeath;
+        dependentUpdateEditView(container, isDeath);
+        
+    }
+    
+    function dependentUpdateEditView(container, isDeath) {
+        
+        if (isDeath) {
+            container.find(".control-DeathDate").show();
+           
+        } else {
+            container.find(".control-DeathDate").hide();
+        }
+        reOrderControls(container);
+        
+    }
+    
+</script>

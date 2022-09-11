@@ -1,0 +1,81 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<script id="objectiveSection-Workflow-Approval-Template" type="text/x-kendo-template">
+    <div>
+        <fieldset class="objective-info">
+            <legend>@GlobalResource.ObjectiveInformation</legend>
+
+            <div class="appraisal-meta-info">
+                <div>
+                    <span>@GlobalResource.Weight</span>
+                    <span class="val">#=SectionWeight#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionValue :</span>
+                    <span class="val">#=SectionValue#</span>
+                </div>
+            </div>
+
+            <div class="appraisal-meta-desc">
+                <span>@GlobalResource.Description:</span>
+                #if(Description==null||Description=="null"){#
+
+                #Description="";#
+                #}#
+                <textarea readonly>#=Description#</textarea>
+            </div>
+        </fieldset>
+        <div class="objective">
+            <table>
+                <colgroup>
+                    <col class="column-namecolumn">
+                    <col id="evaluation-mark-column" class="column-evaluation-mark">
+                    #if(AppraisalItems.length!=0){#
+                    #for (var j = 0; j < AppraisalItems[0].Steps.length; j++) {#
+                    #var step=role.AppraisalItems[0].Steps[j];#
+                    <col style="width: 58px;">
+                    <col style="width: 38px;">
+                    <col style="width: 26px;">
+                    <col style="width: 70px;">
+                    #}#
+                    #}#
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Name)</th>
+                        <th id="evaluation-mark" class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.EvaluationMark)</th>
+                        #if(AppraisalItems.length!=0){#
+                        #for (var j = 0; j < AppraisalItems[0].Steps.length; j++) {#
+                        #var step=role.AppraisalItems[0].Steps[j];#
+                        <th style=" padding-right: 0; padding-left: 0;">@GlobalResource.Manager</th>
+                        <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Weight)</th>
+                        <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Rate)</th>
+                        <th style=" padding-right: 0; padding-left: 0;">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Description)</th>
+                        #}#
+                        #}#
+                    </tr>
+                </thead>
+                <tbody>
+                    #for (var j = 0; j < AppraisalItems.length; j++) {#
+                    #var item=AppraisalItems[j];#
+                    <tr class="objective-#=i#">
+                        <td><p>#=item.Name#</p></td>
+                        <td id="evaluation-mark-#=item.Id#"><p>#=item.EvaluationMark#</p></td>
+                        #for (var j = 0; j < item.Steps.length; j++) {#
+                        #var step=item.Steps[j];#
+                        #if(step.Description==null||step.Description=="null"){#
+                        #step.Description="";#
+                        #}#
+                        <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Manager#</p></td>
+                        <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Weight#</p></td>
+                        <td class="center-column"><p style="padding:0;padding-left: 5px; text-align: left; ">#=step.Rate#</p></td>
+                        <td class="center-column"><textarea readonly>#=step.Description#</textarea></td>
+                        #}#
+                    </tr>
+                    #}#
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+

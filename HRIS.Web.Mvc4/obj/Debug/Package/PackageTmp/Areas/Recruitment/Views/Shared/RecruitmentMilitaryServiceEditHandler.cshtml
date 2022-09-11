@@ -1,0 +1,119 @@
+﻿@using HRIS.Domain.Personnel.Enums;
+
+<script type="text/javascript">
+    function RecruitmentMilitaryServiceEditHandler(e) {
+        
+        var status = e.model.Status.Id;
+        var container = e.container.find(".controls-div");
+        militaryUpdateEditViewAsStatus(container, status);
+        function status_change() {
+            militaryUpdateEditViewAsStatus(container, this.value());
+        }
+        var dropdownlist = e.container.find("#dropDownListStatus").data("kendoDropDownList");
+        dropdownlist.bind("change", status_change);
+        dropdownlist.bind("close", status_change);
+        //addRequiredStar("IsPermamentExemption");
+        removeRequiredStar('ExemptionReason');
+        removeRequiredStar('DateOfExemption');
+        removeRequiredStar('DelayReason');
+        removeRequiredStar('DateOfDelay');
+
+        addRequiredStar("ExemptionReason");
+        addRequiredStar("DateOfExemption");
+        addRequiredStar("DelayReason");
+        addRequiredStar("DateOfDelay");
+        //addRequiredStar("SendDelayExpirationNotification");
+        removeRequiredStar('MilitiryServiceNo');
+        removeRequiredStar('MilitiryServiceDocIssuance');
+        removeRequiredStar('Granter');
+        removeRequiredStar('Days');
+        removeRequiredStar('Months');
+        removeRequiredStar('Years');
+        removeRequiredStar('ServiceStartDate');
+        removeRequiredStar('ServiceEndDate');
+        removeRequiredStar('HoldDate');
+        removeRequiredStar('ReserveStartDate');
+
+        addRequiredStar("MilitiryServiceNo");
+        addRequiredStar("MilitiryServiceDocIssuance");
+        addRequiredStar("Granter");
+        addRequiredStar("Days");
+        addRequiredStar("Months");
+        addRequiredStar("Years");
+        addRequiredStar("ServiceStartDate");
+        addRequiredStar("ServiceEndDate");
+        addRequiredStar("HoldDate");
+        addRequiredStar("ReserveStartDate");
+    }
+
+    //function RecruitmentMilitaryServiceEditHandler(e) {
+    //    var status = e.model.Status.Id;
+    //    var container = e.container.find("#default-view-controls");
+    //    militaryUpdateEditViewAsStatus(container, status);
+
+    //}
+
+    function militaryUpdateEditViewAsStatus(container, status) {
+        container.find(".control").hide();
+        container.find(".control.control-Status").show();
+        container.find(".control.control-Notes").show();
+        //Exempt معفى
+         @{var statusTest = ((int)MilitaryStatus.Exempt).ToString();}
+        if (status == "@statusTest") {
+            container.find(".control.control-IsPermamentExemption").show();
+            container.find(".control.control-ExemptionReason").show();
+            container.find(".control.control-DateOfExemption").show();
+
+        }
+        //Delayed, مؤجل
+         @{ statusTest = ((int)MilitaryStatus.Delayed).ToString();}
+        if (status == "@statusTest") {
+            container.find(".control.control-DelayReason").show();
+            container.find(".control.control-DateOfDelay").show();
+            container.find(".control.control-SendDelayExpirationNotification").show();
+
+        }
+        //Served,أنهى خدمته
+         @{ statusTest = ((int)MilitaryStatus.Served).ToString();}
+        if (status == "@statusTest") {
+            container.find(".control.control-MilitiryServiceNo").show();
+            container.find(".control.control-MilitiryServiceDocIssuance").show();
+            container.find(".control.control-Granter").show();
+            container.find(".control.control-Days").show();
+            container.find(".control.control-Months").show();
+            container.find(".control.control-Years").show();
+            container.find(".control.control-ServiceStartDate").show();
+            container.find(".control.control-ServiceEndDate").show();
+
+        }
+         @{ statusTest = ((int)MilitaryStatus.Hold).ToString();}
+        //Hold,احتفاظ
+        if (status == "@statusTest") {
+            container.find(".control.control-MilitiryServiceNo").show();
+            container.find(".control.control-MilitiryServiceDocIssuance").show();
+            container.find(".control.control-Granter").show();
+            container.find(".control.control-Days").show();
+            container.find(".control.control-Months").show();
+            container.find(".control.control-Years").show();
+            container.find(".control.control-ServiceStartDate").show();
+            container.find(".control.control-ServiceEndDate").show();
+            container.find(".control.control-HoldDate").show();
+        }
+         @{ statusTest = ((int)MilitaryStatus.Reserve).ToString();}
+        //reserve,احتياط
+        if (status == "@statusTest") {
+            container.find(".control.control-MilitiryServiceNo").show();
+            container.find(".control.control-MilitiryServiceDocIssuance").show();
+            container.find(".control.control-Granter").show();
+            container.find(".control.control-Days").show();
+            container.find(".control.control-Months").show();
+            container.find(".control.control-Years").show();
+            container.find(".control.control-ServiceStartDate").show();
+            container.find(".control.control-ServiceEndDate").show();
+            container.find(".control.control-ReserveStartDate").show();
+        }
+        reOrderControls(container);
+
+    }
+
+</script>

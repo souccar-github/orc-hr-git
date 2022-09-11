@@ -1,0 +1,187 @@
+﻿html, body { /* Needed for the 100% Kendo Splitter */
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow-x:hidden;
+}
+
+#horizontal { /* To set the Kendo Splitter to 100% height */
+    height:99%;
+    background:#eaeaea;
+}
+
+#theme-default { /* After splitter, the page is slightly shifted, so this is to adjust it */
+    margin-left: -1px;
+    margin-top: -1px;
+}
+
+#left_bar { /* Gives a horizontal scrollbar for the left bar's secondary navigation menu */ 
+    overflow-y: auto;
+    width: 270px;
+}
+
+#start_menu { /* Shifts the start menu a pixel to the right, and gives the shifted position same color as the primary nav's */
+    border-right: #0e4169 1px solid;
+}
+
+#content { /* Overrides the min-hight: 650px, not needed because of an accomplished different structure */
+    min-height: initial;
+}
+
+#container {
+    height: initial;
+}
+
+.k-popup {
+    width: 185px;
+}
+
+form.k-filter-menu .k-textbox{
+    width: 100%;
+}
+
+.switch_bar {
+    text-align: initial;
+}
+
+.switch_bar li {
+    text-align: center;
+}
+
+.switch_bar ul {
+    padding-left: 15px;
+}
+
+.zip_files_b {
+    background-position: -200px -100px !important;
+}
+
+#breadcrumb {
+    margin: 0px;
+    padding: 0px 10px 0 50px;
+    font-size: 13px;
+    line-height: 49px;
+    color: #444;
+    text-shadow: 1px 1px 0px #fff;
+    font-weight: bold;
+}
+
+.breadcrumb_area {
+    float: left;
+    
+}
+
+.breadcrumb_links {
+    float: left;
+}
+
+#breadcrumb a {
+    color: #444;
+}
+
+#breadcrumb a:hover {
+    color: #06C;
+}
+
+.arrowbread {
+    background-image: url(../images/breadcrumb/bc_separator_en.png);
+    height: 30px;
+    background-repeat: no-repeat;
+    padding-right: 15px;
+    float: left;
+    margin-left: 5px;
+    margin-top: 10px;
+}
+
+.maestro_logo {
+    display: block;
+    width: 235px;
+    height: 214px;
+    float: right;
+    margin-right: 0px;
+    margin-top: 60px;
+    background: url(../images/maestro/icons.png) 0 -150px no-repeat;
+}
+
+.menuItemLink {
+    cursor: pointer;
+}
+
+.hris {
+    width: 235px;
+    height: 72px;
+    background: url("../images/maestro/icons.png") 10px 10px no-repeat;
+    margin-top: -15px;
+}
+
+.hris_header {
+    width: 235px;
+    height: 72px;
+    background: url("../images/maestro/icons.png") 10px 10px no-repeat;
+    margin-top: -12px;
+    margin-left: -25px;
+}
+
+.k-grid tr td {
+    overflow:visible;
+}
+
+.actionlist_separator {
+    border-bottom-style: solid !important;
+    border-bottom-width: 1px !important;
+    border-bottom-color: #94c0d2 !important;
+}
+
+#grid td
+{
+    word-wrap: break-word;
+}
+
+.k-filterable a.k-grid-filter.k-state-active ~ .k-link {
+    font-style:italic;
+}
+                
+[id*='menu'] li span .k-i-arrow-s {
+    display: none;
+}
+
+[id*='menu'] .k-menu .k-item, .k-widget.k-menu-horizontal>.k-item {
+    border-style: none;
+}
+
+::selection { /* Selected text settings */
+    background-color: #000000;
+    color: #fff;
+}
+			
+::-webkit-scrollbar { /* Scrollbar settings, work only with Google Chrome browsers */
+    width: 15px;
+    height: 15px;
+    border: none;
+    background-color: #F0F0F0;
+}
+
+::-webkit-scrollbar:hover { /* Scrollbar settings, work only with Google Chrome browsers */
+    width: 15px;
+    height: 15px;
+    border: none;
+    background-color: rgb(200,200,200);
+}
+
+::-webkit-scrollbar-thumb { /* Scrollbar settings, work only with Google Chrome browsers */
+    background-color: #CDCDCD;
+    border: 1px solid #F0F0F0;
+}
+
+::-webkit-scrollbar-thumb:hover { /* Scrollbar settings, work only with Google Chrome browsers */
+    background-color: rgb(100,100,100);
+    border: 1px solid #F0F0F0;
+}
+			
+::-webkit-scrollbar-corner { /* Scrollbar settings, work only with Google Chrome browsers */
+    background-color: #F0F0F0;
+}
+
+::-webkit-scrollbar-button { /* Scrollbar settings, work only with Google Chrome browsers */
+    display: none;
+}

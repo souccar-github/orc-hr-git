@@ -1,0 +1,87 @@
+﻿    
+<script type="text/javascript" language="javascript">
+
+    function PromotionsSettingsEditHandler(e) {
+        var isNew=true;
+        getAppraisalPhases(e, isNew);
+        $("[name='StartDate']").data("kendoDatePicker").bind("change", onChange);
+        $("[name='EndDate']").data("kendoDatePicker").bind("change", onChange);
+        function onChange() {
+            $(".appraisalPhase-container").remove();
+            getAppraisalPhases(e, isNew);
+        }
+    }
+
+    function getAppraisalPhases(e, isNew) {
+
+        var fromDate,toDate;
+        //$(".custom-appraisal-phase-include").addClass('disabled').attr('disabled', 'disabled');
+        if (e.model.dirty && (!isNew))
+        {
+            fromDate = e.model.fromDate;
+            toDate = e.model.toDate;
+
+        } else {
+            fromDate = kendo.toString($("[name='StartDate']").data("kendoDatePicker").value(), "MM/dd/yyyy");
+            toDate = kendo.toString($("[name='EndDate']").data("kendoDatePicker").value(), "MM/dd/yyyy");
+        }
+        
+        $.ajax({
+            url: '@Url.Action("GetCustomAppraisalPhases", "Promotion", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: e.model.Id,
+                fromDate: fromDate,
+                toDate: toDate
+            }),
+            success: function (appraisalPhases) {
+                e.model.dirty = true;
+                e.model.CustomInformation = appraisalPhases;
+                initAppraisalTemplateEditWindow(e, appraisalPhases);
+            }
+        });
+    }
+
+    function initAppraisalTemplateEditWindow(e, appraisalPhases) {
+
+        e.container.find(".fieldset-PMSGoupesNames_PromotionsInfo").append('<div class="appraisalPhase-container first-column control"></div>');
+        var appraisalPhaseTemplate = kendo.template($("#appraisal-phase-editor-template").html());
+        e.container.find(".appraisalPhase-container").html(appraisalPhaseTemplate({ AppraisalPhases: appraisalPhases }));
+      
+        e.container.find('.custom-appraisal-phase-include').off("change").on("change", function () {
+            var index = $(this).attr("data-index");
+            appraisalPhases[index].IsIncluded = this.checked;
+        });
+    }
+    
+</script>
+
+<script id="appraisal-phase-editor-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th>OpenDate</th>
+                <th>CloseDate</th>
+                <th>Description</th>
+                <th>Checked</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i < AppraisalPhases.length; i++) {#
+            <tr>
+                #var checkStatus="";#
+                #if(AppraisalPhases[i].IsIncluded){#
+                #checkStatus='checked="checked"';#
+                #}#
+                <td>#=AppraisalPhases[i].Period#</td>
+                <td>#=AppraisalPhases[i].OpenDate#</td>
+                <td>#=AppraisalPhases[i].CloseDate#</td>
+                <td>#=AppraisalPhases[i].Description#</td>
+                <td><input type="checkbox" #=checkStatus# class="custom-appraisal-phase-include" name="custom-appraisal-phase-#=i#" data-index="#=i#" /></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

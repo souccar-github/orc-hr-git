@@ -1,0 +1,46 @@
+﻿
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers
+
+@{
+    Layout = "~/Views/ReportGenerator/ReportGeneratorLayOut.cshtml";
+    var dir = "";
+    var kdir = "";
+    var localdir = "";
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        dir = "rtl";
+        kdir = "k-rtl";
+        localdir = "local-rtl";
+    }
+
+}
+
+@Html.DevExpress().DocumentViewer(settings =>
+{
+
+    settings.Name = "DocumentViewer";
+    settings.CallbackRouteValues = new
+    {
+        Controller = "ReportBuilder",
+        Action = "DocumentViewerPartial"
+    };
+    settings.ExportRouteValues = new
+    {
+        Controller = "ReportBuilder",
+        Action = "DocumentViewerExport"
+    };
+    settings.Report = (DevExpress.XtraReports.UI.XtraReport)Model;
+}).GetHtml()
+
+<script>
+    $(document).ready(function() {
+        var dir = '@dir';
+        if (dir != "") {
+            $(".dxXtraReports_PageTable").attr("dir", @dir);
+            $("#report_div").attr("dir", @dir);}
+    });
+
+
+</script>
+@*@Html.Action("DocumentViewerPartial","ReportBuilder")*@

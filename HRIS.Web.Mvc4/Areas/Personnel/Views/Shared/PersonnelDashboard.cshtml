@@ -1,0 +1,432 @@
+﻿@using Project.Web.Mvc4
+
+
+<link href="~/CssAndJs/dashboard.css" rel="stylesheet" />
+<style>
+    .k-icon.k-clear-value.k-i-close {
+        display: none !important;
+    }
+</style>
+
+
+@Html.Partial("Charts/MalesAndFemalesPercentageChat")
+@Html.Partial("Charts/BloodGroupsPercentageChart")
+@Html.Partial("Charts/ReligionPercentageChart")
+@Html.Partial("Charts/SocialStatusPercentageChart")
+@Html.Partial("Charts/NationalityPercentageChart")
+@Html.Partial("Charts/DisabilityPercentageChart")
+
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming.ToString();
+}
+
+<script type="text/javascript">
+
+    @{
+        var dir = "ltr";
+        var pageDir = "left";
+
+        if (CurrentLocale.Language == Locale.Rtl)
+        {
+            pageDir = "right";
+            dir = "rtl";
+        }
+    }
+
+    var $themeName = '@themingName';
+    var $dir = '@dir';
+    var $pageDir = '@pageDir';
+
+    var $parentNode = null;
+    var $childNode = null;
+    var $filterNode = '';
+    var $isItemChecked = false;
+    var $seletedData = [];
+
+    $(function () {
+        getParentNodes();
+    });
+
+
+    function getParentNodes() {
+        window.Souccar.ajax('@Url.Action("GetParentNodes", "Dashboard", new { area = "Personnel" })', {  }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $parentNode = data;
+
+            getChildrenNodesByParents($parentNode);
+            generateBloodGroupPercentageSection();
+            generateReligionsPercentageSection();
+            generateSocialStatusPercentageSection();
+            generateDisabilityPercentageSection();
+            generateNationalityPercentageSection();
+        }
+        function erorrFunc() {
+            console.log("Error / func:getParentNodes");
+        }
+    }
+
+    function getChildrenNodesByParents(parentNodes) {
+
+        window.Souccar.ajax('@Url.Action("GetChildrenNodes", "Dashboard", new { area = "Personnel" })', { parentNodes: parentNodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $childNode = data;
+            generateMalesAndFemalesPercentageSection();
+
+        }
+        function erorrFunc() {
+            console.log("Error / func:getChildrenNodesByParents");
+        }
+    }
+
+    /*----------------------------------------------------*/
+    /*-------------------Generate ComboBoxs---------------*/
+    /*----------------------------------------------------*/
+
+    function generateComboBox(selector, name, data) {
+        var comboName = name;
+        var comboTemplateText = "<input type='checkbox' id='chk_" + comboName + "_#=data.Id #' onclick='updateIdinHf(this);' value='#=data.Id #' name='" + comboName + "'  />" + " " + "${ data.Name }";
+        var dataSource = getComboDataSource(data);
+
+        $(selector).kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: dataSource,
+            filter: "contains",
+            index: -1,
+            suggest: true,
+            autoWidth: false,
+            template: comboTemplateText,
+            close: onClose,
+            select: onChange,
+            open: function (e) {
+                e.sender.value(null);
+            },
+            dataBound: function (e) {
+
+                var name = e.sender.element.context.name;
+                var selector = "#hf_" + name;
+                var data = $(selector).get(0).value.split(",");
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] != "") {
+                        var selector = "#chk_" + name + "_"+ data[i];
+                        var chk = $(selector).get(0);
+                        if (chk) {
+                            chk.checked = 'checked';
+                            
+                            checkIfAllSelected(name);
+                        }
+
+                    }
+
+                }
+
+            }
+        });
+
+        //To checked all items
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Id != "") {
+                var selector = "#chk_" + name + "_" + data[i].Id;
+                var chk = $(selector).get(0);
+                if (chk) {
+                    chk.checked = 'checked';
+                    updateIdinHf(chk);
+                }
+
+            }
+
+        }
+    }
+
+
+    function updateIdinHf(obj) {
+
+        var id = $(obj).attr('id');
+        var name = $(obj).attr('name');
+        var value = parseInt($(obj).attr('value'));
+        var IsChecked = $(obj).is(':checked');
+        var hf = $("#hf_" + name).get(0);
+
+        if (value != 0) {
+            updateIdInHiddenField(hf, value, IsChecked);
+            checkIfAllSelected(name);
+        }
+        else {
+            $('input[id*="chk_' + name + '"]').each(function () {
+                if (parseInt($(this).val()) != 0) {
+                    if (IsChecked == true) {
+                        $(this).prop("checked", true);
+                        updateIdInHiddenField(hf, $(this).val(), IsChecked);
+                    }
+                    else {
+                        $(this).prop("checked", false);
+                        updateIdInHiddenField(hf, $(this).val(), IsChecked);
+                    }
+                }
+            });
+        }
+        $isItemChecked = true;
+
+    }
+
+    function checkIfAllSelected(name) {
+        
+        var totalchk = $('input[id*="chk_' + name + '"]').not("#chk_" + name + "_0").length;
+        var checkedchk = $('input[id*="chk_' + name + '"]:checked').not("#chk_" + name + "_0").length;
+
+        if (totalchk == checkedchk) {
+            $("#chk_" + name + "_0").prop("checked", true);
+        }
+        else {
+            $("#chk_" + name + "_0").prop("checked", false);
+        }
+    }
+
+    function onClose(e) {
+        if ($isItemChecked == true) {
+            $isItemChecked = false;
+            e.preventDefault();
+            
+        }
+        
+        e.sender.text('');
+    }
+    function updateIdInHiddenField(hf, id, IsAdd) {
+
+        if (hf.value == "") {
+            hf.value = ",";
+        }
+
+        if (IsAdd == true) {
+            if (hf.value.indexOf("," + id + ",") == -1) {
+                hf.value = hf.value + id + ",";
+            }
+        }
+        else if (IsAdd == false) {
+            if (hf.value.indexOf("," + id + ",") >= 0) {
+                hf.value = hf.value.replace("," + id + ",", ",");
+            }
+        }
+    }
+    function onChange(e) {
+        
+        var filterText = e.sender.filterInput.val();
+        if (filterText) {
+            e.preventDefault();
+        }
+        $isItemChecked = true;
+        updateComboBoxValues(e);
+       
+    }
+    function getComboDataSource(data) {
+
+        var items = [];
+        if (data.length > 0) {
+            items = [{ Name: "Select All", Id: "0" }];
+            for (var i = 0; i < data.length; i++) {
+                var item = { Name: data[i].Name, Id: data[i].Id };
+                items.push(item);
+            }
+        }
+        return items;
+    }
+    function updateComboBoxValues(e) {
+       
+        switch (e.sender.element.context.name) {
+            case 'pNodeMafp': {
+                eleCount = $pNodeMafp.length;
+                $pNodeMafp.splice(0, eleCount);
+
+                var eleName = "chk_" + e.sender.element.context.name + "_";
+                
+                var items = e.sender.dataSource.data();
+
+                //var selectAllSelector = '#' + eleName + 0;
+                //if ($(selectAllSelector).is(':checked')) {
+                //    for (var i = 1; i < items.length; i++) {
+                //        $pNodeMafp.push(items[i]);
+                //    }
+                //} else {
+                //    for (var i = 1; i < items.length; i++) {
+                //        var selector = '#' + eleName + items[i].Id;
+                //        if ($(selector).is(':checked')) {
+                //            $pNodeMafp.push(items[i]);
+                //        }
+                //    }
+                //}
+
+                for (var i = 1; i < items.length; i++) {
+                    var selector = '#' + eleName + items[i].Id;
+                    if ($(selector).is(':checked')) {
+                        $pNodeMafp.push(items[i]);
+                    }
+                }
+
+                updateChildNodes($pNodeMafp, "mafp");
+                var dataSource = new kendo.data.DataSource();
+                var data = getComboDataSource($cNodeMafp);
+                dataSource.data(data);
+
+                var cNodeMafpDropDownList = $('#cNodeMafp').data("kendoDropDownList");
+                cNodeMafpDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+                cNodeMafpDropDownList.setDataSource(dataSource);
+
+                getMalesAndFemalesPercentageChartData();
+
+            } break;
+
+            case 'cNodeMafp': {
+                eleCount = $cNodeMafp.length;
+                $cNodeMafp.splice(0, eleCount);
+                debugger;
+                var eleName = "chk_" + e.sender.element.context.name + "_";
+                var items = e.sender.dataSource.data();
+
+                for (var i = 1; i < items.length; i++) {
+                    var selector = '#' + eleName + items[i].Id;
+                    if ($(selector).is(':checked')) {
+                        $cNodeMafp.push(items[i]);
+                    }
+                }
+
+                getMalesAndFemalesPercentageChartData();
+
+            } break;
+
+            case 'pNodeRp': {
+                eleCount = $pNodeRp.length;
+                $pNodeRp.splice(0, eleCount);
+
+                var eleName = "chk_" + e.sender.element.context.name + "_";
+                var items = e.sender.dataSource.data();
+
+                for (var i = 1; i < items.length; i++) {
+                    var selector = '#' + eleName + items[i].Id;
+                    if ($(selector).is(':checked')) {
+                        $pNodeRp.push(items[i]);
+                    }
+                }
+
+                updateChildNodes($pNodeRp, "rp");
+                var dataSource = new kendo.data.DataSource();
+                var data = getComboDataSource($cNodeRp);
+                dataSource.data(data);
+
+                var cNodeRpDropDownList = $('#cNodeRp').data("kendoDropDownList");
+                cNodeRpDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+                cNodeRpDropDownList.setDataSource(dataSource);
+
+                getReligionsPercentageChartData();
+
+            } break;
+
+            case 'cNodeRp': {
+                eleCount = $cNodeRp.length;
+                $cNodeRp.splice(0, eleCount);
+
+                var eleName = "chk_" + e.sender.element.context.name + "_";
+                var items = e.sender.dataSource.data();
+
+                for (var i = 1; i < items.length; i++) {
+                    var selector = '#' + eleName + items[i].Id;
+                    if ($(selector).is(':checked')) {
+                        $cNodeRp.push(items[i]);
+                    }
+                }
+
+                getReligionsPercentageChartData();
+
+            } break;
+
+            case 'pNodeSsp': {
+                eleCount = $pNodeSsp.length;
+                $pNodeSsp.splice(0, eleCount);
+
+                var eleName = "chk_" + e.sender.element.context.name + "_";
+                var items = e.sender.dataSource.data();
+
+                for (var i = 1; i < items.length; i++) {
+                    var selector = '#' + eleName + items[i].Id;
+                    if ($(selector).is(':checked')) {
+                        $pNodeSsp.push(items[i]);
+                    }
+                }
+
+                updateChildNodes($pNodeSsp,"ssp");
+                var dataSource = new kendo.data.DataSource();
+                var data = getComboDataSource($cNodeSsp);
+                dataSource.data(data);
+
+                var cNodeSspDropDownList = $('#cNodeSsp').data("kendoDropDownList");
+                cNodeSspDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+                cNodeSspDropDownList.setDataSource(dataSource);
+
+                getSocialStatusPercentageChartData();
+            } break;
+
+            case 'cNodeSsp': {
+                eleCount = $cNodeSsp.length;
+                $cNodeSsp.splice(0, eleCount);
+
+                var eleName = "chk_" + e.sender.element.context.name + "_";
+                var items = e.sender.dataSource.data();
+
+                for (var i = 1; i < items.length; i++) {
+                    var selector = '#' + eleName + items[i].Id;
+                    if ($(selector).is(':checked')) {
+                        $cNodeSsp.push(items[i]);
+                    }
+                }
+
+                getSocialStatusPercentageChartData();
+            } break;
+        }
+
+    }
+
+    function updateChildNodes(parentNodes, type) {
+        
+        window.Souccar.ajax('@Url.Action("GetChildrenNodes", "Dashboard", new { area = "Personnel" })', { parentNodes: parentNodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if(type == "mafp")
+                $cNodeMafp = data;
+            else if(type=="rp")
+                $cNodeRp = data;
+            else if (type == "ssp")
+                $cNodeSsp = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getMalesAndFemalesPercentageChartData');
+        }
+    }
+
+    function getDashboardColors() {
+        return [
+            getDefaultThemeColor(),
+            '#434348', '#7CB5EC', '#F45B5B',
+            '#2f7ed8', '#0d233a', '#8bbc21',
+            '#910000', '#1aadce', '#492970',
+            '#f28f43', '#77a1e5', '#c42525',
+            '#a6c96a', '#0000FF', '#008000'
+        ];
+    }
+
+    function getDefaultThemeColor() {
+        debugger;
+        switch ($themeName) {
+        case 'lightblue':
+            return '#86c4bc';
+        case 'sepia':
+            return '#c0a48c';
+        case 'formal':
+            return '#87adc4';
+        case 'lady':
+            return '#9c8bc1';
+        default:
+            return '#818285';
+        }
+    }
+
+</script>
+

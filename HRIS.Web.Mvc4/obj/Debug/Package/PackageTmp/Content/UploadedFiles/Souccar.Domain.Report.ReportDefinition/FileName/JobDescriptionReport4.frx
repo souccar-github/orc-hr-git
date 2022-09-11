@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/26/2016 15:31:38" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLv8mbDFO+GLO/BMnYuGIhM5Q==">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.FirstName+' '+dbo.Employee.FatherName+' '+dbo.Employee.LastName AS FullName,&#13;&#10;dbo.Employee.Code&#13;&#10;FROM dbo.Employee INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE Employee.Id NOT IN (SELECT DISTINCT Employee_id AS Id FROM dbo.AssigningEmployeeToPosition WHERE dbo.AssigningEmployeeToPosition.Employee_id IS NOT NULL AND AssigningEmployeeToPosition.IsVertualDeleted=0) AND dbo.Employee.Id IS NOT NULL&#13;&#10;AND dbo.EmployeeCard.CardStatus = 0 AND Employee.IsVertualDeleted=0 AND EmployeeCard.IsVertualDeleted=0&#13;&#10;ORDER BY dbo.Employee.Id DESC">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="FullName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table1" ParentDataSource="null" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="66.15">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين الغير معينين بموقع وظيفي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="70.27" Width="718.2" Height="18.9">
+      <TextObject Name="Text30" Left="501.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Width="502.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="93.3" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text5" Left="501.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Width="501.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="116.32" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="500.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="500.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="139.34" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

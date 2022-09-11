@@ -1,0 +1,5 @@
+D:\Projects\ORC-HR\HR System\Souccar.NHibernate\obj\Debug\Souccar.NHibernate.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\ui\binaries\Souccar.NHibernate.dll
+D:\Projects\ORC-HR\HR System\ui\binaries\Souccar.NHibernate.pdb
+D:\Projects\ORC-HR\HR System\Souccar.NHibernate\obj\Debug\Souccar.NHibernate.dll
+D:\Projects\ORC-HR\HR System\Souccar.NHibernate\obj\Debug\Souccar.NHibernate.pdb

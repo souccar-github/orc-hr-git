@@ -1,0 +1,178 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="chart chart-width-half">
+    <div class="chart-params">
+        @* Parent Nodes *@
+        <div id="p-node-rp" style="float:left;width:48%;">
+            <div class="control control-p-node-rp">
+                <div class="k-edit-label">
+                    <label for="pNodeRp">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ParentNodes)</label>
+                </div>
+                <div data-container-for="pNodeRp" class="k-edit-field">
+                    <input id="pNodeRp" name="pNodeRp" placeholder="@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.SelectParentNodes) ..." />
+                    <input id="hf_pNodeRp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+        @* Child Nodes *@
+        <div id="c-node-rp" style="width:48%;">
+            <div class="control control-c-node-rp">
+                <div class="k-edit-label">
+                    <label for="cNodeRp">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ChildNodes)</label>
+                </div>
+                <div data-container-for="cNodeRp" class="k-edit-field">
+                    <input id="cNodeRp" name="cNodeRp" placeholder="@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.SelectChildNodes) ..." />
+                    <input id="hf_cNodeRp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+    </div>
+    <div id="religion-percentage-chart" class="container-chart"></div>
+
+    <div id="religion-percentage-table"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $pNodeRp = null;
+    var $cNodeRp = null;
+
+    function generateReligionsPercentageSection() {
+
+        $pNodeRp = $parentNode;
+        $cNodeRp = $childNode;
+
+        generateComboBox("#pNodeRp", "pNodeRp", $pNodeRp);
+        generateComboBox("#cNodeRp", "cNodeRp", $cNodeRp);
+
+        $('#c-node-rp').css('float', $pageDir);
+        $('#p-node-rp').css('float', $pageDir);
+
+        getReligionsPercentageChartData();
+    }
+
+    function getReligionsPercentageChartData() {
+
+        window.Souccar.ajax('@Url.Action("GetReligionsPercentageData", "Dashboard", new { area = "Personnel" })', { childrenNodes: $cNodeRp, parentsNodes: $pNodeRp }, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateReligionsPercentageChart(data);
+                generateReligionsPercentageTable(data);
+            }, 500);
+
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getReligionsPercentageChartData');
+        }
+
+    }
+
+    function generateReligionsPercentageChart(data) {
+
+        //var colors = Highcharts.getOptions().colors;
+        //colors.unshift(getDefaultThemeColor());
+
+        Highcharts.chart('religion-percentage-chart', {
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            title: {
+                text: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ReligionsPercentage)'
+            },
+            tooltip: {
+                pointFormat: '<b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    size: 220,
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 35,
+                    dataLabels: {
+                        
+                        enabled: true,
+                        format: $dir == 'ltr' ? '<span>{point.name}: {point.percentage:.1f} <span> %' : '% <span>{point.name}: {point.percentage:.1f} <span>',
+                        useHTML: "hasBidiBug"
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                type: 'pie',
+                //headerFormat: '',
+                //pointFormat: '<div style="color:{point.color};><b>{point.y:.2f} %</b></div> ',
+                point: {
+                    events: {
+                        click: function (event) {
+                            //alert(this.y);
+                        }
+                    }
+                },
+                data: [
+
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Muslim)', y: data.MuslimsPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Christian)', y: data.ChristiansPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Jewish)', y: data.JewishsPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.OtherReligions)', y: data.OthersPercentage },
+
+                ]
+            }]
+        });
+
+        //Highcharts.setOptions({
+        //    lang: getChartResource()
+        //});
+    }
+
+    function generateReligionsPercentageTable(data) {
+        var table = '<table id="religionPercentageTable" dir="' + $dir + '" class="tbl dashboardTable" border="0" cellpadding="0" cellspacing="1" >';
+        table += '<tr>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Muslim) </th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Christian)</th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Jewish)</th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.OtherReligions)</th>';
+        table += '</tr>';
+
+        table += '<tr>';
+        table += '<td style="background-color:#ffffff"> ' + data.NumberOfMuslims + ' </td>';
+        table += '<td style="background-color:#ffffff"> ' + data.NumberOfChristians + ' </td>';
+        table += '<td style="background-color:#ffffff"> ' + data.NumberOfJewishs + ' </td>';
+        table += '<td style="background-color:#ffffff"> ' + data.NumberOfOthers + ' </td>';
+        table += '</tr>';
+
+        table += '</table>';
+
+        $('#religion-percentage-table').html("");
+        $('#religion-percentage-table').html(table);
+    }
+
+    //function getChartResource() {
+    //    return {
+    //        loading: 'تحميل ...',
+    //        exportButtonTitle: "تصفح",
+    //        printChart: "طباعة",
+    //        rangeSelectorZoom: "Periodo",
+    //        downloadPNG: 'تحميل كـ PNG',
+    //        downloadJPEG: 'Download imagem JPEG',
+    //        downloadPDF: 'Download documento PDF',
+    //        downloadSVG: 'Download imagem SVG'
+
+    //    }
+    
+    //}
+
+</script>
+

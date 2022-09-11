@@ -1,0 +1,5 @@
+D:\Projects\ORC-HR\HR System\CodeGeneratorLibrary\obj\Debug\Souccar.CodeGenerator.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\UI\Binaries\Souccar.CodeGenerator.dll
+D:\Projects\ORC-HR\HR System\UI\Binaries\Souccar.CodeGenerator.pdb
+D:\Projects\ORC-HR\HR System\CodeGeneratorLibrary\obj\Debug\Souccar.CodeGenerator.dll
+D:\Projects\ORC-HR\HR System\CodeGeneratorLibrary\obj\Debug\Souccar.CodeGenerator.pdb

@@ -1,0 +1,973 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@using HRIS.Domain.EmployeeRelationServices.Enums
+
+<div class="pre-employees-promotion-container"></div>
+<div class="employees-promotion-container"></div>
+
+<script>
+
+    initPromotionView();
+
+    function initPromotionView() {
+
+        generatePromotionView($(".pre-employees-promotion-container"));
+
+        var employeeId;
+
+        $.ajax({
+            url: '@Url.Action("GetEmployees", "Promotion", new { area = "" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+
+                $("#employees").kendoAutoComplete({
+                    dataTextField: "Name", // The widget is bound to the "Name" field
+                    dataSource: data.Data,
+                    placeholder: "@GlobalResource.SelectEmployee" + "...",
+                    select: function(e) {
+                        var dataItem = this.dataItem(e.item.index());
+                        employeeId = dataItem.Id;   
+                    }
+                });
+            }
+        });
+
+        var initPromotionsDate = kendo.toString(new Date(), "dd/MM/yyyy");
+
+        $("[Name='militaryEmployeespromotionsDate']").val(initPromotionsDate);
+        $("[Name='employeePromotionsDate']").val(initPromotionsDate);
+        $("[Name='employeesPromotionsDate']").val(initPromotionsDate);
+        $('[name="militaryEmployeespromotionsCreateDate"]').val(initPromotionsDate);
+        $('[name="employeePromotionsCreateDate"]').val(initPromotionsDate);
+        $('[name="employeesPromotionsCreateDate"]').val(initPromotionsDate);
+
+        $('[name="militaryEmployeespromotionsCreateDate"]').data("kendoDatePicker").enable(false);
+        $('[name="employeePromotionsCreateDate"]').data("kendoDatePicker").enable(false);
+        $('[name="employeesPromotionsCreateDate"]').data("kendoDatePicker").enable(false);
+
+        $.ajax({
+            url: '@Url.Action("GetPromotionsSettings", "Promotion", new { area = "" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+
+                var elements =
+                    [
+                        { element: $("[Name='militaryEmployeesPromotionSetting']").data("kendoDropDownList") },
+                        { element: $("[Name='employeePromotionsSetting']").data("kendoDropDownList") },
+                        { element: $("[Name='employeesPromotionSetting']").data("kendoDropDownList") }
+                    ];
+
+                fillpromotionsSettingDropdown(elements, data);
+            }
+        });
+
+        $("[Name='militaryEmployeesPromotionSetting']").data("kendoDropDownList").bind("change", onPromotionSettingDropDownChange);
+        $("[Name='employeePromotionsSetting']").data("kendoDropDownList").bind("change", onPromotionSettingDropDownChange);
+        $("[Name='employeesPromotionSetting']").data("kendoDropDownList").bind("change", onPromotionSettingDropDownChange);
+
+        ////}
+
+        function onPromotionSettingDropDownChange(e) {
+
+            var promotionSettingId = Number(e.sender.value());
+
+            $.ajax({
+                url: '@Url.Action("GetEmployeePromotionEndDate", "Promotion", new { area = "" })',
+                type: "POST",
+                data: JSON.stringify({ id: promotionSettingId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var year = data.firstDayInNewYear;
+
+                    $("[Name='employeesPromotionsDate']").val("01/01/" + year);
+                    $("[Name='militaryEmployeespromotionsDate']").val("01/01/" + year);
+                    $("[Name='employeePromotionsDate']").val("01/01/" + year);
+
+                }
+            });
+        }
+
+        function fillpromotionsSettingDropdown(elements, data) {
+
+            data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+            var dataSource = new kendo.data.DataSource({
+                data: data.Data
+            });
+
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].element.setDataSource(dataSource);
+                elements[i].element.text("@GlobalResource.Select");
+            }
+        }
+
+        addRequiredStar('employeesPromotionsDate');
+        addRequiredStar('employeesPromotionSetting');
+        addRequiredStar('militaryEmployeespromotionsDate');
+        addRequiredStar('militaryEmployeesPromotionSetting');
+        addRequiredStar('militaryEmployeesPromotionRate');
+        addRequiredStar('employeePromotionsDate');
+        addRequiredStar('employeePromotionsSetting');
+        addRequiredStar('employees');
+        addRequiredStar('employeePromotionRate');
+
+        $("[name='militaryEmployeesPromotionSettingUpdate']").off('click').on('click', function () {
+            var url = '@Url.Action("GetMilitaryEmployeesPromotion", "Promotion", new { area = "" })';
+            var id = $("[Name='militaryEmployeesPromotionSetting']").data("kendoDropDownList").value();
+            var date = $("[Name='militaryEmployeespromotionsDate']").val();
+            var promotionRate = $("[Name='militaryEmployeesPromotionRate']").val();
+            var buttonClickName = $(this).attr('name');
+            var jsonParam = { id: id, promotionsDate: date, promotionRate: promotionRate };
+
+            if (id != 0) {
+                GetPromotion(url, jsonParam, buttonClickName);
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("Error", '@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectRequiredField)', "k-icon w-b-error", commands);
+            }
+        });
+        $("[name='employeePromotionSettingUpdate']").off('click').on('click', function () {
+            var url = '@Url.Action("GetEmployeePromotion", "Promotion", new { area = "" })';
+            var id = $("[Name='employeePromotionsSetting']").data("kendoDropDownList").value();
+            var date = $("[Name='employeePromotionsDate']").val();
+            var promotionRate = $("[Name='employeePromotionRate']").val();
+            var buttonClickName = $(this).attr('name');
+            //var employeeId = $("#employees").data("kendoAutoComplete").dataItem(0).Id;
+            var jsonParam = { id: id, promotionsDate: date, promotionRate: promotionRate, employeeId: employeeId };
+
+            if (id != 0) {
+                GetPromotion(url, jsonParam, buttonClickName);
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("Error", '@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectRequiredField)', "k-icon w-b-error", commands);
+            }
+        });
+        $("[name='employeesPromotionSettingUpdate']").off('click').on('click', function () {
+
+            var url = '@Url.Action("GetEmployeesPromotion", "Promotion", new { area = "" })';
+            var id = $("[Name='employeesPromotionSetting']").data("kendoDropDownList").value();
+            var date = $("[Name='employeesPromotionsDate']").val();
+            var promotionRate = 0;
+            var buttonClickName = $(this).attr('name');
+            var jsonParam = { id: id, promotionsDate: date, promotionRate: promotionRate };
+
+            if (id != 0) {
+                GetPromotion(url, jsonParam, buttonClickName);
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("Error", '@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectRequiredField)', "k-icon w-b-error", commands);
+            }
+        });
+
+        function generatePromotionView(container) {
+
+            var promotionTemplate = kendo.template($("#promotion-template").html());
+            container.html(promotionTemplate);
+
+            container.find(".promotion-form").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+
+            militaryEmployeesTemplate = kendo.template($("#military-employees-promotion-template").html());
+            container.find(".promotion-form .promotion-tab-military-employees-promotion").html(militaryEmployeesTemplate);
+
+            employeesTemplate = kendo.template($("#employees-promotion-template").html());
+            container.find(".promotion-form .promotion-tab-employees-promotion").html(employeesTemplate);
+
+            employeeTemplate = kendo.template($("#employee-promotion-template").html());
+            container.find(".promotion-form .promotion-tab-employee-promotion").html(employeeTemplate);
+
+            kendo.init(container);
+        }
+
+        function GetPromotion(url, jsonParam, buttonClickName) {
+
+            if (jsonParam.promotionsSettingId == "" || jsonParam.promotionsSettingId == "0" || jsonParam.promotionsSettingId == 0) {
+                return;
+            }
+            if (jsonParam.promotionsDate == "") {
+                return;
+            }
+
+            if (buttonClickName == "employeePromotionSettingUpdate") {
+                if (jsonParam.employeeId == "" || jsonParam.employeeId == "0" || jsonParam.employeeId == 0) {
+                    return;
+                }
+            }
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify(jsonParam),
+                contentType: 'application/json',
+                success: function (data) {
+                    openPromotionsWindow(data.Data, buttonClickName);
+                }
+            });
+        }
+    }
+    //---------------------------------------------------------------------------------------------------------------------------
+    var checkedIds = {};
+    var militaryEmployeeCheckedIds = {};
+    //واجهة الترفيعات
+    function openPromotionsWindow(data, buttonClickName) {
+
+        if (buttonClickName == "employeesPromotionSettingUpdate") {
+
+            initEmployeesGrid($(".employees-promotion-template .employees-grid-container"), data);
+
+        } else if (buttonClickName == "militaryEmployeesPromotionSettingUpdate") {
+
+            initMilitaryEmployeesGrid($(".military-employees-promotion-template .military-employees-grid-container"), data);
+
+        } else if (buttonClickName == "employeePromotionSettingUpdate") {
+
+            var employeePromotionInfoTemplate = kendo.template($("#employees-promotion-info-template").html());
+            $(".employee-promotion-template .employees-grid-container").html(employeePromotionInfoTemplate({ model: data }));
+
+        }
+
+        $("#confirm_save_promotion").off('click').on('click', function () {
+
+        });
+
+        $("#cancel_promotion").off('click').on('click', function () {
+            $(".employees-promotion-container").data("kendo-window").close();
+        });
+    }
+
+    function initEmployeesGrid(container, data) {
+
+        container.kendoGrid({
+            toolbar: [{ template: kendo.template($("#employees-button-template").html()) }],
+            dataSource:
+                {
+                    data: data,
+                    schema: {
+                        model: {
+                            fields: {
+                                FullName: {
+                                    editable: false
+                                },
+                                JobTitle: {
+                                    editable: false
+                                },
+                                JobDescription: {
+                                    editable: false
+                                },
+                                PayBeforePromotion: {
+                                    editable: false
+                                },
+                                EfficiencyDegree: {
+                                    editable: false
+                                },
+                                DaysEffectOnPromotion: {
+                                    editable: false
+                                },
+                                AbsenceDaysEffectOnPromotion: {
+                                    editable: false
+                                },
+                                BenefitAmount: {
+                                    editable: false
+                                },
+                                PayAfterPromotion: {
+                                    editable: false
+                                },
+                                Note: {
+                                    editable: true
+                                },
+                                IsChecked: {
+                                    type: "boolean"
+                                },
+                                IsPromotionBlocking: {
+                                    editable: false
+                                }
+                            }
+                        }
+                    }
+                },
+            selectable: "cell",
+            filterable: true,
+            sortable: true,
+            resizable: true,
+            dataBound: onDataBound,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 25, 50]
+            },
+            editable: true,
+            columns: [
+                {
+                    field: "Id",
+                    title: "Id",
+                    hidden: true
+                },
+                {
+                    field: "FullName",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.FullName)",
+                    width: 165
+                },
+                {
+                    field: "JobTitle",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.JobTitle)",
+                    width: 165
+                },
+                {
+                    field: "JobDescription",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.JobDescription)",
+                    width: 165
+                },
+                {
+                    field: "PayBeforePromotion",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SalaryBefore)",
+                    width: 100
+                },
+                {
+                    field: "EfficiencyDegree",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Efficiency)",
+                    width: 100
+                },
+                {
+                    field: "DaysEffectOnPromotion",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.DueDays)",
+                    width: 100
+                },
+                {
+                    field: "AbsenceDaysEffectOnPromotion",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.AbsenceDays)",
+                    width: 100
+                },
+                {
+                    field: "BenefitAmount",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Benefit)",
+                    width: 100
+                },
+                {
+                    field: "PayAfterPromotion",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SalaryAfter)",
+                    width: 100
+                },
+                {
+                    field: "Note",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Note)",
+                    width: 200
+                },
+                {
+                    field: "IsPromotionBlocking",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionBlocking)",
+                    filterable: false,
+                    sortable: false,
+                    width: 90,
+                    template: "<input type='checkbox' disabled class='ob-promotion-blocking' name='IsPromotionBlocking' data-bind='checked: IsPromotionBlocking' #= IsPromotionBlocking ? checked='checked' : '' #/>"
+                },
+                {
+                    field: "IsChecked",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Check)",
+                    filterable: false,
+                    sortable: false,
+                    width: 90,
+                    template: "<input type='checkbox' class='checkbox' />"//,
+                    //headerTemplate: '<input type="checkbox" id="check-all" class="check-all" /><label for="check-all" >@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.CheckAll)</label>'
+                }//,
+                //{ template: "<input type='checkbox' class='checkbox' />" }
+            ]
+        });
+        
+        var grid=$(".employees-grid-container").data("kendoGrid");
+
+        //bind click event to the checkbox
+        grid.table.on("click", ".checkbox", selectRow);
+
+        //on click of the checkbox:
+        function selectRow() {
+            var checked = this.checked,
+				row = $(this).closest("tr"),
+				grid = $(".employees-grid-container").data("kendoGrid"),
+				dataItem = grid.dataItem(row);
+
+            checkedIds[dataItem.Id] = checked;
+            if (checked) {
+                //-select the row
+                row.addClass("k-state-selected");
+                dataItem.IsChecked = true;
+            } else {
+                //-remove selection
+                row.removeClass("k-state-selected");
+                dataItem.IsChecked = false;
+            }
+        }
+
+        function onDataBound(e) {
+
+            var view = this.dataSource.view();
+            for (var i = 0; i < view.length; i++) {
+                if (checkedIds[view[i].Id]) {
+                    this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+						.addClass("k-state-selected")
+						.find(".checkbox")
+						.attr("checked", "checked");
+                }
+            }
+        }
+    }
+
+    function initMilitaryEmployeesGrid(container, data) {
+
+        container.kendoGrid({
+            toolbar: [{ template: kendo.template($("#military-employees-button-template").html()) }],
+            dataSource:
+                {
+                    data: data,
+                    schema: {
+                        model: {
+                            fields: {
+                                FullName: {
+                                    editable: false
+                                },
+                                JobTitle: {
+                                    editable: false
+                                },
+                                JobDescription: {
+                                    editable: false
+                                },
+                                PayBeforePromotion: {
+                                    editable: false
+                                },
+                                EfficiencyDegree: {
+                                    editable: false
+                                },
+                                BenefitAmount: {
+                                    editable: false
+                                },
+                                PayAfterPromotion: {
+                                    editable: false
+                                },
+                                Note: {
+                                    editable: true
+                                },
+                                IsChecked: {
+                                    type: "boolean"
+                                }
+                            }
+                        }
+                    }
+                },
+            selectable: "cell",
+            filterable: true,
+            sortable: true,
+            resizable: true,
+            dataBound: onDataBound,
+            pageable: {
+                pageSize: 10,
+                pageSizes: [10, 25, 50]
+            },
+            editable: true,
+            columns: [
+                {
+                    field: "Id",
+                    title: "Id",
+                    hidden: true
+                },
+                {
+                    field: "FullName",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.FullName)",
+                    width: 165
+                },
+                {
+                    field: "JobTitle",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.JobTitle)",
+                    width: 165
+                },
+                {
+                    field: "JobDescription",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.JobDescription)",
+                    width: 165
+                },
+                {
+                    field: "PayBeforePromotion",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SalaryBefore)",
+                    width: 100
+                },
+                {
+                    field: "EfficiencyDegree",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Efficiency)",
+                    width: 100
+                },
+                {
+                    field: "BenefitAmount",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Benefit)",
+                    width: 100
+                },
+                {
+                    field: "PayAfterPromotion",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SalaryAfter)",
+                    width: 100
+                },
+                {
+                    field: "Note",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Note)",
+                    width: 200
+                },
+                {
+                    field: "IsChecked",
+                    title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Check)",
+                    filterable: false,
+                    sortable: false,
+                    width: 90,
+                    template: "<input type='checkbox' class='checkbox' />"
+                }
+            ]
+        });
+
+        var grid = $(".military-employees-grid-container").data("kendoGrid");
+
+        //bind click event to the checkbox
+        grid.table.on("click", ".checkbox", selectRow);
+
+        //on click of the checkbox:
+        function selectRow() {
+            var checked = this.checked,
+				row = $(this).closest("tr"),
+				grid = $(".military-employees-grid-container").data("kendoGrid"),
+				dataItem = grid.dataItem(row);
+
+            militaryEmployeeCheckedIds[dataItem.Id] = checked;
+            if (checked) {
+                //-select the row
+                row.addClass("k-state-selected");
+                dataItem.IsChecked = true;
+            } else {
+                //-remove selection
+                row.removeClass("k-state-selected");
+                dataItem.IsChecked = false;
+            }
+        }
+
+        function onDataBound(e) {
+
+            var view = this.dataSource.view();
+            for (var i = 0; i < view.length; i++) {
+                if (militaryEmployeeCheckedIds[view[i].Id]) {
+                    this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+						.addClass("k-state-selected")
+						.find(".checkbox")
+						.attr("checked", "checked");
+                }
+            }
+        }
+    }
+
+    function ApplayPromotion_click(container) {
+    
+        var title = "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IncidenceDefinitionPromotion)";
+        var buttons = [
+            { Name: "confirm_save_incidence", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel_incidence", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "incidence-definition-promotion-info-container";
+        var containerDiv = $("<div></div>");
+        var bodyHTML = "<div class='incidence-definition-promotion-container-body'><fieldset><legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IncidenceDefinition)</legend><div class='incidence-definition'></div></fieldset><fieldset><legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.EmployeesNotifi)</legend><label for='multiselect'>Employees</label><select id='multiselect' multiple='multiple' data-placeholder='@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectEmployees)'+'...'></select></fieldset></div>";
+        createAndOpenCustomWindow(containerDiv, bodyHTML, containerId, title, buttons, false);
+
+        var incidenceDefinitionTemplateData = [
+            { Name: "IncidenceType", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IncidenceType)", Type: "Enum", TypeName: "HRIS.Domain.EmployeeRelationServices.Enums.IncidenceType", IsRequired: true },
+            { Name: "IncidenceDate", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IncidenceDate)", Type: "Date" },
+            { Name: "StartDate", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.StartDate)", Type: "Date" },
+            { Name: "ApprovedDateByCBS", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.ApprovedDateByCBS)", Type: "Date" },
+            { Name: "DocumentNumber", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.DocumentNumber)", Type: "Number" },
+            { Name: "DocumentDate", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.DocumentDate)", Type: "Date" },
+            { Name: "DocumentType", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.DocumentType)", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.DocumentType", Creatable: false, IsRequired: true },
+            { Name: "IssuedBy", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IssuedBy)", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.WorkSide", Creatable: false, IsRequired: false },
+            { Name: "IssuedTo", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IssuedTo)", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.WorkSide", Creatable: false, IsRequired: false },
+            { Name: "Description", Title: "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Description)", Type: "Textarea" }
+        ];
+
+        @{var automaticPromotion = ((int)IncidenceType.AutomaticPromotion).ToString();}
+
+        var date;
+        if (container=='all-employees') {
+            date = $("[Name='employeesPromotionsDate']").val();
+        } else if (container=='military-employees')
+        {
+            date = $("[Name='militaryEmployeespromotionsDate']").val();
+        } else {
+            date = $("[Name='employeePromotionsDate']").val();
+        }
+
+        var incidenceDefinitionDatabind = kendo.observable(
+        {
+            IncidenceType: Number(@automaticPromotion),
+            IncidenceDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+            StartDate: date,
+            ApprovedDateByCBS: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+            DocumentNumber: 0,
+            DocumentDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+            DocumentType: 0,
+            IssuedBy: 0,
+            IssuedTo: 0,
+            Description: "",
+
+        });
+
+        createCustomEditForm(containerDiv.find(".incidence-definition"), { Fields: incidenceDefinitionTemplateData, Key: "incidence-definition" }, incidenceDefinitionDatabind);
+
+        addRequiredStar('IncidenceDate');
+        addRequiredStar('StartDate');
+        addRequiredStar('ApprovedDateByCBS');
+        addRequiredStar('DocumentNumber');
+        addRequiredStar('DocumentDate');
+        addRequiredStar('DocumentType');
+
+        $.ajax({
+            url: '@Url.Action("GetEmployees", "Promotion", new { area = "" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                $("#multiselect").kendoMultiSelect({
+                    dataSource: data.Data,
+                    dataTextField: "Name",
+                    dataValueField: "Id",
+                    change: function (e) {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg').remove();
+                    }
+                });
+            }
+        });
+        $('[name="IncidenceType"]').data("kendoDropDownList").enable(false);
+        $(".add-employee-notifi").off('click').on('click', function () {
+
+            var employeeDropdown = $("[name='selectEmployee']").data("kendoDropDownList");
+            var employeeId = employeeDropdown.value();
+            if (employeeId == "" || employeeId == "0" || employeeId == 0) {
+                return;
+            }
+            var jobTitle = $("[name='selectJobTitle']").data("kendoDropDownList").text();
+            var employeeName = $("[name='selectEmployee']").data("kendoDropDownList").text();
+
+            var isExist = false;
+            $(".employees-notifi tbody tr").each(function () {
+                if ($(this).find(".jt").text() == jobTitle && $(this).find(".en").text() == employeeName) {
+                    isExist = true;
+                }
+            });
+
+            if (!isExist) {
+                var id = Number($(".employees-notifi tbody tr").length) + 1;
+                var rowtemplate = kendo.template($("#employees-notifi-row-template").html());
+                $(".employees-notifi tbody").append(rowtemplate({ id: id, jobTitle: jobTitle, employeeName: employeeName }));
+                kendo.init($(".employees-notifi"));
+            }
+        });
+
+        $("#confirm_save_incidence").off('click').on('click', function () {
+
+            var selectedEmployeesToNotifi = $("#multiselect").data("kendoMultiSelect").value();
+            var incidenceDefinitionViewModel = kendo.observable({
+                IncidenceDate: $("#IncidenceDate_incidence-definition").val(),
+                StartDate: $("#StartDate_incidence-definition").val(),
+                ApprovedDateByCBS: $("#ApprovedDateByCBS_incidence-definition").val(),
+                DocumentNumber: $("#DocumentNumber_incidence-definition").val(),
+                DocumentDate: $("#DocumentDate_incidence-definition").val(),
+                DocumentType: $("#DocumentType_incidence-definition").val(),
+                IssuedBy: $("#IssuedBy_incidence-definition").val(),
+                IssuedTo: $("#IssuedTo_incidence-definition").val(),
+                Description: $("#Description_incidence-definition").val()
+            });
+
+            if (selectedEmployeesToNotifi == 0) {
+                $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg').remove();
+                var messageText = "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectEmployees)";
+                var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                $("#multiselect").after(t);
+            }
+
+            var promotionsSetting
+            var selectedEmployeesDataItems = [];
+            var employeeDataItem;
+            var gridContainer;
+            if (container == 'all-employees') {
+                gridContainer = $(".employees-grid-container").data("kendoGrid");
+                promotionsSetting = Number($("[Name='employeesPromotionSetting']").data("kendoDropDownList").value());
+            } else if (container == 'military-employees') {
+                gridContainer = $(".military-employees-grid-container").data("kendoGrid");
+                promotionsSetting = Number($("[Name='militaryEmployeesPromotionSetting']").data("kendoDropDownList").value());
+            } else {
+
+                employeeDataItem = kendo.observable({
+                    Id: Number(container),
+                    PayBeforePromotion: Number($("#PayBeforePromotion").text()),
+                    Efficiency: Number($("#Efficiency").text()),
+                    BenefitAmount: Number($("#BenefitAmount").text()),
+                    PayAfterPromotion: Number($("#PayAfterPromotion").text()),
+                    Note: $("#promotion-note").val(),
+                    PromotionsSetting: Number($("[Name='employeePromotionsSetting']").data("kendoDropDownList").value())
+                });
+            }
+
+            if (container == 'all-employees' || container == 'military-employees') {
+                for (var i = 0; i < gridContainer.dataSource._data.length; i++) {
+                    var dataItem = gridContainer.dataSource._data[i];
+                    selectedEmployeesDataItems.push(dataItem);
+                }
+
+                $.ajax({
+                    url: '@Url.Action("SaveIncidenceDefinitionPromotion", "Promotion", new { area = "" })',
+                    type: "POST",
+                    data: JSON.stringify({ employeesId: selectedEmployeesToNotifi, incidenceDefinitionInfo: incidenceDefinitionViewModel, employeesDataItems: selectedEmployeesDataItems, promotionsSettingId: promotionsSetting }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success==true) {
+                            containerDiv.data("kendo-window").close();
+                            //$(".promotion-form .promotion-tab-military-employees-promotion").html({});
+                            //$(".promotion-form .promotion-tab-employees-promotion").html({});
+                            $(".pre-employees-promotion-container").html({});
+                        } else {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                        }
+                    }
+                });
+
+            } else{
+
+                $.ajax({
+                    url: '@Url.Action("SaveEmployeeIncidenceDefinitionPromotion", "Promotion", new { area = "" })',
+                    type: "POST",
+                    data: JSON.stringify({ employeesId: selectedEmployeesToNotifi, incidenceDefinitionInfo: incidenceDefinitionViewModel, employeeDataItem: employeeDataItem }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success == true) {
+                            containerDiv.data("kendo-window").close();
+                            //$(".promotion-form .promotion-tab-employee-promotion").html({});
+                            $(".pre-employees-promotion-container").html({}); 
+                        } else {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                        }
+                    }
+                });
+            }
+
+            //if ($("#IncidenceDate_incidence-definition").val().trim() == "") {
+            //    var incidenceDateMessageText = "Select Incidence Date";
+            //    var incidenceDateTemplate = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: incidenceDateMessageText });
+            //    $("#IncidenceDate_incidence-definition").after(incidenceDateTemplate);
+            //} else {
+            //    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg').remove();
+            //}
+
+        });
+
+        $("#cancel_incidence").off('click').on('click', function () {
+            containerDiv.data("kendo-window").close();
+        });
+    }
+
+    function remove_SectionItem(id) {
+        $("#row-" + id).remove();
+    }
+
+</script>
+
+<script id="employees-button-template" type="text/x-kendo-template">
+<a class="k-button k-button-icontext k-grid-add" onclick="return ApplayPromotion_click('all-employees')"><span class="k-icon k-update"></span>Applay</a>
+</script>
+
+<script id="military-employees-button-template" type="text/x-kendo-template">
+    <a class="k-button k-button-icontext k-grid-add" onclick="return ApplayPromotion_click('military-employees')"><span class="k-icon k-update"></span>Applay</a>
+</script>
+
+<script id="military-employees-promotion-template" type="text/x-kendo-template">
+<div class="military-employees-promotion-template">
+    <fieldset>
+        <legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.MilitaryEmployeesPromotionInfo)</legend>
+        <div class="Military-employees-promotions-setting-form-container">
+            <div class="k-edit-label">
+                <label for="militaryEmployeespromotionsCreateDate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.CreateDate)</label>
+            </div>
+            <div data-container-for="militaryEmployeespromotionsCreateDate" class="k-edit-field">
+                <input name="militaryEmployeespromotionsCreateDate" class="create-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: militaryEmployeespromotionsCreateDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="militaryEmployeespromotionsDate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsDate)</label>
+            </div>
+            <div data-container-for="militaryEmployeespromotionsDate" class="k-edit-field">
+                <input name="militaryEmployeespromotionsDate" class="promotions-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: promotionsDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="militaryEmployeesPromotionSetting">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsSetting)</label>
+            </div>
+            <div data-container-for="militaryEmployeesPromotionSetting" class="k-edit-field">
+                <input type="text" name="militaryEmployeesPromotionSetting" class="promotions-setting-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+            </div> 
+            <div class="k-edit-label">
+                <label for="militaryEmployeesPromotionRate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionRate)</label>
+            </div>
+            <div data-container-for="militaryEmployeesPromotionRate" class="k-edit-field">
+                <input type="text" data-type="number" name="militaryEmployeesPromotionRate" class="promotion-rate" data-role="numerictextbox" value="0" min="0" max="100" data-bind="value:promotionRate">
+            </div> 
+            <div data-container-for="militaryEmployeesPromotionSettingUpdate" class="k-edit-field">
+                <button name="militaryEmployeesPromotionSettingUpdate" class="promotions-setting-update k-button"><span class="k-icon k-update"></span>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Calculate)</button>
+            </div>
+        </div> 
+    </fieldset>
+    <div class="military-employees-grid-container"></div> 
+</div>
+</script>
+
+<script id="employee-promotion-template" type="text/x-kendo-template">
+<div class="employee-promotion-template">
+    <fieldset>
+        <legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.EmployeePromotionInfo)</legend>
+        <div class="employee-promotions-setting-form-container">
+            <div class="k-edit-label">
+                <label for="employeePromotionsCreateDate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.CreateDate)</label>
+            </div>
+            <div data-container-for="employeePromotionsCreateDate" class="k-edit-field">
+                <input name="employeePromotionsCreateDate" class="create-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: employeePromotionsCreateDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="employeePromotionsDate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsDate)</label>
+            </div>
+            <div data-container-for="employeePromotionsDate" class="k-edit-field">
+                <input name="employeePromotionsDate" class="promotions-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: promotionsDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="employeePromotionsSetting">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsSetting)</label>
+            </div>
+            <div data-container-for="employeePromotionsSetting" class="k-edit-field">
+                <input type="text" name="employeePromotionsSetting" class="promotions-setting-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+            </div>
+            <div class="k-edit-label">
+                <label for="employees">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Employee)</label>
+            </div>
+            <div data-container-for="employees" class="k-edit-field">
+                <input id="employees" />
+            </div>      
+            <div class="k-edit-label">
+                <label for="employeePromotionRate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionRate)</label>
+            </div>
+            <div data-container-for="employeePromotionRate" class="k-edit-field">
+                <input type="text" data-type="number" name="employeePromotionRate" class="promotion-rate" data-role="numerictextbox" value="0" min="0" max="100" data-bind="value:promotionRate">
+            </div> 
+            <div data-container-for="employeePromotionSettingUpdate" class="k-edit-field">
+                <button name="employeePromotionSettingUpdate" class="promotions-setting-update k-button"><span class="k-icon k-update"></span>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Calculate)</button>
+            </div>
+        </div>
+    </fieldset>   
+    <div class="employees-grid-container"></div> 
+</div>
+</script>
+
+<script id="employees-promotion-template" type="text/x-kendo-template">
+<div class="employees-promotion-template">
+    <fieldset>
+        <legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.EmployeesPromotionInfo)</legend>
+        <div class="employees-promotions-setting-form-container">
+            <div class="k-edit-label">
+                <label for="employeesPromotionsCreateDate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.CreateDate)</label>
+            </div>
+            <div data-container-for="employeesPromotionsCreateDate" class="k-edit-field">
+                <input name="employeesPromotionsCreateDate" class="create-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: employeesPromotionsCreateDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="employeesPromotionsDate">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsDate)</label>
+            </div>
+            <div data-container-for="employeesPromotionsDate" class="k-edit-field">
+                <input name="employeesPromotionsDate" class="promotions-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: promotionsDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="employeesPromotionSetting">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsSetting)</label>
+            </div>
+            <div data-container-for="employeesPromotionSetting" class="k-edit-field">
+                <input type="text" name="employeesPromotionSetting" class="promotions-setting-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+            </div>
+            <div data-container-for="employeesPromotionSettingUpdate" class="k-edit-field">
+                <button name="employeesPromotionSettingUpdate" class="promotions-setting-update k-button"><span class="k-icon k-update"></span>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Calculate)</button>
+            </div>
+        </div>
+    </fieldset>    
+    <div class="employees-grid-container"></div> 
+</div>
+</script>
+
+<script id="promotion-template" type="text/x-kendo-template">
+    <div class="promotion-form"> 
+    <ul>
+        <li class="k-state-active">@PromotionLocalizationHelper.GetResource(PromotionLocalizationHelper.EmployeesPromotion)</li>
+        <li>@PromotionLocalizationHelper.GetResource(PromotionLocalizationHelper.MilitaryEmployeesPromotion)</li>
+        <li>@PromotionLocalizationHelper.GetResource(PromotionLocalizationHelper.EmployeePromotion)</li>
+    </ul>
+    <div class="promotion-tab-div expandable-collapseable promotion-tab-employees-promotion"></div>
+    <div class="promotion-tab-div expandable-collapseable promotion-tab-military-employees-promotion"></div>
+    <div class="promotion-tab-div expandable-collapseable promotion-tab-employee-promotion"></div>
+    </div>
+</script>
+
+<script id="employees-promotion-info-template" type="text/x-kendo-template">
+<div class="promotion-form">
+    <fieldset class='promotion-fieldset'><legend></legend><div class="promotion-button-template-container k-toolbar k-grid-toolbar">
+        <a class="k-button k-button-icontext k-grid-add" onclick="return ApplayPromotion_click('#=model[0].Id#')"><span class="k-icon k-update"></span>Applay</a>
+        </div><div class='promotion'></div>
+        <table class="promotion-table-template">
+            <thead>
+                <tr>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.FullName)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.JobTitle)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.JobDescription)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SalaryBefore)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Efficiency)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Benefit)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SalaryAfter)</th>
+                    <th class="">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Note)</th>
+                </tr>
+            </thead>
+            <tbody class="promotion-body">
+                #var item=model[0];#
+                <tr>
+                    <td>#=item.FullName#</td>
+                    <td>#=item.JobTitle#</td>
+                    <td>#=item.JobDescription#</td>
+                    <td id="PayBeforePromotion">#=item.PayBeforePromotion#</td>
+                    <td id="Efficiency">#=item.EfficiencyDegree#</td>
+                    <td id="BenefitAmount">#=item.BenefitAmount#</td>
+                    <td id="PayAfterPromotion">#=item.PayAfterPromotion#</td>
+                    <td><textarea name="promotion-note-#=item.Id#" id="promotion-note" class="promotion-note promotion-note k-textbox"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    @*<a class="k-button k-button-icontext k-grid-add" onclick="return ApplayPromotion_click('one-employee')"><span class="k-icon k-update"></span>Applay</a>*@
+    @*<a class="k-button k-button-icontext k-grid-add" onclick="return ApplayPromotion_click('#=item.Id#')"><span class="k-icon k-update"></span>Applay</a>*@
+</div>    
+</script>
+
+<script id="add-incidence-definition-template" type="text/x-kendo-template">
+<div class="add-incidence-definition-template">
+    <fieldset>
+        <legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IncidenceDefinition)</legend>
+        <div class="add-incidence-definition-form-container">
+            <div class="k-edit-label">
+                <label for="incidenceType">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.IncidenceType)</label>
+            </div>
+            <div data-container-for="employeesPromotionsDate" class="k-edit-field">
+                <input name="employeesPromotionsDate" class="promotions-date" data-role="datepicker" data-format="dd/MM/yyyy" data-bind="value: promotionsDate" />
+            </div>  
+            <div class="k-edit-label">
+                <label for="employeesPromotionSetting">@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.PromotionsSetting)</label>
+            </div>
+            <div data-container-for="employeesPromotionSetting" class="k-edit-field">
+                <input type="text" name="employeesPromotionSetting" class="promotions-setting-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+            </div>
+            <div data-container-for="employeesPromotionSettingUpdate" class="k-edit-field">
+                <button name="employeesPromotionSettingUpdate" class="promotions-setting-update k-button"><span class="k-icon k-update"></span>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.Calculate)</button>
+            </div>
+        </div>
+    </fieldset>
+</div>
+</script>

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/28/2015 12:56:58" ReportInfo.Modified="10/10/2016 13:38:42" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+      
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqpg2z2qeXZypb9c0zslFjeYDLPp/3ZCBB0AZQh1YuZ89Og91XCHeZEmX0h6beg7EF3XyNC3QVLn6XBXcmag8b/+rdBWzCvMF2h7POL+YMshXgzl410r74KYm+VhH4UbH3WvVk7QSq/fwwp40otAUuzfy1/W0Gg7Va4PsNtdFAckxFbrhrs4AXF+GzBgot5ubHnEqjJzW8UstgEwJZ3AfHAQ==">
+      <TableDataSource Name="Table" Alias="WithoutAdj" DataType="System.Int32" Enabled="true" SelectCommand="with WithoutDetails AS&#13;&#10;(&#13;&#10;SELECT        &#13;&#10;EmployeeAttendanceCard_id  AS EmpAttCardID,&#13;&#10;FinalTotalOvertimeValue,&#13;&#10;NormalOvertimeValue,&#13;&#10;ParticularOvertimeValue,&#13;&#10;HolidayOvertimeValue,&#13;&#10;MONTH (dbo.AttendanceRecord.Date ) as monthnumber ,&#13;&#10;LatenessPenalty,&#13;&#10;NonAttendancePenalty,&#13;&#10;FinalLatenessTotalValue,&#13;&#10;LatenessHoursValue,&#13;&#10;NonAttendanceHoursValue,&#13;&#10;FinalNonAttendanceTotalValue&#13;&#10;&#13;&#10; FROM            dbo.AttendanceWithoutAdjustment inner join dbo.AttendanceWithoutAdjustmentDetail on dbo.AttendanceWithoutAdjustment.Id=dbo.AttendanceWithoutAdjustmentDetail.AttendanceWithoutAdjustment_id&#13;&#10;					INNER JOIN dbo.AttendanceRecord ON dbo.AttendanceRecord.Id = dbo.AttendanceWithoutAdjustment.AttendanceRecord_id&#13;&#10;  where	AttendanceWithoutAdjustment.IsVertualDeleted = 0 AND&#13;&#10;		AttendanceWithoutAdjustmentDetail.IsVertualDeleted = 0 AND&#13;&#10;		AttendanceRecord.IsVertualDeleted = 0&#13;&#10; )&#13;&#10; select&#13;&#10; EmpAttCardID,&#13;&#10;monthnumber,&#13;&#10;ISNULL((select count(*) from  dbo.AttendanceWithoutAdjustment inner join dbo.AttendanceWithoutAdjustmentDetail on dbo.AttendanceWithoutAdjustment.Id=dbo.AttendanceWithoutAdjustmentDetail.AttendanceWithoutAdjustment_id &#13;&#10;where ActualWorkValue&lt;=0 AND IsOffDay=0 AND HasMission=0 AND HasVacation=0&#13;&#10;AND AttendanceWithoutAdjustment.EmployeeAttendanceCard_id=EmpAttCardID AND Month(AttendanceWithoutAdjustmentDetail.Date)=monthnumber),0)AS CountAbsence,&#13;&#10;FinalTotalOvertimeValue,&#13;&#10;LatenessPenalty,&#13;&#10;NonAttendancePenalty,&#13;&#10;FinalNonAttendanceTotalValue,&#13;&#10;FinalLatenessTotalValue, &#13;&#10;ISNULL(SUM(NormalOvertimeValue),0)AS TotalNormalOvertimeValue,&#13;&#10;ISNULL(SUM(ParticularOvertimeValue),0)AS TotalParticularOvertimeValue,&#13;&#10;ISNULL(SUM(HolidayOvertimeValue),0)AS TotalHolidayOvertimeValue,&#13;&#10;ISNULL(SUM(LatenessHoursValue),0)AS InitialLatenessTotalValue,&#13;&#10;ISNULL(SUM(NonAttendanceHoursValue),0)AS InitialNonAttendanceTotalValue&#13;&#10;&#13;&#10; from   WithoutDetails &#13;&#10;group by monthnumber,EmpAttCardID,FinalTotalOvertimeValue,&#13;&#10;LatenessPenalty,&#13;&#10;NonAttendancePenalty,&#13;&#10;FinalNonAttendanceTotalValue,&#13;&#10;FinalLatenessTotalValue&#13;&#10;         ">
+        <Column Name="monthnumber" DataType="System.Int32"/>
+        <Column Name="EmpAttCardID" DataType="System.Int32"/>
+        <Column Name="CountAbsence" DataType="System.Int32"/>
+        <Column Name="FinalTotalOvertimeValue" DataType="System.Double"/>
+        <Column Name="LatenessPenalty" DataType="System.Int32"/>
+        <Column Name="NonAttendancePenalty" DataType="System.Int32"/>
+        <Column Name="FinalNonAttendanceTotalValue" DataType="System.Double"/>
+        <Column Name="FinalLatenessTotalValue" DataType="System.Double"/>
+        <Column Name="TotalNormalOvertimeValue" DataType="System.Double"/>
+        <Column Name="TotalParticularOvertimeValue" DataType="System.Double"/>
+        <Column Name="TotalHolidayOvertimeValue" DataType="System.Double"/>
+        <Column Name="InitialLatenessTotalValue" DataType="System.Double"/>
+        <Column Name="InitialNonAttendanceTotalValue" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="EmpInfo" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        dbo.Employee.FirstName+' '+dbo.Employee.FatherName+' '+ dbo.Employee.LastName AS FullName, dbo.EmployeeCard.Id AS EmployeeAttendanceCardId&#13;&#10;FROM            dbo.Employee INNER JOIN&#13;&#10;                         dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;  where	Employee.IsVertualDeleted = 0 AND&#13;&#10;	EmployeeCard.IsVertualDeleted = 0">
+        <Column Name="Fullname" DataType="System.String"/>
+        <Column Name="EmployeeAttendanceCardId" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="EmployeeAttendanceCardId" ChildColumns="EmpAttCardID" Enabled="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="37.8">
+      <TextObject Name="Text168" Width="1048.95" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير احصائيات الدوام بدون تقاص" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="41.65" Width="1047.06"/>
+    <DataBand Name="Data1" Top="45.49" Width="1047.06" Height="56.7">
+      <TextObject Name="Text171" Left="916.65" Top="28.35" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الشهر المختار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text172" Left="765.45" Top="28.35" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[MonthName([WithoutAdj.monthnumber])]" Format="Date" Format.Format="d" HorzAlign="Center" RightToLeft="true" Font="Arial, 11pt"/>
+      <TextObject Name="Text169" Left="916.65" Top="9.45" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الاصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text170" Left="765.45" Top="9.45" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+      <DataBand Name="Data2" Top="204.38" Width="1047.06" Height="47.25" CanGrow="true" CanBreak="true" Guides="85.05" DataSource="Table">
+        <TextObject Name="FinalOvertimeValueText" Left="236.25" Width="85.05" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.TotalHolidayOvertimeValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="ReqWorkMonthSumValueText" Left="803.25" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.CountAbsence]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="SumActWorkValueText" Left="727.65" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.InitialLatenessTotalValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="ReqWorkHoursText" Left="652.05" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.FinalLatenessTotalValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="StatusText" Left="557.55" Width="94.5" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.InitialNonAttendanceTotalValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="ExpectedOverTimeText" Left="481.95" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.FinalNonAttendanceTotalValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="TotalOvertimeOrderValueText" Left="406.35" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[IIf([WithoutAdj.LatenessPenalty]==0,&quot;None&quot;,IIf([WithoutAdj.LatenessPenalty]==1,&quot;Alert&quot;,IIf([WithoutAdj.LatenessPenalty]==2,&quot;Warning&quot;,IIf([WithoutAdj.LatenessPenalty]==3,&quot;LayOff&quot;,&quot;NoValue&quot;))))]&#13;&#10;" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="InitialOvertimeValueText" Left="321.3" Width="85.05" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[IIf([WithoutAdj.NonAttendancePenalty]==0,&quot;None&quot;,IIf([WithoutAdj.NonAttendancePenalty]==1,&quot;Alert&quot;,IIf([WithoutAdj.NonAttendancePenalty]==2,&quot;Warning&quot;,IIf([WithoutAdj.NonAttendancePenalty]==3,&quot;LayOff&quot;,&quot;NoValue&quot;))))]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="InitialNonAttendanceValueText" Left="160.65" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.TotalParticularOvertimeValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="FinalNonAttendanceValueText" Left="85.05" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.TotalNormalOvertimeValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="PenaltyText" Width="85.05" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.FinalTotalOvertimeValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="Text31" Left="878.85" Width="170.1" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[WithoutAdj.Table1_Table.Fullname]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <DataHeaderBand Name="DataHeader2" Top="106.04" Width="1047.06" Height="94.5">
+          <TextObject Name="Text22" Left="321.3" Width="85.05" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العقوبة المترتبة على نقص الدوام" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text20" Left="481.95" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نقص الدوام بعد معامل الضرب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text29" Width="85.05" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاضافي المحتسب بعد الضرب بالمعامل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text24" Left="236.25" Width="85.05" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاضافي الاجمالي المحتسب للعطل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text16" Left="803.25" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد أيام الغياب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text17" Left="727.65" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التأخير الإجمالي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text18" Left="652.05" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التأخير الإجمالي بعد معامل الضرب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text19" Left="557.55" Width="94.5" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نقص الدوام الاجمالي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text21" Left="406.35" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العقوبة المترتبة على التأخير" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text25" Left="160.65" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاضافي الاجمالي المحتسب للفترة الخاصة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text27" Left="85.05" Width="75.6" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاضافي الاجمالي المحتسب للعادي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Left="878.85" Width="170.1" Height="94.5" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="255.48" Width="1047.06" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="266" Height="126" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="106" Top="55" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="184" Top="28" Width="60" Height="13" TabIndex="3" Text="اختار الشهر"/>
+    <ComboBoxControl Name="ComboBox1" Left="4" Top="24" Width="175" TabIndex="4" DataColumn="WithoutAdj.monthnumber" DropDownStyle="DropDownList" DropDownWidth="145" ItemHeight="13"/>
+  </DialogPage>
+</Report>

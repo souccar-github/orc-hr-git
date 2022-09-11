@@ -1,0 +1,232 @@
+﻿@using HRIS.Domain.Global.Constant
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.ProjectModels
+<script>
+
+    function AddUserToRole(userId) {
+        $.ajax({
+            url: '@Url.Action("GetRole", "Role", new {area = "Security"})',
+            type: "POST",
+            data: JSON.stringify({ userId: parseInt(userId) }),
+            contentType: 'application/json',
+            success: function (data) {
+                var title = "@LocalizationHelper.GetResource(CommandsNames.ResourceGroupName,CommandsNames.AddUserToRole)";
+                var buttons = [
+                    { Name: "role_update", CssClass: "update", Title: "@GlobalResource.Save" },
+                    { Name: "role_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var containerId = "role-container";
+                var bodyHTML = "<div id='roles'></div>";
+                var popupDiv = $('<div id="addUserToRoleWindow" style="display: none"></div>');
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+
+                $("#role_cancel").off('click').on('click', function () {
+                    $("#addUserToRoleWindow").data("kendo-window").close();
+                });
+
+                createDualSelectList("role",
+                    data,
+                    "roles",
+                    "@GlobalResource.Role",
+                    "@GlobalResource.SelectedRole",
+                    false);
+                $("#role_update").off('click').on('click', function () {
+                    $.ajax({
+                        url: '@Url.Action("SaveRolesOfUser", "Role", new {area = "Security"})',
+                        type: "POST",
+                        data: JSON.stringify({ userId: parseInt(userId), roles: data }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            $("#addUserToRoleWindow").data("kendo-window").close();
+                            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+
+                        }
+                    });
+
+
+
+
+                });
+                $("#role_cancel").off('click').on('click', function () {
+                    $("#addUserToRoleWindow").data("kendo-window").close();
+                });
+                // createAndOpenWindow($("#addUserToRoleWindow"), "Add User To Role", 600, 465);
+            }
+        });
+    }
+
+
+    function ResetPassword(userId) {
+        var title = "ResetPassword";
+        var databind = kendo.observable();
+        var tempdata = [
+       { Name: "NewPassword", Title: "NewPassword", Type: "Text", IsRequired: true },
+       { Name: "ConfirmPassword", Title: "ConfirmPassword", Type: "Text", IsRequired: true }
+        ];
+
+        var buttons = [
+        { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+        { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "ResetPasswordContainer";
+        var bodyHTML = "<div class='ResetPassword fix-custom-popup'></div>";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow($('<div class="ResetPasswordDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+        $("#cancel").off('click').on('click', function () {
+            $(".ResetPasswordDiv").data("kendo-window").close();
+        });
+
+        $("#update").off('click').on('click', function () {
+
+            $.ajax({
+                url: '@Url.Action("ResetPassword", "Account", new { area = "" })',
+                type: "POST",
+                data: JSON.stringify({ newPassword: databind.NewPassword, confirmPassword: databind.ConfirmPassword, userId: parseInt(userId) }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        $(".ResetPasswordDiv").data("kendo-window").close();
+                        ShowMessageBox("@GlobalResource.Success", data.Msg, "k-icon w-b-info", commands);
+
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+
+
+        });
+
+        createCustomEditForm($(".ResetPassword"), { Fields: tempdata, Key: "ResetPasswordKey" }, databind);
+    }
+
+
+
+</script>
+
+@*<div id="addUserToRoleWindow" style="display: none">
+    </div>*@
+
+
+@using HRIS.Domain.Global.Constant
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.ProjectModels
+<script>
+
+    function AddUserToRole(userId) {
+        $.ajax({
+            url: '@Url.Action("GetRole", "Role", new {area = "Security"})',
+            type: "POST",
+            data: JSON.stringify({ userId: parseInt(userId) }),
+            contentType: 'application/json',
+            success: function (data) {
+                var title = "@LocalizationHelper.GetResource(CommandsNames.ResourceGroupName,CommandsNames.AddUserToRole)";
+                var buttons = [
+                    { Name: "role_update", CssClass: "update", Title: "@GlobalResource.Save" },
+                    { Name: "role_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var containerId = "role-container";
+                var bodyHTML = "<div id='roles'></div>";
+                var popupDiv = $('<div id="addUserToRoleWindow" style="display: none"></div>');
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+
+                $("#role_cancel").off('click').on('click', function () {
+                    $("#addUserToRoleWindow").data("kendo-window").close();
+                });
+
+                createDualSelectList("role",
+                    data,
+                    "roles",
+                    "@GlobalResource.Role",
+                    "@GlobalResource.SelectedRole",
+                    false);
+                $("#role_update").off('click').on('click', function () {
+                    $.ajax({
+                        url: '@Url.Action("SaveRolesOfUser", "Role", new {area = "Security"})',
+                        type: "POST",
+                        data: JSON.stringify({ userId: parseInt(userId), roles: data }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            $("#addUserToRoleWindow").data("kendo-window").close();
+                            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+
+                        }
+                    });
+
+
+
+
+                });
+                $("#role_cancel").off('click').on('click', function () {
+                    $("#addUserToRoleWindow").data("kendo-window").close();
+                });
+                // createAndOpenWindow($("#addUserToRoleWindow"), "Add User To Role", 600, 465);
+            }
+        });
+    }
+
+
+    function ResetPassword(userId) {
+        var title = "ResetPassword";
+        var databind = kendo.observable();
+        var tempdata = [
+       { Name: "NewPassword", Title: "NewPassword", Type: "Text", IsRequired: true },
+       { Name: "ConfirmPassword", Title: "ConfirmPassword", Type: "Text", IsRequired: true }
+        ];
+
+        var buttons = [
+        { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+        { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "ResetPasswordContainer";
+        var bodyHTML = "<div class='ResetPassword fix-custom-popup'></div>";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow($('<div class="ResetPasswordDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+        $("#cancel").off('click').on('click', function () {
+            $(".ResetPasswordDiv").data("kendo-window").close();
+        });
+
+        $("#update").off('click').on('click', function () {
+
+            $.ajax({
+                url: '@Url.Action("ResetPassword", "Account", new { area = "" })',
+                type: "POST",
+                data: JSON.stringify({ newPassword: databind.NewPassword, confirmPassword: databind.ConfirmPassword, userId: parseInt(userId) }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        $(".ResetPasswordDiv").data("kendo-window").close();
+                        ShowMessageBox("@GlobalResource.Success", data.Msg, "k-icon w-b-info", commands);
+
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+
+
+        });
+
+        createCustomEditForm($(".ResetPassword"), { Fields: tempdata, Key: "ResetPasswordKey" }, databind);
+    }
+
+
+
+</script>
+
+@*<div id="addUserToRoleWindow" style="display: none">
+    </div>*@
+
+

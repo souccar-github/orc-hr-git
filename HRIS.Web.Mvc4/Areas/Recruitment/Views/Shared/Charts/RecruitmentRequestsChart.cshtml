@@ -1,0 +1,353 @@
+﻿
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.JobDescription.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-full">
+    <div id="chart-params-rr" class="chart-params">
+        @* From Date *@
+        <div id="from-date-rr" style="float:@pageDir;width:30%;">
+            <div class="control control-from-date-rr">
+                <div class="k-edit-label">
+                    <label for="fromDateRr">@GlobalResource.FromDate</label>
+                </div>
+                <div data-container-for="fromDateRr" class="k-edit-field">
+                    <input id="fromDateRr" />
+                </div>
+
+            </div>
+        </div>
+        @* To Date *@
+        <div id="to-date-rr" style="float:@pageDir;width:30%;">
+            <div class="control control-to-date-rr">
+                <div class="k-edit-label">
+                    <label for="toDateRr">@GlobalResource.ToDate</label>
+                </div>
+                <div data-container-for="toDateRr" class="k-edit-field">
+                    <input id="toDateRr" />
+                </div>
+
+            </div>
+        </div>
+        @* Nodes Type *@
+        <div id="p-node-type-rr" style="float:@pageDir;width:30%;">
+            <div class="control control-p-node-type-rr">
+                <div class="k-edit-label">
+                    <label for="nodeTypeRr">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeRr" class="k-edit-field">
+                    <input id="nodeTypeRr" name="nodeTypeRr" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeRr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        <div style="clear:both;"></div>
+        @* Nodes *@
+        <div id="p-node-rr" style="float:@pageDir;width:30%;">
+            <div class="control control-p-node-rr">
+                <div class="k-edit-label">
+                    <label for="nodeRr">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeRr" class="k-edit-field">
+                    <input id="nodeRr" name="nodeRr" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeRr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Job Description *@
+        <div id="p-job-desc-rr" style="float:@pageDir;width:30%;">
+            <div class="control control-p-job-desc-rr">
+                <div class="k-edit-label">
+                    <label for="jobDescRr">@typeof(JobDescription).GetLocalized()</label>
+                </div>
+                <div data-container-for="jobDescRr" class="k-edit-field">
+                    <input id="jobDescRr" name="jobDescRr" placeholder="@typeof(JobDescription).GetLocalized() ..." />
+                    <input id="hf_jobDescRr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+    </div>
+
+    <div style="clear:both;"></div>
+    <div id="recruitment-requests-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesRr = null;
+    var $nodesRr = null;
+    var $jobDescRr = null;
+
+    function getRecruitmentRequests(nodesTypes, nodes,jobDescriptions) {
+        $nodesTypesRr = nodesTypes;
+        $nodesRr = nodes;
+        $jobDescRr = jobDescriptions;
+
+        var date = new Date();
+        date.setMonth(date.getMonth() - 1);
+
+        $('#fromDateRr').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth(), 1),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showRecruitmentRequestsChart();
+            }
+        });
+
+        $('#toDateRr').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showRecruitmentRequestsChart();
+            }
+        });
+
+        generateComboBox("#nodeTypeRr", "nodeTypeRr", $nodesTypesRr, onChangeNodeTypeRr);
+        generateComboBox("#nodeRr", "nodeRr", $nodesRr, onChangeNodeRr);
+        generateComboBox("#jobDescRr", "jobDescRr", $jobDescRr, onChangeJobDescRr);
+
+
+        setTimeout(function () { showRecruitmentRequestsChart(); }, 500);
+    }
+
+    function onChangeNodeTypeRr(e) {
+        onChange(e);
+        updateNodeTypeRrComboBox(e);
+    }
+    function updateNodeTypeRrComboBox(e) {
+        var eleCount = $nodesTypesRr.length;
+        $nodesTypesRr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesRr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesRr.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesRr($nodesTypesRr);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesRr);
+        dataSource.data(data);
+
+        var nodeRrDropDownList = $('#nodeRr').data("kendoDropDownList");
+        nodeRrDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeRrDropDownList.setDataSource(dataSource);
+
+        //===Job Description
+        updateJobDescriptionsRr($nodesRr);
+        var jobDescDataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescRr);
+        jobDescDataSource.data(data);
+
+        var jobDescRrDropDownList = $('#jobDescRr').data("kendoDropDownList");
+        jobDescRrDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescRrDropDownList.setDataSource(jobDescDataSource);
+
+        showRecruitmentRequestsChart();
+    }
+    function updateNodesRr(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Recruitment" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesRr = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeRr(e) {
+        onChange(e);
+        updateNodeRrComboBox(e);
+    }
+    function updateNodeRrComboBox(e) {
+        var eleCount = $nodesRr.length;
+        $nodesRr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesRr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesRr.push(items[i]);
+                }
+            }
+        }
+
+        updateJobDescriptionsRr($nodesRr);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescRr);
+        dataSource.data(data);
+
+        var jobDescRrDropDownList = $('#jobDescRr').data("kendoDropDownList");
+        jobDescRrDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescRrDropDownList.setDataSource(dataSource);
+
+        showRecruitmentRequestsChart();
+    }
+    function updateJobDescriptionsRr(nodes) {
+        window.Souccar.ajax('@Url.Action("GetJobDescriptions", "Dashboard", new { area = "Recruitment" })', { nodes: nodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $jobDescRr = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+    }
+    function onChangeJobDescRr(e) {
+        onChange(e);
+        updateJobDescRrComboBox(e);
+    }
+
+    function updateJobDescRrComboBox(e) {
+        var eleCount = $jobDescRr.length;
+        $jobDescRr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $jobDescRr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $jobDescRr.push(items[i]);
+                }
+            }
+        }
+
+        showRecruitmentRequestsChart();
+    }
+    function showRecruitmentRequestsChart() {
+
+        var fromKendoDatePicker = $('#fromDateRr').data('kendoDatePicker');
+        var fromDate = fromKendoDatePicker.value();
+
+        var toKendoDatePicker = $('#toDateRr').data('kendoDatePicker');
+        var toDate = toKendoDatePicker.value();
+
+        window.Souccar.ajax('@Url.Action("RecruitmentRequests", "Dashboard", new { area = "Recruitment" })', { jobDescriptions: $jobDescRr, fromDate: fromDate , toDate : toDate}, successFunc, erorrFunc);
+        function successFunc(data) {
+            if(data.Success)
+                initRecruitmentRequestsChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+
+    }
+
+    function initRecruitmentRequestsChart(data) {
+        console.log(data);
+        Highcharts.chart('recruitment-requests-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.RecruitmentRequests) '
+            },
+            xAxis: {
+                categories: data.JobDescriptions
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: ''
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: ( // theme
+                            Highcharts.defaultOptions.title.style &&
+                            Highcharts.defaultOptions.title.style.color
+                        ) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                //enabled: false
+                headerFormat: '<b>{point.x}</b><br/>'
+                //pointFormat: '{@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Total): {point.stackTotal}'
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Accepted)',
+                data: data.AcceptedRequests
+            }, {
+                name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Rejected)',
+                    data: data.RejectedRequests
+            }, {
+                    name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Finished)',
+                    data: data.FinishedRequests
+            }]
+        });
+    }
+</script>
+
+
+

@@ -1,0 +1,73 @@
+﻿@using  Project.Web.Mvc4.Helpers;
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Extenstions
+@using Souccar.Domain.Extensions
+@using Souccar.Core.Extensions
+@using Project.Web.Mvc4.Helpers.Resource;
+@{
+    ViewBag.Title = GlobalResource.Settings;
+}
+
+<div class="settings">
+    <h1>@GlobalResource.Settings</h1>
+    <a href="@Url.Action("Manage", "Account", new { area=""})">@GlobalResource.ChangePassword</a>
+
+    <fieldset class="theme">
+        @{var name = typeof(Souccar.Domain.Security.ThemingType).GetTitle();
+            if (string.IsNullOrEmpty(name))
+            {
+                name = "Theming Type";
+            }}
+        <legend>@name</legend>
+        @{ var themingTypeDataSource = typeof(Souccar.Domain.Security.ThemingType).GetDataSource();
+        }
+        <form action='@Url.Action("Settings", "Home", new { area = "" })' method="post">
+
+
+            @for (int i = 0; i < themingTypeDataSource.Count; i++)
+            {
+                if (ThemingHelper.IsSupportedTheme((@themingTypeDataSource[i]["Id"]).ToString()))
+                {
+                    var temp = "";
+                    if (((int)Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserThemingType) == System.Convert.ToInt16(themingTypeDataSource[i]["Id"]))
+                    {
+                        temp = "checked='checked'";
+                    }
+                <div>
+                    <input @temp  type="radio" name="themingType" value="@themingTypeDataSource[i]["Id"]" id='ThemingType_@themingTypeDataSource[i]["Id"]' />
+                    <label for='ThemingType_@themingTypeDataSource[i]["Id"]'>@themingTypeDataSource[i]["Name"]</label>
+                </div>
+                }
+            }
+
+
+
+            <div class="top-commands">
+                <input class="k-button primary-command" type="submit" value="@GlobalResource.Save" />
+                @*<button class="">
+                        <span class="command-icon save"></span>
+
+                    </button>*@
+
+            </div>
+
+        </form>
+    </fieldset>
+</div>
+<script>
+    $(document).ready(function () {
+        var cookies = decodeURIComponent(document.cookie).split(';');
+        for (var i = 0 ; i < cookies.length; i++) {
+            var cookie = cookies[i].split('=');
+            if (cookie[0].includes("IsThemingSupported") && cookie[1].includes("False"))
+            {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("info", "@SecurityLocalizationHelper.GetResource(SecurityLocalizationHelper.ThisThemingIsNotSupported)", "k-icon w-b-info", commands);
+                var date = new Date();
+                date.setTime(date.getTime() + (300 * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toGMTString();
+                document.cookie = cookie[0] + "=" + "True" + expires + "; path=/";
+            }
+        }
+    });
+</script>

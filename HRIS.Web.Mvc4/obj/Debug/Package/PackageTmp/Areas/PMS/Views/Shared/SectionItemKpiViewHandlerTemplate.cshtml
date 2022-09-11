@@ -1,0 +1,65 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<script>
+    function AppraisalSectionItemKpiViewHandler(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetSectionViewModel", "Section", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sectionViewModel) {
+                e.model.CustomInformation = sectionViewModel;
+
+                e.container.find("#default-view-controls").append('<div class="section-items-container"></div>');
+                var template = kendo.template($("#appraisal-appraisal-template-view-template").html());
+                e.container.find(".section-items-container").html(template(sectionViewModel));
+
+                for (var i = 0; i < $(".show-appraisal-item").length; i++) {
+                    $(".show-appraisal-item").eq(i).kendoTooltip({
+                        content: $(".tooltip-wrapper").eq(i),
+                        width: 400,
+                        position: "top",
+                    });
+                }
+            }
+        });
+
+    }
+</script>
+
+<script id="appraisal-appraisal-template-view-template" type="text/x-kendo-template">
+    #var showKpisTemplate = kendo.template($("\\#show-kpis-template").html());#
+    <span>@GlobalResource.Items</span>
+    <div class="section-items">   
+        <table>
+            <thead>   
+                <tr>
+                    <th>@GlobalResource.Name</th>
+                    <th>@GlobalResource.Weight</th>
+                    <th>@GlobalResource.Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < Items.length; i++) {#
+                #var item=Items[i];#
+                <tr>
+                    <td>#=item.Name#</td>
+                    <td>#=item.Weight#</td>
+                    <td>#=item.Description#</td>
+                    <td class="item-commands">
+                         <button data-item-index="#=i#" class="show-appraisal-item k-button">
+                            <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                        </button>
+                        <div class="kpis-info">
+                            <div class="tooltip-wrapper">
+                                #=showKpisTemplate({Kpis:item.Kpis})#
+                            </div>
+                        </div>
+                    </td>
+                </tr> 
+                #}#
+            </tbody>
+        </table>
+    </div>
+</script>

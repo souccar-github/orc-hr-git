@@ -1,0 +1,617 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using HRIS.Validation.MessageKeys;
+@using Souccar.Infrastructure.Core;
+@using HRIS.Domain.EmployeeRelationServices.Configurations;
+<script>
+    @*var dataSource = {
+        transport: {
+            read: {
+                url: "@Url.Action("ReadToList", "Reference", new { typeName = "HRIS.Domain.AttendanceSystem.Configurations.InfractionForm", area = "" })"
+        }
+    },
+        schema: {
+        data: "Data",
+        id: "Id"
+        }
+    };*@
+    
+    $.ajax({
+        url: window.applicationpath + 'Reference/ReadToList',
+        type: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify({ typeName: "@typeof(InfractionForm).FullName", requestInformation: null }),
+        async: false,
+        success: function (data) {
+            infractionFormDataSource = data.Data;
+        }
+    });
+    function NonAttendanceFormEditHandler(e) {
+        $.ajax({
+            url: '@Url.Action("GetSectionViewModel", "NonAttendanceForm", new { area = "AttendanceSystem" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sectionViewModel) {
+                e.model.CustomInformation = sectionViewModel;
+
+                e.container.find(".controls-div").append('<div class="section-items-container control"></div>');
+                initEditForm(e, sectionViewModel);
+            },
+            error: function () {
+                alert("Error");
+            }
+        });
+        function initEditForm(e, sectionViewModel) {
+            var template = kendo.template($("#section-items-template").html());
+            e.container.find(".section-items-container").html(template(sectionViewModel));
+
+            e.container.find(".controls-div .add-incentive-item").off("click").on("click", function () {
+                addIncentiveItem(e, sectionViewModel);
+            });
+            e.container.find(".controls-div .edit-incentive-item").off("click").on("click", function () {
+                var index = $(this).attr("data-item-index");
+                var item = sectionViewModel.Items[index];
+                item.Index = index;
+                editIncentiveItem(e, sectionViewModel, item);
+            });
+            e.container.find(".controls-div .remove-incentive-item").off("click").on("click", function () {
+                var index = $(this).attr("data-item-index");
+                removeIncentiveItem(e, sectionViewModel, index);
+            });
+
+            for (var i = 0; i < $(".show-incentive-item").length; i++) {
+                $(".show-incentive-item").eq(i).kendoTooltip({
+                    content: $(".tooltip-wrapper").eq(i),
+                    width: 400,
+                    position: "top",
+                });
+            }
+        }
+
+
+        function initEditItem(e, sectionViewModel, item) {
+            e.model.dirty = true;
+            var title = "@GlobalResource.AddNonAttendanceSlices";
+            var buttons = [
+               { Name: "edit_item_add", CssClass: "update", Title: "@GlobalResource.Save" },
+                { Name: "edit_item_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+            ];
+            var containerId = "edit-nonAttendance-item-container";
+            var bodyHTML = "<div class='edit-appraisal-item-body'></div>";
+            var div = $('<div class="edit-appraisal-item-div"></div>');
+
+            createAndOpenCustomWindow(div, bodyHTML, containerId, title, buttons, false);
+
+            var itemTemplate = kendo.template($("#section-item-editor-template").html());
+            $(".edit-appraisal-item-body").html(itemTemplate(item));
+            kendo.init(".edit-appraisal-item-body");
+            addFieldRequired();
+
+            $(".edit-appraisal-item-body .kpi-value").kendoNumericTextBox({
+            });
+
+            $(".edit-appraisal-item-body").find("[name='Weight']").kendoNumericTextBox({
+                max: 100, min: 0
+            });
+
+            $("#edit_item_cancel").off('click').on('click', function () {
+
+                if ($(".k-window").hasClass("k-edit-form-container"))
+                    $(".k-window").removeClass("k-edit-form-container");
+
+
+                div.data("kendo-window").close();
+              //  initEditForm(e, sectionViewModel);
+            });
+
+            $("#edit_item_add").off('click').on('click', function () {
+
+                var x = getItemFromWindow();
+
+                if (x.StartSlice != 0 && x.EndSlice != 0 && x.Percentages.length != 0) {
+                   
+                    if (parseInt(x.StartSlice) > parseInt(x.EndSlice)) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.StartSliceValueMustBeLessOrEqualThanEndSliceValue))", "k-icon w-b-error", commands);
+                        return false;
+                    }
+
+                    var data = sectionViewModel.Items;
+                    if (data.length > 0) {
+
+                        if (parseInt(item.Id) != 0) {
+                            //edit
+                            for (index = 0; index < data.length ; index++) {
+
+                                if (parseInt(item.Id) != parseInt(data[index].Id)) {
+                                    if (parseInt(x.StartSlice) >= parseInt(data[index].StartSlice) && parseInt(x.EndSlice) <= parseInt(data[index].EndSlice) ||
+                                   parseInt(x.StartSlice) >= parseInt(data[index].StartSlice) && parseInt(x.StartSlice) <= parseInt(data[index].EndSlice) ||
+                                   parseInt(x.EndSlice) <= parseInt(data[index].EndSlice) && parseInt(x.EndSlice) >= parseInt(data[index].StartSlice)) {
+                                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                        ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.NonAttendanceSliceConflictWithOtherNonAttendanceSlicesInThisNonAttendanceForm))", "k-icon w-b-error", commands);
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                           
+                            if (item.Index < data.length)
+                            {
+                                //edit after create
+                                for (index = 0; index < data.length ; index++) {
+
+                                    if (parseInt(item.Index) != parseInt(data[index].Index)) {
+                                        if (parseInt(x.StartSlice) >= parseInt(data[index].StartSlice) && parseInt(x.EndSlice) <= parseInt(data[index].EndSlice) ||
+                                       parseInt(x.StartSlice) >= parseInt(data[index].StartSlice) && parseInt(x.StartSlice) <= parseInt(data[index].EndSlice) ||
+                                       parseInt(x.EndSlice) <= parseInt(data[index].EndSlice) && parseInt(x.EndSlice) >= parseInt(data[index].StartSlice)) {
+                                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                            ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.NonAttendanceSliceConflictWithOtherNonAttendanceSlicesInThisNonAttendanceForm))", "k-icon w-b-error", commands);
+                                            return false;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //create
+                                for (index = 0; index < data.length ; index++) {
+
+                                  
+                                        if (parseInt(x.StartSlice) >= parseInt(data[index].StartSlice) && parseInt(x.EndSlice) <= parseInt(data[index].EndSlice) ||
+                                       parseInt(x.StartSlice) >= parseInt(data[index].StartSlice) && parseInt(x.StartSlice) <= parseInt(data[index].EndSlice) ||
+                                       parseInt(x.EndSlice) <= parseInt(data[index].EndSlice) && parseInt(x.EndSlice) >= parseInt(data[index].StartSlice)) {
+                                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                            ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.NonAttendanceSliceConflictWithOtherNonAttendanceSlicesInThisNonAttendanceForm))", "k-icon w-b-error", commands);
+                                            return false;
+                                        }
+                                    
+                                }
+                            }
+                           
+
+                        }
+                       
+                    }
+                    sectionViewModel.Items[item.Index] = getItemFromWindow();
+                }
+
+
+
+                if (SectionValidation(sectionViewModel))
+                {
+                    div.data("kendo-window").close();
+                    initEditForm(e, sectionViewModel);
+                }
+
+            });
+            $(".edit-appraisal-item-body .add-incentive-kpi").off('click').on('click', function () {
+                var kpiTemplate = kendo.template($("#section-item-kpi-tr-template").html());
+                var trs = $(".edit-appraisal-item-body .kpis-table tbody tr");
+                trs.last().before(kpiTemplate({}));
+
+                var tr = trs.last().prev();
+                tr.find("[name='kpi-description']").kendoNumericTextBox({
+                    min: 1,
+                    value: 1
+                });
+                tr.find("[name='kpi-value']").kendoNumericTextBox({
+                    decimals: 3,
+                    format: "### \\%",
+                    value: 100,
+                    min: 1,
+                    max: 100
+                });
+
+
+                tr.find(".remove-incentive-item-kpi").off('click').on('click', function () {
+                    tr.remove();
+                });
+
+
+            });
+            debugger;
+            var InfractionDropDownList = $('.control-Description')[2];
+            InfractionDropDownList.getElementsByTagName('input')[0].className += "InfractionDropDownList";
+            $(".InfractionDropDownList").data('kendoDropDownList').one("dataBound", function () { this.text(item.InfractionForm.Description) });;
+
+        }
+        function addIncentiveItem(e, sectionViewModel) {
+            initEditItem(e, sectionViewModel, { Index: sectionViewModel.Items.length, Id: 0, EndSlice: 0, StartSlice: 0, Value: 0, InfractionForm:0, Percentages: [] });
+        }
+        function editIncentiveItem(e, sectionViewModel, item) {
+            initEditItem(e, sectionViewModel, item);
+
+        }
+        function removeIncentiveItem(e, sectionViewModel, index) {
+            var items = [];
+            for (var i = 0; i < sectionViewModel.Items.length; i++) {
+                if (i != index)
+                    items.push(sectionViewModel.Items[i]);
+            }
+            sectionViewModel.Items = items;
+            initEditForm(e, sectionViewModel);
+        }
+        function getItemFromWindow() {
+            var item = {};
+            item.EndSlice = $(".edit-appraisal-item-body").find("[name='EndSlice']").val();
+            item.StartSlice = $(".edit-appraisal-item-body").find("[name='StartSlice']").val();
+            item.Value = $(".edit-appraisal-item-body").find("[name='Value']").val();
+            item.Id = $(".edit-appraisal-item-body").find("[name='Id']").val();
+            item.Index = $(".edit-appraisal-item-body").find("[name='Index']").val();
+            var infractionFormId = $(".edit-appraisal-item-body").find("[name='InfractionForm']").data("kendoDropDownList").value();
+            var infractionFormDescription = $(".edit-appraisal-item-body").find("[name='InfractionForm']").data("kendoDropDownList").text();
+            item.InfractionForm = ({ Id: infractionFormId, Number: 0, Description: infractionFormDescription, InfractionSlices: [] });
+            item.Percentages = [];
+            var trs = $(".edit-appraisal-item-body .kpis-table tbody tr");
+            for (var i = 0; i < trs.length - 1; i++) {
+                var PercentageOrder = $(trs[i]).find("[name='kpi-description']").val();
+                //var weight = $(trs[i]).find("[name='kpi-weight']").val();
+                var Percentage = $(trs[i]).find("[name='kpi-value']").val();
+                item.Percentages.push({ Id: i, PercentageOrder: PercentageOrder, Percentage: Percentage });
+            }
+            return item;
+        }
+
+    }
+
+    function remove_tr_click(index) {
+        var selectedRow = ".tr-" + index;
+        $(selectedRow).remove();
+    }
+</script>
+<script id="section-items-template" type="text/x-kendo-template">
+    #var showPercentageTemplate = kendo.template($("\\#show-Percentage-template").html());#
+    <span>@GlobalResource.AddNonAttendanceSlices</span>
+    <div class=" inactive-section-items">
+        <table>
+            <colgroup>
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>@GlobalResource.StartSlice</th>
+                    <th>@GlobalResource.EndSlice</th>
+                    <th>@GlobalResource.Value</th>
+                    <th>@GlobalResource.InfractionForm</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < Items.length; i++) {#
+                #var item=Items[i];#
+                <tr>
+                    <td>#=item.StartSlice#</td>
+                    <td>#=item.EndSlice#</td>
+                    <td>#=item.Value#</td>
+                    <td>#=(item.InfractionForm != null) ? item.InfractionForm.Description : " "#</td>
+                    <td class="item-commands">
+                        <button data-item-index="#=i#" class="edit-incentive-item k-button">
+                            <span class="k-icon k-edit" style="vertical-align: sub;"></span>
+                        </button>
+                        <button data-item-index="#=i#" class="remove-incentive-item k-button">
+                            <span class="k-icon k-cancel" style="vertical-align: sub;"></span>
+                        </button>
+                        <button data-item-index="#=i#" class="show-incentive-item k-button">
+                            <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                        </button>
+                        <div class="kpis-info">
+                            <div class="tooltip-wrapper">
+                                #=showPercentageTemplate({Percentages:item.Percentages})#
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                #}#
+                <tr>
+                    <td colspan="5">
+                        <button class="add-incentive-item k-button">
+                            <span class="k-icon k-add" style="vertical-align: sub;"></span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</script>
+<script id="section-item-editor-template" type="text/x-kendo-template">
+    <div class="controls-div">
+        <input type="hidden" name="Id" value="#=Id#" />
+        <input type="hidden" name="Index" value="#=Index#" />
+        <div class="control control-Name">
+            <div class="k-edit-label">
+                <label for="StartSlice">@GlobalResource.StartSlice</label>
+            </div>
+            <div data-container-for="Name" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="StartSlice" value="#=StartSlice#" />
+            </div>
+        </div>
+        <div class="control control-Weight">
+            <div class="k-edit-label">
+                <label for="EndSlice">@GlobalResource.EndSlice</label>
+            </div>
+            <div data-container-for="Weight" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="EndSlice" value="#=EndSlice#" />
+            </div>
+        </div>
+        <div class="control control-Description">
+            <div class="k-edit-label">
+                <label for="Value">@GlobalResource.Value</label>
+            </div>
+            <div data-container-for="Description" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="Value" value="#=Value#" />
+            </div>
+        </div>
+        <div class="control control-Description">
+            <div class="k-edit-label">
+                <label class="NASInfractionForm" for="InfractionForm">@GlobalResource.InfractionForm</label>
+            </div>
+            <div data-container-for="InfractionForm" class="k-edit-field">
+                <input id="InfractionForm" name="InfractionForm"
+                       data-role="dropdownlist" data-text-field="Name" data-source="infractionFormDataSource" data-value-primitive="true"
+                       data-value-field="Id" data-bind="value:InfractionForm" />
+            </div>
+                </div>
+        <div class="control kpis-table-container">
+            <span>@GlobalResource.AddNonAttendanceSlicePercentages</span>
+            <table class="kpis-table">
+                <thead>
+
+                    <tr>
+                        <th>@GlobalResource.PercentageOrder</th>
+                        <th>@GlobalResource.Percentage</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    #for (var i = 0; i < Percentages.length; i++) {#
+                    #var Percentage=Percentages[i];#
+                    <tr class="tr-#=i#">
+                        <td><span class="equired-star">*</span><input class="kpi-value" type="text" name="kpi-description" value="#=Percentage.PercentageOrder#" /> </td>
+                        <td><span class="equired-star">*</span><input class="kpi-value" type="text" name="kpi-value" value="#=Percentage.Percentage#" /></td>
+                        <td>
+                            <button class="remove-incentive-item-kpi k-button" onclick=" return remove_tr_click('#=i#')">
+                                <span class="k-icon k-cancel" style="vertical-align: sub;"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    #}#
+                    <tr>
+                        <td colspan="3">
+                            <button class="add-incentive-kpi k-button">
+                                <span class="k-icon k-add" style="vertical-align: sub;"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+<script id="section-item-kpi-tr-template" type="text/x-kendo-template">
+    <tr>
+        <td><span class="equired-star">*</span><input class="kpi-value" type="text" name="kpi-description" value="0" /> </td>
+        @*<td><input class="kpi-weight" type="text" name="kpi-weight" value="0" /></td>*@
+        <td><span class="equired-star">*</span><input class="kpi-value" type="text" name="kpi-value" value="0" /></td>
+        <td>
+            <button class="remove-incentive-item-kpi k-button">
+                <span class="k-icon k-cancel" style="vertical-align: sub;"></span>
+            </button>
+        </td>
+    </tr>
+</script>
+
+<script id="show-Percentage-template" type="text/x-kendo-template">
+    <table class="kpis-table">
+        <thead>
+            <tr>
+                <th>@GlobalResource.PercentageOrder</th>
+                <th>@GlobalResource.Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i < Percentages.length; i++) {#
+            #var Percentage=Percentages[i];#
+            <tr>
+                <td><span>#=Percentage.PercentageOrder#</span></td>
+                <td><span>#=Percentage.Percentage#</span></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+
+<script>
+    function NonAttendanceFormViewHandler(e) {
+        
+        $.ajax({
+            url: '@Url.Action("GetSectionViewModel", "NonAttendanceForm", new { area = "AttendanceSystem" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success:
+                function (sectionViewModel) {
+                    debugger;
+                e.model.CustomInformation = sectionViewModel;
+                console.log(sectionViewModel);
+                e.container.find("#default-view-controls").append('<div class="section-items-container"></div>');
+                var template = kendo.template($("#NonAttendanceSlices-template-view-template").html());
+                e.container.find(".section-items-container").html(template(sectionViewModel));
+                for (var i = 0; i < $(".show-nonAttendance-item").length; i++) {
+                    $(".show-nonAttendance-item").eq(i).kendoTooltip({
+                        content: $(".tooltip-wrapper").eq(i),
+                        width: 400,
+                        position: "top",
+                    });
+                }
+
+
+                },
+            error: function () {
+                alert("Error");
+            }
+
+        });
+
+    }
+</script>
+
+@* Non Attendance Slices Template *@
+<script id="NonAttendanceSlices-template-view-template" type="text/x-kendo-template">
+    #var showPercentageTemplate = kendo.template($("\\#show-Percentage-template").html());#
+    <span>@GlobalResource.AddNonAttendanceSlices</span>
+    <div class="section-items">
+        <table>
+            <colgroup>
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>@GlobalResource.StartSlice</th>
+                    <th>@GlobalResource.EndSlice</th>
+                    <th>@GlobalResource.Value</th>
+                    <th>@GlobalResource.InfractionForm</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < Items.length; i++) {#
+                #var item=Items[i];#
+                <tr>
+                    <td>#=item.StartSlice#</td>
+                    <td>#=item.EndSlice#</td>
+                    <td>#=item.Value#</td>
+                    <td>#=item.InfractionForm.Infraction#</td>
+                    <td class="item-commands">
+                        <button data-item-index="#=i#" class="show-nonAttendance-item k-button">
+                            <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                        </button>
+                        <div class="kpis-info">
+                            <div class="tooltip-wrapper">
+                                #=showPercentageTemplate({Percentages:item.Percentages})#
+                            </div>
+                            </div>
+                    </td>
+           
+                </tr>
+                #}#
+            </tbody>
+        </table>
+    </div>
+</script>
+
+<script>
+
+    function SectionValidation(sectionViewModel) {
+        var startSlice = $('input:text[name=StartSlice]').val();
+        var endSlice = $('input:text[name=EndSlice]').val();
+        var value = $('input:text[name=Value]').val();
+        var infractionForm = $('input:text[name=InfractionForm]').val();
+
+
+
+        if (!$(".k-window").hasClass("k-edit-form-container"))
+            $(".k-window").addClass("k-edit-form-container");
+
+        if (startSlice == "" || startSlice == 0 || startSlice == "0") {
+            if ($("[name='StartSlice']").next("span"))
+                $("[name='StartSlice']").next("span").remove();
+
+            $("[name='StartSlice']").after('<span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg"  data-for="StartSlice" role="alert"><span class="k-icon k-warning" ></span> Required </span>');
+            return false;
+        }
+        else {
+            if ($("[name='StartSlice']").next("span"))
+                $("[name='StartSlice']").next("span").remove();
+        }
+        if (endSlice == "" || endSlice == 0 || endSlice == "0") {
+            if ($("[name='EndSlice']").next("span"))
+                $("[name='EndSlice']").next("span").remove();
+
+            $("[name='EndSlice']").after('<span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg"  data-for="endSlice" role="alert"><span class="k-icon k-warning" ></span> Required </span>');
+            return false;
+        }
+        else {
+            if ($("[name='EndSlice']").next("span"))
+                $("[name='EndSlice']").next("span").remove();
+        }
+
+      /*  if (endSlice < startSlice) {
+            if ($("[name='EndSlice']").next("span"))
+                $("[name='EndSlice']").next("span").remove();
+
+            $("[name='EndSlice']").after('<span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg"  data-for="endSlice" role="alert"><span class="k-icon k-warning" ></span> Greater Than </span>');
+            return false;
+        }
+        else {
+            if ($("[name='EndSlice']").next("span"))
+                $("[name='EndSlice']").next("span").remove();
+        }
+        */
+        if ($(".k-window").hasClass("k-edit-form-container"))
+            $(".k-window").removeClass("k-edit-form-container");
+        debugger;
+        var trs = $(".edit-appraisal-item-body .kpis-table tbody tr");
+      
+       
+        if (trs.length == 1)
+        {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.YouMustAddOneNonAttendanceSlicePercentageAtLeast))", "k-icon w-b-error", commands);
+            return false;
+        } else
+        {
+            var orders = [], occurrence = [], orderExist = false;
+
+            $("[name='kpi-description']").each(function (i, obj) {
+                orders.push(obj.value);
+            });
+
+            
+            orders.forEach(function (v, i) {
+                if (!occurrence[v])
+                    occurrence[v] = [i];
+                else
+                    occurrence[v].push(i);  
+            });
+
+            occurrence.forEach(function (v, i) {
+                if (v.length > 1) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.NonAttendanceSlicePercentageOrderMustBeUnique))", "k-icon w-b-error", commands);
+                    orderExist = true;
+                }
+            });
+
+            if (orderExist == true)
+                return false;
+        }
+
+         return true;
+    }
+
+    function addRequiredStar(fieldName) {
+        $("label[for='" + fieldName + "']").append('<span class="equired-star">*</span>');
+    }
+
+    function addFieldRequired() {
+        addRequiredStar('StartSlice');
+        addRequiredStar('EndSlice');
+        addRequiredStar('Percentage');
+        addRequiredStar('kpi-description');
+        addRequiredStar('kpi-value');
+
+        //$(".NASInfractionForm").append('<span class="equired-star">*</span>');
+    }
+</script>

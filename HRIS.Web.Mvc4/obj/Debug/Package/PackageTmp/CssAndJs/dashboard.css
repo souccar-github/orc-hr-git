@@ -1,0 +1,187 @@
+
+.left-totals {
+    padding-left: 20px;
+    padding-right: 0px;
+    float: left;
+}
+
+.right-totals {
+    float: right;
+    padding-right: 20px;
+    padding-left: 0px;
+}
+
+.total-table {
+    border: 1px solid rgb(177, 174, 174);
+    float: left;
+    padding: 20px;
+    background: rgb(214, 214, 214);
+}
+
+
+.k-picker-wrap.k-state-default {
+    width: 88%;
+}
+
+table.fixed { table-layout:fixed; }
+table.fixed td { overflow: hidden; }
+
+.prigth {
+    padding-right: 60px;
+}
+
+.pleft {
+    padding-left: 40px;
+}
+
+.leftm {
+    padding-left: 30px;
+}
+
+.tbl {
+    width: 94%;
+    margin-left: auto;
+    margin-right: auto;
+    table-layout:fixed;
+}
+
+    .tbl tr td {
+       
+    }
+
+
+
+td {
+    padding: 10px;
+    text-align: center;
+}
+
+.redCell {
+    font-weight: bold;
+}
+
+.priceCell {
+    font-weight: bold;
+    color: #FFF;
+    background: #5F8CFF;
+}
+
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        width: 100%;
+        height: auto !important;
+    }
+
+    tbody {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: auto !important;
+    }
+
+    tr {
+        display: block;
+        width: 100%;
+        height: auto !important;
+        margin-bottom: 50px;
+    }
+
+    td {
+        padding: 10px 0;
+        display: block;
+        width: 100%;
+        height: auto !important;
+    }
+}
+
+.liquidFillGaugeText {
+    font-family: Helvetica;
+    font-weight: bold;
+}
+
+#mimic {
+    width: 1040px;
+}
+
+.container {
+    overflow-x: scroll;
+    left: 0;
+}
+
+.sync-container {
+    background-color: #c3e2de;
+    padding: 3px;
+    height: 40px;
+    margin-bottom: 4px;
+}
+
+.sync-button {
+    text-align: center;
+    line-height: 30px;
+    /*font-size:large;*/
+    font-weight: bold;
+    height: 40px;
+    width: 100px;
+    display: block;
+    background: #86c4bc;
+    color: #004757;
+}
+
+    .sync-button:hover {
+        color: #004757;
+    }
+
+.chart {
+    border-top: solid 1px silver;
+    height: auto;
+    float: left;
+    padding: 2em 0.3em 0.3em 0.3em;
+    margin-left: 0.5em;
+    margin-bottom: 1em;
+    -webkit-box-shadow: inset 0px 0px 5px -1px #004757;
+    -moz-box-shadow: inset 0px 0px 5px -1px #004757;
+    box-shadow: inset 0px 0px 5px -1px #004757;
+}
+
+.chart-width-full {
+    width: 97%;
+}
+
+.chart-hidden {
+    display: none;
+}
+
+.chart-transition {
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+.container-chart {
+    min-width: 320px;
+    
+    height: 400px;
+    margin: 0 auto;
+}
+
+.chart-params {
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+}
+
+.chart-width-half {
+    width:48%;
+    height: fit-content;
+    padding-bottom: 20px;
+}
+
+input.k-input.k-textbox,
+.k-widget.k-numerictextbox,
+.k-widget.k-datepicker.k-header,
+.k-widget.k-dropdown.k-header {
+    width: 100%;
+    font-size: 11px;
+}

@@ -1,0 +1,21 @@
+﻿@using Project.Web.Mvc4.Helpers
+<script>
+
+    function LoanPaymentActionListHandler(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+</script>

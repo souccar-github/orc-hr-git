@@ -1,0 +1,87 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function PositionEditHandler(e) {
+        debugger;
+        if (!e.model.isNew()) {
+            handlingManagerIsMandatoryValue();
+        }
+        else {
+            $("[name='ManagerIsMandatory']").prop('checked', true);
+            e.model.ManagerIsMandatory = true;
+            handlingManagerIsMandatoryValue();
+        }
+        $("[name='ManagerIsMandatory']").click(function () {
+            handlingManagerIsMandatoryValue(this.checked);
+        });
+        //addRequiredStar('JobDescription');
+        //var comboBox = e.container.find("#comboBoxJobDescription").data("kendoComboBox");
+        //comboBox.bind("change", jobDescriptionDropdownChange);
+        var dropdownlist = e.container.find("#dropDownListJobDescription").data("kendoDropDownList");
+        if (dropdownlist != null)
+            dropdownlist.bind("change", jobDescriptionDropdownChange);
+        
+        if (!e.model.isNew()) {
+            setTimeout(function () {
+                $("[name='ManagerJobTitle']").data("kendoDropDownList").open();
+                setTimeout(function () {
+                    $("[name='ManagerJobTitle']").data("kendoDropDownList").close();
+                }, 50);
+            }, 200);
+        }
+        
+        var dropdownlist = e.container.find("#dropDownListJobDescription").data("kendoDropDownList");
+        if (dropdownlist!=null)
+            dropdownlist.bind("change", jobDescriptionDropdownChange);
+    }
+    function jobDescriptionDropdownChange(e) {
+        
+        var url = '@Url.Action("GetGradeStep", "Position", new { area = "JobDescription" })';
+        var targetControl = $("#dropDownListStep").data("kendoDropDownList");
+        cascadeFor(url, targetControl, Number(e.sender.value()));
+    }
+    function handlingManagerIsMandatoryValue() {
+        if ($("[name='ManagerIsMandatory']").is(':checked')) {
+
+            $(".control-Manager").show();
+            $(".control-ManagerJobTitle").show();
+            addRequiredStar('Manager');
+            addRequiredStar('ManagerJobTitle');
+
+        }
+
+        else {
+
+            $(".control-Manager").hide();
+            $(".control-ManagerJobTitle").hide();
+            removeRequiredStar('Manager');
+            removeRequiredStar('ManagerJobTitle');
+        }
+
+    }
+    function cascadeFor(url, targetControl, value) {
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify({ jobDesId: value }),
+            contentType: 'application/json',
+            success: function (data) {
+                data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                targetControl.setDataSource(dataSource);
+                targetControl.text("@GlobalResource.Select");
+                targetControl.dataSource.read();
+            }
+        });
+
+    }
+    function JobDesPositionEditHandler(e) {
+        e.container.find(".control.control-JobDescription").hide();
+    }
+    function JobDesPositionViewHandler(e) {
+        e.container.find("#view_edit").remove();
+    }
+</script>

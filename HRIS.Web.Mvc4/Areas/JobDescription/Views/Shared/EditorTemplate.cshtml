@@ -1,0 +1,56 @@
+﻿@Html.Partial("~/Areas/JobDescription/Views/Home/../../../PayrollSystem/Views/Shared/BenefitsDeduction.cshtml")
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+
+<script id="view-positions-delegate" type="text/kendo-x-template">
+        <table>
+            <thead>
+                <tr>
+                    <th>@GlobalResource.Code</th>
+                    <th>@GlobalResource.JobDescription</th>
+                    <th>@GlobalResource.Node</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i=0;i < data.length; i++) {#
+                <tr>
+                    <td>#=data[i].Code#</td>
+                    <td>#=data[i].JobDescription#</td>
+                    <td>#=data[i].Node#</td>
+                    <td><button class="k-button del-btn" data-positionid="#=data[i].Id#">@GlobalResource.Delegate</button></td>
+                </tr>
+                #}#
+            </tbody>
+        </table>
+</script>
+
+<script id="view-history-delegate" type="text/kendo-x-template">
+        <table>
+            <thead>
+                <tr>
+                    <th>"@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.AssignTo)"</th>
+                    <th>"@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ReasonForDelegation)"</th>
+                    <th>"@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.StartDate)"</th>
+                    <th>"@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.EndDate)"</th>
+                    <th>"@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Comment)"</th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i=0;i < data.length; i++) {#
+                <tr>
+                    <td>#=data[i].ToPosition#</td>
+                    <td>#=data[i].Reason#</td>
+                    <td>#=ToStringForDate(data[i].FromDate)#</td>
+                    <td>#=ToStringForDate(data[i].ToDate)#</td>
+                    <td>#=data[i].Comment#</td>
+                </tr>
+                #}#
+            </tbody>
+        </table>
+    
+
+</script>
+
+

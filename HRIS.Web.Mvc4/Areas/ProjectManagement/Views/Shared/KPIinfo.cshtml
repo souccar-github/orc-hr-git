@@ -1,0 +1,73 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function KPIinfo(projectId) {
+        var title = "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.KPIInformation)";
+        var databind = kendo.observable();
+        databind.ProjectId = projectId;
+
+        var tempdata = [
+            { Name: "KPItype", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.KPItype)", Type: "Index", TypeName: "HRIS.Domain.ProjectManagement.Indexes.KPItype", Creatable: true, IsRequired: true },
+            { Name: "KPIwieght", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.KPIwieght)", Type: "Number", IsRequired: true },
+            { Name: "KPIvalue", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.KPIvalue)", Type: "Number", IsRequired: true },
+            { Name: "KPIdescription", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.KPIdescription)", Type: "Textarea" }
+        ];
+
+        $.ajax({
+            url: '@Url.Action("GetKPItInfo", "Home")',
+            type: "POST",
+            data: JSON.stringify({
+                model: databind
+            }),
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+
+                databind.KPItype = data.KPItype;
+                databind.KPIwieght = data.KPIwieght;
+                databind.KPIvalue = data.KPIvalue;
+                databind.KPIdescription = data.KPIdescription;
+
+            }
+        });
+
+        var buttons = [
+            { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "KPIinfoContainer";
+        var bodyHTML = "<div class='KPIinfo fix-custom-popup'></div>";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow($('<div class="KPIinfoDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+        $("#cancel").off('click').on('click', function () {
+            $(".KPIinfoDiv").data("kendo-window").close();
+        });
+
+        $("#update").off('click').on('click', function () {
+            if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                $.ajax({
+                    url: '@Url.Action("SaveKpiInformation", "Home")',
+                    type: "POST",
+                    data: JSON.stringify({
+                        model: databind
+                    }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success) {
+                            $(".KPIinfoDiv").data("kendo-window").close();
+                        } else {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                        }
+                    }
+                });
+            }
+        });
+
+        createCustomEditForm($(".KPIinfo"), { Fields: tempdata, Key: "KPIinfoKey" }, databind);
+    }
+ </script>

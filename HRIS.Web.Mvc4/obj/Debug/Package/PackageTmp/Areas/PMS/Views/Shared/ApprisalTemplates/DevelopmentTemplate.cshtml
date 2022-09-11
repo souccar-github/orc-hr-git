@@ -1,0 +1,85 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script id="DevelopmentSection-workflow-template" type="text/x-kendo-template">
+<div>
+@*    <div class="development-info">
+        <div>#=Description#</div>
+    </div>*@
+
+    <div class="development">
+    
+    <fieldset class='weak-points-fieldset'><legend>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.WeakPoints)</legend><div class='weak-points'></div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Section)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                </tr>
+            </thead>
+            <tbody class="WeakPoints-body">
+                #for (var i = 0; i < model.length; i++) {#
+                    #var devSectionViewModel=model[i];#
+                    #for (var j = 0; j < devSectionViewModel.WeakPoints.length; j++) {#
+                        #var item=devSectionViewModel.WeakPoints[j];#
+                        #var checkStatus="";#
+                             #if(item.IsChecked){#
+                                #checkStatus='checked="checked"';#
+                             #}#
+                        <tr>
+                            <td>#=devSectionViewModel.SectionName#</td>
+                            <td class="item-Name">#=item.Name#</td>
+                            <td>#=item.Weight#</td>
+                            <td>#=item.Rate#</td>
+                            <td></td>
+                            <td>#=item.Note#</td>
+                        </tr>
+                    #}#
+                #}#
+
+            </tbody>
+        </table>
+    </fieldset>
+        
+    <fieldset class='strong-points-fieldset'><legend>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.StrongPoints)</legend>
+        <table>
+            <thead>
+                <tr>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Section)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < model.length; i++) {#
+                    #var devSectionViewModel=model[i];#
+                    #for (var j = 0; j < devSectionViewModel.StrongPoints.length; j++) {#
+                        #var item=devSectionViewModel.StrongPoints[j];#
+                        <tr>
+                            <td>#=devSectionViewModel.SectionName#</td>
+                            <td>#=item.Name#</td>
+                            <td>#=item.Weight#</td>
+                            <td>#=item.Rate#</td>
+                            <td></td>
+                            <td>#=item.Note#</td>
+                            <td></td>
+                        </tr>
+                    #}#
+                #}#
+   
+            </tbody>
+        </table>
+    </fieldset>
+
+    </div>
+
+</div>
+</script>

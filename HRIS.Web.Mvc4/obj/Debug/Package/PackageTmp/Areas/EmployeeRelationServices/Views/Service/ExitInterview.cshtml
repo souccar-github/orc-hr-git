@@ -1,0 +1,164 @@
+﻿@using HRIS.Domain.EmployeeRelationServices.Enums
+@using HRIS.Domain.Personnel.Enums
+@using HRIS.Domain.Personnel.RootEntities
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Extenstions
+@using  Project.Web.Mvc4.Helpers.Resource
+@using HRIS.Validation.MessageKeys
+@using Souccar.Infrastructure.Core;
+
+<div class="resignedEmployees-container"></div>
+<div class="survey-container"></div>
+<fieldset>
+    <legend>@GlobalResource.BasicInfo</legend>
+    <div class="generalInformation-container"></div>
+</fieldset>
+
+<script>
+
+    $('.generalInformation-container').parent().hide();
+
+    //Messages
+
+    function succeedMessage(data) {
+        if (data == false) {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Success", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ThereIsNoExitInterviewItemExist)", "k-icon w-b-info", commands);
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+        }
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+    //Get resigned Employees
+    Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/GetResignedEmployees", null, showResignedEmployees, failedMessage);
+
+    function showResignedEmployees(data) {
+        var template = kendo.template($("#employee-information-list-action-template").html());
+        $('.resignedEmployees-container').html(template(data.ResignedEmployees));
+        $(".action-btn").off("click").on("click", function () {
+            var employeeId = $(this).attr('data-employeeid');
+            $('.resignedEmployees-container').hide();
+            var template = kendo.template($("#view-survey").html());
+            $('.survey-container').html(template(data.SurveyItems));
+
+            //show General Information
+            Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/showEmployeeDetails", { employeeId: employeeId }, showEmployeeDetails, failedMessage);
+            function showEmployeeDetails(temp) {
+                $('.generalInformation-container').parent().show();
+                var databind = kendo.observable();
+                Souccar.clone(temp, databind); 
+                var tempdata = [
+                    { Name: "Date", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Date)", Type: "Date", IsReadonly: true },
+                    { Name: "Interviewer", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Interviewer)", Type: "Text", IsReadonly: true },
+                    { Name: "WorkStartDate", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.WorkStartDate)", Type: "Date", IsReadonly: true },
+                    { Name: "WorkEndDate", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.WorkEndDate)", Type: "Date", IsReadonly: true },
+                    { Name: "EmploymentPeriod", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.EmploymentPeriod)", Type: "text", IsReadonly: true },
+                    { Name: "Years", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Years)", Type: "Text", IsReadonly: true },
+                    { Name: "Months", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Months)", Type: "Text", IsReadonly: true },
+                    { Name: "Days", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Days)", Type: "Text", IsReadonly: true },
+                    { Name: "LeaveReason", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.LeaveReason)", Type: "Textarea", IsReadonly: true }
+                ];
+                createCustomEditForm($('.generalInformation-container'), { Fields: tempdata, Key: "Id" }, databind);
+            };
+            $(".check-question").off("click").on("click", function () {
+                $(this).parent().parent().find('.item').slideToggle(500);
+                $(this).parent().toggleClass("opened-question");
+            });
+            $(".save-surv-btn").off("click").on("click", function () {
+                var items = [];
+                $.each($(".check-question"), function () {
+                    if ($(this).is(':checked')) {
+                        items.push({
+                            ExitSurveyItemId: $(this).attr('data-exit-enterview-item-id'),
+                            EmployeeAnswer: $(this).parent().parent().find('.txt-answer').val(),
+                            InterviewerComment: $(this).parent().parent().find('.txt-comment').val(),
+
+                        });
+                    }
+                });
+                $(".check-question").is(':checked')
+                console.log(JSON.stringify(items));
+                Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/SaveSurvey", { items: items, employeeId: employeeId }, succeedMessage, failedMessage);
+            });
+        });
+    }
+
+</script>
+
+<script id="view-survey" type="text/kendo-x-template">
+
+    <div class="top-commands">
+        <button class="k-button primary-command save-surv-btn">
+            <span class="command-icon save"></span>
+            @GlobalResource.Save
+        </button>
+    </div>
+
+    <div data-role="page" id="pageone">
+        <div data-role="header">
+            <h1>Exit Interview</h1>
+        </div>
+
+        <fieldset class="questions">
+            <legend>@GlobalResource.InterviewQuestions</legend>
+            #for (var i=0;i < data.length; i++) {#
+            <div class="exit-interview-question">
+                <div class="question-header">
+                    <input id="question#=i#" data-exit-enterview-item-id="#=data[i].Id#" type="checkbox" class="check-question">
+                    <label for="question#=i#">#=data[i].Name#</label>
+                </div>
+                <div class="item" style="display:none" data-exit-enterview-item-id="#=data[i].Id#">
+                    #var description=data[i].Description;#
+                    #if(description!=null && description!="" ){#
+                      <div>
+                        
+                        @{
+                            var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+                            var temp = Url.Content("~/Content/images/theme-" + themingName + "/exit-interview-info-icon.png");
+                        }
+                       
+                        <img src='@temp' alt="" />
+                           <p>#=description#</p>
+                    </div>
+                    #}#
+                    <div>
+                        <p>Answer</p>
+                        <textarea class="txt-answer"></textarea>
+                    </div>
+                    
+                    <div>
+                        <p>Comment</p>
+                        <textarea class="txt-comment"></textarea>
+                    </div>
+
+                </div>
+            </div>
+        #}#
+        </fieldset>
+
+    </div>
+</script>
+
+<script id="employee-information-list-action-template" type="text/kendo-x-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i=0;i < data.length; i++) {#
+            <tr>
+                <td>#=data[i].FullName#</td>
+                <td><button class="k-button primary-action action-btn" data-positionid="#=data[i].PositionId#" data-employeeid="#=data[i].EmployeeId#">#=data[i].ActionTitle#</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

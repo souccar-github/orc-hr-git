@@ -1,0 +1,236 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<div id="OverwriteTemplateSetting_window"></div>
+
+<script>
+    function OverwriteAppraisalTemplateSetting(templateSettingId) {
+
+        var title = "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.OverwriteAppraisalTemplateSetting)";
+        var buttons = [
+            { Name: "ovrewrite_template_setting_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "ovrewrite-template-setting-container";
+        var bodyHTML = "<div class='ovrewrite-template-setting-body'></div>";
+        var popupDiv = $('<div id="OverwriteTemplateSetting_window"></div>');
+        createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, true);
+
+        var template = kendo.template($("#overwrite-template-setting-template").html());
+        popupDiv.find(".ovrewrite-template-setting-body").html(template({}));
+        kendo.init(popupDiv.find(".ovrewrite-template-setting-body"));
+        var container = popupDiv;
+
+        updateTreePreview();
+        
+        $("#ovrewrite_template_setting_cancel").off('click').on('click', function () {
+            container.data("kendo-window").close();
+        });
+
+        $.ajax({
+            url: window.applicationpath + "PMS/Template/GetTemplates",
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                container.find(".template-dropdown").kendoDropDownList({
+                    dataSource: {
+                        data: data
+                    },
+                    dataTextField: "Name",
+                    dataValueField: "Id"
+                });
+            }
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetOrgLevel", "Template", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                var dropdownlist = container.find(".org-level-dropdown input").data("kendoDropDownList");
+                dropdownlist.setDataSource(dataSource);
+                dropdownlist.text("@GlobalResource.Select");
+                dropdownlist.bind("change", orgLevelAppraisalTemplateSettingDropdownChange);
+                container.find(".grade-dropdown input").data("kendoDropDownList").bind("change", gradeAppraisalTemplateSettingDropdownChange);
+                container.find(".job-title-dropdown input").data("kendoDropDownList").bind("change", jobTitleAppraisalTemplateSettingDropdownChange);
+            }
+        });
+
+        initAppraisalTemplateSettingSubmits(container);
+        function orgLevelAppraisalTemplateSettingDropdownChange(e) {
+            var url = '@Url.Action("GetGrade", "Template", new { area = "PMS" })';
+            var targetControl = container.find(".grade-dropdown input").data("kendoDropDownList");
+            cascadeFor(url, targetControl, e.sender.value());
+        }
+
+        function gradeAppraisalTemplateSettingDropdownChange(e) {
+            var url = '@Url.Action("GetJobTitle", "Template", new { area = "PMS" })';
+            var targetControl = container.find(".job-title-dropdown input").data("kendoDropDownList");
+            cascadeFor(url, targetControl, e.sender.value());
+        }
+
+        function jobTitleAppraisalTemplateSettingDropdownChange(e) {
+            var url = '@Url.Action("GetJobDescription", "Template", new { area = "PMS" })';
+            var targetControl = container.find(".job-description-dropdown input").data("kendoDropDownList");
+            cascadeFor(url, targetControl, e.sender.value());
+        }
+        
+        function initAppraisalTemplateSettingSubmits(container) {
+        container.find(".org-level-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetTemplateByOrgLevel", "Template", new { area = "PMS" })';
+            var id = container.find(".org-level-dropdown input").data("kendoDropDownList").value();
+            var templateId = container.find("[name='orgLevelTemplate']").data("kendoDropDownList").value();;
+            setTemplate(url, templateId, id);
+        });
+
+        container.find(".grade-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetTemplateByGrade", "Template", new { area = "PMS" })';
+            var id = container.find(".grade-dropdown input").data("kendoDropDownList").value();
+            var templateId = container.find("[name='gradeTemplate']").data("kendoDropDownList").value();;
+            setTemplate(url, templateId, id);
+        });
+
+        container.find(".job-title-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetTemplateByJobTitle", "Template", new { area = "PMS" })';
+            var id = container.find(".job-title-dropdown input").data("kendoDropDownList").value();
+            var templateId = container.find("[name='jobTitleTemplate']").data("kendoDropDownList").value();;
+            setTemplate(url, templateId, id);
+        });
+
+        container.find(".job-description-submit").off('click').on('click', function () {
+            var url = '@Url.Action("SetTemplateByJobDescription", "Template", new { area = "PMS" })';
+            var id = container.find(".job-description-dropdown input").data("kendoDropDownList").value();
+            var templateId = container.find("[name='jobDescriptionTemplate']").data("kendoDropDownList").value();;
+            setTemplate(url, templateId, id);
+        });
+    }
+
+    function setTemplate(url, templateId, id) {
+        if (id == "" || id == "0" || id == 0) {
+            return;
+        }
+        if (templateId == "" || templateId == "0" || templateId == 0) {
+            return;
+        }
+
+        var msg = "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.AreYouSureOverwriteProcess)";
+        var commands = [{ Title: "@GlobalResource.Ok", Name: "ok", ClassName: "k-icon k-update", Handler: okHandler },
+                        { Title: "@GlobalResource.No", Name: "no", ClassName: "k-icon k-cancel" }];
+        ShowMessageBox("@GlobalResource.Information", msg, "k-icon w-b-info", commands);
+
+        function okHandler() {
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ id: id, templateId: templateId, templateSettingId: templateSettingId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    updateTreePreview();
+                }
+            });
+
+        }
+
+    }
+
+    function updateTreePreview() {
+        container.find('.tree-preview-container').html('<div class="tree-preview"></div>');
+        container.find('.tree-preview').kendoTreeView({
+            dataSource: new kendo.data.HierarchicalDataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDatasourceBasedGradeForAppraisal","CoreTree",new {area=""})',
+                            data: { settingId: templateSettingId },
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }, parameterMap: function (innerData, operation) {
+                            return JSON.stringify(innerData);
+                        }
+                    },
+                    schema: {
+                        model: {
+                            id: "Id",
+                            children: "Items"
+                        }
+                    }
+                }),
+            dataTextField: "Name",
+            dataSpriteCssClassField: "ImageName",
+            loadOnDemand: false,
+        });
+    }
+        
+    function cascadeFor(url, targetControl, value) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify({ id: value }),
+            contentType: 'application/json',
+            success: function (data) {
+                data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                targetControl.setDataSource(dataSource);
+                targetControl.text("@GlobalResource.Select");
+            }
+        });
+    }
+}
+</script>
+
+<script id="overwrite-template-setting-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FilterBy</th><th>@GlobalResource.Template</th><th></th>
+            </tr>
+        </thead>
+        <colgroup>
+            <col class="pms-filter-by-column" />
+            <col class="pms-template-column" />
+            <col class="pms-apply-column" />
+        </colgroup>
+        <tbody>
+            <tr>
+                <td class="menu-cell">
+                    <label>@GlobalResource.OrgLevel</label><br />
+                    <input class="org-level-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                </td>
+                <td class="menu-cell"><input class="org-level-template template-dropdown" name="orgLevelTemplate" /></td>            
+                <td><button class="org-level-submit k-button"><span class="k-icon k-update"></span></button></td>
+            </tr>
+            <tr>
+                <td class="menu-cell">
+                    <label>@GlobalResource.Grade</label><br />
+                    <input class="grade-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                </td>
+                <td class="menu-cell"><input class="grade-template template-dropdown" name="gradeTemplate" /></td>
+                <td><button class="grade-submit k-button"><span class="k-icon k-update"></span></button></td>
+            </tr>
+            <tr>
+                <td class="menu-cell">
+                    <label>@GlobalResource.JobTitle</label> <br />
+                    <input class="job-title-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                </td>
+                <td class="menu-cell"><input class="job-title-template template-dropdown" name="jobTitleTemplate" /></td>
+                <td><button class="job-title-submit k-button"><span class="k-icon k-update"></span></button></td>
+            </tr>
+            <tr>
+                <td class="menu-cell">
+                    <label>@GlobalResource.JobDescription</label><br />
+                    <input class="job-description-dropdown" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-value-primitive="true" />
+                </td>
+                <td class="menu-cell"><input class="job-description-template template-dropdown" name="jobDescriptionTemplate" /></td>
+                <td><button class="job-description-submit k-button"><span class="k-icon k-update"></span></button></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="tree-preview-container">
+        
+    </div>   
+</script>

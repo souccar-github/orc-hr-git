@@ -1,0 +1,207 @@
+﻿@using HRIS.Domain.Training.Entities
+@using HRIS.Domain.Training.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-ar" class="chart-params">
+        
+        @* Training Plan *@
+        <div id="p-training-plan-ar" style="float:@pageDir;width:48%;">
+            <div class="control control-p-training-plan-ar">
+                <div class="k-edit-label">
+                    <label for="trainingPlanAr">@typeof(TrainingPlan).GetLocalized()</label>
+                </div>
+                <div data-container-for="trainingPlanAr" class="k-edit-field">
+                    <input id="trainingPlanAr" name="trainingPlanAr" placeholder="@typeof(TrainingPlan).GetLocalized() ..." />
+                    <input id="hf_trainingPlanAr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Course *@
+        <div id="p-course-ar" style="float:@pageDir;width:48%;">
+            <div class="control control-p-course-ar">
+                <div class="k-edit-label">
+                    <label for="courseAr">@typeof(Course).GetLocalized()</label>
+                </div>
+                <div data-container-for="courseAr" class="k-edit-field">
+                    <input id="courseAr" name="courseAr" placeholder="@typeof(Course).GetLocalized() ..." />
+                    <input id="hf_courseAr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+
+    <div id="course-attendance-rate-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+    var $trainingPlansAr = null;
+    var $coursesAr = null;
+
+    function getCourseAttendanceRate(trainingPlans, courses) {
+        $trainingPlansAr = trainingPlans;
+        $coursesAr = courses;
+
+        generateComboBox("#trainingPlanAr", "trainingPlanAr", $trainingPlansAr, onChangeTrainingPlanAr);
+        generateComboBox("#courseAr", "courseAr", $coursesAr, onChangeCourseAr);
+
+        setTimeout(function () { showCourseAttendanceRateChart(); }, 500);
+    }
+
+    function onChangeTrainingPlanAr(e) {
+        debugger;
+        onChange(e);
+        updateTrainingPlanArComboBox(e);
+    }
+
+    function updateTrainingPlanArComboBox(e) {
+        var eleCount = $trainingPlansAr.length;
+        $trainingPlansAr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $trainingPlansAr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $trainingPlansAr.push(items[i]);
+                }
+            }
+        }
+
+        //===Course
+        updateCourseAr($trainingPlansAr);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($coursesAr);
+        dataSource.data(data);
+
+        var courseArDropDownList = $('#courseAr').data("kendoDropDownList");
+        courseArDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        courseArDropDownList.setDataSource(dataSource);
+        
+        var text = getComboBoxText($coursesAr, 'courseAr');
+        courseArDropDownList.text(text);
+
+        showCourseAttendanceRateChart();
+    }
+
+    function updateCourseAr(trainingPlans) {
+        window.Souccar.ajax('@Url.Action("GetTrainingPlanCourses", "Dashboard", new { area = "Training" })', { plans: trainingPlans }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $coursesAr = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:updateCourseAr');
+        }
+    }
+
+    function onChangeCourseAr(e) {
+        onChange(e);
+        updateCourseArComboBox(e);
+    }
+    function updateCourseArComboBox(e) {
+        var eleCount = $coursesAr.length;
+        $coursesAr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $coursesAr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $coursesAr.push(items[i]);
+                }
+            }
+        }
+
+        showCourseAttendanceRateChart();
+    }
+
+    function showCourseAttendanceRateChart() {
+        window.Souccar.ajax('@Url.Action("CoursesAttendanceRate", "Dashboard", new { area = "Training" })', { trainingPlans: $trainingPlansAr, courseNames: $coursesAr }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success)
+                initCourseAttendanceRateChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:showCourseAttendanceRateChart');
+        }
+    }
+
+    function initCourseAttendanceRateChart(data) {
+        var colors = [getDefaultThemeColor(), '#434348', '#7CB5EC', '#F45B5B'];
+        Highcharts.chart('course-attendance-rate-chart', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.CourseAttendanceRate)'
+            },
+            subtitle: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTrainees) ' + data.NumberOfTrainees
+            },
+            tooltip: {
+                enabled: false
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<br>{point.percentage:.1f} %',
+                        distance: -50
+                    },
+                    showInLegend: true
+                }
+            },
+            colors: colors,
+            series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: [
+                    {
+                        name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TraineesAttendedTheCourse) ' + data.TraineesAttendedTheCourseRate + ' %',
+                    y: data.TraineesAttendedTheCourseRate
+                }, {
+                    name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TraineesNotAttendedTheCourse) ' + data.TraineesNotAttendedTheCourseRate + ' %',
+                    y: data.TraineesNotAttendedTheCourseRate
+                }]
+            }]
+        });
+    }
+
+</script>

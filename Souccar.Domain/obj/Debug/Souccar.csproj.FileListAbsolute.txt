@@ -1,0 +1,7 @@
+D:\Projects\ORC-HR\HR System\ui\binaries\Souccar.dll
+D:\Projects\ORC-HR\HR System\ui\binaries\Souccar.pdb
+D:\Projects\ORC-HR\HR System\Souccar.Domain\obj\Debug\Souccar.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\Souccar.Domain\obj\Debug\Interop.zkemkeeper.dll
+D:\Projects\ORC-HR\HR System\Souccar.Domain\obj\Debug\Souccar.csproj.ResolveComReference.cache
+D:\Projects\ORC-HR\HR System\Souccar.Domain\obj\Debug\Souccar.dll
+D:\Projects\ORC-HR\HR System\Souccar.Domain\obj\Debug\Souccar.pdb

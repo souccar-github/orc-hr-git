@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="01/26/2015 13:21:50" ReportInfo.Modified="07/15/2015 09:39:18" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+    private void Form1_Load(object sender, EventArgs e)
+    {    
+      
+    } 
+
+    private void Table1_ManualBuild(object sender, EventArgs e)
+    {
+      // get the data source by its name
+      DataSourceBase rowData = Report.GetDataSource(&quot;Table&quot;);
+      // init the data source
+      rowData.Init();
+      
+      // print the first table row - it is a header
+      Table1.PrintRow(0);
+      // each PrintRow call must be followed by either PrintColumn or PrintColumns call
+      // to print cells on the row
+      Table1.PrintColumns();
+
+      // now enumerate the data source and print the table body
+      while (rowData.HasMoreRows)
+      {
+        // print the table body  
+        Table1.PrintRow(1);
+        Table1.PrintColumns();
+        
+        // go next data source row
+        rowData.Next();
+      }
+      
+      // print the last table row - it is a footer
+      Table1.PrintRow(2);
+      Table1.PrintColumns();
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqj0Bz3LMPQcCCKHMoHWzXjzykxnmxU6YfMKbo+2kpD6Z45BdvntOLpbvOXQj4ntbouGD5n4zeJ/sOCzfL4nt7xwWJOYSibX6kOz4X2P66lyAboIV7+G4+sOQSK7XDnhlcKvUuWNGZRYKFxQObWBPPlOc5gCQYCeR/7yX31Zps26K+Og++u6vVk7DkihrQx4CJ5zwIxRuclvCM5uV17NKYVw==">
+      <TableDataSource Name="Node" DataType="System.Int32" Enabled="true" TableName="Node">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsHistorical" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Type_id" DataType="System.Int32"/>
+        <Column Name="Parent_Id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Node.Id AS NodeId, &#13;&#10;dbo.Employee.Id AS EmployeeId, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.AppraisalPhase.Id, &#13;&#10;dbo.AppraisalPhase.CreationDate AS CreationDate, &#13;&#10;dbo.AppraisalPhase.StartDate AS StartDate, &#13;&#10;dbo.AppraisalPhase.EndDate AS EndDate,&#13;&#10;dbo.AppraisalPhaseWorkflow.FinalMarkAfterApproval,&#13;&#10;dbo.AppraisalPhaseWorkflow.Id AS AppraisalPhaseWorkflowId,&#13;&#10;ROUND((SELECT SUM(dbo.Appraisal.AppraisalValue) FROM Appraisal WHERE  dbo.Appraisal.PhaseWorkflow_id=dbo.AppraisalPhaseWorkflow.Id),0) AS FinalMark&#13;&#10;FROM            &#13;&#10;dbo.JobDescription INNER JOIN&#13;&#10;dbo.Position ON dbo.JobDescription.Id = dbo.Position.JobDescription_id INNER JOIN&#13;&#10;dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id INNER JOIN&#13;&#10;dbo.AssigningEmployeeToPosition ON dbo.Position.AssigningEmployeeToPosition_id = dbo.AssigningEmployeeToPosition.Id AND &#13;&#10;dbo.Position.Id = dbo.AssigningEmployeeToPosition.Position_Id INNER JOIN&#13;&#10;dbo.Employee ON dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id INNER JOIN&#13;&#10;dbo.AppraisalPhaseWorkflow ON dbo.Position.Id = dbo.AppraisalPhaseWorkflow.Position_id INNER JOIN&#13;&#10;dbo.AppraisalPhase ON dbo.AppraisalPhaseWorkflow.Phase_Id = dbo.AppraisalPhase.Id&#13;&#10;&#13;&#10;WHERE ((SELECT SUM(dbo.Appraisal.AppraisalValue) FROM Appraisal WHERE  dbo.Appraisal.PhaseWorkflow_id=dbo.AppraisalPhaseWorkflow.Id))&lt;&gt;0">
+        <Column Name="CreationDate" DataType="System.DateTime"/>
+        <Column Name="StartDate" DataType="System.DateTime"/>
+        <Column Name="EndDate" DataType="System.DateTime"/>
+        <Column Name="NodeId" DataType="System.Int32"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="FinalMarkAfterApproval" DataType="System.Single"/>
+        <Column Name="AppraisalPhaseWorkflowId" DataType="System.Int32"/>
+        <Column Name="FinalMark" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="AppraisalPhase" DataType="System.Int32" Enabled="true" TableName="AppraisalPhase" SelectCommand="  SELECT &#13;&#10;  A.IsVertualDeleted,&#13;&#10;A.Id, A.CreationDate, &#13;&#10;A.StartDate, &#13;&#10;A.EndDate, &#13;&#10;cast(A.StartDate AS nvarchar) +'-'+cast(A.EndDate AS nvarchar) AS PhaseTitle,&#13;&#10;A.Description, &#13;&#10;A.Period, &#13;&#10;A.Month, &#13;&#10;A.Quarter, &#13;&#10;A.SemiAnnual, &#13;&#10;A.Year, &#13;&#10;A.TemplateSetting_id, &#13;&#10;A.AppraisalPhaseSetting_id&#13;&#10;FROM &quot;AppraisalPhase&quot; A&#13;&#10;where A.IsVertualDeleted = 'False'">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="CreationDate" DataType="System.DateTime"/>
+        <Column Name="StartDate" DataType="System.DateTime"/>
+        <Column Name="EndDate" DataType="System.DateTime"/>
+        <Column Name="Description" DataType="System.String"/>
+        <Column Name="Period" DataType="System.Int32"/>
+        <Column Name="Month" DataType="System.Int32"/>
+        <Column Name="Quarter" DataType="System.Int32"/>
+        <Column Name="SemiAnnual" DataType="System.Int32"/>
+        <Column Name="Year" DataType="System.Int32"/>
+        <Column Name="TemplateSetting_id" DataType="System.Int32"/>
+        <Column Name="AppraisalPhaseSetting_id" DataType="System.Int32"/>
+        <Column Name="PhaseTitle" DataType="System.String"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Node_Table1" ParentDataSource="Node" ChildDataSource="Table" ParentColumns="Id" ChildColumns="NodeId" Enabled="true"/>
+    <Relation Name="AppraisalPhase_Table" ParentDataSource="AppraisalPhase" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Id" Enabled="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="47.25">
+      <TextObject Name="Text17" Width="718.2" Height="47.25" Fill.Color="WhiteSmoke" Text="تقرير عن تقييم الموظفين التابعين لعقدة معينة خلال مرحلة معينة " HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="51.1" Width="718.2" Height="226.8">
+      <TableObject Name="Table1" Top="18.9" Width="710.53" Height="189" ManualBuildEvent="Table1_ManualBuild">
+        <TableColumn Name="Column1" Width="196.15"/>
+        <TableColumn Name="Column2" Width="262.38"/>
+        <TableColumn Name="Column3" Width="252"/>
+        <TableRow Name="Row1" Height="27">
+          <TableCell Name="Cell1" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="علامة" Padding="5, 0, 0, 0" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TableCell Name="Cell2" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الفرع / العقدة" Padding="0, 0, 5, 0" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TableCell Name="Cell74" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الموظف" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="27">
+          <TableCell Name="Cell6" Border.Lines="All" Border.Color="LightGray" Text="[Table.FinalMark]" Padding="5, 0, 0, 0" HorzAlign="Center" VertAlign="Center" RightToLeft="true"/>
+          <TableCell Name="Cell7" Border.Lines="All" Border.Color="LightGray" Text="[Table.Node.Name]" Padding="0, 0, 5, 0" HorzAlign="Center" VertAlign="Center" RightToLeft="true"/>
+          <TableCell Name="Cell75" Border.Lines="All" Border.Color="LightGray" Text="[Table.FirstName] [Table.FatherName] [Table.LastName]" HorzAlign="Right" VertAlign="Center"/>
+        </TableRow>
+        <TableRow Name="Row3" Height="27">
+          <TableCell Name="Cell11" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TableCell Name="Cell12" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Padding="0, 0, 5, 0" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TableCell Name="Cell76" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row9" Height="27">
+          <TableCell Name="Cell51"/>
+          <TableCell Name="Cell52"/>
+          <TableCell Name="Cell77"/>
+        </TableRow>
+        <TableRow Name="Row10" Height="27">
+          <TableCell Name="Cell58"/>
+          <TableCell Name="Cell59"/>
+          <TableCell Name="Cell78"/>
+        </TableRow>
+        <TableRow Name="Row11" Height="27">
+          <TableCell Name="Cell65"/>
+          <TableCell Name="Cell66"/>
+          <TableCell Name="Cell79"/>
+        </TableRow>
+        <TableRow Name="Row12" Height="27">
+          <TableCell Name="Cell72"/>
+          <TableCell Name="Cell73"/>
+          <TableCell Name="Cell80"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="281.74" Width="718.2" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="334" Height="198" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="194" Top="103" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label3" Left="288" Top="40" Width="36" Height="13" RightToLeft="Yes" TabIndex="2" Text="العقدة"/>
+    <LabelControl Name="Label1" Left="284" Top="72" Width="42" Height="13" RightToLeft="Yes" TabIndex="2" Text="المرحلة"/>
+    <ComboBoxControl Name="ComboBox1" Left="44" Top="68" Width="225" RightToLeft="Yes" TabIndex="6" DataColumn="Table.AppraisalPhase.PhaseTitle" DropDownStyle="DropDownList" DropDownWidth="181" ItemHeight="13"/>
+    <ComboBoxControl Name="ComboBox2" Left="44" Top="36" Width="225" RightToLeft="Yes" TabIndex="7" DataColumn="Table.Node_Table1.Name" DropDownStyle="DropDownList" DropDownWidth="209" ItemHeight="13"/>
+  </DialogPage>
+</Report>

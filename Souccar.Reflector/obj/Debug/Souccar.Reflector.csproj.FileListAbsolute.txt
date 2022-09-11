@@ -1,0 +1,10 @@
+D:\Projects\ORC-HR\HR System\UI\Binaries\Souccar.Reflector.dll
+D:\Projects\ORC-HR\HR System\UI\Binaries\Souccar.Reflector.pdb
+D:\Projects\ORC-HR\HR System\Souccar.Reflector\obj\Debug\Souccar.Reflector.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\Souccar.Reflector\obj\Debug\Souccar.Reflector.dll
+D:\Projects\ORC-HR\HR System\Souccar.Reflector\obj\Debug\Souccar.Reflector.pdb
+D:\Projects\ORC-HR\HR System-git\UI\Binaries\Souccar.Reflector.dll
+D:\Projects\ORC-HR\HR System-git\UI\Binaries\Souccar.Reflector.pdb
+D:\Projects\ORC-HR\HR System-git\Souccar.Reflector\obj\Debug\Souccar.Reflector.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System-git\Souccar.Reflector\obj\Debug\Souccar.Reflector.dll
+D:\Projects\ORC-HR\HR System-git\Souccar.Reflector\obj\Debug\Souccar.Reflector.pdb

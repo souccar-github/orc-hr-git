@@ -1,0 +1,72 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script>
+    function ManageDelegatePosition(id) {
+        var title = "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ManageDelegate)";
+        var buttons = [
+            { Name: "Delegate_Position_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "Delegate_Position_container";
+        var bodyHTML = "<div id='Delegate_Position'></div>";
+        var popupDiv = $('<div></div>');
+
+        createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+        window.DelegatePositions = [];
+        createDualSelectList("DelegatePosition", window.DelegatePositions, "Delegate_Position", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.SelectedPosition)", true);
+
+        window.PositionManageDelegateDatabind = kendo.observable();
+
+        var tempdata = [
+            { Name: "DelegateType", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.DelegateType)", Type: "Index", TypeName: "HRIS.Domain.JobDescription.Indexes.AuthorityType", Creatable: true, IsRequired: true }
+        ];
+
+        createCustomEditForm($("#Delegate_Position .dual-select-footer-development"), { Fields: tempdata, Key: "delegatePosition" }, PositionManageDelegateDatabind);
+
+        $("#Delegate_Position .dual-select-footer-development").append("<button class='k-button apply-delegate-type'>@GlobalResource.Apply</button>");
+
+        var dropdownlist = $("#DelegateType_delegatePosition").data("kendoDropDownList");
+
+        dropdownlist.bind("change", function (e) {
+            var value = this.value();
+            $.ajax({
+                url: '@Url.Action("GetDelegate", "Position", new { area = "JobDescription" })',
+                type: "POST",
+                data: JSON.stringify({ positionId: parseInt(id), delegateType: value }),
+                contentType: 'application/json',
+                success: function (data) {
+                    window.DelegatePositions = data;
+                    refreshSelectListWithReBindEventHandler("DelegatePosition", window.DelegatePositions, true);
+                }
+            });
+        });
+        
+        $("#Delegate_Position .apply-delegate-type").off('click').on('click', function() {
+            if (PositionManageDelegateDatabind.DelegateType == 0) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Fail", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.SelectTypeFirst)", "k-icon w-b-warning", commands);
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveDelegate", "Position", new { area = "JobDescription" })',
+                type: "POST",
+                data: JSON.stringify({
+                    positionId: parseInt(id),
+                    delegateType: window.PositionManageDelegateDatabind.DelegateType,
+                    delegates: DelegatePositions
+                }),
+                contentType: 'application/json',
+                success: function(data) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                }
+            });
+
+        });
+
+        $("#Delegate_Position_cancel").off('click').on('click', function () {
+            popupDiv.data("kendo-window").close();
+        });
+    }
+</script>

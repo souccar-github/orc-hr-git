@@ -1,0 +1,27 @@
+﻿@using Project.Web.Mvc4.Helpers
+<script id="employee-position-list-action-template" type="text/kendo-x-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@GlobalResource.JobDescription</th>
+                <th>@GlobalResource.JobTitle</th>
+                <th>@GlobalResource.Node</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i=0;i < data.length; i++) {#
+            <tr>
+                <td>#=data[i].FullName#</td>
+                <td>#=data[i].PositionName#</td>
+                <td>#=data[i].JobDescriptionName#</td>
+                <td>#=data[i].JobTitleName#</td>
+                <td>#=data[i].NodeName#</td>
+                <td><button class="k-button primary-action action-btn" data-positionid="#=data[i].PositionId#" data-employeeid="#=data[i].EmployeeId#" data-fullname="#=data[i].FullName#">#=data[i].ActionTitle#</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

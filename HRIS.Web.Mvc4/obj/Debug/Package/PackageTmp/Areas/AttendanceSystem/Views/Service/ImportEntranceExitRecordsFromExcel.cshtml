@@ -1,0 +1,122 @@
+﻿@using Project.Web.Mvc4.Helpers
+
+<div>
+
+    <div id="grid"></div>
+    <div id="importingresult">
+        <p id="importingresulttext"></p>
+    </div>
+    <div id="ImportFromExcelDiv" data-role="draggable">
+        <div class="filearea"></div>
+
+        <div class="k-edit-buttons k-state-default not-default-button">
+
+            <a class="k-button k-button-icontext k-grid-update" id="ImportButtonFile"><span class="k-icon k-update"></span>@GlobalResource.ImportValues</a>
+            <a class="k-button k-button-icontext k-grid-cancel" id="CancelButtonFile"><span class="k-icon k-cancel"></span>@GlobalResource.Cancel</a>
+
+        </div>
+
+    </div>
+</div>
+<script>
+
+    var fileUploaded = false;
+
+    var importFromExcelDivWindow = $("#ImportFromExcelDiv");
+    importFromExcelDivWindow.kendoWindow({
+        title: "@GlobalResource.ImportEntranceExitRecords",
+        //height: 350,
+        modal: true,
+        // width: 500,
+        resizable: true,
+        open: function () {
+            importFromExcelDivWindow.data("kendoWindow").center();
+        }
+    });
+    var template = kendo.template($("#fileTemplate").html());
+    importFromExcelDivWindow.find(".filearea").append(template);
+
+    importFromExcelDivWindow.data("kendoWindow").open();
+    function onComplete(e) {
+        CloseImportFromExcelDivWindow();
+        document.getElementById("importingresulttext").innerHTML = "@GlobalResource.SuccessMessage";
+
+    }
+
+    $("[name='files']").kendoUpload({
+
+        async: {
+            saveUrl: "Service/ImportEntranceExitRecords",
+            autoUpload: true
+        },
+        success: function (data) {
+
+            if (!data.response.Success) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("Error", data.response.Msg, "k-icon w-b-error", commands);
+            } else {
+
+                fileUploaded = true;
+            }
+        },
+        select: function (e) {
+            if (e.files[0].extension.toLowerCase() != ".xlsx" && e.files[0].extension.toLowerCase() != ".xls") {
+                e.files.splice(0, 1);
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@GlobalResource.TheFileExtensionIsInvalid", "k-icon w-b-error", commands);
+            }
+        },
+        validation: {
+            allowedExtensions: [".xlsx", ".xls"]
+        },
+        multiple: false,
+
+    });
+    var viewModel = kendo.observable({
+        ImportFile: $("[name='files']").val()
+    });
+    kendo.init($("#ImportFromExcelDiv"));
+    $(document).off('click').on('click', '#ImportButtonFile', function () {
+        if (fileUploaded) {
+            importFile();
+            popupDiv.data("kendoWindow").close();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+        }
+    });
+    function importFile() {
+        $.ajax({
+
+            url: '@Url.Action("SaveEntranceExitRecords", "Service", new { area = "AttendanceSystem" })',
+            type: "POST",
+            async: false,
+            success: function (data) {
+
+                if (data.Success) {
+                    var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+                CloseImportFromExcelDivWindow();
+            }
+        });
+    }
+    $(document).on('click', '#CancelButtonFile', function () {
+        CloseImportFromExcelDivWindow();
+    });
+    function CloseImportFromExcelDivWindow() {
+        importFromExcelDivWindow.data("kendoWindow").close();
+    }
+    $("#FileUpload1").closest(".k-upload-button")
+                    .find("span")
+                    .text("@GlobalResource.SelectFiles");
+</script>
+<script id="fileTemplate" type="text/x-kendo-template">
+    <div class="k-edit-form-container upload-window">
+        <label for="FileUpload1">@GlobalResource.SelectXLSXFileToImportOrDragAndDropFilesToTheBelowRectangle</label>
+        <input type="file" id="FileUpload1" name="files" />
+    </div>
+</script>

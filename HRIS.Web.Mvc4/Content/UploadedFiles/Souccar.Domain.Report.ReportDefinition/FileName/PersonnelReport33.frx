@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="05/05/2015 09:34:09" ReportInfo.Modified="09/15/2015 10:01:47" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVF76LdUzHk64a6rxQusfKS9dkq7rpP9ousOIvI+5Wnouw4caubUCg+wsLFsrrLcAp6UvmM+D+61bzWK6uSDGbd4v6pCn3f1nya4XS0w4SLCEI=">
+      <TableDataSource Name="Table" Alias="Emp" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     &#13;&#10;dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, &#13;&#10;dbo.Employee.Id AS EmployeeId, &#13;&#10;dbo.JobDescription.Name AS JobDescriptionName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.EmployeeCard.Salary, &#13;&#10;dbo.EmployeeCard.SalaryDeservableType&#13;&#10;FROM         &#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.Position ON dbo.Employee.Id = dbo.Position.Id INNER JOIN&#13;&#10;dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id INNER JOIN&#13;&#10;dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE&#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="JobDescriptionName" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Salary" DataType="System.Single"/>
+        <Column Name="SalaryDeservableType" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="Bnft" DataType="System.Int32" Enabled="true" SelectCommand="WITH Temp AS(&#13;&#10;SELECT     &#13;&#10;dbo.Employee.Id AS EmpId, &#13;&#10;dbo.BenefitCard.Id AS BenefitCardID,&#13;&#10;dbo.BenefitCard.Name AS BenefitCardName, &#13;&#10;dbo.PrimaryEmployeeBenefit.Value, &#13;&#10;dbo.PrimaryEmployeeBenefit.Formula, &#13;&#10;dbo.PrimaryEmployeeBenefit.ExtraValue, &#13;&#10;dbo.PrimaryEmployeeBenefit.ExtraValueFormula,&#13;&#10;'True' AS HasEmpCardBenefit&#13;&#10;FROM         &#13;&#10;dbo.PrimaryEmployeeBenefit INNER JOIN&#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id ON dbo.PrimaryEmployeeBenefit.EmployeeCard_id = dbo.EmployeeCard.Id INNER JOIN&#13;&#10;dbo.BenefitCard ON dbo.PrimaryEmployeeBenefit.BenefitCard_id = dbo.BenefitCard.Id&#13;&#10;WHERE&#13;&#10;PrimaryEmployeeBenefit.IsVertualDeleted=0 AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0 AND &#13;&#10;BenefitCard.IsVertualDeleted=0&#13;&#10;&#13;&#10;UNION ALL&#13;&#10;&#13;&#10;SELECT     &#13;&#10;dbo.Employee.Id AS EmpId, &#13;&#10;dbo.BenefitCard.Id AS BenefitCardID,&#13;&#10;dbo.BenefitCard.Name AS BenefitCardName, &#13;&#10;dbo.GradeBenefitDetail.Value, &#13;&#10;dbo.GradeBenefitDetail.Formula,&#13;&#10;dbo.GradeBenefitDetail.ExtraValue, &#13;&#10;dbo.GradeBenefitDetail.ExtraValueFormula,&#13;&#10;'False' AS HasEmpCardBenefit&#13;&#10;FROM         &#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id INNER JOIN&#13;&#10;dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id INNER JOIN&#13;&#10;dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id INNER JOIN&#13;&#10;dbo.GradeBenefitDetail ON dbo.GradeBenefitDetail.Grade_id = dbo.Grade.Id INNER JOIN&#13;&#10;dbo.BenefitCard ON dbo.GradeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id&#13;&#10;WHERE&#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;JobTitle.IsVertualDeleted=0 AND &#13;&#10;Grade.IsVertualDeleted=0 AND &#13;&#10;GradeBenefitDetail.IsVertualDeleted=0 AND &#13;&#10;BenefitCard.IsVertualDeleted=0&#13;&#10;)&#13;&#10;SELECT * FROM Temp">
+        <Column Name="EmpId" DataType="System.Int32"/>
+        <Column Name="BenefitCardID" DataType="System.Int32"/>
+        <Column Name="BenefitCardName" DataType="System.String"/>
+        <Column Name="Value" DataType="System.Double"/>
+        <Column Name="Formula" DataType="System.Int32"/>
+        <Column Name="ExtraValue" DataType="System.Double"/>
+        <Column Name="ExtraValueFormula" DataType="System.Int32"/>
+        <Column Name="HasEmpCardBenefit" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table2" Alias="BnftCard" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     &#13;&#10;dbo.Employee.Id AS EmpId, &#13;&#10;dbo.BenefitCard.Id AS BenefitCardID,&#13;&#10;dbo.BenefitCard.Name AS BenefitCardName, &#13;&#10;dbo.PrimaryEmployeeBenefit.Value, &#13;&#10;dbo.PrimaryEmployeeBenefit.Formula, &#13;&#10;dbo.PrimaryEmployeeBenefit.ExtraValue, &#13;&#10;dbo.PrimaryEmployeeBenefit.ExtraValueFormula,&#13;&#10;'من البطاقة' AS HasEmpCardBenefit&#13;&#10;FROM         &#13;&#10;dbo.PrimaryEmployeeBenefit INNER JOIN&#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id ON dbo.PrimaryEmployeeBenefit.EmployeeCard_id = dbo.EmployeeCard.Id INNER JOIN&#13;&#10;dbo.BenefitCard ON dbo.PrimaryEmployeeBenefit.BenefitCard_id = dbo.BenefitCard.Id&#13;&#10;WHERE&#13;&#10;PrimaryEmployeeBenefit.IsVertualDeleted=0 AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0 AND &#13;&#10;BenefitCard.IsVertualDeleted=0">
+        <Column Name="EmpId" DataType="System.Int32"/>
+        <Column Name="BenefitCardID" DataType="System.Int32"/>
+        <Column Name="BenefitCardName" DataType="System.String"/>
+        <Column Name="Value" DataType="System.Double"/>
+        <Column Name="Formula" DataType="System.Int32"/>
+        <Column Name="ExtraValue" DataType="System.Double"/>
+        <Column Name="ExtraValueFormula" DataType="System.Int32"/>
+        <Column Name="HasEmpCardBenefit" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table3" Alias="BnftGrade" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     &#13;&#10;dbo.Employee.Id AS EmpId, &#13;&#10;dbo.BenefitCard.Id AS BenefitCardID,&#13;&#10;dbo.BenefitCard.Name AS BenefitCardName, &#13;&#10;dbo.GradeBenefitDetail.Value, &#13;&#10;dbo.GradeBenefitDetail.Formula,&#13;&#10;dbo.GradeBenefitDetail.ExtraValue, &#13;&#10;dbo.GradeBenefitDetail.ExtraValueFormula,&#13;&#10;'من الفئة' AS HasEmpCardBenefit&#13;&#10;FROM         &#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id INNER JOIN&#13;&#10;dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id INNER JOIN&#13;&#10;dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id INNER JOIN&#13;&#10;dbo.GradeBenefitDetail ON dbo.GradeBenefitDetail.Grade_id = dbo.Grade.Id INNER JOIN&#13;&#10;dbo.BenefitCard ON dbo.GradeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id&#13;&#10;WHERE&#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;JobTitle.IsVertualDeleted=0 AND &#13;&#10;Grade.IsVertualDeleted=0 AND &#13;&#10;GradeBenefitDetail.IsVertualDeleted=0 AND &#13;&#10;BenefitCard.IsVertualDeleted=0">
+        <Column Name="EmpId" DataType="System.Int32"/>
+        <Column Name="BenefitCardID" DataType="System.Int32"/>
+        <Column Name="BenefitCardName" DataType="System.String"/>
+        <Column Name="Value" DataType="System.Double"/>
+        <Column Name="Formula" DataType="System.Int32"/>
+        <Column Name="ExtraValue" DataType="System.Double"/>
+        <Column Name="ExtraValueFormula" DataType="System.Int32"/>
+        <Column Name="HasEmpCardBenefit" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table_Table2" ParentDataSource="Table" ChildDataSource="Table2" ParentColumns="EmployeeId" ChildColumns="EmpId" Enabled="true"/>
+    <Relation Name="Table_Table3" ParentDataSource="Table" ChildDataSource="Table3" ParentColumns="EmployeeId" ChildColumns="EmpId" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="66.15">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير تعويضات الموظف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="70.15" Width="718.2" Height="75.6" DataSource="Table">
+      <TextObject Name="Text8" Left="189" Top="38.8" Width="198.45" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Emp.JobDescriptionName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="604.8" Top="38.8" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Emp.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="387.45" Top="38.8" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Emp.FullName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="189" Top="18.9" Width="198.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="387.45" Top="18.9" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="604.8" Top="18.9" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text18" Left="94.5" Top="38.8" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Emp.Salary]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text20" Top="38.8" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Emp.SalaryDeservableType]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text21" Top="18.9" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نمط الاستحقاق" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text25" Left="387.45" Top="56.7" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="قيمة التعويض" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text26" Left="481.95" Top="56.7" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم التعويض" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="283.5" Top="56.7" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="صيغة التعويض" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="189" Top="56.7" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="القيمة الاضافية" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text33" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="صيغة القيمة الاضافية" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text39" Left="604.8" Top="56.7" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مصدر التعويض" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text19" Left="94.5" Top="18.9" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الراتب المقطوع" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="149.75" Width="718.2" Height="18.9" DataSource="Table2">
+        <TextObject Name="Text22" Left="387.45" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftCard.Value]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text24" Left="481.95" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftCard.BenefitCardName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text28" Left="283.5" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftCard.Formula]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text30" Left="189" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftCard.ExtraValue]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text32" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftCard.ExtraValueFormula]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text40" Left="604.8" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftCard.HasEmpCardBenefit]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      </DataBand>
+      <DataBand Name="Data3" Top="172.65" Width="718.2" Height="19.45" DataSource="Table3" Filter="[BnftCard.BenefitCardID]!=[BnftGrade.BenefitCardID]">
+        <TextObject Name="Text34" Left="387.45" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftGrade.Value]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text35" Left="481.95" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftGrade.BenefitCardName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text36" Left="283.5" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftGrade.Formula]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text37" Left="189" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftGrade.ExtraValue]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text38" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftGrade.ExtraValueFormula]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text41" Left="604.8" Top="0.55" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BnftGrade.HasEmpCardBenefit]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="196.1" Width="718.2" Height="37.8">
+        <TextObject Name="Text17" Left="557.55" Top="18.9" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد العناصر ضمن التقرير" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text14" Top="18.9" Width="557.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="237.9" Width="718.2" Height="37.8"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="266" Height="150" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="114" Top="79" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <ComboBoxControl Name="ComboBox1" Left="12" Top="44" Width="175" RightToLeft="Yes" TabIndex="2" DataColumn="Emp.FullName" DropDownStyle="DropDownList" DropDownWidth="205" ItemHeight="13"/>
+    <LabelControl Name="Label1" Left="196" Top="48" Width="42" Height="13" TabIndex="3" Text="الموظف"/>
+  </DialogPage>
+</Report>

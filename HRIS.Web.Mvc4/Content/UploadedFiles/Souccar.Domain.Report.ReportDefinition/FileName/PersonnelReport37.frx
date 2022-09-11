@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/06/2015 15:31:09" ReportInfo.Modified="07/04/2016 14:20:12" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqtis+rNOUXql9HL1HltlmQ4xrZNcFdWmqbzG+em7BFI2SYgX0JmavMyZ62c5siTv8cKDLjrr+5z/jW6RUApBVJllelIgZ0zbdEsdXuOHf8B+aE1tYK1mOdD0iySaYKBhPoFMlipabHPyJQMS2pQUzDx9ksulMBLlkBjSlBlEYYYo+9xhpJR/51KyuO+ex6JzY+0lReFZPcvBeQnDXWcWPhA==">
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT&#13;&#10;dbo.Employee.FirstName+' '+Employee.FatherName+' '+dbo.Employee.LastName AS FullName,     &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName,&#13;&#10;dbo.Employee.Code AS EmpCode, &#13;&#10;dbo.AssigningEmployeeToPosition.Position_Id, &#13;&#10;dbo.Position.Code AS PosCode, dbo.EmployeeCard.StartWorkingDate, dbo.EmployeeCard.ProbationPeriodEndDate&#13;&#10;FROM         &#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.Position.Id = dbo.AssigningEmployeeToPosition.Position_Id &#13;&#10;AND  dbo.Position.AssigningEmployeeToPosition_id = dbo.AssigningEmployeeToPosition.Id&#13;&#10;WHERE	dbo.EmployeeCard.CardStatus = 1 AND&#13;&#10;		Employee.IsVertualDeleted = 0 AND&#13;&#10;		EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;		Position.IsVertualDeleted = 0 AND&#13;&#10;		AssigningEmployeeToPosition.IsVertualDeleted = 0&#13;&#10;AND  dbo.EmployeeCard.StartWorkingDate IS NOT NULL&#13;&#10;AND  dbo.EmployeeCard.ProbationPeriodEndDate IS NOT NULL&#13;&#10;AND  dbo.EmployeeCard.StartWorkingDate &gt;= CAST(@SelectDate AS datetime)&#13;&#10;AND  dbo.EmployeeCard.ProbationPeriodEndDate &lt;= CAST(@SelectDate AS datetime)">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="Position_Id" DataType="System.Int32"/>
+        <Column Name="StartWorkingDate" DataType="System.DateTime"/>
+        <Column Name="ProbationPeriodEndDate" DataType="System.DateTime"/>
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="EmpCode" DataType="System.String"/>
+        <Column Name="PosCode" DataType="System.String"/>
+        <CommandParameter Name="SelectDate" DataType="22" Size="255" Expression="DateTimePicker1.Value.ToString(&quot;yyyy-MM-dd&quot;)"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="122.85">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين تحت التجربة" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d"/>
+      <TextObject Name="Text15" Left="510.3" Top="75.6" Width="207.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التاريخ المدخل" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text16" Top="75.6" Width="510.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[DateTimePicker1.Value]" Format="Date" Format.Format="dd/MM/yyyy" HorzAlign="Right" Font="Arial, 12pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="129.2" Width="718.2" Height="37.8">
+      <TextObject Name="Text9" Left="151.2" Width="179.55" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text11" Left="75.6" Width="75.6" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ بداية العمل" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text13" Width="75.6" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ نهاية فترة التجربة" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="330.75" Width="207.9" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الثلاثي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="538.65" Width="179.55" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرمز" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="173.35" Width="718.2" Height="19.9" DataSource="Table">
+      <TextObject Name="Text8" Left="151.2" Width="179.55" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Table.PosCode]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text10" Left="75.6" Width="75.6" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.StartWorkingDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.StartWorkingDate] )]" Format="Date" Format.Format="dd/MM/yyyy" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text12" Width="75.6" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.ProbationPeriodEndDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.ProbationPeriodEndDate] )]" Format="Date" Format.Format="dd/MM/yyyy" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text1" Left="330.75" Width="207.9" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Table.FullName]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text3" Left="538.65" Width="179.55" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Table.EmpCode]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <DataFooterBand Name="DataFooter1" Top="199.6" Width="718.2" Height="18.9">
+        <TextObject Name="Text17" Left="538.65" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الموظفين تحت التجربة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text14" Width="538.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="224.85" Width="718.2" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="294" Height="166" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="142" Top="79" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" ClickEvent="" DialogResult="OK"/>
+    <DateTimePickerControl Name="DateTimePicker1" Left="40" Top="28" Width="175" TabIndex="2" AutoFill="false" AutoFilter="false" FilterOperation="GreaterThanOrEqual" CustomFormat="dd/MM/yyyy" Format="Short" Value="04/06/2015 15:31:39"/>
+    <LabelControl Name="Label1" Left="216" Top="32" Width="55" Height="13" TabIndex="3" Text="قبل التاريخ"/>
+    <LabelControl Name="Label2" Left="40" Top="56" Width="67" Height="13" ForeColor="Red" RightToLeft="Yes" TabIndex="4" Text="dd/mm/yyyy"/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,247 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers.DomainExtensions
+<script type="text/x-kendo-template" id="workflowTemplate">
+     <div class="workflow"> 
+        <fieldset>
+            <div id="workflow_Content">
+                <div class="div_for_border">
+                    <div id="workflow_description">
+
+                        <div class="workflow_description_header">
+                            <div class="workflow_type">
+                                
+                                <p>#=data.Type#</p>
+                            </div>
+
+                            <div class="workflow_related_info">
+                               <span class="k-icon k-i-calendar"></span> 
+                                <span> #=data.Date#</span>
+                                <span class="workflow-custom-related-info">
+                                </span>
+                                <a href='\\#'><span class='k-icon k-i-maximize workflow-maximize-but'></span></a>
+                            </div>
+
+                        </div> <!-- end of workflow_description_header -->
+
+                   <!--   <p class="workflow_description_text">#=data.Description#</p>-->
+                        <hr />
+
+                    </div><!-- end of workflow description -->
+                    
+                    <div id="workflow_data">
+                    
+                    </div> <!-- end of workflow data -->
+                    </div>
+                </div>
+            
+            <div class="workflow_body_area">
+                <div class="div_for_border">  
+                    #var canAddStepClass="with-new-step";#
+                    #var canAddStepClassForBody="workflow-body-with-editor";#  
+                    #if(!data.CanAddNewStep) {#
+                        # canAddStepClass="without-new-step";#
+                        # canAddStepClassForBody="workflow-body-without-editor";#
+                    #}#
+                    <div id="workflow_body" class="#=canAddStepClassForBody#">
+                        #var canAddStepClass="with-new-step";#
+                        #if(!data.CanAddNewStep) { canAddStepClass="without-new-step";}#
+                        <div id="workflow_comments" class="#=canAddStepClass#">
+                            #if(data.CanAddNewStep) {#
+                                <div id="new_step">
+                                    <p class="new_step_header">@WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.Notes)</p>
+                                    <textarea id="NewStepDescription" rows="5" cols="30" style="height:75px">
+                                        
+                                       #var currentUser='@UserExtensions.CurrentUser?.FullName';#
+                                         #for(var i = 0; i < data.Steps.length; i++){#
+                                        #if(data.Steps[i].Status=="Pending") {#
+                                        #if(data.Steps[i].Description==null){#
+                                        #data.Steps[i].Description="";#
+                                        #}#
+                                        #=data.Steps[i].Description#
+                                        #}#
+                                        #if(data.Steps[i].Status=="Accept"){#
+                                       
+                                        #=" "#
+                                        #}#
+                                        #}#
+                                      
+                                        #for(var i = 0; i < data.Approvals.length; i++){#
+                                        #if(data.Approvals[i].Status=="Pending") {#
+                                        #if(data.Approvals[i].Description==null){#
+                                        #data.Approvals[i].Description="";#
+                                        #}#
+                                        #=data.Approvals[i].Description#
+                                        #}#
+                                        #if(data.Approvals[i].Status=="Accept"){#
+
+                                        #=" "#
+                                        #}#
+                                        #}#
+                                       @*#for(var i = 0; i < data.Steps.length; i++){#
+                                        #if(currentUser == data.Steps[i].User){#  
+                                        #var description= data.Steps[i].Description; #      
+                                        #if(data.Steps[i].Description == null ){# 
+                                        #data.Steps[i].Description="";#
+                                        #=data.Steps[i].Description#
+                                        #}else{#
+                                        #=data.Steps[i].Description#
+                                        #}#
+                                        #}#
+                                        #}#      
+                                        #for(var i = 0; i < data.Approvals.length; i++){#
+                                        #if(currentUser == data.Approvals[i].User){#
+                                        #if(data.Approvals[i].Description == null){#
+                                        #data.Approvals[i].Description="";#
+                                        #=data.Approvals[i].Description#
+                                        #}else{#
+                                        #=data.Approvals[i].Description#
+                                        #}#
+                                        #}#
+                                        #}#*@          
+                                
+                                    </textarea>
+                                    <div class="k-edit-buttons k-state-default not-default-button">
+                                        <a class="k-button"  id="AcceptButton" href="\\#"><span class="k-icon k-update"></span>#=data.AcceptTitle#</a>
+                                        <a class="k-button"  id="RejectButton" href="\\#"><span class="k-icon k-cancel"></span>#=data.RejectTitle#</a>
+                                        <a class="k-button"  id="PendingButton" href="\\#"><span class="k-icon k-Wait"></span>#=data.PendingTitle#</a>
+                                    </div>
+                                </div> <!-- end of new step -->
+                            # } #
+                            <div id="old_step_container">
+                                <div id="old_step">
+                                    # for (var i = 0; i < data.Steps.length; i++) { #
+                                        <div id="workflow_step#=data.Steps[i].Id#" class="step">
+                                            <div class="workflow_step_header" onclick="showHideCommentClick(#=data.Steps[i].Id#)">
+                                                <p class="comment_username">
+                                                    <span class="k-icon #=data.Steps[i].IconClass#"></span>
+                                                    #=data.Steps[i].User#
+                                                </p>
+                                                <p class="comment_status">&nbsp;#=data.Steps[i].Status# @WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.Notes)&nbsp;</p>
+                                                <p class="comment_date"> #=data.Steps[i].Date# </p>
+                                                <span class="show-hide-comment up_down_arrow"></span>
+                                            </div> <!-- end of workflow step header -->
+                                            #if(data.Steps[i].Description==null){#
+                                            #data.Steps[i].Description="";#
+                                            #}#
+                                            #data.Steps[i].Description=data.Steps[i].Description.replace(/\&lt;/g,"<");#
+                                            #data.Steps[i].Description=data.Steps[i].Description.replace(/\&gt;/g,">");#
+
+                                            <div id="comment_div_#=data.Steps[i].Id#" class="comment_div" style="display: none;">
+                                                <p class="comment_text">#=data.Steps[i].Description#</p>
+                                            </div>
+
+                                        </div> <!--end of workflow_step -->
+                                        # } #
+                                </div> <!-- end of old step -->
+                                <div id="old_approval">
+                                    # for (var i = 0; i < data.Approvals.length; i++) { #
+                                        #if(data.Approvals[i].IsSeen){#                                            
+                                            <div id="workflow_approval#=data.Approvals[i].Id#" class="step">
+                                                <div class="workflow_step_header" onclick="showHideCommentClick(#=data.Approvals[i].Id#)">
+                                                    <p class="comment_username">
+                                                        <span class="k-icon #=data.Approvals[i].IconClass#"></span>
+                                                        #=data.Approvals[i].User#
+                                                    </p>
+                                                    <p class="comment_status">&nbsp;#=data.Approvals[i].Status# @WorkflowLocalizationHelper.GetResource(WorkflowLocalizationHelper.Notes)&nbsp;</p>
+                                                    <p class="comment_date"> #=data.Approvals[i].Date# </p>
+                                                    <span class="show-hide-comment up_down_arrow"></span>
+                                                </div> <!-- end of workflow step header -->
+                                                #if(data.Approvals[i].Description==null){#
+                                                #data.Approvals[i].Description="";#
+                                                #}#
+                                                #data.Approvals[i].Description=data.Approvals[i].Description.replace(/\&lt;/g,"<");#
+                                                #data.Approvals[i].Description=data.Approvals[i].Description.replace(/\&gt;/g,">");#
+
+                                                <div id="comment_div_#=data.Approvals[i].Id#" class="comment_div" style="display: none;">
+                                                    <p class="comment_text">#=data.Approvals[i].Description#</p>
+                                                </div>
+
+                                            </div> <!--end of workflow_approval -->
+                                         #}#
+                                    #}#
+                                </div> <!-- end of old step -->
+                            </div><!-- end of old step container -->
+                        </div> <!-- end of workflow comments -->
+                    </div><!-- end of workflow body --> 
+                </div><!-- end of workflow_border -->
+            </div> <!-- end of workflow body area -->
+        </fieldset>
+    </div> <!-- end of workflow -->
+</script>
+
+<script>
+    function showHideCommentClick(id) {
+        $("#comment_div_" + id).slideToggle(350);
+    }
+
+    function createWorkflow(container, workflowId, afterCreateHandler, acceptHandler, rejectHandler, pendingHandler) {
+        $.ajax({
+            url: '@Url.Action("GetWorkflow", "Home", new { area = "Workflow" })',
+            type: "POST",
+            data: JSON.stringify({ workflowId: workflowId }),
+            contentType: 'application/json',
+            success: function (data) {
+                createWorkflowHtml(container, data, workflowId, afterCreateHandler, acceptHandler, rejectHandler, pendingHandler);
+            }
+        });
+    }
+
+    function saveStep(e) {
+        $.ajax({
+            url: '@Url.Action("SaveStep", "Home", new { area = "Workflow" })',
+            type: "POST",
+            data: JSON.stringify({ workflowId: e.data.workflowId, status: e.data.status, description: $("#NewStepDescription").val() }),
+            contentType: 'application/json',
+            success: function (data) {
+                createWorkflowHtml(e.data.container, data, e.data.workflowId);
+
+            }
+        });
+    }
+
+    function createWorkflowHtml(container, data, workflowId, afterCreateHandler, acceptHandler, rejectHandler, pendingHandler) {
+        var template = kendo.template($("#workflowTemplate").html());
+        container.html(template(data));
+
+        if (typeof (acceptHandler) == "function")
+            $("#AcceptButton").off("click").on("click", { status: "Accept", workflowId: workflowId, container: container }, acceptHandler);
+        else
+            $("#AcceptButton").off("click").on("click", { status: "Accept", workflowId: workflowId, container: container }, saveStep);
+
+        if (typeof (rejectHandler) == "function")
+            $("#RejectButton").off("click").on("click", { status: "Reject", workflowId: workflowId, container: container }, rejectHandler);
+        else
+            $("#RejectButton").off("click").on("click", { status: "Reject", workflowId: workflowId, container: container }, saveStep);
+
+        if (typeof (pendingHandler) == "function")
+            $("#PendingButton").off("click").on("click", { status: "Pending", workflowId: workflowId, container: container }, pendingHandler);
+        else
+            $("#PendingButton").off("click").on("click", { status: "Pending", workflowId: workflowId, container: container }, saveStep);
+
+        $("#NewStepDescription").kendoEditor({
+            tools: [
+                "bold",
+                "italic",
+                "underline",
+                "strikethrough",
+                "justifyLeft",
+                "justifyCenter",
+                "justifyRight",
+                "justifyFull",
+                "foreColor"
+            ]
+        });
+        if (typeof (afterCreateHandler) == "function")
+            afterCreateHandler(data, container);
+        $('.workflow-maximize-but').off('click').on('click', function (e) {
+            $('.workflow-maximize-but').toggleClass('clicked');
+            $('.workflow_body_area').toggle();
+            if ($('.workflow-maximize-but').hasClass('clicked')) {
+                $('#workflow_Content').width('100%');
+            }
+            else {
+                $('#workflow_Content').width('64%');
+            }
+        });
+    }
+</script>

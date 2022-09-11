@@ -1,0 +1,43 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function ManageReporting(id) {
+        $.ajax({
+            url: '@Url.Action("GetReportingTarget", "JobDescription", new { area = "JobDescription" })',
+            type: "POST",
+            data: JSON.stringify({ jobDescriptionId: parseInt(id) }),
+            contentType: 'application/json',
+            success: function (data) {
+                var title = "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ManageReporting)";
+                var buttons = [
+                    { Name: "Reporting_Target_JobDescription_update", CssClass: "update", Title: "@GlobalResource.Save" },
+                    { Name: "Reporting_Target_JobDescription_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var containerId = "Reporting_Target_JobDescription_container";
+                var bodyHTML = "<div id='Reporting_Target_JobDescription'></div>";
+                var popupDiv = $('<div></div>');
+
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+
+                createDualSelectList("ReportingTargetJobDescription", data, "Reporting_Target_JobDescription", "Job Description", "Selected Job Description", true);
+                $("#Reporting_Target_JobDescription_update").off('click').on('click', function () {
+                    $.ajax({
+                        url: '@Url.Action("SaveReportingTarget", "JobDescription", new { area = "JobDescription" })',
+                        type: "POST",
+                        data: JSON.stringify({ jobDescriptionId: parseInt(id), managers: data }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            popupDiv.data("kendo-window").close();
+                            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                        }
+                    });
+                });
+
+                $("#Reporting_Target_JobDescription_cancel").off('click').on('click', function () {
+                    popupDiv.data("kendo-window").close();
+                });
+            }
+        });
+    }
+</script>

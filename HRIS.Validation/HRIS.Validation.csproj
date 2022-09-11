@@ -1,0 +1,377 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4B856B7C-13BB-4381-BD07-AD40FF3D864E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HRIS.Validation</RootNamespace>
+    <AssemblyName>HRIS.Validation</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\ui\binaries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentNHibernate, Version=1.3.0.733, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="HRIS.Domain, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\HRIS.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="SpecExpress, Version=1.6.1.56, Culture=neutral, PublicKeyToken=76939f3daa87791a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\SpecExpress.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MessageKeys\CustomMessageKeysAttendanceSystemModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysEmployeeRelationServicesModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysObjectiveModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysOrganizationChartModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysHealthInsuranceModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysPayrollSystemModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysPmsModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysProjectManagementModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysRecruitmentModule.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysTrainingModule.cs" />
+    <Compile Include="MessageKeys\GlobalMessages.cs" />
+    <Compile Include="MessageKeys\CustomMessageKeysPersonnelModule.cs" />
+    <Compile Include="DefaultSpecification.cs" />
+    <Compile Include="GlobalConstant.cs" />
+    <Compile Include="MessageKeys\PreDefinedMessageKeysSpecExpress.cs" />
+    <Compile Include="MessageStore\CustomMessagesResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomMessagesResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="MessageStore\CustomMessagesMessageStore.cs" />
+    <Compile Include="MessageStore\DefaultValidationMessagesStor.cs" />
+    <Compile Include="MessageStore\SouccarValidationMessageStore.cs" />
+    <Compile Include="MessageStore\DefaultValidationMessagesResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DefaultValidationMessagesResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="MessageStore\GlobalMessagesResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GlobalMessagesResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Specification\AttendanceSystem\Configurations\GeneralSettingsSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\LeaveAttachmentSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\ServiceWorkflowSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\RootEntities\EmployeeInfractionSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\InfractionSliceSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Entities\NonAttendanceSliceSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Entities\NonAttendanceSlicePercentageSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Entities\NormalShiftSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Entities\OvertimeSliceSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Entities\ParticularOvertimeShiftSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Configurations\TemporaryWorkshopSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Entities\WorkshopRecurrenceSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Configurations\AttendanceFormSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Configurations\BioMetricSettingSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\AttendanceRecordSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\EmployeeAttendanceCardSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\EntranceExitRecordSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\HourlyMissionSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\InfractionFormSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Configurations\NonAttendanceFormSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Configurations\OvertimeFormSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\OvertimeOrderSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\TravelMissionSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\Configurations\WorkshopSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EndingSecondaryPositionEmployeeSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\RecycledLeaveSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\RecycleSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\PaidSliceSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\BalanceSliceSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\LeaveRequestSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\AssigningEmployeeToPositionSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\AssignmentSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EmployeeDisciplinarySpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EmployeePromotionSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EmployeeResignationSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EmployeeRewardSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EmployeeTerminationSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\EmployeeTransferSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\ExitInterviewSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\FinancialPromotionSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Entities\LeaveTemplateDetailSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\LeaveSettingSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\DisciplinarySettingSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\ExitSurveyItemSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\GeneralEmployeeRelationSettingSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\RewardSettingSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\Configurations\LeaveTemplateMasterSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\RootEntities\ChangeableHolidaySpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\RootEntities\PublicHolidaySpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\RootEntities\FixedHolidaySpecification.cs" />
+    <Compile Include="Specification\Grade\Entities\JobTitleBenefitDetailSpecification.cs" />
+    <Compile Include="Specification\Grade\Entities\JobTitleSpecitication.cs" />
+    <Compile Include="Specification\Grade\Entities\NonCashBenefitSpecitication.cs" />
+    <Compile Include="Specification\Grade\Entities\GradeByEducationQualificationSpecification.cs" />
+    <Compile Include="Specification\Grade\Entities\GradeStepSpecification.cs" />
+    <Compile Include="Specification\Grade\RootEntities\GradeByEducationSpecification.cs" />
+    <Compile Include="Specification\Grade\RootEntities\GradeSpecification.cs" />
+    <Compile Include="Specification\Index\IndexSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\CompetenceCategoryLevelDescriptionSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\AuthoritySpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\ComputerSkillSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\ConditionSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\DelegateAuthoritiesToPositionSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\DelegateRolesToPositionSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\NatureJobSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\ResponsibilityKpiSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\ResponsibilitySpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\RoleKpiSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Configurations\CompetencyCategorySpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\JEducationSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\JExperienceSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\JLanguageSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\JSkillSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\KnowledgeSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\PositionSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\RoleSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Entities\WorkingConditionSpecification.cs" />
+    <Compile Include="Specification\JobDesc\Configurations\PositionCodeSpecification.cs" />
+    <Compile Include="Specification\Localization\RootEntities\LanguageSpecification.cs" />
+    <Compile Include="Specification\Objectives\Entities\ActionPlanSpecification.cs" />
+    <Compile Include="Specification\Objectives\Entities\ObjectiveConstraintSpecification.cs" />
+    <Compile Include="Specification\Objectives\Entities\ObjectiveKpiSpecification.cs" />
+    <Compile Include="Specification\Objectives\Entities\SharedWithSpecification.cs" />
+    <Compile Include="Specification\Objectives\RootEntities\ObjectiveCreationPhaseSpecification.cs" />
+    <Compile Include="Specification\Objectives\RootEntities\ObjectiveAppraisalPhaseSpecification.cs" />
+    <Compile Include="Specification\Objectives\RootEntities\ObjectiveSpecification.cs" />
+    <Compile Include="Specification\Objectives\RootEntities\StrategicObjectiveSpecification.cs" />
+    <Compile Include="Specification\OrganizationChart\Configurations\NodeTypeSpecification.cs" />
+    <Compile Include="Specification\OrganizationChart\RootEntities\SubCompanySpecification.cs" />
+    <Compile Include="Specification\OrganizationChart\RootEntities\OrganizationSpecification.cs" />
+    <Compile Include="Specification\OrganizationChart\RootEntities\NodeSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\BankingInformationSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\CrossDeductionWithBenefitSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\CrossDeductionWithDeductionSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\CrossDependencySpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\EmployeeLoanSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\JobTitleBenefitDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\PositionDeductionDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\NodeDeductionDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\JobTitleDeductionDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\JobDescriptionDeductionDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\GradeDeductionDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\GradeBenefitDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\JobDescriptionBenefitDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\LoanPaymentSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\MonthlyCardSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\MonthlyEmployeeBenefitSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\MonthlyEmployeeDeductionSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\NodeBenefitDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\PositionBenefitDetailSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\EmployeeAdvanceSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\PrimaryEmployeeBenefitSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\PrimaryEmployeeDeductionSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Entities\SalaryIncreaseOrdinanceEmployeeSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\RootEntities\FinancialCardSpecification.cs" />
+    <Compile Include="Specification\Personnel\Configurations\BankInformationSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Configurations\BenefitCardSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Configurations\DeductionCardSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Configurations\GeneralOptionSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\RootEntities\MonthSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\RootEntities\SalaryIncreaseOrdinanceSpecification.cs" />
+    <Compile Include="Specification\PayrollSystem\Configurations\TaxSliceSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\CertificationAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ChildAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ConvictionAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\DependentAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\DrivingLicenseAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\EducationAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ExperienceAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\LanguageAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\MilitaryServiceAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\PassportAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ResidencyAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\SkillAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\TrainingAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\SpouseAttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\EmployeeTemporaryWorkshopSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\AttachmentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\EmployeeCustodieSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\JobRelatedInfoSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\CertificationSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ChildSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ContactSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ConvictionSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\DependentSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\DrivingLicenseSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\EducationSpecification.cs" />
+    <Compile Include="Specification\Personnel\Configurations\DefineCustodiesDetailsSpecification.cs" />
+    <Compile Include="Specification\Personnel\Configurations\DefineHealthInsuranceTypesSpecification.cs" />
+    <Compile Include="Specification\EmployeeRelationServices\RootEntities\EmployeeCardSpecification.cs" />
+    <Compile Include="Specification\Personnel\RootEntities\EmployeeSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ExperienceSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\LanguageSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\MilitaryServiceSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\PassportSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\ResidencySpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\SkillSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\SpouseSpecification.cs" />
+    <Compile Include="Specification\Personnel\Entities\TrainingSpecification.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specification\JobDesc\Entities\CompetenceSpecification.cs" />
+    <Compile Include="Specification\JobDesc\RootEntities\JobDescriptionSpecification.cs" />
+    <Compile Include="Specification\Personnel\Configurations\EmployeeCodeSettingSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\AppraisalPhaseWorkflowSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Competency\AppraisalCompetenceSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Competency\CompetencySectionItemSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Competency\CompetencySectionSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\JobDescription\AppraisalJobDescriptionSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\JobDescription\JobDescriptionSectionItemKpiSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\JobDescription\JobDescriptionSectionItemSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\JobDescription\JobDescriptionSectionSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\objective\AppraisalObjectiveSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\objective\ObjectiveSectionItemKpiSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\objective\ObjectiveSectionItemSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\objective\ObjectiveSectionSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Organizational\AppraisalCustomSectionItemSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Organizational\AppraisalCustomSectionSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Organizational\OrganizationalSectionItemKpiSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Organizational\OrganizationalSectionItemSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\Organizational\OrganizationalSectionSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\TemplateAppraisalPositionsSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\TemplateSectionWeightSpecification.cs" />
+    <Compile Include="Specification\PMS\RootEntities\AppraisalPhaseConfigurationSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\AppraisalPhaseConfigurationWorkflowSpecification.cs" />
+    <Compile Include="Specification\PMS\Configurations\AppraisalPhaseSettingSpecification.cs" />
+    <Compile Include="Specification\PMS\RootEntities\AppraisalPhaseSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\AppraisalSectionItemKpiSpecification.cs" />
+    <Compile Include="Specification\PMS\Entities\AppraisalSectionItemSpecification.cs" />
+    <Compile Include="Specification\PMS\RootEntities\AppraisalSectionSpecification.cs" />
+    <Compile Include="Specification\PMS\Configurations\AppraisalTemplateSettingSpecification.cs" />
+    <Compile Include="Specification\PMS\RootEntities\AppraisalTemplateSpecification.cs" />
+    <Compile Include="Specification\PMS\Configurations\PromotionsSettingsSpecification.cs" />
+    <Compile Include="Specification\PMS\RootEntities\WorkflowSettingSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\ConstrainSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\IndirectManagerInfoSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\PhaseSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\TaskSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\TeamSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\SuccessFactorSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\TRoleSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\Entities\ResourceSpecification.cs" />
+    <Compile Include="Specification\ProjectManagement\RootEntities\ProjectSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Configurations\EvaluationSettingsSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\JobApplicationAttachmentSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RecruitmentMilitaryServiceSpecification.cs" />
+    <Compile Include="Specification\Recruitment\RootEntities\JobApplicationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\OralExaminationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\PersonalSkillSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\ProfessionalCertificationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\QualificationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RChildSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RecruitmentComputerSkillSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RecruitmentEducationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RecruitmentInformationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RecruitmentRequestAttachmentSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\REducationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RJobRelatedInfoSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\RSpouseSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\TrainingCourseLanguageSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\TrainingCourseSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\WorkingExperienceSpecification.cs" />
+    <Compile Include="Specification\Recruitment\Entities\WrittenExaminationSpecification.cs" />
+    <Compile Include="Specification\Recruitment\RootEntities\AdvertisementSpecification.cs" />
+    <Compile Include="Specification\Recruitment\RootEntities\ApplicantSpecification.cs" />
+    <Compile Include="Specification\Recruitment\RootEntities\InterviewSpecification.cs" />
+    <Compile Include="Specification\Recruitment\RootEntities\RecruitmentRequestSpecification.cs" />
+    <Compile Include="Specification\Reporting\RootEntities\ReportDefinitionSpecification.cs" />
+    <Compile Include="Specification\Security\FullAuthorityRolesSpecififcation.cs" />
+    <Compile Include="Specification\Security\RoleSpecification.cs" />
+    <Compile Include="Specification\Security\UserSpecification.cs" />
+    <Compile Include="Specification\TaskManagement\RootEntities\DailyWorkSpecification.cs" />
+    <Compile Include="Specification\TaskManagement\RootEntities\TaskSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\ActivateCourseSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\AppraisalCourseSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\AppraisalTraineeAttachmentSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\AppraisalTraineeSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\CourseAttachmentSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\CourseConditionSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\CourseCostSpecification.cs" />
+    <Compile Include="Specification\Training\Entities\CourseSpecification.cs" />
+    <Compile Include="Specification\Training\RootEntities\TrainingNeedSpecification.cs" />
+    <Compile Include="Specification\Training\RootEntities\TrainingPlanSpecification.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\date.js" />
+    <Content Include="Scripts\specexpress.unobtrusive.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MessageStore\CustomMessagesResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CustomMessagesResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageStore\DefaultValidationMessagesResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefaultValidationMessagesResource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageStore\GlobalMessagesResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GlobalMessagesResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Specification\TaskManagement\Entities\" />
+    <Folder Include="Specification\TaskManagement\Indexes\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

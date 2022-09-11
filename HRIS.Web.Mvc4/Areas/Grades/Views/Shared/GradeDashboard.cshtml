@@ -1,0 +1,132 @@
+﻿@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+<link href="~/CssAndJs/dashboard.css" rel="stylesheet" />
+<style>
+    .k-icon.k-clear-value.k-i-close {
+        display: none !important;
+    }
+</style>
+
+
+<div class="chart chart-width-full">
+
+    <div id="grade-chart"></div>
+
+</div>
+
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming.ToString();
+}
+
+<script type="text/javascript">
+
+    @{
+        var dir = "ltr";
+        var pageDir = "left";
+
+        if (CurrentLocale.Language == Locale.Rtl)
+        {
+            pageDir = "right";
+            dir = "rtl";
+        }
+    }
+
+    var $dir = '@dir';
+    var $pageDir = '@pageDir';
+
+    var $themeName = '@themingName';
+
+    $(function () {
+        getGradeChartData();
+    });
+
+    function getGradeChartData() {
+        window.Souccar.ajax('@Url.Action("GetGradeChartData", "Dashboard", new { area = "Grades" })', {}, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateGradeChart(data);
+
+            }, 500);
+
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getGradeChartData');
+        }
+    }
+
+    function generateGradeChart(items) {
+
+        var data = new Array();
+        for (var item of items) {
+            data.push([item.Name,item.Value]);
+        }
+
+        Highcharts.chart('grade-chart', {
+            chart: {
+                type: 'column',
+                height:'47%'
+            },
+            title: {
+                text: 'Grades'
+            },
+            xAxis: {
+                type: 'category',
+                labels: {
+                    rotation: -45,
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Average Salary'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: 'Average salary : <b>{point.y:.1f} </b>'
+            },
+            series: [{
+                name: 'Population',
+                color: getDefaultThemeColor(),
+                data: data,
+                dataLabels: {
+                    enabled: true,
+                    rotation: -90,
+                    color: '#FFFFFF',
+                    align: 'right',
+                    format: '{point.y:.1f}', // one decimal
+                    y: 10, // 10 pixels down from the top
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            }]
+        });
+    }
+
+    function getDefaultThemeColor() {
+        switch ($themeName) {
+        case 'lightblue':
+            return '#86c4bc';
+        case 'sepia':
+            return '#c0a48c';
+        case 'formal':
+            return '#87adc4';
+        case 'lady':
+            return '#9c8bc1';
+        default:
+            return '#818285';
+        }
+    }
+
+</script>
+

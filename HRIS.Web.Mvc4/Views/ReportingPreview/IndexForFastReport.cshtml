@@ -1,0 +1,19 @@
+﻿@FastReport.Web.WebReportGlobals.ScriptsWOjQuery()
+@FastReport.Web.WebReportGlobals.StylesWOjQuery()
+<div class="report-viewer">
+    @ViewBag.WebReport.GetHtml()
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        timeout = setTimeout('timeout_trigger()', 2000);
+
+    });
+    function timeout_trigger() {
+        $(".report-viewer table").attr("dir", "ltr");
+        clearTimeout(timeout);
+    }
+</script>
+
+

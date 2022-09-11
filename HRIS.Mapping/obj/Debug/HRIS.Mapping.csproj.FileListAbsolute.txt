@@ -1,0 +1,10 @@
+D:\Projects\ORC-HR\HR System\HRIS.Mapping\obj\Debug\HRIS.Mapping.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\ui\binaries\HRIS.Mapping.dll
+D:\Projects\ORC-HR\HR System\ui\binaries\HRIS.Mapping.pdb
+D:\Projects\ORC-HR\HR System\HRIS.Mapping\obj\Debug\HRIS.Mapping.dll
+D:\Projects\ORC-HR\HR System\HRIS.Mapping\obj\Debug\HRIS.Mapping.pdb
+D:\Projects\ORC-HR\HR System-git\ui\binaries\HRIS.Mapping.dll
+D:\Projects\ORC-HR\HR System-git\ui\binaries\HRIS.Mapping.pdb
+D:\Projects\ORC-HR\HR System-git\HRIS.Mapping\obj\Debug\HRIS.Mapping.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System-git\HRIS.Mapping\obj\Debug\HRIS.Mapping.dll
+D:\Projects\ORC-HR\HR System-git\HRIS.Mapping\obj\Debug\HRIS.Mapping.pdb

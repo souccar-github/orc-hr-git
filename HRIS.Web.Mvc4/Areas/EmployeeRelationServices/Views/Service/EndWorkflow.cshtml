@@ -1,0 +1,227 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Helpers
+
+<div id="find-employee-template-container"></div>
+<div class="find-workFlow-employee-result">
+
+</div>
+<script>
+
+    var employee = [];
+    initialEmployee();
+
+    var tempdata = [
+        { Name: "Employee", Title: "@GlobalResource.EmployeeName", Type: "Dropdown", DataSource: "employee", Creatable: false, IsRequired: true },
+
+    ];
+    var databind = kendo.observable(
+                {
+
+                });
+
+    createCustomEditForm($("#find-employee-template-container"), { Fields: tempdata, Key: "find-employee-template-container" }, databind);
+    debugger;
+    $("[name='Employee']").kendoDropDownList({
+        filter: "contains",
+        dataSource: employee,
+        autoBind: true,
+        minLength: 1,
+        dataTextField: "Name",
+        dataValueField: "Id",
+    });
+
+
+
+
+    var applyButton = $('<div class="top-commands"><button style="margin:10px;" class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.ForceClose</button></div>');
+    $("#find-employee-template-container").find("[name='Employee']").after(applyButton);
+    function initialEmployee() {
+        $.ajax({
+            url: '@Url.Action("GetEmployee", "Reference", new { area = "EmployeeRelationServices" })',
+            type: "POST",
+            data: {},
+            async: false,
+            success: function (data) {
+                if (data.Success == true) {
+                    employee = data.Employee;
+                }
+            }
+        });
+    }
+
+    //////
+    $('[name="Employee"]').on('change', function (e) {
+        ShowWorkFlows();
+    });
+    ///
+    $(".applyButton").on('click', function () {
+        //debugger;
+        var id = $("[Name='Employee']").data("kendoDropDownList").value();
+        window.Souccar.ajax('@Url.Action("EndAllWorkflow", "Service", new { area = "EmployeeRelationServices" })', { employeeId: id }, successFunc, erorrFunc);
+        function successFunc(data) {
+
+            if (data.Success == false) {
+                var commands = [{ Title: "@GlobalResource.Error", ClassName: "k-icon k-error" }];
+                ShowMessageBox("Error", data.Message, "k-icon w-b-error", commands);
+            } else {
+                var template = kendo.template($("#employee-end-workflow-template").html());
+                $(".find-workFlow-employee-result").html(template({ workFlows: data }));
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+            }
+        }
+        function erorrFunc() {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-error" }];
+            ShowMessageBox("Error", data.Message, "k-icon w-b-error", commands);
+        }
+
+    });
+    /////
+    function ShowWorkFlows() {
+
+        var id = $("[name='Employee']").data("kendoDropDownList").value();
+
+        if (id == null) {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("Error", '@GlobalResource.RequiredMessage', "k-icon w-b-error", commands);
+        }
+        else {
+            window.Souccar.ajax('@Url.Action("GetMatchWorkFlow", "Service", new { area = "EmployeeRelationServices" })', { employeeId: id }, successFunc, erorrFunc);
+            function successFunc(data) {
+                //debugger;
+                if (data.Success == false) {
+                    @*var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Info", data.Message, "k-icon w-b-info", commands);*@
+                    var template = kendo.template($("#employee-end-workflow-template").html());
+                    $(".find-workFlow-employee-result").html(template({ workFlows: data }));
+                    kendo.init($("#employee-end-workflow-template"));
+                } else {
+
+                    //  console.log(data.Data);
+                    var template = kendo.template($("#employee-end-workflow-template").html());
+                    $(".find-workFlow-employee-result").html(template({ workFlows: data.Data }));
+                    kendo.init($("#employee-end-workflow-template"));
+
+
+                }
+            }
+            function erorrFunc(data) {
+
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("Error", data.Message, "k-icon w-b-error", commands);
+            }
+
+        }
+
+    }
+
+    /////
+</script>
+<script id="employee-end-workflow-template" type="text/x-kendo-template">
+    <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th>@GlobalResource.Date</th>
+                <th>@GlobalResource.Description</th>
+                <th>@GlobalResource.Status</th>
+                <th>@GlobalResource.Type</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i  < data.workFlows.length;i++) {#
+
+            @*#for(var i=0;i
+                <data.workflows.length;i++){#*@ #var workFlow=data.workFlows[i]; #
+
+            #var status="";#
+            #if(workFlow.Status==3){#
+            #status='Pending';#
+            #}#
+            #if(workFlow.Status==1){#
+            #status='Completed';#
+            #}#
+            #if(workFlow.Status==2){#
+            #status='Canceled';#
+            #}#
+            #if(workFlow.Status==0){#
+            #status='InProgress';#
+            #}#
+            @*////////////////////////////*@
+            #var type="";#
+            #if(workFlow.Type==0){#
+            #type='Appraisal';#
+            #}#
+            #if(workFlow.Type==1){#
+            #type='Objective';#
+            #}#
+            #if(workFlow.Type==2){#
+            #type='Incentive';#
+            #}#
+            #if(workFlow.Type==3){#
+            #type='LeaveRequest';#
+            #}#
+            #if(workFlow.Type==4){#
+            #type='EmployeeDisciplinary';#
+            #}#
+            #if(workFlow.Type==5){#
+            #type='EmployeeReward';#
+            #}#
+            #if(workFlow.Type==6){#
+            #type='EmployeeTermination';#
+            #}#
+            #if(workFlow.Type==7){#
+            #type='EmployeeResignation';#
+            #}#
+            #if(workFlow.Type==8){#
+            #type='EmployeeFinancialPromotion';#
+            #}#
+            #if(workFlow.Type==9){#
+            #type='EmployeePromotion';#
+            #}#
+            #if(workFlow.Type==10){#
+            #type='InterviewEvaluation';#
+            #}#
+            #if(workFlow.Type==11){#
+            #type='EmployeeEntranceExitRecordRequest';#
+            #}#
+            #if(workFlow.Type==12){#
+            #type='EmployeeMissionRequest';#
+            #}#
+            #if(workFlow.Type==13){#
+            #type='EmployeeAdvance';#
+            #}#
+            #if(workFlow.Type==14){#
+            #type='EmployeeCustodie';#
+            #}#
+            #if(workFlow.Type==15){#
+            #type='EmployeeLoanRequest';#
+            #}#
+            #if(workFlow.Type==16){#
+            #type='EmployeeTransferRequest';#
+            #}#
+
+            @*#else if(workFlow.Status==1){#
+                #status='Completed';#
+                #}#
+                #else if(workFlow.Status==2){#
+                #status='Canceled';#
+                #}#
+                #else{#
+                #status='InProgress';#
+                #}#*@
+            <tr>
+                <td class="td-emp-info">
+                    <span class="control-FullName">
+                        #=window.Souccar.toStringForDate(workFlow.Date)#
+                    </span>
+
+                </td>
+                <td>#=workFlow.Description#</td>
+                <td>#=status#</td>
+                <td>#=type#</td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

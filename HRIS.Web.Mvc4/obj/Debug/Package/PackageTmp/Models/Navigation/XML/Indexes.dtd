@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE Indexes [
+	<!ELEMENT Indexes (Index*)>
+	<!ATTLIST Index
+		Id	ID	#REQUIRED
+	>
+	<!ELEMENT Index (Languages)>
+	<!ELEMENT Languages (Language+)>
+	<!ATTLIST Language
+		LocaleId	IDREF	#REQUIRED
+		Title		CDATA	#REQUIRED
+		Description	CDATA	#IMPLIED
+	>
+]>

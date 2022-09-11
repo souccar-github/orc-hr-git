@@ -1,0 +1,58 @@
+﻿<script id="customMessageBoxTemplate" type="text/x-kendo-template">
+    <div class="message-box">
+        <span class="#=IconClass#"></span>
+        <p class="message-box-body ">#=Message#</p>
+    </div>
+    <div class="k-edit-buttons k-state-default message-box-buttons not-default-button">
+        #for(var i=0;i<Commands.length;i++){ #
+            <a class="k-button #=Commands[i].Name#" href="\\#">
+                <span class="#=Commands[i].ClassName#"></span>#=Commands[i].Title#
+            </a>  
+        #}#
+     </div>  
+
+</script>
+<script>
+    function ShowMessageBox(title, message, iconClass, commands) {
+      
+        var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+            width: "300px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: title,
+        });
+        var objWindow = kendoWindow.data("kendoWindow");
+        objWindow.open();
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+        objWindow
+            .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: message,IconClass:iconClass, Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+                for (var i = 0; i < commands.length; i++) {
+                    if ($(this).hasClass(commands[i].Name) && commands[i].Handler != null) {
+                        commands[i].Handler(commands[i].HandlerParameter);
+                    }
+                }
+                objWindow.destroy();
+            })
+            .end();
+        objWindow.bind("close", function () {
+            objWindow.destroy();
+        });
+    }
+
+    
+    function gedCommandsClassNames(commands) {
+        var result = "";
+        for (var i = 0; i < commands.length-1; i++) {
+            result += "."+commands[i].Name+",";
+        }
+        if(commands.length>0)
+            result += "." + commands[i].Name;
+        return result;
+    }
+
+</script>

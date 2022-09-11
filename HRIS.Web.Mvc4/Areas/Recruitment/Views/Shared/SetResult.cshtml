@@ -1,0 +1,93 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function SetResult(applicantId) {
+        var title = "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.SetResult)";
+        var databind = kendo.observable();
+        databind.AdvertisementId = window.requestInformation.NavigationInfo.Previous[0].RowId;
+        databind.RecruitmentInformationId = window.requestInformation.NavigationInfo.Previous[1].RowId;
+        databind.ApplicantId = applicantId;
+        databind.IsAccepted = false;
+
+        var tempdata = [
+            { Name: "IsAccepted", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.IsAccepted)", Type: "Boolean" },
+            { Name: "RejectionReason", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.RejectionReason)", Type: "Index", TypeName: "HRIS.Domain.Recruitment.Indexes.RejectionReason", Creatable: true, IsRequired: true }
+        ];
+
+        $.ajax({
+            url: '@Url.Action("GetApplicantResultInfo", "Home")',
+            type: "POST",
+            data: JSON.stringify({
+                model: databind
+            }),
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+
+                databind.IsAccepted = data.IsAccepted;
+                databind.RejectionReason = data.RejectionReason;
+
+            }
+        });
+
+        var buttons = [
+            { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "SetResultContainer";
+        var bodyHTML = "<div class='SetResult fix-custom-popup'></div>";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow($('<div class="SetResultDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+        $("#cancel").off('click').on('click', function () {
+            $(".SetResultDiv").data("kendo-window").close();
+        });
+
+        $("#update").off('click').on('click', function () {
+            if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                $.ajax({
+                    url: '@Url.Action("SaveApplicantResult", "Home")',
+                    type: "POST",
+                    data: JSON.stringify({
+                        model: databind
+                    }),
+
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success) {
+                            $(".SetResultDiv").data("kendo-window").close();
+                        } else {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                        }
+                    }
+                });
+            }
+        });
+
+        createCustomEditForm($(".SetResult"), { Fields: tempdata, Key: "SetResultKey" }, databind);
+        
+
+        $('[Name="IsAccepted"]').click(function () {
+            if ($("[name='IsAccepted']").is(':checked')) {
+                $('[Name="RejectionReason"]').data("kendoDropDownList").text("");
+                databind.RejectionReason = $('[Name="RejectionReason"]').data("kendoDropDownList").value();
+            }
+        });
+
+        var rejectionReasonDropDownList = $('[Name="RejectionReason"]').data("kendoDropDownList");
+        rejectionReasonDropDownList.bind("change", function () {
+            if ($('[Name="RejectionReason"]').data("kendoDropDownList").text() == "") {
+                $('[Name="IsAccepted"]').prop("checked", true);
+                databind.IsAccepted = true;
+            } else {
+                $('[Name="IsAccepted"]').prop("checked", false);
+                databind.IsAccepted = false;
+            }
+        });
+        
+    }
+ </script>

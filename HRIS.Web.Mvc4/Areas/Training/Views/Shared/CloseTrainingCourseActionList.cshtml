@@ -1,0 +1,81 @@
+﻿@using HRIS.Domain.Training.Entities
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Extenstions
+
+<script type="text/javascript">
+    function CloseTheTrainingCourse(id) {
+        $.ajax({
+            url: '@Url.Action("CheckCourseStatus", "Home", new {area = "Training"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ courseId: id }),
+            success: function (data) {
+                if (!data.Success)
+                    showErrorMessage(data.Message);
+                else {
+                    if (data.CourseStatus == 1) { // CourseStatus.Activated = 1
+                        generateCloseTrainingCourseWindow(id);
+                    } else {
+                        showErrorMessage(
+                            '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TheCourseStatusMustBeActivated)');
+                    }
+                }
+            }
+        });
+
+    }
+
+    function generateCloseTrainingCourseWindow(id) {
+        var commands = [
+            { Name: "Accept", Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" },
+            { Name: "Cancel", Title: "@GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+        var kendoWindow = $("<div class='close-box-div'></div>").kendoWindow({
+            width: "350px",
+            height: "160px",
+            modal: true,
+            resizable: false,
+            title: "@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.CloseTheTrainingCourse)"
+        });
+        var closeCourseWindow = kendoWindow.data("kendoWindow");
+        closeCourseWindow.open();
+
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+
+        closeCourseWindow
+            .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.AreYouSureYouWantToCloseTheCourse)", IconClass: "k-icon w-b-question", Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+
+                for (var i = 0; i < commands.length - 1; i++) {
+                    if ($(this).hasClass("Accept")) {
+                        closeTrainingCourse(id);
+                    }
+                }
+                closeCourseWindow.close();
+            })
+            .end();
+    }
+
+    function closeTrainingCourse(id) {
+        $.ajax({
+            url: '@Url.Action("CloseTrainingCourse", "ActionList", new {area = "Training"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ courseId: id }),
+            success: function (data) {
+                if (data.Success) {
+                    $('#grid').data("kendoGrid").dataSource.read();
+                    showSuccessMessage(data.Message);
+                } else {
+                    showErrorMessage(data.Message);
+                }
+            }
+        });
+    }
+
+</script>
+

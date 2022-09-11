@@ -1,0 +1,311 @@
+﻿@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.Personnel.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-epr" class="chart-params">
+
+        @* Nodes Type *@
+        <div id="p-node-type-epr" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-type-epr">
+                <div class="k-edit-label">
+                    <label for="nodeTypeEpr">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeEpr" class="k-edit-field">
+                    <input id="nodeTypeEpr" name="nodeTypeEpr" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeEpr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Nodes *@
+        <div id="p-node-epr" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-epr">
+                <div class="k-edit-label">
+                    <label for="nodeEpr">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeEpr" class="k-edit-field">
+                    <input id="nodeEpr" name="nodeEpr" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeEpr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Employees *@
+        <div id="p-emp-epr" style="float:@pageDir;width:48%;">
+            <div class="control control-p-emp-epr">
+                <div class="k-edit-label">
+                    <label for="employeeEpr">@typeof(Employee).GetLocalized()</label>
+                </div>
+                <div data-container-for="employeeEpr" class="k-edit-field">
+                    <input id="employeeEpr" name="employeeEpr" placeholder="@typeof(Employee).GetLocalized() ..." />
+                    <input id="hf_employeeEpr" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+    </div>
+
+    <div style="clear:both;"></div>
+    <div id="employee-participation-rate-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesEpr = null;
+    var $nodesEpr = null;
+    var $employeeEpr = null;
+
+    function getEmployeeParticipationRate(nodesTypes, nodes, employees) {
+        $nodesTypesEpr = nodesTypes;
+        $nodesEpr = nodes;
+        $employeeEpr = employees;
+
+        generateComboBox("#nodeTypeEpr", "nodeTypeEpr", $nodesTypesEpr, onChangeNodeTypeEpr);
+        generateComboBox("#nodeEpr", "nodeEpr", $nodesEpr, onChangeNodeEpr);
+        generateComboBox("#employeeEpr", "employeeEpr", $employeeEpr, onChangeEmpEpr);
+
+
+        setTimeout(function () { showEmployeeParticipationRateChart(); }, 500);
+    }
+
+
+    function onChangeNodeTypeEpr(e) {
+
+        onChange(e);
+        updateNodeTypeComboBox(e);
+    }
+    function updateNodeTypeComboBox(e) {
+
+        var eleCount = $nodesTypesEpr.length;
+        $nodesTypesEpr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesEpr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesEpr.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesEpr($nodesTypesEpr);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesEpr);
+        dataSource.data(data);
+
+        var nodeEprDropDownList = $('#nodeEpr').data("kendoDropDownList");
+        nodeEprDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeEprDropDownList.setDataSource(dataSource);
+
+        var nodeText = getComboBoxText($nodesEpr, 'nodeEpr');
+        nodeEprDropDownList.text(nodeText);
+
+        //===Employee
+        updateEmployees($nodesEpr);
+        var employeeDataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($employeeEpr);
+        employeeDataSource.data(data);
+
+        var employeeEprDropDownList = $('#employeeEpr').data("kendoDropDownList");
+        employeeEprDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        employeeEprDropDownList.setDataSource(employeeDataSource);
+
+        var empText = getComboBoxText($employeeEpr, 'employeeEpr');
+        employeeEprDropDownList.text(empText);
+
+        showEmployeeParticipationRateChart();
+    }
+    function updateNodesEpr(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Training" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesEpr = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeEpr(e) {
+
+        onChange(e);
+        updateNodeComboBox(e);
+    }
+    function updateNodeComboBox(e) {
+        var eleCount = $nodesEpr.length;
+        $nodesEpr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesEpr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesEpr.push(items[i]);
+                }
+            }
+        }
+
+        updateEmployees($nodesEpr);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($employeeEpr);
+        dataSource.data(data);
+
+        var employeeEprDropDownList = $('#employeeEpr').data("kendoDropDownList");
+        employeeEprDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        employeeEprDropDownList.setDataSource(dataSource);
+
+        showEmployeeParticipationRateChart();
+    }
+    function updateEmployees(nodes) {
+        window.Souccar.ajax('@Url.Action("GetEmployees", "Dashboard", new { area = "Training" })',
+            { nodes: nodes },
+            successFunc,
+            erorrFunc);
+
+        function successFunc(data) {
+            $employeeEpr = data;
+        }
+
+        function erorrFunc() {
+            console.log('ERROR - func:updateEmployees');
+        }
+    }
+
+    function onChangeEmpEpr(e) {
+
+        onChange(e);
+        updateEmpComboBox(e);
+    }
+
+    function updateEmpComboBox(e) {
+        
+        var eleCount = $employeeEpr.length;
+        $employeeEpr.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $employeeEpr.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $employeeEpr.push(items[i]);
+                }
+            }
+        }
+
+        showEmployeeParticipationRateChart();
+    }
+
+    function showEmployeeParticipationRateChart() {
+
+        window.Souccar.ajax('@Url.Action("EmployeeParticipationRateInTheCourses", "Dashboard", new {area = "Training" })',
+            { employees: $employeeEpr },
+            successFunc,
+            erorrFunc);
+
+        function successFunc(data) {
+            if (data.Success)
+                initEmployeeParticipationRateChart(data);
+        }
+
+        function erorrFunc() {
+            console.log('ERROR - func:updateEmployees');
+        }
+
+    }
+
+    function initEmployeeParticipationRateChart(data) {
+        var colors = [getDefaultThemeColor(), '#434348', '#7CB5EC', '#F45B5B'];
+        Highcharts.chart('employee-participation-rate-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.EmployeeParticipationRateInTheCourses)'
+            },
+            xAxis: {
+                categories: data.EmployeesNames
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.CourseCount)'
+                }
+            },
+            legend: {
+                enable: false
+            },
+            tooltip: {
+                outside: true,
+                useHTML: true,
+                borderRadius: 5,
+                formatter: function () {
+                   
+                    return (
+                        '<div class="chart-tooltip' +
+                            this.x +
+                            '"><span class="tval"><b>' +
+                             this.x+
+                            '</b> </span><span class="tlabel"><p>'+ '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.CourseCount) '+ this.y + '</p></span></div>'
+                    );
+
+
+                }
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+            },
+            colors: colors,
+            series: [{
+                name: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfCoursesTheEmployeeParticipated)',
+                data: data.NumberOfEmployees
+            }]
+        });
+    }
+</script>

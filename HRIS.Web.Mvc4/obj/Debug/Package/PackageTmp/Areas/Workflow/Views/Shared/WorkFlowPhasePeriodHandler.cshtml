@@ -1,0 +1,65 @@
+﻿@using HRIS.Domain.Global.Enums;
+<script>
+    function PhasePeriodEditHandler(e) {
+        var period = e.model.Period.Id;
+        var container = e.container.find(".controls-div");
+
+     //   $("[name='Year']").kendoNumericTextBox({ format: "####" });
+        phasePeriodEditViewAsPeriod(container, period);
+        function period_change() {
+            phasePeriodEditViewAsPeriod(container, this.value());
+        }
+        var dropdownlist = e.container.find("#dropDownListPeriod").data("kendoDropDownList");
+        dropdownlist.bind("change", period_change);
+        dropdownlist.bind("close", period_change);
+        addRequiredStar("Period");
+        addRequiredStar("Year");
+        addRequiredStar("SemiAnnual");
+        addRequiredStar("Quarter");
+        addRequiredStar("Month");
+        addRequiredStar("StartDate");
+        addRequiredStar("EndDate");
+    }
+    function phasePeriodEditViewAsPeriod(container, period) {
+
+        container.find(".control.control-StartDate").hide();
+        container.find(".control.control-EndDate").hide();
+        container.find(".control.control-Year").hide();
+        container.find(".control.control-Quarter").hide();
+        container.find(".control.control-SemiAnnual").hide();
+        container.find(".control.control-Month").hide();
+
+        container.find(".control.control-Period").show();
+        container.find(".control.control-Description").show();
+
+        @{var periodTest=((int)Period.Annual).ToString();}
+        if (period == "@periodTest") {
+            container.find(".control.control-Year").show();
+        }
+
+        @{ periodTest=((int)Period.SemiAnnual).ToString();}
+        if (period == "@periodTest") {
+            container.find(".control.control-Year").show();
+            container.find(".control.control-SemiAnnual").show();
+        }
+
+        @{ periodTest=((int)Period.Quarterly).ToString();}
+        if (period == "@periodTest") {
+            container.find(".control.control-Year").show();
+            container.find(".control.control-Quarter").show();
+        }
+
+        @{ periodTest = ((int)Period.Monthly).ToString();}
+        if (period == "@periodTest") {
+            container.find(".control.control-Year").show();
+            container.find(".control.control-Month").show();
+        }
+
+        @{ periodTest = ((int)Period.Custom).ToString();}
+        if (period == "@periodTest") {
+            container.find(".control.control-StartDate").show();
+            container.find(".control.control-EndDate").show();
+        }
+        reOrderControls($('.k-popup-edit-form'));
+    }
+</script>

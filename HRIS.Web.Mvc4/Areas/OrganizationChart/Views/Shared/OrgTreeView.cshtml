@@ -1,0 +1,74 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+<div class="k-content">
+    <fieldset class="expandable-collapseable">
+        <legend>
+            @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.OverallOrgChart)
+        </legend>
+        
+        <div id="treeview" class="tree"></div>
+
+    </fieldset>
+</div>
+<script id="OrgTreeTemplate" type="text/x-kendo-template">
+   
+
+    <span class="tree-node-metadata">
+        <span class="tree-empname">#if(item.Name!==" "){#
+        #=item.Name#
+        #}else{#
+        #=item.Code#
+        #}#</span>
+        <span class="tree-nodename">@GlobalResource.Node: #=item.Node#</span>
+        <span class="tree-jobtitle">@GlobalResource.JobTitle: #=item.JobTit#</span>
+        <span class="tree-jobdesc">@GlobalResource.JobDescription: #=item.JobDesc#</span>
+    </span>
+</script>
+
+
+<script>
+
+    $("#treeview").kendoTreeView({
+        template: kendo.template($('#OrgTreeTemplate').html()),
+        dragAndDrop: false,
+        dataSource: getTreeViewDataSource(),
+        dataImageUrlField: "imageUrl"   
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+    
+    
+    function getTreeViewDataSource() {
+        var result ={};
+        
+        result.transport = {
+            read: {
+                url: '@Url.Action("GetOrgTreeNodes", "Node")',
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                //children: "Items",
+                hasChildren: "HasChildren"
+            }
+        };
+        return  result;
+    }
+
+
+    /* remove selection on double click */
+    document.ondblclick = function (evt) {
+        if (window.getSelection)
+            window.getSelection().removeAllRanges();
+        else if (document.selection)
+            document.selection.empty();
+    }
+
+
+</script>
+

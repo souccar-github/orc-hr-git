@@ -1,0 +1,233 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+
+<div class="top-commands">
+    <button class="k-button primary-command k-button-icontext k-grid-update" id="EditOrganizationButton">
+        <span class="command-icon edit"></span> @GlobalResource.Edit
+    </button>
+</div>
+<div class="k-content" id="PrivateOrganizationWindow"></div>
+
+<script>
+    $.ajax({
+        url: '@Url.Action("GetOrgnizationForView", "Organization", new { area = "OrganizationChart" })',
+        type: "POST",
+        contentType: 'application/json',
+        async: false,
+        success: function (data) {
+            var template = kendo.template($("#view-org-template").html());
+
+            //hide null value from json
+            $.each(data, function (key, value) {
+                if (value == null) {
+                    data[key] = "";
+                }
+            });
+
+            $("#PrivateOrganizationWindow").html(template(data));
+            var tempdata = [
+            { Name: "Name", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.OrganizationNameCaption)", Type: "Text", IsRequired: true },
+            { Name: "Location", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.LocationCaption)", Type: "Index", TypeName: "HRIS.Domain.Personnel.Indexes.Country", Creatable: true, IsRequired: true },
+            { Name: "Size", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.SizeCaption)", Type: "Index", TypeName: "HRIS.Domain.OrganizationChart.Indexes.OrganizationSize", Creatable: true, IsRequired: true },
+            { Name: "NumberOfEmployees", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NumberOfEmployeesCaption)", Type: "Number", IsRequired: true },
+            { Name: "Phone", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.PhoneCaption)", Type: "Text", IsRequired: true },
+            { Name: "Fax", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.FaxCaption)", Type: "Text", IsRequired: true },
+            { Name: "Mobile", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MobileCaption)", Type: "Text", IsRequired: true },
+            { Name: "Address", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.AddressCaption)", Type: "Textarea", IsRequired: true },
+            { Name: "POBox", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.POBoxCaption)", Type: "Text"},
+            { Name: "WebSite", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.WebSiteCaption)", Type: "Text" },
+            { Name: "Facebook", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.FacebookCaption)", Type: "Text" }
+            ];
+
+            $("#EditOrganizationButton").off('click').on('click', function () {
+                $.ajax({
+                    url: '@Url.Action("GetOrgnizationForView", "Organization", new { area = "OrganizationChart" })',
+                    type: "POST",
+                    contentType: 'application/json',
+                    async: false,
+                    success: function (data) {
+                        var template = kendo.template($("#view-org-template").html());
+                        //hide null value from json
+                        $.each(data, function (key, value) {
+                            if (value == null) {
+                                data[key] = "";
+                            }
+                        });
+                    
+                var buttons = [
+                    { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                    { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var databind = kendo.observable();
+                window.Souccar.clone(data, databind);
+                databind.Size = data.Size.Id;
+                databind.Location = data.Location.Id;
+                var title = "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.PrivateOrganizationCaption)";
+
+                var containerId = "edit-org-container";
+                var bodyHTML = "<div class='edit-org-container-body fix-custom-popup'></div>";
+                var popupDiv = $('<div></div>');
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, true);
+
+                createCustomEditForm($(".edit-org-container-body"), { Fields: tempdata, Key: "PrivateOrganizationKey" }, databind);
+                   
+                $("#cancel").off('click').on('click', function() {
+                    popupDiv.data("kendo-window").close();
+                });
+
+                $("#update").off('click').on('click', function () {
+                    debugger;
+                    if ($(".edit-org-container-body").kendoValidator().data("kendoValidator").validate()) {
+                        console.log(JSON.stringify(databind.Location));
+                        $.ajax({
+                            url: '@Url.Action("SaveOrgnization", "Organization", new { area = "OrganizationChart" })',
+                            contentType: 'application/json',
+                            data: {
+
+                                Name: databind.Name,
+                                locationId:  databind.Location ,
+                                sizeId:databind.Size,
+                                NumberOfEmployees: databind.NumberOfEmployees,
+                                Phone: databind.Phone,
+                                Fax: databind.Fax,
+                                Mobile: databind.Mobile,
+                                Address: databind.Address,
+                                POBox: databind.POBox,
+                                WebSite: databind.WebSite,
+                                Facebook: databind.Facebook,
+                            },
+                            async: true,
+                            success: function (result) {
+                                if (result.Success) {
+                                    popupDiv.data("kendo-window").close();
+                                    $("#PrivateOrganizationWindow").html(template(result.Org));
+                                } else {
+                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                                }
+
+                            }
+                        });
+
+                    }
+                });
+                    }
+                });
+
+            });
+
+        }
+    });
+
+
+
+
+
+</script>
+
+<script id="view-org-template" type="text/x-kendo-template">
+    #var size=data.Size.Name;#
+    #var location=data.Location.Name;#
+    #console.log(data.Location.Name);#
+    
+    <h1>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.PrivateOrganizationCaption)</h1>
+
+    <fieldset>
+        <legend> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MainInformationCaption) </legend>
+
+        <div class="k-edit-label">
+            <label for="Name"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.OrganizationNameCaption) </label>
+        </div>
+        <div data-container-for="Name" class="k-edit-field">
+            <span class="org-view-name">#=data.Name#</span>
+        </div>
+
+        <div class="k-edit-label">
+            <label for="Location"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.LocationCaption) </label>
+        </div>
+        <div data-container-for="Location" class="k-edit-field">
+            <span class="org-view-location">#if( location != null) {# #=data.Location.Name# #}else{""}#</span>
+        </div>
+
+        <div class="k-edit-label">
+            <label for="Size"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.SizeCaption) </label>
+        </div>
+        <div data-container-for="Size" class="k-edit-field">
+            <span class="org-view-size">#if( size != null) {# #=data.Size.Name# #}else{""}#</span>
+
+        </div>
+
+        <div class="k-edit-label">
+            <label for="NumberOfEmployees"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NumberOfEmployeesCaption) </label>
+        </div>
+        <div data-container-for="NumberOfEmployees" class="k-edit-field">
+            <span class="org-view-size">#=data.NumberOfEmployees#</span>
+        </div>
+
+    </fieldset>
+
+    <fieldset>
+        <legend> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ContactInformationCaption) </legend>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="Phone"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.PhoneCaption) </label>
+        </div>
+        <div data-container-for="Phone" class="k-edit-field">
+            <span class="org-view-phone">#=data.Phone#</span>
+
+        </div>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="Fax"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.FaxCaption) </label>
+        </div>
+        <div data-container-for="Fax" class="k-edit-field">
+            <span class="org-view-fax">#=data.Fax#</span>
+
+        </div>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="Mobile"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MobileCaption) </label>
+        </div>
+        <div data-container-for="Mobile" class="k-edit-field">
+            <span class="org-view-mobile">#=data.Mobile#</span>
+        </div>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="Address"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.AddressCaption) </label>
+        </div>
+        <div data-container-for="Address" class="k-edit-field">
+            <span class="org-view-address">#=data.Address#</span>
+        </div>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="POBox"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.POBoxCaption) </label>
+        </div>
+        <div data-container-for="POBox" class="k-edit-field">
+            <span class="org-view-POBox">#=data.POBox#</span>
+        </div>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="WebSite"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.WebSiteCaption) </label>
+        </div>
+        <div data-container-for="WebSite" class="k-edit-field">
+            <span class="org-view-WebSite"><a target="_blank" href="#=data.WebSite#">#=data.WebSite#</a></span>
+        </div>
+
+        <div class="k-edit-label">
+            <span></span>
+            <label for="Facebook"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.FacebookCaption) </label>
+        </div>
+        <div data-container-for="Facebook" class="k-edit-field">
+            <span class="org-view-Facebook"><a target="_blank" href="#=data.Facebook#">#=data.Facebook#</a></span>
+        </div>
+
+        </fieldset>
+
+</script>

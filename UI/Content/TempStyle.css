@@ -1,0 +1,689 @@
+﻿/*----------------------------------------------------------
+The base color for this template is #5c87b2. If you'd like
+to use a different color start by replacing all instances of
+#5c87b2 with your new color.
+----------------------------------------------------------*/
+body
+{
+    background-color: gainsboro;
+    font-size: .75em;
+    font-family: Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #696969;
+}
+
+html { overflow-y: scroll; }
+
+a:link
+{
+    color: #034af3;
+    text-decoration: none;
+    color: #696969;
+    font-family: Consolas;
+    font-size: small;
+}
+
+a:visited
+{
+    color: #505abc;
+    text-decoration: none;
+    color: #696969;
+    font-family: Consolas;
+    font-size: small;
+}
+
+a:hover
+{
+    color: #23A4FF;
+    text-decoration: underline;
+    font-family: Consolas;
+    font-size: small;
+}
+
+a:active
+{
+    color: #12eb87;
+}
+
+p, ul
+{
+    margin-bottom: 20px;
+    line-height: 1.6em;
+}
+
+/* HEADINGS   
+----------------------------------------------------------*/
+
+h1, h2, h3, h4, h5, h6
+{
+    font-size: 1.5em;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1
+{
+    font-size: 2em;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+h2
+{
+    padding: 0 0 10px 0;
+}
+
+h3
+{
+    font-size: 1.2em;
+}
+
+h4
+{
+    font-size: 1.1em;
+}
+
+h5, h6
+{
+    font-size: 1em;
+}
+
+/* this rule styles <h2> tags that are the 
+first child of the left and right table columns */
+
+.rightColumn > h1, .rightColumn > h2, .leftColumn > h1, .leftColumn > h2
+{
+    margin-top: 0;
+}
+
+/* PRIMARY LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+/* you can specify a greater or lesser percentage for the 
+page width. Or, you can specify an exact pixel width. */
+
+.page
+{
+    width: 90%;
+    
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+#header
+{
+    position: relative;
+    margin-bottom: 0px;
+    color: #000;
+    padding: 0;
+}
+
+#header h1
+{
+    font-weight: bold;
+    padding: 5px 0;
+    margin: 0;
+    color: #fff;
+    border: none;
+    line-height: 2em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 32px !important;
+}
+
+.MasterGridSelect
+{
+    background: url(Ribbon/Icons/48/13.png) 85% 55% no-repeat;
+
+}
+
+.DetailsGridSelect
+{
+    background: url(Ribbon/Icons/48/13.png) 85% 55% no-repeat;
+}
+
+
+#result
+{
+    background-color: #E3E3E3;
+    opacity: 0.9;
+    border-radius: 10px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 2px;
+}
+
+#Nodes {
+    background-color: #E3E3E3;
+    opacity: 0.9;
+    border-radius: 10px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 2px;
+}
+    
+    
+        
+#ContentPlaceHolder
+{
+    Background-color: #F2F2F2;
+    opacity: 0.9;
+    border-radius: 5px;
+        
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 5px;
+}
+
+#Ribbon
+{
+    background-color: palegoldenrod;
+    opacity: 1;
+    border-radius: 5px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 2px;
+    font-family: Consolas;
+    font-style: normal;
+}
+
+#Navigator
+{
+    background-color: moccasin;
+    opacity: 1;
+    border-radius: 5px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 3px;
+    font-family: Consolas;
+    font-style: normal;
+}
+
+#IndexNav
+{
+    color: #23A4FF;
+    text-decoration: underline;
+    font-family: Consolas;
+    font-size: small;
+}
+
+#Error
+{
+    font-family: Consolas;
+    font-style: normal;
+    color: Red;
+        
+}
+
+#footer
+{
+    color: #000000;
+    padding: 10px 0;
+    text-align: center;
+    line-height: normal;
+    margin: 0;
+    font-size: .9em;
+    font-family: Consolas;
+    font-style: normal;
+}
+
+#JDDashboardPlate
+{
+    background-color: #D3D3D3;
+    opacity: 1;
+    border-radius: 5px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 3px;
+    font-family: Consolas;
+    font-style: normal;
+}
+
+#OCDashboardPlate
+{
+    background-color: #FEE8D6;
+    opacity: 1;
+    border-radius: 5px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 3px;
+    font-family: Consolas;
+    font-style: normal;
+}
+
+#ECDashboardPlate
+{
+    background-color: #E7C6A5;
+    opacity: 1;
+    border-radius: 5px;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    border-top-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomright: 4px;
+    margin: 3px;
+    font-family: Consolas;
+    font-style: normal;
+}
+
+
+/* TABLE
+----------------------------------------------------------*/
+
+table
+{
+    border: solid 1px #e8eef4;
+    border-collapse: collapse;
+}
+
+table td
+{
+    padding: 5px;
+    border: solid 1px #e8eef4;
+}
+
+table th
+{
+    padding: 6px 5px;
+    text-align: left;
+    background-color: #e8eef4;
+    border: solid 1px #e8eef4;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+
+.clear
+{
+    clear: both;
+}
+
+.error
+{
+    color: Red;
+}
+
+#menucontainer
+{
+    margin-top: 5px;
+}
+
+div#title
+{
+    display: block;
+    float: left;
+    text-align: left;
+}
+
+#logindisplay
+{
+    font-size: 1.1em;
+    display: block;
+    text-align: right;
+    margin: 0px;
+    color: White;
+}
+
+#logindisplay a:link
+{
+    color: white;
+    text-decoration: underline;
+}
+
+#logindisplay a:visited
+{
+    color: white;
+    text-decoration: underline;
+}
+
+#logindisplay a:hover
+{
+    color: white;
+    text-decoration: none;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+
+.field-validation-error
+{
+    color: #ff0000;
+}
+
+.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error
+{
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors
+{
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+
+/* TABLE
+----------------------------------------------------------*/
+
+table
+{
+    border: solid 0px #e8eef4;
+    border-collapse: collapse;
+}
+
+table td
+{
+    padding: 1px;
+    border: solid 0px #e8eef4;
+}
+
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+.ParentFieldset
+{
+    height: auto;
+}
+
+fieldset
+{
+    margin: 0.1em;
+    padding: 0.5em;
+    border: 0px solid #CCC;
+    height: 15em;
+}
+
+.ParentLegend
+{
+    border-radius: 10px;
+    font-family: Consolas;
+    font-style: normal;
+    
+}
+
+legend
+{
+    font-size: -12em;
+    font-weight: normal;
+    font-style: oblique;
+    padding: 2px 4px 8px 4px;
+    color: Black;
+}
+
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+
+.display-label,
+.editor-label
+{
+
+}
+
+#ErrorDiv
+{
+    margin: 10px;
+}
+
+#SelectModeDiv
+{
+    width: 600px;
+
+}
+
+#EditModeDiv
+{
+
+}
+
+.CommandsDiv
+{
+
+}
+
+.readerField
+{
+    font-style: normal;
+    font-size: 0.9em;
+    float: left;
+    margin: 10px;
+}
+
+.editorNonRequiredField
+{
+    font-style: normal;
+    font-weight: bold;
+    font-size: 0.9em;
+    float: left;
+    margin: 10px;
+}
+
+.editorRequiredField
+{
+    font-style: normal;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: Green;
+    float: left;
+    margin: 10px;
+}
+
+.editor-label-required
+{
+    margin: 0.3em 0;
+    font-style: normal;
+    font-weight: bold;
+    color: Gray;
+    font-size: 0.9em;
+}
+
+.display-field,
+.editor-field
+{
+
+}
+
+.text-box
+{
+
+}
+
+.text-box.multi-line
+{
+}
+
+.tri-state
+{
+
+}
+
+.SingleLine[type="text"]
+{
+    width: 200px;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.MultiLine
+{
+    width: 200px;
+    background-color: transparent;
+    border-color: transparent;
+    border-style: none;
+}
+
+input[type="text"]
+{
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+            
+    
+    overflow: hidden;
+    white-space: nowrap;
+    height: 18px;
+    width: 150px;
+    
+    border-color: Gray;
+    
+    border-width: 1px;
+    border-style: solid;
+}
+
+.numerictextbox
+{
+    width: 400px;
+}
+
+
+.InActive
+{
+    height: 13px;
+    width: 150px;
+}
+
+.Active
+{
+    height: 13px;
+    width: 150px;
+    border: solid 2px #73A6FF;
+    background: #EFF5FF;
+    color: #000;
+}
+
+input[type="password"]
+{
+
+}
+
+
+
+select
+{
+    height: 19px;
+    width: 150px;
+}
+
+
+a.ActionLinkImage
+{
+    background: url(../../Content/icon_picture.png) no-repeat top left;
+}
+
+/* Buttons */
+
+input[type="button"]
+{
+    height: 22px;
+    border: 1px solid;
+    border-color: Silver;
+    background: #e8e8e8 url('2010.1.518/Vista/sprite.png') repeat-x 0 -96px;
+    color: #333;
+    height: 18px;
+    width: 60px;
+    font-size: small;
+}
+
+input[type="submit"]
+{
+    height: 22px;
+    border: 1px solid;
+    border-color: Silver;
+    background: #e8e8e8 url('2010.1.518/Vista/sprite.png') repeat-x 0 -96px;
+    color: #333;
+    height: 18px;
+    width: 60px;
+    font-size: small;
+}
+
+input:hover[type="button"]
+{
+    background-position: 0 -128px;
+}
+
+input:hover[type="submit"]
+{
+    background-position: 0 -128px;
+}
+
+.CancelButton
+{
+    height: 22px;
+    border: 1px solid;
+    border-color: Silver;
+    background: #e8e8e8 url('2010.1.518/Vista/sprite.png') repeat-x 0 -96px;
+    color: #333;
+    height: 18px;
+    width: 60px;
+    font-size: small;
+}
+
+.EditButton
+{
+    height: 22px;
+    border: 1px solid;
+    border-color: Silver;
+    background: #e8e8e8 url('2010.1.518/Vista/sprite.png') repeat-x 0 -96px;
+    color: #333;
+    height: 18px;
+    width: 60px;
+    font-size: small;
+    color: red;
+}

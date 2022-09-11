@@ -1,0 +1,351 @@
+﻿@using  Project.Web.Mvc4.Helpers
+
+<script type="text/javascript">
+   
+    function reOrderControls(container) {
+        var controls = container.find(".control");
+        var index=0;
+        for (var i = 0; i < controls.length; i++) {
+            if( $(controls[i]).css("display")!="none"){
+                $(controls[i]).removeClass("first-column");
+                $(controls[i]).removeClass("second-column");
+                if (index++ % 2 == 0) {
+                    $(controls[i]).addClass("first-column");
+                } else {
+                    $(controls[i]).addClass("second-column");
+                }
+            }
+        }
+    }
+    
+    function getCommandsByGroupId(commands, groupId) {
+        var idx = 0;
+        var result = [];
+
+        for (var i = 0; i < commands.length; i++) {
+            if (commands[i].GroupId == groupId) {
+                if (commands[i].ShowCommand == true) {
+                    result[idx] = commands[i];
+                    idx++;
+                }
+            } else if (commands[i].GroupId > groupId) {
+                break;
+            }
+        }
+
+        return result;
+    }
+     
+    function addIndexValueClick(inputId, indexValueTextId, windowId, inputType) {
+       
+        addIndexValue(inputId, document.getElementById(indexValueTextId).value, inputType);
+        document.getElementById(indexValueTextId).value = "";
+        $('#' + windowId).data('kendoWindow').close();
+    }
+     
+    function customAddIndexValueClick(inputId, indexValueTextId, windowId, inputType) {
+        
+        addIndexValue(inputId, document.getElementById(indexValueTextId).value, inputType);
+        debugger;
+        document.getElementById(indexValueTextId).value = "";
+        $('#' + windowId).data('kendoWindow').close();
+    }
+
+</script>
+
+<script id="GridTabsTemplate" type="text/x-kendo-template">
+   <div class="grid-taps-container">
+       <ul>
+           <li class="k-state-active">@GlobalResource.General</li>
+           
+           #for(var i=0;i<requestInformation.NavigationInfo.Next.length;i++){#
+            #var tabHead=requestInformation.NavigationInfo.Next[i];#                              
+                #if (tabHead.IsDetailHide == false)  { # 
+               <li class="grid-tab-title" data-detail-name="#=tabHead.Name#">#=tabHead.Title#</li>
+                             # } #          
+        #}#
+       </ul>
+       <div class="grid-tab-container grid-tab-container-general"></div>
+       #for(var i=0;i<requestInformation.NavigationInfo.Next.length;i++){#
+           #var tab=requestInformation.NavigationInfo.Next[i];#
+                                         
+            #if (tab.IsDetailHide == false)  { #
+            <div class="grid-tab-container grid-tab-container-#=tab.Name#">
+                <div class="grid-detail-#=tab.Name#"></div>
+            </div>
+            # } #
+                       
+       #}#
+  </div>
+</script>
+
+<script id="TooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg">
+        <span class="k-icon k-warning"></span>
+        #= message #
+       
+    </span>
+</script>
+
+<script id="GridViewSelector" type="text/x-kendo-template">
+    <div id="viewSelector">
+        <label for="selectorDropDownList">#=gridModel.ViewsTitle#:&nbsp;</label>
+        <input id="selectorDropDownList" type="search"/>
+    </div>
+
+</script>
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+    var temp = Url.Content("~/Content/images/theme-" + themingName + "/manual-notification.png");
+}
+<script id="GridNotificationTemplate" type="text/x-kendo-template">
+    <div class="notification-grid-btn"><img src='@temp' alt="" /></div>
+    <div class="notification-grid-container">
+        <div class="notification-grid-box">
+            <input id="notification_grid_title" placeholder="@GlobalResource.Title"/>
+            <textarea id="notification_grid_text"></textarea>
+            <select id="notification_grid_receivers" multiple="multiple">
+            </select>
+        </div>
+    </div>
+</script>
+
+<script id="AdditionalToolbarCommands" type="text/x-kendo-template">
+    <div id="additional_toolbar_commands_list">
+        <ul class="k-button toolbar-additional-button">
+            <li class="dropdown">
+                <a href="\\#" data-toggle="dropdown" class="dropdown-toggle">
+                    <span class="k-icon k-minus"></span>
+                </a>
+                # var listDirection = ($.cookie('userLanguage') == 'ar-SY') ? 'pull-left' : 'pull-right'; #
+                <div class="notification_list dropdown-menu #= listDirection # blue_d">
+                    <div class="white_lin nlist_block">
+                        <ul id="additional_menu">
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</script>
+
+<script id="ActionListTemplate" type="text/x-kendo-template">
+    <ul class="actionlist_menu actionlist_icon">
+        <li class="dropdown">
+            <a href="\\#" data-toggle="dropdown" class="dropdown-toggle"></a>
+            # var listDirection = ($.cookie('userLanguage') == 'ar-SY') ? 'pull-right' : 'pull-left'; #
+            <div class="notification_list dropdown-menu #= listDirection # blue_d">
+                <div class="white_lin nlist_block">
+                    <ul>
+                        # for (var i = 0; i < actionList.GroupsCount; i++) { #
+                            # var commands = getCommandsByGroupId(actionList.Commands, i + 1); #
+                            #if(commands.length>0){#
+                                # for (var j = 0; j < commands.length - 1; j++) { #
+                                    <li>
+                                        
+                                        <a href="\\#" class="#=commands[j].StyleClass#" onclick="#= commands[j].HandlerName #(#= id #)">
+                                            <span class="#=commands[j].ImageClass#"></span>                                    
+                                            #= commands[j].Name #
+                                        </a>
+                                    </li>
+                                # } #
+    
+                                #if(i<actionList.GroupsCount-1){#
+                                    <li class="actionlist_separator">
+                                #}else{#
+                                    <li>
+                                #}#       
+                                        <a href="\\#" class="#=commands[commands.length - 1].StyleClass#" onclick="#= commands[commands.length - 1].HandlerName #(#= id #)">
+                                             <span class="#=commands[commands.length - 1].ImageClass#"></span>
+                                             #= commands[commands.length - 1].Name #
+                                        </a>
+                                    </li>
+                            #}#
+                        # } #
+                    </ul>
+                </div>
+            </div>
+        </li>
+    </ul>
+</script>
+
+<script id="NewActionListTemplate" type="text/x-kendo-template">
+    <ul class="">     
+        # for (var i = 0; i < actionList.GroupsCount; i++) { #
+            # var commands = getCommandsByGroupId(actionList.Commands, i + 1); #
+            #if(commands.length>0){#
+                # for (var j = 0; j < commands.length - 1; j++) { #
+                    <li>
+                        <a href="\\#" class="#=commands[j].StyleClass#" onclick="#= commands[j].HandlerName #(#= id #)">
+                            <span class="menu-img-icon #=commands[j].ImageClass#"></span>                                    
+                            <span class="menu-item-title">#= commands[j].Name #</span>
+                        </a>
+                    </li>
+                # } #
+    
+                #if(i<actionList.GroupsCount-1){#
+                    <li class="actionlist_separator">
+                #}else{#
+                    <li>
+                #}#      
+                        <a href="\\#" class="#=commands[commands.length - 1].StyleClass#" onclick="#= commands[commands.length - 1].HandlerName #(#= id #)">
+                                <span class="menu-img-icon #=commands[commands.length - 1].ImageClass#"></span>
+                               <span class="menu-item-title"> #= commands[commands.length - 1].Name #</span>
+                        </a>
+                    </li>
+            #}#
+        # } #
+    </ul>
+</script>
+<script id="DetailActionListTemplate" type="text/x-kendo-template">
+    <ul class="">
+        # for (var i = 0; i < actionList.GroupsCount; i++) { #
+        # var commands = getCommandsByGroupId(actionList.Commands, i + 1); #
+        #if(commands.length>0){#
+        # for (var j = 0; j < commands.length - 1; j++) { #
+        <li>
+            <a href="\\#" class="#=commands[j].StyleClass#" onclick="#= commands[j].HandlerName #(#= id #,#=detailNO#)">
+                <span class="menu-img-icon #=commands[j].ImageClass#"></span>
+                <span class="menu-item-title">#= commands[j].Name #</span>
+            </a>
+        </li>
+        # } #
+
+        #if(i
+        <actionList.GroupsCount-1){#
+                    <li class="actionlist_separator">
+                #}else{#
+                    <li>
+                #}#
+                        <a href="\\#" class="#=commands[commands.length - 1].StyleClass#" onclick="#= commands[commands.length - 1].HandlerName #(#= id #,#=detailNO#)">
+                                <span class="menu-img-icon #=commands[commands.length - 1].ImageClass#"></span>
+                               <span class="menu-item-title"> #= commands[commands.length - 1].Name #</span>
+                        </a>
+                    </li>
+            #}#
+        # } #
+    </ul>
+</script>
+<script id="IndexAddButton" type="text/kendo-x-template" >
+    <button id="open#=Id#" class="k-button" onclick="openAddIndexWindow('window#=Id#', '#=InputTypeName##=Id#', '#=InputTypeName#','#=Id#');">
+        <span class="k-icon k-add" style="vertical-align: sub;"></span>
+    </button>
+</script>
+
+<script id="ReferenceButton" type="text/kendo-x-template">
+    <button id="open#=Id#" class="k-button" onclick="openReferenceWindow('#=Id#','#=TypeName#','#=WindowTitle#');">
+        <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+    </button>
+</script>
+
+<script id="IndexAddPopupWindow" type="text/kendo-x-template">
+    <div class="add-index-popup">
+        <label for="#=ValueTextBoxId#"> #=LabelText# </label>
+        <input class="k-textbox"  id="#=ValueTextBoxId#" type="text" />
+        <span class="k-button" onclick="addIndexValueClick('#=InputTypeName##=Id#', '#=ValueTextBoxId#', 'window#=Id#', '#=InputTypeName#');">
+            #=ButtonText#
+        </span>
+    </div>
+</script>
+
+
+<script id="CustomIndexAddPopupWindow" type="text/kendo-x-template">
+    <div class="add-index-popup">
+        <label for="#=ValueTextBoxId#"> #=LabelText# </label>
+        <input class="k-textbox" id="#=ValueTextBoxId#" type="text"></input>
+        <br/>
+        <span class="k-button" onclick="customAddIndexValueClick('#=InputTypeName##=Id#', '#=ValueTextBoxId#', 'window#=Id#', '#=InputTypeName#');">
+            #=ButtonText#
+        </span>
+    </div>
+</script>
+
+
+<script id="DefaultViewTemplate" type="text/kendo-x-template">
+    #if(ViewNavigation){#       
+        #if(canShowNextElementButton(Item.Id,GridModel)){#
+            <div class="next-element-button">
+                <a href="\\#"></a>
+            </div>
+        #}else if(canShowNextPageButton(Item.Id,GridModel)){#
+            <div class="next-page-button">
+                <a href="\\#"></a>
+            </div>
+        #}#
+    
+        #if(canShowPreviousElementButton(Item.Id,GridModel)){#
+            <div class="previous-element-button">
+                <a href="\\#"></a>
+            </div>
+        #}else if(canShowPreviousPageButton(Item.Id,GridModel)){#
+            <div class="previous-page-button">
+                <a href="\\#"></a>
+            </div>
+        #}#    
+    #}#
+    <input type="hidden" name="model_id" value="#=Item.Id#"/>
+    <input type="hidden" name="model_uid" value="#=Item.uid#"/>
+
+    #var columnsClass="";#
+    #var columns=data.View.Columns;#
+    #var view=data.View;#
+    #var index=0;# 
+    
+   #if(view.ShowTwoColumns){#  
+        #columnsClass="two-columns-popup-view";#
+   #}else{#
+        #columnsClass="one-column-popup-view";#
+   #}#
+    #if (!view.ShowGroup || view.Groups.length == 0) {#
+    <div id="default-view-controls" class="#=columnsClass#">
+        #for(var i=0;i<columns.length;i++){# 
+            #var column=columns[i];#
+            #if (column.FieldName !="Id" &&!column.Hidden) {#
+            <div class="control control-#=column.FieldName# #=getControlOrderClass(index++,view)#">
+                <div class='k-edit-label'>
+                    <label for='#column.FieldName#'>#=column.Title#</label>
+                </div>
+                <div class='k-edit-field'>
+                    #var field = getFieldByName(GridModel.SchemaFields, column.FieldName);#
+                    #if(field.Type=='file'){#
+                    #=getStringValueForFile(GridModel,column, Item)#
+                    #}else{#
+                    #=getStringValue(GridModel,column, Item)#
+                    #}#
+                </div>
+            </div>
+            #}#
+            #}#
+    </div>
+    #}else{#
+    <div class='show-fieldsets-div #=columnsClass#'>
+        #for (var i = 0; i < view.Groups.length; i++) {#
+        #index=0;#
+        #var group = view.Groups[i];#
+        <fieldset class='fieldset-#=group.Name#'>
+            #if (group.Name != "") {#
+            <legend align="center">#=group.Title#</legend>
+            #}#
+            #for (var j = 0; j < group.Columns.length; j++) {#
+            #var column = group.Columns[j];#
+            #if (column.FieldName !="Id" &&!column.Hidden) {#
+            <div class="control control-#=column.FieldName# #=getControlOrderClass(index++,view)#">
+                <div class='k-edit-label'>
+                    <label for='#=column.FieldName#'>#=column.Title#</label>
+                </div>
+                <div class='k-edit-field'>
+                    #var field = getFieldByName(GridModel.SchemaFields, column.FieldName);#
+                    #if(field.Type=='file'){#
+                    #=getStringValueForFile(GridModel,column, Item)#
+                    #}else{#
+                    #=getStringValue(GridModel,column, Item)#
+                    #}#
+                </div>
+            </div>
+            #}#
+            #}#
+        </fieldset>
+        #}#
+    </div>
+    #}#
+</script>

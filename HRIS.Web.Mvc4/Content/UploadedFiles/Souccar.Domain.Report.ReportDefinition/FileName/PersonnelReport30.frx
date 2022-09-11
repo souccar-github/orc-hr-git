@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/09/2015 09:51:13" ReportInfo.Modified="11/13/2016 10:42:40" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVFlnkXqzD1VNqRCkSavrdXiIf+lj0vOFUlkMzi4+Olo92l+WuZ/TRneJ8XO81bLaaSzmNoMnA20oGnPeTlhg3p/kpqJdCtUAL/ET45T8xkAkL+Qo4XVP/B4rrj/kAnrXSa">
+      <TableDataSource Name="Employee" DataType="System.Int32" Enabled="true" TableName="Employee" SelectCommand="SELECT E.Id, E.IsVertualDeleted, E.FirstName, E.LastName, E.FatherName, E.MotherName, E.FirstNameL2, E.LastNameL2, E.FatherNameL2, E.MotherNameL2, E.PlaceOfBirthL2, E.Gender, E.MaritalStatus, E.DateOfBirth, E.CivilRecordPlaceAndNumber, E.PersonalRecordSource, E.NationalityIssue, E.OtherNationalityIssue, E.BloodType, E.Religion, E.MilitaryStatus, E.Status, E.Address, E.Phone, E.Mobile, E.Email, E.POBox, E.WebSite, E.Twitter, E.Facebook, E.IdentificationNo, E.Code, E.IsRetired, E.PhotoId, E.EmploymentStatus, E.SalaryStatus, E.DisabilityExist, E.PlaceOfBirth_id, E.CountryOfBirth_id, E.Nationality_id, E.OtherNationality_id, E.DisabilityType_id, E.RecruitmentInformation_id, E.OtherNationalityExist&#13;&#10;FROM &quot;Employee&quot; E&#13;&#10;WHERE E.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="MotherName" DataType="System.String"/>
+        <Column Name="FirstNameL2" DataType="System.String"/>
+        <Column Name="LastNameL2" DataType="System.String"/>
+        <Column Name="FatherNameL2" DataType="System.String"/>
+        <Column Name="MotherNameL2" DataType="System.String"/>
+        <Column Name="PlaceOfBirthL2" DataType="System.String"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="CivilRecordPlaceAndNumber" DataType="System.String"/>
+        <Column Name="PersonalRecordSource" DataType="System.String"/>
+        <Column Name="NationalityIssue" DataType="System.DateTime"/>
+        <Column Name="OtherNationalityIssue" DataType="System.DateTime"/>
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="Religion" DataType="System.Int32"/>
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="Status" DataType="System.Int32"/>
+        <Column Name="Address" DataType="System.String"/>
+        <Column Name="Phone" DataType="System.String"/>
+        <Column Name="Mobile" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="POBox" DataType="System.String"/>
+        <Column Name="WebSite" DataType="System.String"/>
+        <Column Name="Twitter" DataType="System.String"/>
+        <Column Name="Facebook" DataType="System.String"/>
+        <Column Name="IdentificationNo" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsRetired" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PhotoId" DataType="System.String"/>
+        <Column Name="EmploymentStatus" DataType="System.Int32"/>
+        <Column Name="SalaryStatus" DataType="System.Int32"/>
+        <Column Name="DisabilityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="CountryOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="OtherNationality_id" DataType="System.Int32"/>
+        <Column Name="DisabilityType_id" DataType="System.Int32"/>
+        <Column Name="RecruitmentInformation_id" DataType="System.Int32"/>
+        <Column Name="OtherNationalityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.EmployeeCard.CardStatus, &#13;&#10;dbo.JobDescription.Name AS JobDescription,&#13;&#10;dbo.Training.CourseName, &#13;&#10;dbo.Training.CourseDuration, &#13;&#10;dbo.Training.TrainingCenter, &#13;&#10;dbo.Training.TrainingCenterLocation, &#13;&#10;dbo.Training.CertificateIssuanceDate,&#13;&#10;dbo.CourseSpecialize.Name AS CourseSpecialize, dbo.Employee.Id&#13;&#10;FROM	dbo.Employee &#13;&#10;		INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;        INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;        INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id&#13;&#10;        INNER JOIN dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id &#13;&#10;        INNER JOIN dbo.Training ON dbo.Employee.Id = dbo.Training.Employee_id &#13;&#10;        INNER JOIN dbo.CourseSpecialize ON dbo.Training.Specialize_id = dbo.CourseSpecialize.Id&#13;&#10;WHERE     &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary= 'True' AND&#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Training.IsVertualDeleted=0 AND &#13;&#10;CourseSpecialize.IsVertualDeleted=0">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="CardStatus" DataType="System.Int32"/>
+        <Column Name="JobDescription" DataType="System.String"/>
+        <Column Name="CourseName" DataType="System.String"/>
+        <Column Name="CourseDuration" DataType="System.Int32"/>
+        <Column Name="TrainingCenter" DataType="System.String"/>
+        <Column Name="TrainingCenterLocation" DataType="System.String"/>
+        <Column Name="CertificateIssuanceDate" DataType="System.DateTime"/>
+        <Column Name="CourseSpecialize" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Employee_Table" ParentDataSource="Employee" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Id" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="56.7" CanGrow="true" CanBreak="true">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="تقرير بيانات الدورات التدريبية" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" RightToLeft="true"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="60.7" Width="718.2" Height="95.5" CanGrow="true" CanBreak="true" DataSource="Employee">
+      <TextObject Name="Text9" Top="19.9" Width="274.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="274.05" Top="19.9" Width="302.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="576.45" Top="19.9" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text1" Left="274.05" Top="38.8" Width="302.4" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Employee.FirstName] [Employee.FatherName] [Employee.LastName]" RightToLeft="true" Font="Arial, 11pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+      <TextObject Name="Text8" Top="38.8" Width="274.05" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.JobDescription]" RightToLeft="true" Font="Arial, 11pt"/>
+      <TextObject Name="Text3" Left="576.45" Top="38.8" Width="141.75" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[Employee.Code]" RightToLeft="true" Font="Arial, 11pt"/>
+      <DataBand Name="Data2" Top="184.55" Width="718.2" Height="38.1" CanGrow="true" CanBreak="true" DataSource="Table">
+        <TextObject Name="Text12" Left="481.95" Top="-0.25" Width="94.5" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.CourseName]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text32" Left="387.45" Top="-0.25" Width="94.5" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.CourseDuration]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text10" Left="576.45" Top="-0.25" Width="122.85" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.CourseSpecialize]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text31" Left="699.3" Top="-0.25" Width="18.9" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+        <TextObject Name="Text33" Left="141.75" Top="-0.25" Width="132.3" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.TrainingCenterLocation]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text34" Left="274.05" Top="-0.25" Width="113.4" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.TrainingCenter]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text38" Top="-0.7" Width="141.75" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.CertificateIssuanceDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.CertificateIssuanceDate] )]" Format="Date" Format.Format="d" RightToLeft="true" Font="Arial, 11pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="160.2" Width="718.2" Height="20.35">
+          <TextObject Name="Text39" Top="-1.55" Width="141.75" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الدورة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text37" Left="141.75" Top="-1.55" Width="132.3" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="موقع المركز التدريبي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text35" Left="274.05" Top="-1.55" Width="113.4" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المركز التدريبي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text36" Left="387.45" Top="-1" Width="94.5" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مدة الدورة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text13" Left="481.95" Top="-1" Width="94.5" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الدورة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text11" Left="576.45" Top="-1" Width="122.85" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اختصاص الدورة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Left="699.3" Top="-1" Width="18.9" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="226.65" Width="718.2" Height="18.9">
+        <TextObject Name="Text17" Left="576.45" Top="-1" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد العناصر ضمن التقرير" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text7" Top="-1" Width="576.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" RightToLeft="true" Font="Arial, 12pt"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="249.55" Width="718.2" Height="18.9"/>
+  </ReportPage>
+</Report>

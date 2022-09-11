@@ -1,0 +1,3677 @@
+﻿/*
+=icons->modules
+=icons->details
+=icons->responsive
+*/
+
+
+
+
+/*=icons->modules-------------------------------------------------------------------------------------- */
+/*--------------------- personnel*/
+
+/* normal */
+#theme-default #primary_nav .icon_module_personnel {
+    background-position: 0 0;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_personnel {
+    background-position: -64px 0;
+}
+
+
+
+
+/*--------------------- Employee Relation services */
+
+/* normal */
+#theme-default #primary_nav .icon_module_employeerelationservices {
+    background-position: 0 -832px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_employeerelationservices {
+    background-position: -64px -832px;
+}
+
+
+
+
+
+/*------------------ objective */
+
+/* normal */
+#theme-default #primary_nav .icon_module_objective {
+    background-position: 0 -64px;
+}
+
+
+
+/* active */
+#theme-default #primary_nav .icon_module_active_objective {
+    background-position: -64px -64px;
+}
+
+/*------------------------- org chart*/
+
+/* normal */
+#theme-default #primary_nav .icon_module_organizationchart {
+    background-position: 0 -128px;
+}
+
+
+
+/* active */
+#theme-default #primary_nav .icon_module_active_organizationchart {
+    background-position: -64px -128px;
+}
+/*-------------------------- job desc */
+
+/* normal */
+#theme-default #primary_nav .icon_module_jobdescription {
+    background-position: 0 -192px;
+}
+
+
+
+/* active */
+#theme-default #primary_nav .icon_module_active_jobdescription {
+    background-position: -64px -192px;
+}
+
+/*-------------------------- performance appraisal */
+
+/* normal */
+#theme-default #primary_nav .icon_module_pms {
+    background-position: 0 -256px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_pms {
+    background-position: -64px -256px;
+}
+
+
+/*-------------------------- Training */
+
+/* normal */
+#theme-default #primary_nav .icon_module_recruitment {
+    background-position: 0 -384px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_recruitment {
+    background-position: -64px -384px;
+}
+
+/*-------------------------- recruitment */
+
+/* normal */
+#theme-default #primary_nav .icon_module_training {
+    background-position: 0 -320px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_training {
+    background-position: -64px -320px;
+}
+
+
+
+
+
+/*-------------------------- payroll */
+
+/* normal */
+#theme-default #primary_nav .icon_module_payroll,
+#theme-default #primary_nav .icon_module_payrollsystem {
+    background-position: 0 -448px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_payroll,
+#theme-default #primary_nav .icon_module_active_payrollsystem {
+    background-position: -64px -448px;
+}
+
+
+/*-------------------------- health insurance */
+
+/* normal */
+#theme-default #primary_nav .icon_module_healthinsurance {
+    background-position: 0 -512px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_healthinsurance {
+    background-position: -64px -512px;
+}
+
+
+
+
+/*-------------------------- localization */
+
+/* normal */
+#theme-default #primary_nav .icon_module_localization {
+    background-position: 0 -576px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_localization {
+    background-position: -64px -576px;
+}
+
+
+
+
+
+
+
+
+/* ------------------------------ reporting */
+
+/* normal */
+#theme-default #primary_nav .icon_module_reporting {
+    background-position: 0 -704px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_reporting {
+    background-position: -64px -704px;
+}
+
+
+
+
+
+
+
+
+
+/*-------------------------- report generator */
+
+/* normal */
+/* #theme-default #primary_nav .icon_module_report_generator  
+{
+    background-position:0 -704px;
+}
+    */
+/* active */
+/* #theme-default #primary_nav .icon_module_active_reportgenerator 
+{
+    background-position:-64px -704px;
+}
+*/
+
+
+
+
+
+
+/*-------------------------- security */
+
+/* normal */
+#theme-default #primary_nav .icon_module_security {
+    background-position: 0 -640px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_security {
+    background-position: -64px -640px;
+}
+
+
+
+/*-------------------------- Grade */
+
+/* normal */
+#theme-default #primary_nav .icon_module_grades {
+    background-position: 0 -771px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_grades {
+    background-position: -64px -771px;
+}
+
+
+
+
+
+
+
+
+/*-------------------------- Incentives */
+
+/* normal */
+#theme-default #primary_nav .icon_module_incentive {
+    background-position: 0px -896px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_incentive {
+    background-position: -64px -896px;
+}
+
+
+
+
+
+
+
+/*-------------------------- attendance */
+
+#theme-default #primary_nav .icon_module_attendancesystem {
+    background-position: 0px -959px;
+}
+
+
+#theme-default #primary_nav .icon_module_active_attendancesystem {
+    background-position: -64px -959px;
+}
+
+
+#theme-default #primary_nav .icon_module_workflow {
+    background-position: 0 -1024px;
+}
+
+#theme-default #primary_nav .icon_module_active_workflow {
+    background-position: -64px -1024px;
+}
+
+.icon_crossdependencys {
+        background-position: -463px -592px;
+}
+
+
+/*-------------------------- project management */
+
+#theme-default #primary_nav .icon_module_projectmanagement
+{
+    background-position: 0 -1088px;
+}
+
+#theme-default #primary_nav .icon_module_active_projectmanagement
+{
+    background-position: -64px -1088px;
+}
+
+
+
+
+
+
+/*=icons->details */
+
+/* Personnel */
+.icon_contact {
+    background-position: -208px -16px;
+}
+
+
+.icon_spouse,
+.icon_rspouse {
+    background-position: -208px -80px;
+}
+
+.icon_children,
+.icon_rchildren {
+    background-position: -208px -144px;
+}
+
+.icon_dependents {
+    background-position: -208px -208px;
+}
+
+.icon_educations,
+.icon_reducations {
+    background-position: -208px -272px;
+}
+
+.icon_trainings {
+    background-position: -208px -336px;
+}
+
+
+.icon_experiences {
+    background-position: -208px -400px;
+}
+
+.icon_skills {
+    background-position: -208px -464px;
+}
+
+.icon_certifications {
+    background-position: -208px -528px;
+}
+
+.icon_drivinglicense {
+    background-position: -208px -592px;
+}
+
+.icon_passports {
+    background-position: -208px -656px;
+}
+
+.icon_residencies {
+    background-position: -208px -720px;
+}
+
+.icon_attachments {
+    background-position: -529px -17px;
+}
+
+.icon_militaryservice {
+    background-position: -208px -784px;
+}
+
+
+.icon_convictions {
+    background-position: -208px -848px;
+}
+
+.icon_languages {
+    background-position: -208px -912px;
+}
+
+
+
+/* language  */
+.icon_localestringresources {
+    background-position: -272px -1360px;
+}
+
+
+
+/* Training Module icons */
+
+.icon_days {
+    background-position: -464px -16px;
+}
+
+.icon_conditions {
+    background-position: -464px -78px;
+}
+
+
+.icon_suggestionstaff {
+    background-position: -464px -145px;
+}
+
+.icon_involvedstaff {
+    background-position: -464px -209px;
+}
+
+.icon_coursecosts {
+    background-position: -464px -270px;
+}
+
+.icon_courseappraisals {
+    background-position: -464px -333px;
+}
+
+.icon_appraisaltrainees {
+    background-position: -464px -400px;
+}
+
+
+.icon_courses {
+    background-position: -464px -464px;
+}
+
+
+.icon_attachment {
+    background-position: -528px -17px;
+}
+
+.icon_appraisalcourses {
+    background-position: -464px -336px;
+}
+
+
+
+.icon_careerpathnodes {
+    background-position: -465px -528px;
+}
+
+
+
+
+
+
+
+
+
+/* objective icons */
+.icon_sharedwiths {
+    background-position: -336px -1360px;
+}
+
+
+.icon_kpis {
+    background-position: -398px -592px;
+}
+
+
+.icon_constraints {
+    background-position: -336px -1296px;
+}
+
+
+.icon_actionplans {
+    background-position: -336px -1232px;
+}
+
+
+.icon_objectives {
+    background-position: -272px -273px;
+}
+
+
+
+
+/* job description icons */
+.icon_roles {
+    background-position: -400px -16px;
+}
+
+
+.icon_authorities {
+    background-position: -400px -80px;
+}
+
+.icon_knowledges {
+    background-position: -400px -143px;
+}
+
+.icon_computerskills {
+    background-position: -400px -208px;
+}
+
+.icon_competencies {
+    background-position: -400px -271px;
+}
+
+.icon_positions {
+    background-position: -402px -528px;
+}
+.icon_logofpositions {
+    background-position: -402px -528px;
+}
+
+.icon_duties {
+    background-position: -207px -1295px;
+}
+
+.icon_delegates {
+    background-position: -400px -400px;
+}
+
+.icon_workingrestrictions {
+    background-position: -400px -336px;
+}
+
+
+.icon_jobsnature {
+    background-position: -400px -721px;
+}
+
+
+.icon_rolekpis,
+.icon_responsibilitykpis {
+    background-position: -398px -592px;
+}
+
+
+.icon_responsibilities {
+    background-position: -400px -656px;
+}
+
+.icon_restrictions {
+    background-position: -208px -1360px;
+}
+
+
+.icon_leveldescriptions {
+    background-position: -400px -785px;
+}
+
+.icon_delegateauthoritiesfrompositions {
+    background-position: -400px -1039px;
+}
+
+.icon_delegateauthoritiestopositions {
+    background-position: -400px -976px;
+}
+
+.icon_delegaterolestopositions {
+    background-position: -400px -912px;
+}
+
+
+.icon_delegaterolesfrompositions {
+    background-position: -400px -848px;
+}
+
+
+.icon_delegaterolesassuperiorpositions {
+    background-position: -400px -1106px;
+}
+
+.icon_delegateroles 
+{
+    background-position: -402px -16px;
+}
+
+
+.icon_delegateauthority 
+{
+    background-position: -400px -1168px
+}
+
+
+
+
+
+
+
+
+/* grade icons */
+.icon_gradebyeducationqualifications {
+    background-position: -336px -784px;
+}
+
+.icon_steps {
+    background-position: -336px -848px;
+}
+
+.icon_jobtitles {
+    background-position: -336px -911px;
+}
+
+.icon_noncashbenefits{
+    background-position: -77px -1169px;
+}
+
+.k-i-expand,.k-rtl .k-i-expand{
+    background-position: -79px -1240px;
+}
+
+.k-i-collapse,.k-rtl .k-i-collapse{
+    background-position: -79px -1304px;
+}
+
+/* recruitment icons */
+.icon_recruitmentinformations {
+    background-position: -464px -1169px;
+}
+
+.icon_jobrelatedinfos,
+.icon_rjobrelatedinfos {
+    background-position: -465px -1360px;
+}
+
+.icon_qualifications {
+    background-position: -464px -1233px;
+}
+
+.icon_applicants {
+    background-position: -464px -1297px;
+}
+
+
+.icon_oralexaminations {
+    background-position: -464px -1104px;
+}
+
+.icon_writtenexaminations {
+    background-position: -464px -1040px;
+}
+
+
+/* Employee Relation Services */
+
+.icon_penalties {
+    background-position: -151px -80px;
+}
+
+.icon_employeerewards {
+    background-position: -147px -13px;
+}
+
+.icon_administrativeprofiles {
+    background-position: -145px -210px;
+}
+
+.icon_terminationpositions {
+    background-position: -145px -276px;
+}
+
+
+.icon_assignments {
+    background-position: -336px -721px;
+}
+
+.icon_employeecustodies {
+    background-position: -336px -16px;
+}
+
+.icon_employeeterminations {
+    background-position: -144px -529px;
+}
+
+.icon_marriageleaverequests {
+    background-position: -145px -592px;
+}
+
+.icon_maternityleaverequests {
+    background-position: -148px -720px;
+}
+
+.icon_deathleaverequests {
+    background-position: -144px -656px;
+}
+
+.icon_hourlyleaverequests {
+    background-position: -144px -787px;
+}
+
+.icon_healthyleaverequests {
+    background-position: -148px -850px;
+}
+
+.icon_unpaidleaverequests {
+    background-position: -144px -977px;
+}
+
+.icon_pilgrimageleaverequests {
+    background-position: -147px -912px;
+}
+
+.icon_administrativeleaverequests {
+    background-position: -144px -1104px;
+}
+
+
+.icon_otherleaverequests {
+    background-position: -144px -1234px;
+}
+
+.icon_incidencedefinitions {
+    background-position: -145px -1360px;
+}
+
+.icon_employeetransfers {
+    background-position: -400px -400px;
+}
+
+.icon_employeedisciplinarys {
+    background-position: -208px -1232px;
+}
+
+.icon_exitinterviews {
+    background-position: -208px -977px;
+}
+
+.icon_employeeresignations {
+    background-position: -208px -1168px;
+}
+
+.icon_employeepromotions {
+    background-position: -208px -1104px;
+}
+
+.icon_financialpromotions {
+    background-position: -208px -1040px;
+}
+
+.icon_leaverequests {
+    background-position: -272px -80px;
+}
+
+.icon_recycledleaves {
+    background-position: -272px -17px;
+}
+
+.icon_balanceslices {
+    background-position: -272px -338px;
+}
+
+.icon_paidslices {
+    background-position: -272px -272px;
+}
+
+.icon_recycles {
+    background-position: -272px -208px;
+}
+
+.icon_leavetemplatedetails {
+    background-position: -272px -144px;
+}
+
+.icon_status {
+    background-position: -272px -399px;
+}
+
+.icon_managerto {
+    background-position: -272px -527px;
+}
+
+.icon_reportingsto {
+    background-position: -272px -463px;
+}
+
+
+.icon_interviewanswers 
+{
+    background-position: -272px -1298px;
+}
+
+
+
+
+
+
+
+
+/* health care */
+.icon_workaccidentdetails {
+    background-position: -529px -144px;
+}
+
+
+.icon_debits {
+    background-position: -528px -273px;
+}
+
+.icon_paymentorderdetails {
+    background-position: -528px -400px;
+}
+
+.icon_nurserydetails {
+    background-position: -528px -209px;
+}
+
+.icon_expensesteps {
+    background-position: -528px -80px;
+}
+
+.icon_delegatedinheritors {
+    background-position: -528px -336px;
+}
+
+
+/* Payroll */
+
+.icon_crossdeductions {
+    background-position: -657px -80px;
+}
+
+.icon_crossdeductionwithdeductions {
+    background-position: -657px -16px;
+}
+
+
+.icon_primaryemployeebenefits {
+    background-position: -656px -210px;
+}
+
+.icon_primaryemployeedeductions {
+    background-position: -656px -145px;
+}
+
+.icon_travelcategorycountries {
+    background-position: -656px -272px;
+}
+
+.icon_employeeloans {
+    background-position: -656px -336px;
+}
+
+.icon_loanpayments {
+    background-position: -652px -398px;
+}
+
+.icon_monthlyemployeedeductions {
+    background-position: -656px -592px;
+}
+
+.icon_monthlyemployeebenefits {
+    background-position: -656px -528px;
+}
+
+.icon_monthbenefitchanges {
+    background-position: -655px -651px;
+}
+
+.icon_monthdeductionchanges {
+    background-position: -656px -720px;
+}
+
+.icon_monthlycards {
+    background-position: -658px -786px;
+}
+
+.icon_bankinginformations {
+    background-position: -656px -465px;
+}
+
+.icon_salaryincreaseordinanceemployees {
+    background-position: -660px -848px;
+}
+
+.icon_gradebenefitdetails {
+    background-position: -656px -912px;
+}
+
+.icon_jobdescriptionbenefitdetails {
+    background-position: -656px -976px;
+}
+
+.icon_jobtitlebenefitdetails {
+    background-position: -656px -1041px;
+}
+
+.icon_nodebenefitdetails {
+    background-position: -656px -1103px;
+}
+
+.icon_positionbenefitdetails {
+    background-position: -656px -1168px;
+}
+
+.icon_positiondeductiondetails {
+    background-position: -656px -1232px;
+}
+
+.icon_nodedeductiondetails {
+    background-position: -528px -1361px;
+}
+
+.icon_jobtitledeductiondetails {
+    background-position: -592px -1360px;
+}
+
+.icon_jobdescriptiondeductiondetails {
+    background-position: -655px -1361px;
+}
+
+.icon_gradedeductiondetails {
+    background-position: -655px -1296px;
+}
+
+
+.icon_approvals {
+background-position: -296px -854px;
+}
+
+
+.icon_jobdescriptions {
+    background-position: -460px -915px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* incentives */
+.icon_deductionincidences {
+    background-position: -400px -1359px;
+}
+
+
+.icon_exceptionemploymenttypes {
+    background-position: -400px -1296px;
+}
+
+
+.icon_exceptionemploymentstatus {
+    background-position: -400px -1232px;
+}
+
+/* attendance icons */
+.icon_particularovertimeshifts {
+    background-position: -528px -1040px;
+}
+
+.icon_temporaryworkshops {
+    background-position: -528px -656px;
+}
+
+.icon_normalshifts {
+    background-position: -528px -464px;
+}
+
+.icon_overtimeslices {
+    background-position: -528px -528px;
+}
+
+.icon_nonattendanceslices {
+    background-position: -528px -592px;
+}
+
+.icon_infractionslices {
+    background-position: -528px -720px;
+}
+
+.icon_attendancewithoutadjustmentdetails,
+.icon_attendancewithoutadjustments {
+    background-position: -528px -975px;
+}
+.icon_attendancedailyadjustmentdetails,
+.icon_attendancedailyadjustments {
+    background-position: -528px -848px;
+}
+.icon_attendancemonthlyadjustmentdetails,
+.icon_attendancemonthlyadjustments {
+    background-position: -528px -912px;
+}
+
+.icon_workshoprecurrences {
+    background-position: -528px -784px;
+}
+
+.icon_jobtitlequalifications {
+    background-position: -464px -978px;
+}
+
+
+/* project management */
+.icon_teams
+{
+    background-position: -272px -720px;
+}
+
+.icon_phases
+{
+    background-position: -272px -784px;
+}
+
+.icon_constrains
+{
+    background-position: -272px -656px;
+}
+
+.icon_successfactors
+{
+    background-position: -272px -592px;
+}
+
+.icon_resources
+{
+    background-position: -144px -1231px;
+}
+
+.icon_members
+{
+    background-position: -272px -848px;
+}
+
+.icon_indirectmanagerinfos
+{
+    background-position: -272px -912px;
+}
+
+.icon_tasks
+{
+    background-position: -272px -976px;
+}
+
+/* language  */
+
+.small-screen .icon_localestringresources{
+    background-position: -238px -1190px;
+}
+
+/* health insurance --------------------------------*/
+.small-screen .icon_delegatedinheritors {
+    background-position: -462px -295px;
+}
+
+.small-screen .icon_expensesteps {
+    background-position: -462px -70px;
+}
+
+.small-screen .icon_nurserydetails {
+    background-position: -462px -180px;
+}
+
+.small-screen .icon_paymentorderdetails {
+    background-position: -462px -350px;
+}
+
+.small-screen .icon_debits {
+    background-position: -462px -238px;
+}
+
+.small-screen .icon_workaccidentdetails {
+    background-position: -462px -127px;
+}
+
+
+/* training ----------------------------------------*/
+
+.small-screen .icon_conditions {
+    background-position: -406px -71px;
+}
+
+.small-screen .icon_coursecosts {
+    background-position: -406px -239px;
+}
+
+.small-screen .icon_courseappraisals {
+    background-position: -406px -291px;
+}
+
+.small-screen .icon_appraisaltrainees {
+    background-position: -406px -348px;
+}
+
+.small-screen .icon_attachment {
+    background-position: -462px -14px;
+}
+
+.small-screen .icon_resignationattachments{
+    background-position: -462px -14px;
+}
+
+.small-screen .icon_courses {
+    background-position: -406px -406px;
+}
+
+.small-screen .icon_careerpathnodes {
+    background-position: -406px -462px;
+}
+
+
+
+
+/* recruitment */
+.small-screen .icon_recruitmentinformations {
+    background-position: -406px -1022px;
+}
+
+.small-screen .icon_qualifications {
+    background-position: -406px -1077px;
+}
+
+.small-screen .icon_applicants {
+    background-position: -406px -1133px;
+}
+
+.small-screen .icon_jobrelatedinfos,
+.small-screen .icon_rjobrelatedinfos {
+    background-position: -406px -1190px;
+}
+
+.small-screen .icon_oralexaminations {
+    background-position: -406px -966px;
+}
+
+.small-screen .icon_writtenexaminations {
+    background-position: -406px -910px;
+}
+
+
+
+/* Personnel -------------------------------------- */
+.small-screen .icon_spouse,
+.small-screen .icon_rspouse {
+    background-position: -182px -70px;
+}
+
+.small-screen .icon_children,
+.small-screen .icon_rchildren {
+    background-position: -182px -125px;
+}
+
+.small-screen .icon_dependents {
+    background-position: -182px -182px;
+}
+
+.small-screen .icon_educations,
+.small-screen .icon_reducations {
+    background-position: -182px -239px;
+}
+
+.small-screen .icon_trainings {
+    background-position: -182px -294px;
+}
+
+.small-screen .icon_experiences {
+    background-position: -182px -350px;
+}
+
+.small-screen .icon_skills {
+    background-position: -182px -405px;
+}
+
+.small-screen .icon_languages {
+    background-position: -182px -796px;
+}
+
+.small-screen .icon_certifications {
+    background-position: -182px -461px;
+}
+
+.small-screen .icon_militaryservice {
+    background-position: -182px -685px;
+}
+
+.small-screen .icon_passports {
+    background-position: -182px -574px;
+}
+
+.small-screen .icon_drivinglicense {
+    background-position: -182px -518px;
+}
+
+.small-screen .icon_convictions {
+    background-position: -182px -742px;
+}
+
+.small-screen .icon_residencies {
+    background-position: -182px -630px;
+}
+
+
+/* Employee Relation Services -------------------------------------- */
+
+.small-screen .icon_positions {
+    background-position: -350px -462px;
+}
+.small-screen .icon_logofpositions {
+    background-position: -350px -462px;
+}
+.small-screen .icon_terminationpositions {
+    background-position: -126px -241px;
+}
+
+/*.small-screen .icon_delays {
+    background-position: -126px -350px;
+}*/
+
+.small-screen .icon_incidencedefinitions {
+    background-position: -127px -1190px;
+}
+
+.small-screen .icon_duties {
+    background-position: -181px -1134px;
+}
+
+.small-screen .icon_administrativeprofiles {
+    background-position: -127px -183px;
+}
+
+.small-screen .icon_penalties {
+    background-position: -126px -70px;
+}
+
+.small-screen .icon_rewards {
+    background-position: -126px -11px;
+}
+
+.small-screen .icon_workhistories {
+    background-position: -127px -181px;
+}
+
+.small-screen .icon_administrativeleaverequests {
+    background-position: -127px -966px;
+}
+
+.small-screen .icon_unpaidleaverequests {
+    background-position: -126px -854px;
+}
+
+.small-screen .icon_healthyleaverequests {
+    background-position: -126px -741px;
+}
+
+.small-screen .icon_hourlyleaverequests {
+    background-position: -126px -685px;
+}
+
+.small-screen .icon_maternityleaverequests {
+    background-position: -126px -630px;
+}
+
+.small-screen .icon_marriageleaverequests {
+    background-position: -126px -518px;
+}
+
+.small-screen .icon_pilgrimageleaverequests {
+    background-position: -126px -798px;
+}
+
+.small-screen .icon_deathleaverequests {
+    background-position: -126px -574px;
+}
+
+.small-screen .icon_otherleaverequests {
+    background-position: -126px -1077px;
+}
+
+.small-screen .icon_employeecustodies {
+    background-position: -294px -13px;
+}
+
+.small-screen .icon_assignments {
+    background-position: -294px -629px;
+}
+
+.small-screen .icon_employeetransfers {
+    background-position: -350px -350px;
+}
+
+.small-screen .icon_employeedisciplinarys {
+    background-position: -182px -1078px;
+}
+
+.small-screen .icon_employeeterminations {
+    background-position: -126px -463px;
+}
+
+.small-screen .icon_employeeterminations {
+    background-position: -126px -463px;
+}
+
+.small-screen .icon_exitinterviews {
+    background-position: -182px -854px;
+}
+
+.small-screen .icon_employeeresignations {
+    background-position: -182px -1022px;
+}
+
+.small-screen .icon_employeepromotions {
+    background-position: -182px -966px;
+}
+
+.small-screen .icon_financialpromotions {
+    background-position: -182px -910px;
+}
+
+.small-screen .icon_employeerewards {
+    background-position: -127px -11px;
+}
+
+.small-screen .icon_leaverequests {
+    background-position: -238px -70px;
+}
+
+.small-screen .icon_recycledleaves {
+    background-position: -238px -15px;
+}
+
+.small-screen .icon_balanceslices {
+    background-position: -238px -293px;
+}
+
+.small-screen .icon_paidslices {
+    background-position: -238px -238px;
+}
+
+.small-screen .icon_recycles {
+    background-position: -238px -182px;
+}
+
+.small-screen .icon_leavetemplatedetails {
+    background-position: -238px -126px;
+}
+
+.small-screen .icon_status {
+    background-position: -238px -350px;
+}
+
+.small-screen .icon_managerto {
+    background-position: -238px -462px;
+}
+
+
+.small-screen .icon_reportingsto {
+    background-position: -238px -406px;
+}
+
+.small-screen .icon_interviewanswers{
+    background-position: -238px -1134px;
+}
+
+
+
+
+
+
+
+
+
+
+/* Grade --------------------------------------------------- */
+
+.small-screen .icon_gradebyeducationqualifications {
+    background-position: -293px -686px;
+}
+
+.small-screen .icon_steps {
+    background-position: -293px -740px;
+}
+
+.small-screen .icon_jobtitles {
+    background-position: -293px -792px;
+}
+.small-screen .icon_noncashbenefits{
+    background-position: -66px -1024px;
+}
+
+
+/* Job Description ------------------------------------------*/
+.small-screen .icon_roles {
+    background-position: -350px -14px;
+}
+
+.small-screen .icon_authorities {
+    background-position: -350px -69px;
+}
+
+.small-screen .icon_competencies {
+    background-position: -350px -237px;
+}
+
+.small-screen .icon_knowledges {
+    background-position: -182px -350px;
+}
+
+.small-screen .icon_computerskills {
+    background-position: -350px -182px;
+}
+
+.small-screen .icon_workingrestrictions {
+    background-position: -350px -295px;
+}
+
+.small-screen .icon_jobsnature {
+    background-position: -350px -630px;
+}
+
+.small-screen .icon_rolekpis {
+    background-position: -348px -518px;
+}
+
+.small-screen .icon_responsibilities {
+    background-position: -350px -574px;
+}
+
+.small-screen .icon_restrictions {
+    background-position: -182px -1190px;
+}
+
+.small-screen .icon_leveldescriptions {
+    background-position: -350px -688px;
+}
+
+.small-screen .icon_delegateauthoritiesfrompositions {
+    background-position: -350px -910px;
+}
+
+.small-screen .icon_delegateauthoritiestopositions {
+    background-position: -350px -854px;
+}
+
+.small-screen .icon_delegaterolestopositions {
+    background-position: -350px -798px;
+}
+
+.small-screen .icon_delegaterolesfrompositions {
+    background-position: -350px -742px;
+}
+
+.small-screen .icon_delegaterolesassuperiorpositions{
+    background-position: -350px -965px;
+}
+
+.small-screen .icon_delegateroles {
+    background-position: -350px -14px;
+}
+
+.small-screen .icon_delegateauthority{
+    background-position: -350px -1022px;
+}
+
+/* Payroll ------------------------------------------*/
+
+.small-screen .icon_primaryemployeebenefits {
+    background-position: -574px -182px;
+}
+
+.small-screen .icon_primaryemployeedeductions {
+    background-position: -574px -126px;
+}
+
+.small-screen .icon_employeeloans {
+    background-position: -574px -295px;
+}
+
+.small-screen .icon_bankinginformations {
+    background-position: -574px -407px;
+}
+
+.small-screen .icon_loanpayments {
+    background-position: -571px -348px;
+}
+
+.small-screen .icon_crossdeductions {
+    background-position: -574px -70px;
+}
+
+.small-screen .icon_crossdeductionwithdeductions {
+    background-position: -574px -14px;
+}
+
+.small-screen .icon_monthdeductionchanges {
+    background-position: -574px -630px;
+}
+
+.small-screen .icon_monthbenefitchanges {
+    background-position: -573px -568px;
+}
+
+.small-screen .icon_monthlycards {
+    background-position: -576px -685px;
+}
+
+.small-screen .icon_monthlyemployeedeductions {
+    background-position: -574px -518px;
+}
+
+.small-screen .icon_monthlyemployeebenefits {
+    background-position: -574px -462px;
+}
+
+.small-screen .icon_travelcategorycountries {
+    background-position: -574px -238px;
+}
+
+.small-screen .icon_salaryincreaseordinanceemployees {
+    background-position: -574px -742px;
+}
+
+.small-screen .icon_gradebenefitdetails {
+    background-position: -574px -798px;
+}
+
+.small-screen .icon_jobdescriptionbenefitdetails {
+    background-position: -574px -854px;
+}
+
+.small-screen .icon_jobtitlebenefitdetails {
+    background-position: -574px -911px;
+}
+
+.small-screen .icon_nodebenefitdetails {
+    background-position: -574px -966px;
+}
+
+.small-screen .icon_positionbenefitdetails {
+    background-position: -574px -1022px;
+}
+
+.small-screen .icon_positiondeductiondetails {
+    background-position: -574px -1078px;
+}
+
+.small-screen .icon_nodedeductiondetails {
+    background-position: -462px -1190px;
+}
+
+.small-screen .icon_jobtitledeductiondetails {
+    background-position: -518px -1189px;
+}
+
+.small-screen .icon_jobdescriptiondeductiondetails {
+    background-position: -573px -1191px;
+}
+
+.small-screen .icon_gradedeductiondetails {
+    background-position: -574px -1134px;
+}
+
+
+
+/* incentives */
+
+.small-screen .icon_deductionincidences {
+    background-position: -350px 42px;
+}
+
+.small-screen .icon_exceptionemploymenttypes {
+    background-position: -350px 98px;
+}
+
+.small-screen .icon_exceptionemploymentstatus {
+    background-position: -350px 154px;
+}
+
+
+
+/* attendance */
+.small-screen .icon_workshoprecurrences {
+    background-position: -462px -686px;
+}
+
+.small-screen .icon_attendancewithoutadjustments {
+    background-position: -462px -852px;
+}
+
+.small-screen .icon_attendancedailyadjustments {
+    background-position: -462px -741px;
+}
+
+.small-screen .icon_attendancemonthlyadjustments {
+    background-position: -462px -798px;
+}
+
+.small-screen .icon_temporaryworkshops {
+    background-position: -462px -574px;
+}
+
+.small-screen .icon_infractionslices {
+    background-position: -462px -630px;
+}
+
+.small-screen .icon_nonattendanceslices {
+    background-position: -462px -518px;
+}
+
+.small-screen .icon_overtimeslices {
+    background-position: -462px -462px;
+}
+
+.small-screen .icon_particularovertimeshifts {
+    background-position: -462px -910px;
+}
+
+.small-screen .icon_normalshifts {
+    background-position: -462px -406px;
+}
+
+
+
+
+
+
+/* objective */
+.small-screen .icon_objectives{
+    background-position:-294px -1022px;
+}
+
+.small-screen .icon_sharedwiths {
+    background-position:-294px -1190px;
+}
+
+.small-screen .icon_kpis {
+    background-position:-348px -518px;
+}
+
+.small-screen .icon_constraints {
+    background-position:-294px -1135px;
+}
+
+.small-screen .icon_actionplans {
+    background-position:-294px -1078px
+}
+
+
+
+
+/* project management */
+.small-screen .icon_teams
+{
+    background-position: -238px -630px;
+}
+
+.small-screen .icon_phases
+{
+    background-position: -238px -686px;
+}
+
+
+.small-screen .icon_constrains
+{
+    background-position: -238px -573px;
+}
+
+
+.small-screen .icon_successfactors
+{
+    background-position: -238px -518px;
+}
+
+.small-screen .icon_resources
+{
+    background-position: -126px -1078px;
+}
+
+.small-screen .icon_members
+{
+    background-position: -238px -742px;
+}
+
+.small-screen .icon_indirectmanagerinfos
+{
+    background-position: -238px -798px;
+}
+
+.small-screen .icon_tasks
+{
+    background-position: -238px -856px;
+}
+
+
+
+
+
+
+/*=icons->small */
+.title_icon span.icon_module_small_personnel {
+    background-position: -16px 0;
+}
+
+.title_icon span.icon_module_small_employeerelationservices {
+    background-position: -16px -208px;
+}
+
+.title_icon span.icon_module_small_objectives {
+    background-position: -16px -16px;
+}
+
+.title_icon span.icon_module_small_organizationchart {
+    background-position: -16px -32px;
+}
+
+.title_icon span.icon_module_small_training {
+    background-position: -16px -80px;
+}
+
+.title_icon span.icon_module_small_jobdescription {
+    background-position: -16px -48px;
+}
+
+.title_icon span.icon_module_small_pms {
+    background-position: -16px -64px;
+}
+
+.title_icon .icon_module_small_recruitment {
+    background-position: -16px -96px;
+}
+
+.title_icon .icon_module_small_grades {
+    background-position: -16px -192px;
+}
+
+.title_icon .icon_module_small_payroll {
+    background-position: -16px -112px;
+}
+
+.title_icon .icon_module_small_healthinsurance {
+    background-position: -16px -128px;
+}
+
+.title_icon .icon_module_small_localization {
+    background-position: -16px -144px;
+}
+
+.title_icon .icon_module_small_security {
+    background-position: -16px -160px;
+}
+
+.title_icon .icon_module_small_report_generator {
+    background-position: -16px -176px;
+}
+
+
+.title_icon .icon_module_small_incentive {
+    background-position: -16px -225px;
+}
+
+.title_icon .icon_module_small_payrollsystem {
+    background-position: -16px -112px;
+}
+
+.title_icon .icon_module_small_attendancesystem {
+    background-position: -16px -240px;
+}
+
+
+.title_icon .icon_module_small_workflow {
+    background-position: -16px -256px;
+}
+
+
+.title_icon .notification_icon {
+    background-position: -48px 0;
+}
+
+
+.title_icon .icon_module_small_projectmanagement
+{
+    background-position: -16px -272px;
+}
+
+
+
+
+
+
+/*-----------------------style 2 ---------------------------------*/
+
+
+
+
+
+/*=icons->details */
+
+/* Personnel */
+.icon_contact {
+    background-position: -208px -16px;
+}
+
+
+.icon_spouse,
+.icon_rspouse {
+    background-position: -208px -80px;
+}
+
+.icon_children,
+.icon_rchildren {
+    background-position: -208px -144px;
+}
+
+.icon_dependents {
+    background-position: -208px -208px;
+}
+
+.icon_educations,
+.icon_reducations {
+    background-position: -208px -272px;
+}
+
+.icon_trainings {
+    background-position: -208px -336px;
+}
+
+
+.icon_experiences {
+    background-position: -208px -400px;
+}
+
+.icon_skills {
+    background-position: -208px -464px;
+}
+
+.icon_certifications {
+    background-position: -208px -528px;
+}
+
+.icon_drivinglicense {
+    background-position: -208px -592px;
+}
+
+.icon_passports {
+    background-position: -208px -656px;
+}
+
+.icon_residencies {
+    background-position: -208px -720px;
+}
+
+.icon_militaryservice {
+    background-position: -208px -784px;
+}
+
+
+.icon_convictions {
+    background-position: -208px -848px;
+}
+
+.icon_languages {
+    background-position: -208px -912px;
+}
+
+
+
+/* language  */
+.icon_localestringresources {
+    background-position: -272px -1360px;
+}
+
+
+
+/* Training Module icons */
+
+.icon_days {
+    background-position: -464px -16px;
+}
+
+.icon_conditions {
+    background-position: -464px -78px;
+}
+
+
+.icon_suggestionstaff {
+    background-position: -464px -145px;
+}
+
+.icon_involvedstaff {
+    background-position: -464px -209px;
+}
+
+.icon_coursecosts {
+    background-position: -464px -270px;
+}
+
+.icon_courseappraisals {
+    background-position: -464px -333px;
+}
+
+.icon_appraisaltrainees {
+    background-position: -464px -400px;
+}
+
+
+.icon_courses {
+    background-position: -464px -464px;
+}
+
+
+.icon_attachment {
+    background-position: -528px -17px;
+}
+
+.icon_resignationattachments{
+    background-position: -528px -17px;
+}
+
+
+.icon_careerpathnodes {
+    background-position: -465px -528px;
+}
+
+
+
+
+
+
+
+
+
+/* objective icons */
+.icon_sharedwiths {
+    background-position: -336px -1360px;
+}
+
+
+.icon_kpis {
+    background-position: -398px -592px;
+}
+
+
+.icon_constraints {
+    background-position: -336px -1296px;
+}
+
+
+.icon_actionplans {
+    background-position: -336px -1232px;
+}
+
+
+.icon_objectives {
+    background-position: -272px -273px;
+}
+
+
+
+
+/* job description icons */
+.icon_roles {
+    background-position: -400px -16px;
+}
+
+
+.icon_authorities {
+    background-position: -400px -80px;
+}
+
+.icon_knowledges {
+    background-position: -400px -143px;
+}
+
+.icon_computerskills {
+    background-position: -400px -208px;
+}
+
+.icon_competencies {
+    background-position: -400px -271px;
+}
+
+.icon_positions {
+    background-position: -402px -528px;
+}
+.icon_phaseworkflows {
+   background-position: -464px -1296px;
+}
+.icon_logofpositions {
+    background-position: -207px -16px;
+}
+.icon_monthlyemployeeadvances{
+    background-position: -656px -15px;
+}
+.icon_employeeadvances{
+    background-position: -271px -274px;
+}
+.icon_duties {
+    background-position: -207px -1295px;
+}
+
+.icon_delegates {
+    background-position: -400px -400px;
+}
+
+.icon_workingrestrictions {
+    background-position: -400px -336px;
+}
+
+
+.icon_jobsnature {
+    background-position: -400px -721px;
+}
+
+
+.icon_rolekpis,
+.icon_responsibilitykpis {
+    background-position: -398px -592px;
+}
+
+
+.icon_responsibilities {
+    background-position: -400px -656px;
+}
+
+.icon_restrictions {
+    background-position: -208px -1360px;
+}
+
+
+.icon_leveldescriptions {
+    background-position: -400px -785px;
+}
+
+.icon_delegateauthoritiesfrompositions {
+    background-position: -400px -1039px;
+}
+
+.icon_delegateauthoritiestopositions {
+    background-position: -400px -976px;
+}
+
+.icon_delegaterolestopositions {
+    background-position: -400px -912px;
+}
+
+
+.icon_delegaterolesfrompositions {
+    background-position: -400px -848px;
+}
+
+
+.icon_delegaterolesassuperiorpositions {
+    background-position: -400px -1106px;
+}
+
+.icon_delegateroles 
+{
+    background-position: -402px -16px;
+}
+
+
+.icon_delegateauthority 
+{
+    background-position: -400px -1168px
+}
+
+
+
+
+
+
+
+
+/* grade icons */
+.icon_gradebyeducationqualifications {
+    background-position: -336px -784px;
+}
+
+.icon_steps {
+    background-position: -272px -1036px;
+}
+
+.icon_jobtitles {
+    background-position: -336px -911px;
+}
+
+/* recruitment icons */
+.icon_recruitmentinformations {
+    background-position: -464px -1169px;
+}
+
+.icon_jobrelatedinfos,
+.icon_rjobrelatedinfos {
+    background-position: -465px -1360px;
+}
+
+.icon_qualifications {
+    background-position: -464px -1233px;
+}
+
+.icon_applicants {
+    background-position: -464px -1297px;
+}
+
+.icon_recruitmentrequestattachments{
+    background-position: -529px -17px;
+}
+
+.icon_recruitmentmilitaryservices {
+    background-position: -208px -784px;
+}
+
+.icon_educations{
+    background-position: -208px -272px;
+}
+
+.icon_workingexperiences{
+    background-position: -208px -400px;
+}
+
+.icon_jobapplicationattachments{
+    background-position: -529px -17px;
+}
+
+.icon_professionalcertifications{
+    background-position: -208px -528px;
+}
+
+.icon_trainingcourses{
+    background-position: -208px -336px;
+}
+
+.icon_personalskills{
+    background-position: -208px -464px;
+}
+
+.icon_languages{
+    background-position: -208px -912px;
+}
+
+.icon_computerskills{
+    background-position: -402px -208px;
+}
+
+
+.icon_oralexaminations {
+    background-position: -464px -1104px;
+}
+
+.icon_writtenexaminations {
+    background-position: -464px -1040px;
+}
+
+
+/* Employee Relation Services */
+
+.icon_penalties {
+    background-position: -151px -80px;
+}
+
+.icon_employeerewards {
+    background-position: -147px -13px;
+}
+
+.icon_administrativeprofiles {
+    background-position: -145px -210px;
+}
+
+.icon_terminationpositions {
+    background-position: -145px -276px;
+}
+
+
+.icon_assignments {
+    background-position: -336px -721px;
+}
+
+.icon_endingsecondarypositions{
+    background-position: -1171px -660px;
+}
+
+.icon_employeecustodies {
+    background-position: -336px -16px;
+}
+
+.icon_employeeterminations {
+    background-position: -144px -529px;
+}
+
+.icon_marriageleaverequests {
+    background-position: -145px -592px;
+}
+
+.icon_maternityleaverequests {
+    background-position: -148px -720px;
+}
+
+.icon_deathleaverequests {
+    background-position: -144px -656px;
+}
+
+.icon_hourlyleaverequests {
+    background-position: -144px -787px;
+}
+
+.icon_healthyleaverequests {
+    background-position: -148px -850px;
+}
+
+.icon_unpaidleaverequests {
+    background-position: -144px -977px;
+}
+
+.icon_pilgrimageleaverequests {
+    background-position: -147px -912px;
+}
+
+.icon_administrativeleaverequests {
+    background-position: -144px -1104px;
+}
+
+
+.icon_otherleaverequests {
+    background-position: -144px -1234px;
+}
+
+.icon_incidencedefinitions {
+    background-position: -145px -1360px;
+}
+
+.icon_employeetransfers {
+    background-position: -400px -400px;
+}
+
+.icon_employeedisciplinarys {
+    background-position: -208px -1232px;
+}
+
+.icon_exitinterviews {
+    background-position: -208px -977px;
+}
+
+.icon_employeeresignations {
+    background-position: -208px -1168px;
+}
+
+.icon_employeepromotions {
+    background-position: -208px -1104px;
+}
+
+.icon_financialpromotions {
+    background-position: -208px -1040px;
+}
+
+.icon_leaverequests {
+    background-position: -272px -80px;
+}
+
+.icon_recycledleaves {
+    background-position: -272px -17px;
+}
+
+.icon_balanceslices {
+    background-position: -272px -338px;
+}
+
+.icon_paidslices {
+    background-position: -272px -272px;
+}
+
+.icon_recycles {
+    background-position: -272px -208px;
+}
+
+.icon_leavetemplatedetails {
+    background-position: -272px -144px;
+}
+
+.icon_status {
+    background-position: -272px -399px;
+}
+
+.icon_managerto {
+    background-position: -272px -527px;
+}
+
+.icon_reportingsto {
+    background-position: -272px -463px;
+}
+
+
+.icon_interviewanswers 
+{
+    background-position: -272px -1298px;
+}
+
+
+
+
+
+
+
+
+/* health care */
+.icon_workaccidentdetails {
+    background-position: -529px -144px;
+}
+
+
+.icon_debits {
+    background-position: -528px -273px;
+}
+
+.icon_paymentorderdetails {
+    background-position: -528px -400px;
+}
+
+.icon_nurserydetails {
+    background-position: -528px -209px;
+}
+
+.icon_expensesteps {
+    background-position: -528px -80px;
+}
+
+.icon_delegatedinheritors {
+    background-position: -528px -336px;
+}
+
+
+/* Payroll */
+
+.icon_crossdeductions {
+    background-position: -657px -80px;
+}
+
+.icon_crossdeductionwithdeductions {
+    background-position: -657px -16px;
+}
+
+
+.icon_primaryemployeebenefits {
+    background-position: -656px -210px;
+}
+
+.icon_primaryemployeedeductions {
+    background-position: -656px -145px;
+}
+
+.icon_travelcategorycountries {
+    background-position: -656px -272px;
+}
+
+.icon_employeeloans {
+    background-position: -656px -336px;
+}
+
+.icon_loanpayments {
+    background-position: -652px -398px;
+}
+
+.icon_monthlyemployeedeductions {
+    background-position: -656px -592px;
+}
+
+.icon_monthlyemployeebenefits {
+    background-position: -656px -528px;
+}
+
+.icon_monthbenefitchanges {
+    background-position: -655px -651px;
+}
+
+.icon_monthdeductionchanges {
+    background-position: -656px -720px;
+}
+
+.icon_monthlycards {
+    background-position: -658px -786px;
+}
+
+.icon_bankinginformations {
+    background-position: -656px -465px;
+}
+
+.icon_salaryincreaseordinanceemployees {
+    background-position: -660px -848px;
+}
+
+.icon_gradebenefitdetails {
+    background-position: -656px -912px;
+}
+
+.icon_jobdescriptionbenefitdetails {
+    background-position: -656px -976px;
+}
+
+.icon_jobtitlebenefitdetails {
+    background-position: -656px -1041px;
+}
+
+.icon_nodebenefitdetails {
+    background-position: -656px -1103px;
+}
+
+.icon_positionbenefitdetails {
+    background-position: -656px -1168px;
+}
+
+.icon_positiondeductiondetails {
+    background-position: -656px -1232px;
+}
+
+.icon_nodedeductiondetails {
+    background-position: -528px -1361px;
+}
+
+.icon_jobtitledeductiondetails {
+    background-position: -592px -1360px;
+}
+
+.icon_jobdescriptiondeductiondetails {
+    background-position: -655px -1361px;
+}
+
+.icon_gradedeductiondetails {
+    background-position: -655px -1296px;
+}
+
+
+.icon_approvals {
+background-position: -338px -1097px;
+}
+
+
+.icon_jobdescriptions {
+    background-position: -460px -915px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* incentives */
+.icon_deductionincidences {
+    background-position: -400px -1359px;
+}
+
+
+.icon_exceptionemploymenttypes {
+    background-position: -400px -1296px;
+}
+
+
+.icon_exceptionemploymentstatus {
+    background-position: -400px -1232px;
+}
+
+/* attendance icons */
+.icon_particularovertimeshifts {
+    background-position: -528px -1040px;
+}
+
+.icon_temporaryworkshops {
+    background-position: -528px -656px;
+}
+
+.icon_normalshifts {
+    background-position: -528px -464px;
+}
+
+.icon_overtimeslices {
+    background-position: -528px -528px;
+}
+
+.icon_nonattendanceslices {
+    background-position: -528px -592px;
+}
+
+.icon_infractionslices {
+    background-position: -528px -720px;
+}
+
+
+.icon_attendancewithoutadjustments {
+    background-position: -528px -975px;
+}
+
+.icon_attendancedailyadjustments {
+    background-position: -528px -848px;
+}
+
+.icon_attendancemonthlyadjustments {
+    background-position: -528px -912px;
+}
+
+.icon_attendancewithoutadjustmentdetails {
+    background-position: -531px -1169px;
+}
+.icon_attendancedailyadjustmentdetails {
+    background-position: -529px -1232px;
+}
+.icon_attendancemonthlyadjustmentdetails {
+    background-position: -529px -1104px;
+}
+
+.icon_workshoprecurrences {
+    background-position: -528px -784px;
+}
+
+.icon_jobtitlequalifications {
+    background-position: -464px -978px;
+}
+
+
+/* project management */
+.icon_teams
+{
+    background-position: -272px -720px;
+}
+
+.icon_phases
+{
+    background-position: -272px -784px;
+}
+
+.icon_constrains
+{
+    background-position: -272px -656px;
+}
+
+.icon_successfactors
+{
+    background-position: -272px -592px;
+}
+
+.icon_resources
+{
+    background-position: -144px -1231px;
+}
+
+.icon_members
+{
+    background-position: -272px -848px;
+}
+
+.icon_indirectmanagerinfos
+{
+    background-position: -272px -912px;
+}
+
+.icon_tasks
+{
+    background-position: -272px -976px;
+}
+
+
+
+/* =icons->responsive--------------------------------------------------------------------------------- */
+.small-screen .group a {
+    font-size: 9px;
+    height: 56px;
+    width: 42px;
+}
+
+.small-screen .stats_icon {
+    width: 28px;
+    height: 28px;
+    background-size: 616px 1232px;
+}
+
+
+/* language  */
+
+.small-screen .icon_localestringresources{
+    background-position: -238px -1190px;
+}
+
+/* health insurance --------------------------------*/
+.small-screen .icon_delegatedinheritors {
+    background-position: -462px -295px;
+}
+
+.small-screen .icon_expensesteps {
+    background-position: -462px -70px;
+}
+
+.small-screen .icon_nurserydetails {
+    background-position: -462px -180px;
+}
+
+.small-screen .icon_paymentorderdetails {
+    background-position: -462px -350px;
+}
+
+.small-screen .icon_debits {
+    background-position: -462px -238px;
+}
+
+.small-screen .icon_workaccidentdetails {
+    background-position: -462px -127px;
+}
+
+
+/* training ----------------------------------------*/
+
+.small-screen .icon_conditions {
+    background-position: -406px -71px;
+}
+
+.small-screen .icon_coursecosts {
+    background-position: -406px -239px;
+}
+
+.small-screen .icon_courseappraisals {
+    background-position: -406px -291px;
+}
+
+.small-screen .icon_appraisaltrainees {
+    background-position: -406px -348px;
+}
+
+.small-screen .icon_attachment {
+    background-position: -462px -14px;
+}
+
+.small-screen .icon_courses {
+    background-position: -406px -406px;
+}
+
+.small-screen .icon_careerpathnodes {
+    background-position: -406px -462px;
+}
+
+
+
+
+/* recruitment */
+.small-screen .icon_recruitmentinformations {
+    background-position: -406px -1022px;
+}
+
+.small-screen .icon_qualifications {
+    background-position: -406px -1077px;
+}
+
+.small-screen .icon_applicants {
+    background-position: -406px -1133px;
+}
+
+.small-screen .icon_jobrelatedinfos,
+.small-screen .icon_rjobrelatedinfos {
+    background-position: -406px -1190px;
+}
+
+.small-screen .icon_oralexaminations {
+    background-position: -406px -966px;
+}
+
+.small-screen .icon_writtenexaminations {
+    background-position: -406px -910px;
+}
+
+
+
+/* Personnel -------------------------------------- */
+.small-screen .icon_spouse,
+.small-screen .icon_rspouse {
+    background-position: -182px -70px;
+}
+
+.small-screen .icon_children,
+.small-screen .icon_rchildren {
+    background-position: -182px -125px;
+}
+
+.small-screen .icon_dependents {
+    background-position: -182px -182px;
+}
+
+.small-screen .icon_educations,
+.small-screen .icon_reducations {
+    background-position: -182px -239px;
+}
+
+.small-screen .icon_trainings {
+    background-position: -182px -294px;
+}
+
+.small-screen .icon_experiences {
+    background-position: -182px -350px;
+}
+
+.small-screen .icon_skills {
+    background-position: -182px -405px;
+}
+
+.small-screen .icon_languages {
+    background-position: -182px -796px;
+}
+
+.small-screen .icon_certifications {
+    background-position: -182px -461px;
+}
+
+.small-screen .icon_militaryservice {
+    background-position: -182px -685px;
+}
+
+.small-screen .icon_passports {
+    background-position: -182px -574px;
+}
+
+.small-screen .icon_drivinglicense {
+    background-position: -182px -518px;
+}
+
+.small-screen .icon_convictions {
+    background-position: -182px -742px;
+}
+
+.small-screen .icon_residencies {
+    background-position: -182px -630px;
+}
+
+
+/* Employee Relation Services -------------------------------------- */
+
+.small-screen .icon_positions {
+    background-position: -350px -462px;
+}
+
+.small-screen .icon_terminationpositions {
+    background-position: -126px -241px;
+}
+.small-screen .icon_logofpositions {
+    background-position: -350px -462px;
+}
+/*.small-screen .icon_delays {
+    background-position: -126px -350px;
+}*/
+
+.small-screen .icon_incidencedefinitions {
+    background-position: -127px -1190px;
+}
+
+.small-screen .icon_duties {
+    background-position: -181px -1134px;
+}
+
+.small-screen .icon_administrativeprofiles {
+    background-position: -127px -183px;
+}
+
+.small-screen .icon_penalties {
+    background-position: -126px -70px;
+}
+
+.small-screen .icon_rewards {
+    background-position: -126px -11px;
+}
+
+.small-screen .icon_workhistories {
+    background-position: -127px -181px;
+}
+
+.small-screen .icon_administrativeleaverequests {
+    background-position: -127px -966px;
+}
+
+.small-screen .icon_unpaidleaverequests {
+    background-position: -126px -854px;
+}
+
+.small-screen .icon_healthyleaverequests {
+    background-position: -126px -741px;
+}
+
+.small-screen .icon_hourlyleaverequests {
+    background-position: -126px -685px;
+}
+
+.small-screen .icon_maternityleaverequests {
+    background-position: -126px -630px;
+}
+
+.small-screen .icon_marriageleaverequests {
+    background-position: -126px -518px;
+}
+
+.small-screen .icon_pilgrimageleaverequests {
+    background-position: -126px -798px;
+}
+
+.small-screen .icon_deathleaverequests {
+    background-position: -126px -574px;
+}
+
+.small-screen .icon_otherleaverequests {
+    background-position: -126px -1077px;
+}
+
+.small-screen .icon_employeecustodies {
+    background-position: -294px -13px;
+}
+
+.small-screen .icon_assignments {
+    background-position: -294px -629px;
+}
+
+.small-screen .icon_employeetransfers {
+    background-position: -350px -350px;
+}
+
+.small-screen .icon_employeedisciplinarys {
+    background-position: -182px -1078px;
+}
+
+.small-screen .icon_employeeterminations {
+    background-position: -126px -463px;
+}
+
+.small-screen .icon_employeeterminations {
+    background-position: -126px -463px;
+}
+
+.small-screen .icon_exitinterviews {
+    background-position: -182px -854px;
+}
+
+.small-screen .icon_employeeresignations {
+    background-position: -182px -1022px;
+}
+
+.small-screen .icon_employeepromotions {
+    background-position: -182px -966px;
+}
+
+.small-screen .icon_financialpromotions {
+    background-position: -182px -910px;
+}
+
+.small-screen .icon_employeerewards {
+    background-position: -127px -11px;
+}
+
+.small-screen .icon_leaverequests {
+    background-position: -238px -70px;
+}
+
+.small-screen .icon_recycledleaves {
+    background-position: -238px -15px;
+}
+
+.small-screen .icon_balanceslices {
+    background-position: -238px -293px;
+}
+
+.small-screen .icon_paidslices {
+    background-position: -238px -238px;
+}
+
+.small-screen .icon_recycles {
+    background-position: -238px -182px;
+}
+
+.small-screen .icon_leavetemplatedetails {
+    background-position: -238px -126px;
+}
+
+.small-screen .icon_status {
+    background-position: -238px -350px;
+}
+
+.small-screen .icon_managerto {
+    background-position: -238px -462px;
+}
+
+
+.small-screen .icon_reportingsto {
+    background-position: -238px -406px;
+}
+
+.small-screen .icon_interviewanswers{
+    background-position: -238px -1134px;
+}
+
+
+
+
+
+
+
+
+
+
+/* Grade --------------------------------------------------- */
+
+.small-screen .icon_gradebyeducationqualifications {
+    background-position: -293px -686px;
+}
+
+.small-screen .icon_steps {
+    background-position: -293px -740px;
+}
+
+.small-screen .icon_jobtitles {
+    background-position: -293px -792px;
+}
+
+
+/* Job Description ------------------------------------------*/
+.small-screen .icon_roles {
+    background-position: -350px -14px;
+}
+
+.small-screen .icon_authorities {
+    background-position: -350px -69px;
+}
+
+.small-screen .icon_competencies {
+    background-position: -350px -237px;
+}
+
+.small-screen .icon_knowledges {
+    background-position: -182px -350px;
+}
+
+.small-screen .icon_computerskills {
+    background-position: -350px -182px;
+}
+
+.small-screen .icon_workingrestrictions {
+    background-position: -350px -295px;
+}
+
+.small-screen .icon_jobsnature {
+    background-position: -350px -630px;
+}
+
+.small-screen .icon_rolekpis {
+    background-position: -348px -518px;
+}
+
+.small-screen .icon_responsibilities {
+    background-position: -350px -574px;
+}
+
+.small-screen .icon_restrictions {
+    background-position: -182px -1190px;
+}
+
+.small-screen .icon_leveldescriptions {
+    background-position: -350px -688px;
+}
+
+.small-screen .icon_delegateauthoritiesfrompositions {
+    background-position: -350px -910px;
+}
+
+.small-screen .icon_delegateauthoritiestopositions {
+    background-position: -350px -854px;
+}
+
+.small-screen .icon_delegaterolestopositions {
+    background-position: -350px -798px;
+}
+
+.small-screen .icon_delegaterolesfrompositions {
+    background-position: -350px -742px;
+}
+
+.small-screen .icon_delegaterolesassuperiorpositions{
+    background-position: -350px -965px;
+}
+
+.small-screen .icon_delegateroles {
+    background-position: -350px -14px;
+}
+
+.small-screen .icon_delegateauthority{
+    background-position: -350px -1022px;
+}
+
+/* Payroll ------------------------------------------*/
+
+.small-screen .icon_primaryemployeebenefits {
+    background-position: -574px -182px;
+}
+
+.small-screen .icon_primaryemployeedeductions {
+    background-position: -574px -126px;
+}
+
+.small-screen .icon_employeeloans {
+    background-position: -574px -295px;
+}
+
+.small-screen .icon_bankinginformations {
+    background-position: -574px -407px;
+}
+
+.small-screen .icon_loanpayments {
+    background-position: -571px -348px;
+}
+
+.small-screen .icon_crossdeductions {
+    background-position: -574px -70px;
+}
+
+.small-screen .icon_crossdeductionwithdeductions {
+    background-position: -574px -14px;
+}
+
+.small-screen .icon_monthdeductionchanges {
+    background-position: -574px -630px;
+}
+
+.small-screen .icon_monthbenefitchanges {
+    background-position: -573px -568px;
+}
+
+.small-screen .icon_monthlycards {
+    background-position: -576px -685px;
+}
+
+.small-screen .icon_monthlyemployeedeductions {
+    background-position: -574px -518px;
+}
+
+.small-screen .icon_monthlyemployeebenefits {
+    background-position: -574px -462px;
+}
+
+.small-screen .icon_travelcategorycountries {
+    background-position: -574px -238px;
+}
+
+.small-screen .icon_salaryincreaseordinanceemployees {
+    background-position: -574px -742px;
+}
+
+.small-screen .icon_gradebenefitdetails {
+    background-position: -574px -798px;
+}
+
+.small-screen .icon_jobdescriptionbenefitdetails {
+    background-position: -574px -854px;
+}
+
+.small-screen .icon_jobtitlebenefitdetails {
+    background-position: -574px -911px;
+}
+
+.small-screen .icon_nodebenefitdetails {
+    background-position: -574px -966px;
+}
+
+.small-screen .icon_positionbenefitdetails {
+    background-position: -574px -1022px;
+}
+
+.small-screen .icon_positiondeductiondetails {
+    background-position: -574px -1078px;
+}
+
+.small-screen .icon_nodedeductiondetails {
+    background-position: -462px -1190px;
+}
+
+.small-screen .icon_jobtitledeductiondetails {
+    background-position: -518px -1189px;
+}
+
+.small-screen .icon_jobdescriptiondeductiondetails {
+    background-position: -573px -1191px;
+}
+
+.small-screen .icon_gradedeductiondetails {
+    background-position: -574px -1134px;
+}
+
+
+
+/* incentives */
+
+.small-screen .icon_deductionincidences {
+    background-position: -350px 42px;
+}
+
+.small-screen .icon_exceptionemploymenttypes {
+    background-position: -350px 98px;
+}
+
+.small-screen .icon_exceptionemploymentstatus {
+    background-position: -350px 154px;
+}
+
+
+
+/* attendance */
+.small-screen .icon_workshoprecurrences {
+    background-position: -462px -686px;
+}
+
+.small-screen .icon_attendancewithoutadjustments {
+    background-position: -462px -852px;
+}
+
+.small-screen .icon_attendancedailyadjustments {
+    background-position: -462px -741px;
+}
+
+.small-screen .icon_attendancemonthlyadjustments {
+    background-position: -462px -798px;
+}
+
+.small-screen .icon_temporaryworkshops {
+    background-position: -462px -574px;
+}
+
+.small-screen .icon_infractionslices {
+    background-position: -462px -630px;
+}
+
+.small-screen .icon_nonattendanceslices {
+    background-position: -462px -518px;
+}
+
+.small-screen .icon_overtimeslices {
+    background-position: -462px -462px;
+}
+
+.small-screen .icon_particularovertimeshifts {
+    background-position: -462px -910px;
+}
+
+.small-screen .icon_normalshifts {
+    background-position: -462px -406px;
+}
+
+
+
+
+
+
+/* objective */
+.small-screen .icon_objectives{
+    background-position:-294px -1022px;
+}
+
+.small-screen .icon_sharedwiths {
+    background-position:-294px -1190px;
+}
+
+.small-screen .icon_kpis {
+    background-position:-348px -518px;
+}
+
+.small-screen .icon_constraints {
+    background-position:-294px -1135px;
+}
+
+.small-screen .icon_actionplans {
+    background-position:-294px -1078px
+}
+
+
+
+
+/* project management */
+.small-screen .icon_teams
+{
+    background-position: -238px -630px;
+}
+
+.small-screen .icon_phases
+{
+    background-position: -238px -686px;
+}
+
+
+.small-screen .icon_constrains
+{
+    background-position: -238px -573px;
+}
+
+
+.small-screen .icon_successfactors
+{
+    background-position: -238px -518px;
+}
+
+.small-screen .icon_resources
+{
+    background-position: -126px -1078px;
+}
+
+.small-screen .icon_members
+{
+    background-position: -238px -742px;
+}
+
+.small-screen .icon_indirectmanagerinfos
+{
+    background-position: -238px -798px;
+}
+
+.small-screen .icon_tasks
+{
+    background-position: -238px -856px;
+}
+
+
+
+
+
+
+/*=icons->small */
+.title_icon span.icon_module_small_personnel,
+.icon_module_small_Personnel {
+    background-position: -78px 0;
+}
+
+.treeview.active .icon_module_small_Personnel{
+    background-position: -16px 0;
+}
+
+.title_icon span.icon_module_small_employeerelationservices,
+.icon_module_small_EmployeeRelationServices {
+    background-position: -78px -208px;
+}
+
+.treeview.active .icon_module_small_EmployeeRelationServices {
+    background-position: -16px -208px;
+}
+
+.title_icon span.icon_module_small_objectives,
+.icon_module_small_Objectives {
+    background-position: -78px -16px;
+}
+
+.treeview.active .icon_module_small_Objectives {
+    background-position: -16px -16px;
+}
+
+.title_icon span.icon_module_small_organizationchart,
+.icon_module_small_OrganizationChart {
+    background-position: -78px -32px;
+}
+
+.treeview.active .icon_module_small_OrganizationChart {
+    background-position: -16px -32px;
+}
+
+.title_icon span.icon_module_small_training,
+.icon_module_small_Training {
+    background-position: -78px -80px;
+}
+
+.treeview.active .icon_module_small_Training {
+    background-position: -16px -80px;
+}
+
+.title_icon span.icon_module_small_jobdescription ,
+.icon_module_small_JobDescription {
+    background-position: -78px -48px;
+}
+
+.treeview.active .icon_module_small_JobDescription {
+    background-position: -16px -48px;
+}
+
+.title_icon span.icon_module_small_pms ,
+.icon_module_small_PMS{
+    background-position: -78px -64px;
+}
+
+.treeview.active .icon_module_small_PMS{
+    background-position: -16px -64px;
+}
+
+.title_icon .icon_module_small_recruitment,
+.icon_module_small_Recruitment {
+    background-position: -78px -96px;
+}
+
+.treeview.active .icon_module_small_Recruitment {
+    background-position: -16px -96px;
+}
+
+.title_icon .icon_module_small_grades,
+.icon_module_small_Grades {
+    background-position: -78px -192px;
+}
+
+.treeview.active .icon_module_small_Grades {
+    background-position: -16px -192px;
+}
+
+.title_icon .icon_module_small_payroll,
+.icon_module_small_PayRoll {
+    background-position: -78px -112px;
+}
+
+.treeview.active .icon_module_small_PayRoll {
+    background-position: -16px -112px;
+}
+
+.title_icon .icon_module_small_healthinsurance,
+.icon_module_small_HealthInsurance {
+    background-position: -78px -128px;
+}
+
+.treeview.active .icon_module_small_HealthInsurance {
+    background-position: -16px -128px;
+}
+
+.title_icon .icon_module_small_localization,
+.icon_module_small_Localization {
+    background-position: -78px -144px;
+}
+
+.treeview.active .icon_module_small_Localization {
+    background-position: -16px -144px;
+}
+
+.title_icon .icon_module_small_security,
+.icon_module_small_Security {
+    background-position: -78px -160px;
+}
+
+.treeview.active .icon_module_small_Security {
+    background-position: -16px -160px;
+}
+
+.title_icon .icon_module_small_report_generator,
+.icon_module_small_Report_Generator {
+    background-position: -78px -176px;
+}
+
+.treeview.active .icon_module_small_Report_Generator {
+    background-position: -16px -176px;
+}
+
+.title_icon .icon_module_small_incentive,
+.icon_module_small_Incentive {
+    background-position: -78px -225px;
+}
+
+.treeview.active .icon_module_small_Incentive {
+    background-position: -16px -225px;
+}
+
+.title_icon .icon_module_small_payrollsystem,
+.icon_module_small_PayrollSystem {
+    background-position: -78px -112px;
+}
+
+.treeview.active .icon_module_small_PayrollSystem {
+    background-position: -16px -112px;
+}
+
+.title_icon .icon_module_small_attendancesystem,
+.icon_module_small_AttendanceSystem {
+    background-position: -78px -240px;
+}
+
+.treeview.active .icon_module_small_AttendanceSystem {
+    background-position: -16px -240px;
+}
+
+.title_icon .icon_module_small_workflow,
+.icon_module_small_Workflow {
+    background-position: -78px -256px;
+}
+
+.treeview.active .icon_module_small_Workflow {
+    background-position: -16px -256px;
+}
+.title_icon .notification_icon {
+    background-position: -48px 0;
+}
+
+
+.title_icon .icon_module_small_projectmanagement
+{
+    background-position: -16px -272px;
+}
+
+
+
+
+
+/*=icons->modules-------------------------------------------------------------------------------------- */
+/*--------------------- personnel*/
+
+/* normal */
+#theme-default #primary_nav .icon_module_personnel {
+    background-position: 0 0;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_personnel {
+    background-position: -64px 0;
+}
+
+
+
+
+/*--------------------- Employee Relation services */
+
+/* normal */
+#theme-default #primary_nav .icon_module_employeerelationservices {
+    background-position: 0 -832px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_employeerelationservices {
+    background-position: -64px -832px;
+}
+
+
+
+
+
+/*------------------ objective */
+
+/* normal */
+#theme-default #primary_nav .icon_module_objectives {
+    background-position: 0 -64px;
+}
+
+
+
+/* active */
+#theme-default #primary_nav .icon_module_active_objectives {
+    background-position: -64px -64px;
+}
+
+/*------------------------- org chart*/
+
+/* normal */
+#theme-default #primary_nav .icon_module_organizationchart {
+    background-position: 0 -128px;
+}
+
+
+
+/* active */
+#theme-default #primary_nav .icon_module_active_organizationchart {
+    background-position: -64px -128px;
+}
+/*-------------------------- job desc */
+
+/* normal */
+#theme-default #primary_nav .icon_module_jobdescription {
+    background-position: 0 -192px;
+}
+
+
+
+/* active */
+#theme-default #primary_nav .icon_module_active_jobdescription {
+    background-position: -64px -192px;
+}
+
+/*-------------------------- performance appraisal */
+
+/* normal */
+#theme-default #primary_nav .icon_module_pms {
+    background-position: 0 -256px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_pms {
+    background-position: -64px -256px;
+}
+
+
+/*-------------------------- Training */
+
+/* normal */
+#theme-default #primary_nav .icon_module_recruitment {
+    background-position: 0 -384px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_recruitment {
+    background-position: -64px -384px;
+}
+
+/*-------------------------- recruitment */
+
+/* normal */
+#theme-default #primary_nav .icon_module_training {
+    background-position: 0 -320px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_training {
+    background-position: -64px -320px;
+}
+
+
+
+
+
+/*-------------------------- payroll */
+
+/* normal */
+#theme-default #primary_nav .icon_module_payroll,
+#theme-default #primary_nav .icon_module_payrollsystem {
+    background-position: 0 -448px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_payroll,
+#theme-default #primary_nav .icon_module_active_payrollsystem {
+    background-position: -64px -448px;
+}
+
+
+/*-------------------------- health insurance */
+
+/* normal */
+#theme-default #primary_nav .icon_module_healthinsurance {
+    background-position: 0 -512px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_healthinsurance {
+    background-position: -64px -512px;
+}
+
+
+
+
+/*-------------------------- localization */
+
+/* normal */
+#theme-default #primary_nav .icon_module_localization {
+    background-position: 0 -576px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_localization {
+    background-position: -64px -576px;
+}
+
+
+
+
+
+
+
+
+/* ------------------------------ reporting */
+
+/* normal */
+#theme-default #primary_nav .icon_module_reporting {
+    background-position: 0 -704px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_reporting {
+    background-position: -64px -704px;
+}
+
+
+
+
+
+
+
+
+
+/*-------------------------- report generator */
+
+/* normal */
+#theme-default #primary_nav .icon_module_reportgenerator  
+{
+    background-position:0 -704px;
+}
+    
+/* active */
+#theme-default #primary_nav .icon_module_active_reportgenerator 
+{
+    background-position:-64px -704px;
+}
+
+
+
+
+
+
+/*-------------------------- security */
+
+/* normal */
+#theme-default #primary_nav .icon_module_security {
+    background-position: 0 -640px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_security {
+    background-position: -64px -640px;
+}
+
+
+
+/*-------------------------- Grade */
+
+/* normal */
+#theme-default #primary_nav .icon_module_grade {
+    background-position: 0 -771px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_grade {
+    background-position: -64px -771px;
+}
+
+
+
+
+
+
+
+
+/*-------------------------- Incentives */
+
+/* normal */
+#theme-default #primary_nav .icon_module_incentive {
+    background-position: 0px -896px;
+}
+
+/* active */
+#theme-default #primary_nav .icon_module_active_incentive {
+    background-position: -64px -896px;
+}
+
+
+
+
+
+
+
+/*-------------------------- attendance */
+
+#theme-default #primary_nav .icon_module_attendancesystem {
+    background-position: 0px -959px;
+}
+
+
+#theme-default #primary_nav .icon_module_active_attendancesystem {
+    background-position: -64px -959px;
+}
+
+
+#theme-default #primary_nav .icon_module_workflow {
+    background-position: 0 -1024px;
+}
+
+#theme-default #primary_nav .icon_module_active_workflow {
+    background-position: -64px -1024px;
+}
+
+
+/*-------------------------- project management */
+
+#theme-default #primary_nav .icon_module_projectmanagement
+{
+    background-position: 0 -1088px;
+}
+
+#theme-default #primary_nav .icon_module_active_projectmanagement
+{
+    background-position: -64px -1088px;
+}
+
+
+/*----- font icon-----*/
+.icon-nav-item:before {
+  content: "\e900";
+}

@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="09/14/2015 15:18:41" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVF76LdUzHk64a6rxQusfKS9dkq7rpP9ousOIvI+5Wnouw4caubUCg+wsLFsrrLcAp6UvmM+D+61bzWK6uSDGbd4swJWzPUYDuH15O7BxVOV3o=">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="WITH Temp AS(&#13;&#10;SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code,&#13;&#10;(SELECT&#13;&#10;dbo.Grade.Id&#13;&#10;FROM            &#13;&#10;dbo.Grade &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = P.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND  &#13;&#10;		JobTitle.IsVertualDeleted=0 AND &#13;&#10;		JobDescription.IsVertualDeleted=0 AND &#13;&#10;		Position.IsVertualDeleted=0 AND &#13;&#10;		Grade.IsVertualDeleted=0) AS GradeId&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;WHERE	dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;		Employee.IsVertualDeleted=0 AND &#13;&#10;		AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;		Position.IsVertualDeleted=0 AND &#13;&#10;		EmployeeCard.IsVertualDeleted=0&#13;&#10;)&#13;&#10;Select *,&#13;&#10;(SELECT Salary FROM dbo.EmployeeCard WHERE Employee_id=Temp.Id AND EmployeeCard.IsVertualDeleted=0) AS Salary&#13;&#10;FROM Temp&#13;&#10;GROUP BY Id, &#13;&#10;		 FirstName, &#13;&#10;		 LastName, &#13;&#10;		 FatherName, &#13;&#10;		 Code,&#13;&#10;		 GradeId&#13;&#10;ORDER BY Id DESC">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="GradeId" DataType="System.Int32"/>
+        <Column Name="Salary" DataType="System.Single"/>
+      </TableDataSource>
+      <TableDataSource Name="Grade" DataType="System.Int32" Enabled="true" TableName="Grade" SelectCommand="SELECT   Id, Name, MinSalary, MaxSalary, (MinSalary + MaxSalary) / 2 AS AVG&#13;&#10;FROM            dbo.Grade&#13;&#10;WHERE dbo.Grade.IsVertualDeleted=0&#13;&#10;ORDER BY Id">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="MinSalary" DataType="System.Single"/>
+        <Column Name="MaxSalary" DataType="System.Single"/>
+        <Column Name="AVG" DataType="System.Single"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="Grade_Table1" ParentDataSource="Grade" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="GradeId" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="75.6">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير سلم الاجور حسب الفئات" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="79.6" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="339.2" Width="190.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحد الادنى للاجر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الفئة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text40" Left="150.2" Width="190.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحد الاعلى للاجر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="-1" Width="152.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="متوسط الاجر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="102.5" Width="718.2" Height="37.8" DataSource="Grade">
+      <TextObject Name="Text1" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.Name]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Left="340.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.MinSalary]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="151.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.MaxSalary]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.AVG]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text42" Left="151.2" Top="18.9" Width="379.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text43" Left="530.2" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text45" Top="18.9" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الراتب الاساسي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="144.3" Width="718.2" Height="18.9" DataSource="Table1">
+        <TextObject Name="Text4" Left="151.2" Width="379" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text44" Left="530.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text7" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Salary]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="167.2" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="529.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="190.1" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

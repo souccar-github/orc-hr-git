@@ -1,0 +1,109 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="chart chart-width-full">
+
+    <div class="chart-params">
+        <div id="year-lny" style="width:48%;">
+            <div class="control control-year-lny">
+                <div class="k-edit-label">
+                    <label for="yearlny">@GlobalResource.Year</label>
+                </div>
+                <div data-container-for="yearlny" class="k-edit-field">
+                    <input id="yearlny" onkeyup="onKeyupYear()" />
+                </div>
+
+            </div>
+        </div>
+        <div id="node-lny" style="width:48%;">
+            <div class="control control-node-lny">
+                <div class="k-edit-label">
+                    <label for="nodelny">@GlobalResource.Node</label>
+                </div>
+                <div data-container-for="nodelny" class="k-edit-field">
+                    <input id="nodelny" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="node-leaves-per-year-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    function getTheLeavesForSpecificNodeWithinYearChart() {
+        $('#year-lny').css('float', $pageDir);
+        $('#node-lny').css('float', $pageDir);
+
+        var date = new Date();
+        var year = date.getFullYear();
+        $('#yearlny').val(year);
+
+        generateNodeDropdownList('#nodelny',
+            "@Url.Action("GetAllNodes", "Dashboard", new { area = "EmployeeRelationServices" })",
+            function (e) {
+                getTheLeavesForSpecificNodeWithinYear(e, $('#yearlny').val());
+            });
+    }
+
+    function onKeyupYear() {
+        var year = $('#yearlny').val();
+        if (year.length == 4) {
+
+            var nodeDropdownlist = $("#nodelny").data("kendoDropDownList");
+            getTheLeavesForSpecificNodeWithinYear(nodeDropdownlist.value(), year);
+        }
+
+    }
+
+    function getTheLeavesForSpecificNodeWithinYear(nodeId, year) {
+        window.Souccar.ajax('@Url.Action("GetTheLeavesForSpecificNodeWithinYear", "Dashboard", new { area = "EmployeeRelationServices" })',
+            { nodeId: nodeId, year: year },
+            successFunc,
+            erorrFunc);
+        function successFunc(data) {
+            if (data.Success) {
+                generateTheLeavesForSpecificNodeWithinYearChart(data.Data);
+            }
+        }
+        function erorrFunc() {
+            console.log("Error / func:getLeaveSettings");
+        }
+    }
+
+    function generateTheLeavesForSpecificNodeWithinYearChart(data) {
+        Highcharts.chart('node-leaves-per-year-chart', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TheLeavesForSpecificNodeWithinYear)'
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+            yAxis: {
+                title: {
+                    text: '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeavesCount)'
+                }
+            },
+            //legend: {
+            //    layout: 'vertical',
+            //    align: 'right',
+            //    verticalAlign: 'middle'
+            //},
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    },
+                    enableMouseTracking: true
+                }
+            },
+            colors: getDashboardColors(),
+            series: data
+        });
+    }
+</script>

@@ -1,0 +1,238 @@
+﻿@using HRIS.Domain.Recruitment.Enums
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Extenstions
+
+<div class="set-application-status-Window"></div>
+
+<script type="text/javascript">
+
+    function interviewEditHandler(e) {
+        if (e.model.isNew()) {
+            getJobApplicationReference();
+        }
+    }
+
+    function getJobApplicationReference() {
+
+        $.ajax({
+            url: '@Url.Action("GetJobApplicationId", "Home", new { area = "Recruitment" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+
+                    $("[name='JobApplication']").data("kendoDropDownList").value(data.Id);
+                    $("[name='JobApplication']").data("kendoDropDownList").enable(false);
+
+                }
+            }
+        });
+
+    }
+
+    function SetJobApplicationStatus(e) {
+
+        $.ajax({
+            url: '@Url.Action("CheckStatementOfJobApplicationStatus", "Interview", new { area = "Recruitment" })',
+            type: "POST",
+            data: JSON.stringify({ id: e }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    generateSetJobApplicationStatusWindow(data,e);
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+    function generateSetJobApplicationStatusWindow(data,id) {
+        var jobApplicationStatus = [
+            { 'Name': '@ApplicationStatus.Accepted.ToString()', 'Id': '@ApplicationStatus.Accepted' },
+            { 'Name': '@ApplicationStatus.Rejected.ToString()', 'Id': '@ApplicationStatus.Rejected' },
+            { 'Name': '@ApplicationStatus.ForFuture.ToString()', 'Id': '@ApplicationStatus.ForFuture' }
+        ];
+
+        var title = "@typeof(ApplicationStatus).GetTitle()";
+        var buttons = [
+            { Name: "updateSetApplicationStatus", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancelSetApplicationStatus", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+
+        var containerId = "set-application-status-container";
+        var bodyHTML = "<div class='set-application-status-container-body fieldsets-div'></div>";
+        createAndOpenCustomWindow($(".set-application-status-Window"), bodyHTML, containerId, title, buttons, true, false);
+
+        var template = kendo.template($("#set-application-status-template").html());
+        $(".set-application-status-container-body").html(template({ model: data.DevelopmentViewModel, finalMark: data.FinalMark, strongLimit: data.ViewModel.StrongLimit, weaknessLimit: data.ViewModel.WeaknessLimit }));
+        kendo.init($(".set-application-status-Window"));
+
+        $('#updateSetApplicationStatus').off().on('click',function() {
+
+            var applicationStatusDropdownList = $('#applicationStatus').data("kendoDropDownList");
+            var status = applicationStatusDropdownList.value();
+            if (status == -1) {
+
+                var message =
+                    "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ApplicationStatus)" +
+                        "_@GlobalResource.RequiredMessage";
+
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", message, "k-icon w-b-error", commands);
+
+            } else {
+                saveApplicationStatus(status,id);
+            }
+        });
+
+        $(document).on('click', '#cancelSetApplicationStatus', function () {
+
+            $(".set-application-status-Window").data("kendoWindow").close();
+        });
+    }
+
+    function saveApplicationStatus(status,id) {
+        $.ajax({
+            url: '@Url.Action("SaveApplicationStatus", "Interview", new { area = "Recruitment" })',
+            type: "POST",
+            data: JSON.stringify({ status: status,id:id }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("@GlobalResource.Success", data.Message, "k-icon w-b-success", commands);
+
+                    $(".set-application-status-Window").data("kendoWindow").close();
+
+                } else {
+                    ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+
+
+    function getDropdownListDataSource() {
+        return [
+            { 'Name': '', 'Id': '-1' },
+            { 'Name': '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Accepted)', 'Id': '@ApplicationStatus.Accepted' },
+            { 'Name': '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Rejected)', 'Id': '@ApplicationStatus.Rejected' },
+            { 'Name': '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ForFuture)', 'Id': '@ApplicationStatus.ForFuture' }
+        ];
+    }
+</script>
+
+<script id="set-application-status-template" type="text/x-kendo-template">
+    <div>
+        <div class="development">
+            <fieldset class='weak-points-fieldset'>
+                <legend>@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.SetApplicationStatus)</legend>
+
+                <div class="k-edit-label">
+                    <label for="applicationStatus">@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ApplicationStatus)<span class="equired-star">*</span></label>
+                </div>
+                <div data-container-for="applicationStatus" class="k-edit-field">
+                    <input id="applicationStatus" name="applicationStatus" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" required="required" data-value-primitive="true" data-source=getDropdownListDataSource() data-bind="value: applicationStatus" />
+                </div>
+
+                <br />
+                <br />
+                <br />
+                <table>
+                    <thead>
+                        <tr>
+                            <th>@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.FinalMark)</th>
+                            <th>@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.GapThreshold)</th>
+                            <th>@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.SkillThreshold)</th>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:center;">#= Math.round(finalMark * 100)/100 #</td>
+                            <td style="text-align:center;">#=weaknessLimit#</td>
+                            <td style="text-align:center;">#=strongLimit#</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class='weak-points-fieldset'>
+                <legend>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.WeakPoints)</legend><div class='weak-points'></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Section)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="WeakPoints-body">
+                        #for (var i = 0; i < model.length; i++) {#
+                        #var devSectionViewModel=model[i];#
+                        #for (var j = 0; j < devSectionViewModel.WeakPoints.length; j++) {#
+                        #var item=devSectionViewModel.WeakPoints[j];#
+                        #var checkStatus="";#
+                        #if(item.IsChecked){#
+                        #checkStatus='checked="checked"';#
+                        #}#
+                        <tr>
+                            <td>#=devSectionViewModel.SectionName#</td>
+                            <td class="item-Name">#=item.Name#</td>
+                            <td>#=item.Weight#</td>
+                            <td>#=item.Rate#</td>
+                            <td></td>
+                            <td>#=item.Note#</td>
+                        </tr>
+                        #}#
+                        #}#
+
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class='strong-points-fieldset'>
+                <legend>@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.StrongPoints)</legend>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Section)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        #for (var i = 0; i < model.length; i++) {#
+                        #var devSectionViewModel=model[i];#
+                        #for (var j = 0; j < devSectionViewModel.StrongPoints.length; j++) {#
+                        #var item=devSectionViewModel.StrongPoints[j];#
+                        <tr>
+                            <td>#=devSectionViewModel.SectionName#</td>
+                            <td>#=item.Name#</td>
+                            <td>#=item.Weight#</td>
+                            <td>#=item.Rate#</td>
+                            <td></td>
+                            <td>#=item.Note#</td>
+                            <td></td>
+                        </tr>
+                        #}#
+                        #}#
+
+                    </tbody>
+                </table>
+            </fieldset>
+
+        </div>
+
+    </div>
+</script>

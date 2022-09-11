@@ -1,0 +1,360 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<div class="employee-loan-container-title"><label>@GlobalResource.Employee</label></div><br />
+<div class="employee-loan-container"></div><br />
+<div class="employee-loan-container-info"></div><br />
+<div class="employee-loan-approval-container-title"><label>@GlobalResource.PendingLoanRequest</label></div><br />
+<div class="employee-loan-approval-container"></div><br />
+<div class="employee-loan-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var employeeLoanId = window.localStorage.getItem('ServiceId');
+    var employeeContainer = $('.employee-loan-container');
+    var employeeLoanRequestInfoContainer = $('.employee-loan-container-info');
+    var approvalContainer = $('.employee-loan-approval-container');
+    var workflowContainer = $(".employee-loan-request-workflow-container");
+    var employeeTitleContainer = $(".employee-loan-container-title");
+    var employeeLoanApprovalTitleContainer = $(".employee-loan-approval-container-title");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForPSLoanRequestService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            console.log(data.EmployeeApproval);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        employeeContainer.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            employeeContainer.html('');
+            approvalContainer.html('');
+            employeeTitleContainer.html('');
+            employeeLoanApprovalTitleContainer.html('');
+
+
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            window.emps = [];
+            debugger;
+            Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/GetLoanEmps", {}, function (data) { window.emps = data.Data; }, failedMessage);
+
+
+
+            var employeeLoanRequestTemplateData = [
+                { Name: "TotalAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TotalAmount)", Type: "Number", IsRequired: true },
+                { Name: "PaymentsCount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PaymentsCount)", Type: "Number", IsRequired: true },
+                { Name: "FirstRepresentative", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FirstRepresentative)", Type: "Dropdown", DataSource: "emps", Creatable: false, IsRequired: true },
+                { Name: "SecondRepresentative", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SecondRepresentative)", Type: "Dropdown", DataSource: "emps", Creatable: false, IsRequired: true },
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea" }
+            ];
+
+            var employeeLoanRequestDatabind = kendo.observable(
+                {
+                    TotalAmount: 0,
+                    PaymentsCount: 0,
+                    FirstRepresentative: -1,
+                    SecondRepresentative: -1,
+                    Note: ""
+                });
+
+            createCustomEditForm(employeeLoanRequestInfoContainer, { Fields: employeeLoanRequestTemplateData, Key: "employee-employeeLoan" }, employeeLoanRequestDatabind);
+            $("[name='FirstRepresentative']").kendoDropDownList({
+                filter: "contains",
+                autoBind: true,
+                minLength: 1,
+                dataTextField: "Name",
+                dataValueField: "Id",
+            });
+            var dropdownlist = $("[name='FirstRepresentative']").data("kendoDropDownList");
+            dropdownlist.setDataSource(emps);
+            $("[name='SecondRepresentative']").kendoDropDownList({
+                filter: "contains",
+                autoBind: true,
+                minLength: 1,
+                dataTextField: "Name",
+                dataValueField: "Id",
+            });
+            var dropdownlist = $("[name='SecondRepresentative']").data("kendoDropDownList");
+            dropdownlist.setDataSource(emps);
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            employeeLoanRequestInfoContainer.find("[name='Note']").after(applyButton);
+
+            var FirstRepresentative = $('[name="FirstRepresentative"]');
+            var SecondRepresentative = $('[name="SecondRepresentative"]');
+
+            employeeLoanRequestInfoContainer.find(".applyButton").off('click').on('click', function () {
+                debugger;
+                var firstRepresentative = Number(employeeLoanRequestInfoContainer.find("#FirstRepresentative_employee-employeeLoan").data("kendoDropDownList").value());
+                var secondRepresentative = Number(employeeLoanRequestInfoContainer.find("#SecondRepresentative_employee-employeeLoan").data("kendoDropDownList").value());
+                var note = employeeLoanRequestInfoContainer.find("[name='Note']").val();
+                var totalAmount = employeeLoanRequestInfoContainer.find("[name='TotalAmount']").val();
+                var paymentsCount = employeeLoanRequestInfoContainer.find("[name='PaymentsCount']").val();
+                employeeLoanRequestDatabind.set("FirstRepresentative", firstRepresentative);
+                employeeLoanRequestDatabind.set("SecondRepresentative", secondRepresentative);
+                employeeLoanRequestDatabind.set("Note", note);
+                employeeLoanRequestDatabind.set("TotalAmount", totalAmount);
+                employeeLoanRequestDatabind.set("PaymentsCount", paymentsCount);
+                var jsonParam = { employeeId: employeeId, positionId: positionId, request: employeeLoanRequestDatabind };
+
+                $("[name='PaymentsCount']").focusout(function () {
+                    debugger;
+                    if ($("[name='PaymentsCount']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "PaymentsCount");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-PaymentsCount').remove();
+                    }
+
+                });
+
+                $("[name='PaymentsCount']").keyup(function () {
+                    if ($("[name='PaymentsCount']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "PaymentsCount");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-PaymentsCount').remove();
+                    }
+
+                });
+                if (paymentsCount == 0) {
+
+
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "PaymentsCount");
+                }
+                
+                
+                else {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-PaymentsCount').remove();
+                }
+
+                $("[name='TotalAmount']").focusout(function () {
+                    debugger;
+                    if ($("[name='TotalAmount']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "TotalAmount");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-TotalAmount').remove();
+                    }
+
+                });
+
+                $("[name='TotalAmount']").keyup(function () {
+                    if ($("[name='TotalAmount']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "TotalAmount");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-TotalAmount').remove();
+                    }
+
+                });
+                if (totalAmount == 0) {
+
+
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "TotalAmount");
+                }
+
+
+                else {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-TotalAmount').remove();
+                }
+                if (firstRepresentative == "" || firstRepresentative == "0" || firstRepresentative == 0 || firstRepresentative == null || firstRepresentative == -1) {
+                    debugger;
+                    var FirstRepresentativeDropownlist = $("[name='FirstRepresentative']").data("kendoDropDownList");
+                    var FirstRepresentativeValue = FirstRepresentativeDropownlist.value();
+                    if (FirstRepresentativeValue == "0" || FirstRepresentativeValue == "-1" || FirstRepresentativeValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "FirstRepresentative");
+                    }
+                    FirstRepresentativeDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FirstRepresentative').remove();
+                    });
+                }
+                if (secondRepresentative == "" || secondRepresentative == "0" || secondRepresentative == 0 || secondRepresentative == null || secondRepresentative == -1) {
+                    debugger;
+                    var SecondRepresentativeDropownlist = $("[name='SecondRepresentative']").data("kendoDropDownList");
+                    var SecondRepresentativeValue = SecondRepresentativeDropownlist.value();
+                    if (SecondRepresentativeValue == "0" || SecondRepresentativeValue == "-1" || SecondRepresentativeValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "SecondRepresentative");
+                    }
+                    SecondRepresentativeDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-SecondRepresentative').remove();
+                    });
+                }
+                debugger;
+                if (firstRepresentative == null || firstRepresentative == -1 || secondRepresentative == null || secondRepresentative == -1) {
+                    //requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePSLoanItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+            });
+
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            employeeLoanRequestInfoContainer.html('');
+            employeeLoanRequestInfoContainer.html('');
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        var template = kendo.template($("#employee-employee-loan-approval-template").html());
+        approvalContainer.html(template(data));
+        window.EmployeesLoanInfo = data;
+    }
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, employeeLoanId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, employeeLoanId) {
+
+        employeeContainer.html('');
+        approvalContainer.html('');
+        employeeTitleContainer.html('');
+        employeeLoanApprovalTitleContainer.html('');
+
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+
+            var employeeLoanRequestTemplateData = [
+                {Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                {Name: "TotalAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TotalAmount)", Type: "Number", IsReadonly: true },
+                { Name: "PaymentsCount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PaymentsCount)", Type: "Number", IsReadonly: true },
+                { Name: "FirstRepresentative", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FirstRepresentative)", Type: "Text", IsReadonly: true },
+                { Name: "SecondRepresentative", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SecondRepresentative)", Type: "Text", IsReadonly: true },
+                { Name: "RequestDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)", Type: "Date", IsReadonly: true },
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea", IsReadonly: true }
+            ];
+            var employeeLoanRequestViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    TotalAmount: 0,
+                    PaymentsCount: 0,
+                    FirstRepresentative: "",
+                    SecondRepresentative: "",
+                    RequestDate: null,
+                    Note: ""
+                });
+
+            for (var i = 0; i < window.EmployeesLoanInfo.length; i++) {
+                if (window.EmployeesLoanInfo[i].WorkflowItemId == workflowId) {
+                    employeeLoanRequestViewDatabind.FullName = window.EmployeesLoanInfo[i].FullName;
+                    employeeLoanRequestViewDatabind.TotalAmount = window.EmployeesLoanInfo[i].TotalAmount;
+                    employeeLoanRequestViewDatabind.PaymentsCount = window.EmployeesLoanInfo[i].PaymentsCount;
+                    employeeLoanRequestViewDatabind.FirstRepresentative = window.EmployeesLoanInfo[i].FirstRepresentativeName;
+                    employeeLoanRequestViewDatabind.SecondRepresentative = window.EmployeesLoanInfo[i].SecondRepresentativeName;
+                    employeeLoanRequestViewDatabind.RequestDate = window.EmployeesLoanInfo[i].RequestDate;
+                    employeeLoanRequestViewDatabind.Note = window.EmployeesLoanInfo[i].Note;
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeLoanRequestTemplateData, Key: "employee-employeeLoan" }, employeeLoanRequestViewDatabind);
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptPSLoanRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectPSLoanRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingPSLoanRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            debugger;
+            var jsonParam = { workflowId: workflowId, requestId: employeeLoanId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-employee-loan-approval-template" type="text/x-kendo-template">
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TotalAmount)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PaymentsCount)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FirstRepresentative)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SecondRepresentative)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.TotalAmount#</td>
+                <td>#=employee.PaymentsCount#</td>
+                <td>#=employee.FirstRepresentativeName#</td>
+                <td>#=employee.SecondRepresentativeName#</td>
+                <td>#=window.Souccar.toStringForDate(employee.RequestDate)#</td>
+                <td>#=employee.Note#</td>
+                <td style="display: flex; justify-content: center; align-items: center;"><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.RequestId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="11/27/2014 11:07:05" ReportInfo.Modified="10/10/2016 13:52:44" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+  
+
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {
+      if(CheckBox1.Checked){
+        ComboBox2.AutoFilter=false;
+        ComboBox2.Enabled = false;
+        
+        
+        ComboBox1.AutoFilter=false;
+        ComboBox1.Enabled = false; 
+      }else {
+        ComboBox2.AutoFilter=true;
+        ComboBox2.Enabled = true;
+        
+        ComboBox1.AutoFilter=true;
+        ComboBox1.Enabled = true;
+      }
+    }
+
+    private void CheckBox2_Click(object sender, EventArgs e)
+    {
+         
+      if(CheckBox2.Checked){
+        ComboBox3.AutoFilter=false;
+        ComboBox3.Enabled = false;  
+      }else {
+        ComboBox3.AutoFilter=true;
+        ComboBox3.Enabled = true; }
+    }     
+
+    private void CheckBox3_Click(object sender, EventArgs e)
+    {  
+      if(DateTimePicker1.Checked){
+        DateTimePicker1.AutoFilter=false;  
+        DateTimePicker2.AutoFilter=false;
+      }else {
+        DateTimePicker1.AutoFilter=true;
+        DateTimePicker2.AutoFilter=true;}
+    }
+    
+    
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLv9KKUZL9ebShM+Hrj0EJEiw==">
+      <TableDataSource Name="Table" Alias="BasicInfoDataSource" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     dbo.MonthlyCard.Id AS MonthlyCardId, dbo.Employee.Code AS EmployeeCode, dbo.Employee.FirstName + ' ' + dbo.Employee.LastName AS FullName, &#13;&#10;                      dbo.Month.Name AS MonthName, dbo.MonthlyCard.Salary, dbo.Employee.Id AS EmployeeId, dbo.Month.Date AS MonthDate&#13;&#10;FROM         dbo.Month INNER JOIN&#13;&#10;                      dbo.MonthlyCard ON dbo.MonthlyCard.Month_id = dbo.Month.Id INNER JOIN&#13;&#10;                      dbo.EmployeeCard ON dbo.EmployeeCard.Id = dbo.MonthlyCard.PrimaryCard_id INNER JOIN&#13;&#10;                      dbo.Employee ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE     (dbo.MonthlyCard.IsVertualDeleted = 0) AND (dbo.Month.IsVertualDeleted = 0) AND (dbo.EmployeeCard.IsVertualDeleted = 0) AND (dbo.Employee.IsVertualDeleted = 0)&#13;&#10;ORDER BY dbo.Employee.FirstName ASC;">
+        <Column Name="MonthlyCardId" DataType="System.Int32"/>
+        <Column Name="EmployeeCode" DataType="System.String"/>
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="MonthName" DataType="System.String"/>
+        <Column Name="Salary" DataType="System.Single"/>
+        <Column Name="FinalSalary" DataType="System.Double" PropName="Column" Calculated="true" Expression=""/>
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="MonthDate" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="MonthlyEmployeeBenefitDataSource" DataType="System.Int32" Enabled="true" SelectCommand="Select &#13;&#10;		MonthlyEmployeeBenefit.MonthlyCard_id MonthlyCardId,&#13;&#10;		BenefitCard.Name BenefitName,&#13;&#10;		MonthlyEmployeeBenefit.FinalValue&#13;&#10;From&#13;&#10;		MonthlyCard&#13;&#10;Inner Join&#13;&#10;		MonthlyEmployeeBenefit On(MonthlyEmployeeBenefit.MonthlyCard_id = MonthlyCard.Id)&#13;&#10;Inner Join&#13;&#10;		BenefitCard On(BenefitCard.Id = MonthlyEmployeeBenefit.BenefitCard_id)&#13;&#10;where (dbo.MonthlyEmployeeBenefit.IsVertualDeleted=0) AND(dbo.MonthlyCard.IsVertualDeleted=0) AND(dbo.BenefitCard.IsVertualDeleted=0)">
+        <Column Name="MonthlyCardId" DataType="System.Int32"/>
+        <Column Name="BenefitName" DataType="System.String"/>
+        <Column Name="FinalValue" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Table2" Alias="MonthlyEmployeeDeductionDataSource" DataType="System.Int32" Enabled="true" SelectCommand="Select &#13;&#10;		MonthlyEmployeeDeduction.MonthlyCard_id MonthlyCardId,&#13;&#10;		DeductionCard.Name DeductionName,&#13;&#10;		MonthlyEmployeeDeduction.FinalValue&#13;&#10;From&#13;&#10;		MonthlyCard&#13;&#10;Inner Join&#13;&#10;		MonthlyEmployeeDeduction On(MonthlyEmployeeDeduction.MonthlyCard_id = MonthlyCard.Id)&#13;&#10;Inner Join&#13;&#10;		DeductionCard On(DeductionCard.Id = MonthlyEmployeeDeduction.DeductionCard_id)&#13;&#10;&#13;&#10;where (dbo.MonthlyEmployeeDeduction.IsVertualDeleted=0) AND(dbo.MonthlyCard.IsVertualDeleted=0) AND(dbo.DeductionCard.IsVertualDeleted=0)&#13;&#10;">
+        <Column Name="MonthlyCardId" DataType="System.Int32"/>
+        <Column Name="DeductionName" DataType="System.String"/>
+        <Column Name="FinalValue" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Table3" Alias="EmployeeLoanDataSource" DataType="System.Int32" Enabled="true" SelectCommand="Select &#13;&#10;		LoanPayment.MonthlyCard_id MonthlyCardId,&#13;&#10;		DonorLoan.Name DonorLoanName,&#13;&#10;		LoanPayment.PaymentValue&#13;&#10;From&#13;&#10;		MonthlyCard&#13;&#10;Inner Join&#13;&#10;		LoanPayment On(LoanPayment.MonthlyCard_id = MonthlyCard.Id AND LoanPayment.IsExternalPayment = 0)&#13;&#10;Inner Join&#13;&#10;		EmployeeLoan On(EmployeeLoan.Id = LoanPayment.EmployeeLoan_id)&#13;&#10;Inner Join&#13;&#10;		DonorLoan On(DonorLoan.Id = EmployeeLoan.DonorLoan_id)&#13;&#10;&#13;&#10;where (dbo.LoanPayment.IsVertualDeleted=0) AND(dbo.MonthlyCard.IsVertualDeleted=0) AND(dbo.EmployeeLoan.IsVertualDeleted=0) AND(dbo.DonorLoan.IsVertualDeleted=0) &#13;&#10;">
+        <Column Name="MonthlyCardId" DataType="System.Int32"/>
+        <Column Name="DonorLoanName" DataType="System.String"/>
+        <Column Name="PaymentValue" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Table4" Alias="EmployeeTotalsDataSource" DataType="System.Int32" Enabled="true" SelectCommand="Select &#13;&#10;		MonthlyCard.Id MonthlyCardId,&#13;&#10;		MonthlyCard.Salary,&#13;&#10;		(Select &#13;&#10;				ISNULL(SUM(MonthlyEmployeeBenefit.InitialValue), 0) &#13;&#10;		 From &#13;&#10;				MonthlyEmployeeBenefit &#13;&#10;		 Where &#13;&#10;				MonthlyEmployeeBenefit.MonthlyCard_id = MonthlyCard.ID  AND dbo.MonthlyEmployeeBenefit.IsVertualDeleted=0) As TotalEmployeeBenefits,&#13;&#10;		(Select &#13;&#10;				ISNULL(SUM(MonthlyEmployeeDeduction.FinalValue), 0) &#13;&#10;		 From &#13;&#10;				MonthlyEmployeeDeduction &#13;&#10;		 Where &#13;&#10;				MonthlyEmployeeDeduction.MonthlyCard_id = MonthlyCard.ID  AND dbo.MonthlyEmployeeDeduction.IsVertualDeleted=0) As TotalEmployeeDeductions,&#13;&#10;		(Select &#13;&#10;				ISNULL(SUM(LoanPayment.PaymentValue), 0) &#13;&#10;		 From &#13;&#10;				LoanPayment &#13;&#10;		 Where &#13;&#10;				LoanPayment.MonthlyCard_id = MonthlyCard.ID  AND dbo.LoanPayment.IsVertualDeleted=0) As TotalEmployeeLoans,&#13;&#10;		CASE Month.MonthType WHEN 0 THEN MonthlyCard.Salary +&#13;&#10;          (SELECT     ISNULL(SUM(MonthlyEmployeeBenefit.InitialValue), 0)&#13;&#10;             FROM         MonthlyEmployeeBenefit&#13;&#10;             WHERE     MonthlyEmployeeBenefit.MonthlyCard_id = MonthlyCard.ID AND dbo.MonthlyEmployeeBenefit.IsVertualDeleted = 0) -&#13;&#10;          (SELECT     ISNULL(SUM(MonthlyEmployeeDeduction.FinalValue), 0)&#13;&#10;             FROM         MonthlyEmployeeDeduction&#13;&#10;             WHERE     MonthlyEmployeeDeduction.MonthlyCard_id = MonthlyCard.ID AND dbo.MonthlyEmployeeDeduction.IsVertualDeleted = 0) -&#13;&#10;          (SELECT     ISNULL(SUM(LoanPayment.PaymentValue), 0)&#13;&#10;             FROM         LoanPayment&#13;&#10;             WHERE     LoanPayment.MonthlyCard_id = MonthlyCard.ID &#13;&#10;             AND dbo.LoanPayment.IsVertualDeleted = 0 AND dbo.LoanPayment.IsExternalPayment = 0) &#13;&#10;             &#13;&#10;             WHEN 1 THEN&#13;&#10;          (SELECT     ISNULL(SUM(MonthlyEmployeeBenefit.InitialValue), 0)&#13;&#10;             FROM         MonthlyEmployeeBenefit&#13;&#10;             WHERE     MonthlyEmployeeBenefit.MonthlyCard_id = MonthlyCard.ID AND dbo.MonthlyEmployeeBenefit.IsVertualDeleted = 0) -&#13;&#10;          (SELECT     ISNULL(SUM(MonthlyEmployeeDeduction.FinalValue), 0)&#13;&#10;             FROM         MonthlyEmployeeDeduction&#13;&#10;             WHERE     MonthlyEmployeeDeduction.MonthlyCard_id = MonthlyCard.ID AND dbo.MonthlyEmployeeDeduction.IsVertualDeleted = 0)-&#13;&#10;          (SELECT     ISNULL(SUM(LoanPayment.PaymentValue), 0)&#13;&#10;             FROM         LoanPayment&#13;&#10;             WHERE     LoanPayment.MonthlyCard_id = MonthlyCard.ID &#13;&#10;             AND dbo.LoanPayment.IsVertualDeleted = 0 AND dbo.LoanPayment.IsExternalPayment = 0)  END AS ActualFinalSalary&#13;&#10;&#13;&#10;From &#13;&#10;		MonthlyCard&#13;&#10;Inner Join&#13;&#10;		Month On(Month.Id = MonthlyCard.Month_id)&#13;&#10;&#13;&#10;&#13;&#10;where (dbo.MonthlyCard.IsVertualDeleted=0) AND(dbo.Month.IsVertualDeleted=0)">
+        <Column Name="MonthlyCardId" DataType="System.Int32"/>
+        <Column Name="TotalEmployeeBenefits" DataType="System.Double"/>
+        <Column Name="TotalEmployeeDeductions" DataType="System.Double"/>
+        <Column Name="TotalEmployeeLoans" DataType="System.Double"/>
+        <Column Name="Salary" DataType="System.Single"/>
+        <Column Name="ActualFinalSalary" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Table6" Alias="NodeDataSource" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     dbo.Node.Id AS NodeId, dbo.Node.Name AS NodeName, dbo.Node.Parent_Id AS NodeParent_Id, dbo.Position.Id AS PositionId, &#13;&#10;                      dbo.AssigningEmployeeToPosition.Employee_id AS AssigningEmployeeToPosition_Employee_id, dbo.Employee.FirstName, dbo.Employee.LastName, &#13;&#10;                      dbo.Employee.Id&#13;&#10;FROM         dbo.Position INNER JOIN&#13;&#10;                      dbo.AssigningEmployeeToPosition ON dbo.Position.Id = dbo.AssigningEmployeeToPosition.Position_Id INNER JOIN&#13;&#10;                      dbo.Employee ON dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id INNER JOIN&#13;&#10;                      dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id INNER JOIN&#13;&#10;                      dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id&#13;&#10;WHERE     (dbo.AssigningEmployeeToPosition.IsVertualDeleted = 0) AND (dbo.Node.IsVertualDeleted = 0) AND (dbo.Position.IsVertualDeleted = 0) ">
+        <Column Name="NodeId" DataType="System.Int32"/>
+        <Column Name="NodeName" DataType="System.String"/>
+        <Column Name="NodeParent_Id" DataType="System.Int32"/>
+        <Column Name="PositionId" DataType="System.Int32"/>
+        <Column Name="AssigningEmployeeToPosition_Employee_id" DataType="System.Int32"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table5_Table" ParentDataSource="Table" ChildDataSource="null" ParentColumns="NodeId" ChildColumns="Id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Relation Name="Table2_Table" ParentDataSource="Table2" ChildDataSource="Table" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Relation Name="Table3_Table1" ParentDataSource="Table3" ChildDataSource="Table" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Relation Name="Table4_Table1" ParentDataSource="Table4" ChildDataSource="Table" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Relation Name="Table6_Table1" ParentDataSource="Table6" ChildDataSource="Table" ParentColumns="AssigningEmployeeToPosition_Employee_id" ChildColumns="EmployeeId" Enabled="true"/>
+    <Relation Name="Table_Table1" ParentDataSource="Table" ChildDataSource="Table1" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Relation Name="Table_Table2" ParentDataSource="Table" ChildDataSource="Table2" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Relation Name="Table_Table3" ParentDataSource="Table" ChildDataSource="Table3" ParentColumns="MonthlyCardId" ChildColumns="MonthlyCardId" Enabled="true"/>
+    <Total Name="TotalDeductions" Expression="[BasicInfoDataSource.EmployeeTotalsDataSource.TotalEmployeeDeductions]" Evaluator="Data1"/>
+    <Total Name="TotalBenefits" Expression="[EmployeeTotalsDataSource.TotalEmployeeBenefits]" Evaluator="Data1"/>
+    <Total Name="TotalFinalSalaries" Expression="[BasicInfoDataSource.EmployeeTotalsDataSource.ActualFinalSalary]" Evaluator="Data1"/>
+    <Total Name="TotalSalaries" Expression="[BasicInfoDataSource.EmployeeTotalsDataSource.Salary]" Evaluator="Data1"/>
+  </Dictionary>
+  <ReportPage Name="Page1" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="37.8" Guides="0">
+      <TextObject Name="Text168" Width="718.2" Height="37.8" Border.Lines="All" Border.Color="Gainsboro" Fill.Color="WhiteSmoke" Text="تقرير مقبوضات موظف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="41.65" Width="718.2" Height="207.9" CanGrow="true" CanBreak="true" FirstRowStartsNewPage="true" KeepChild="true" DataSource="Table" KeepTogether="true" KeepDetail="true">
+      <SubreportObject Name="LoanSubreport" Left="9.45" Top="94.5" Width="226.8" Height="113.4" ReportPage="Page4"/>
+      <SubreportObject Name="BenefitSubreport" Left="481.95" Top="94.5" Width="226.8" Height="113.4" ReportPage="Page2"/>
+      <SubreportObject Name="DeductionSubreport" Left="245.7" Top="94.5" Width="226.8" Height="113.4" ReportPage="Page3"/>
+      <TextObject Name="Text171" Left="321.3" Top="37.8" Width="387.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[BasicInfoDataSource.NodeDataSource.NodeName]" HorzAlign="Center" RightToLeft="true"/>
+      <TextObject Name="Text172" Left="321.3" Top="18.9" Width="330.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[BasicInfoDataSource.EmployeeId]&#13;&#10;" HorzAlign="Center" RightToLeft="true"/>
+      <TextObject Name="Text173" Left="652.05" Top="18.9" Width="56.7" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text7" Left="245.7" Top="56.7" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التعويضات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text9" Left="245.7" Top="37.8" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الصافي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text11" Left="9.45" Top="56.7" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[BasicInfoDataSource.EmployeeTotalsDataSource.TotalEmployeeBenefits]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text13" Left="9.45" Top="37.8" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[BasicInfoDataSource.EmployeeTotalsDataSource.ActualFinalSalary]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text6" Left="245.7" Top="18.9" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المقطوع" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text10" Left="9.45" Top="18.9" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[BasicInfoDataSource.EmployeeTotalsDataSource.Salary]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text169" Left="652.05" Top="56.7" Width="56.7" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text170" Left="321.3" Top="56.7" Width="330.75" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[BasicInfoDataSource.FullName]" HorzAlign="Center" RightToLeft="true"/>
+      <TextObject Name="Text8" Left="245.7" Top="75.6" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحسميات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text12" Left="9.45" Top="75.6" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[BasicInfoDataSource.EmployeeTotalsDataSource.TotalEmployeeDeductions]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="253.39" Width="718.2" Height="113.4" PrintOnBottom="true">
+      <TextObject Name="Text29" Left="170.1" Top="56.7" Width="113.4" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="إجمالي التعويضات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="170.1" Top="85.05" Width="113.4" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="إجمالي الحسميات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="170.1" Top="28.35" Width="113.4" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="إجمالي الصافي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text32" Top="56.7" Width="170.1" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalBenefits]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text33" Top="85.05" Width="170.1" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalDeductions]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text34" Top="28.35" Width="170.1" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalFinalSalaries]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text35" Left="170.1" Width="113.4" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="إجمالي المقطوع" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text36" Width="170.1" Height="28.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalSalaries]" HorzAlign="Center" RightToLeft="true" WordWrap="false" Font="Arial, 12pt, style=Bold"/>
+    </ReportSummaryBand>
+  </ReportPage>
+  <ReportPage Name="Page2" Landscape="true" PaperWidth="80" PaperHeight="210" FirstPageSource="15" OtherPagesSource="15">
+    <DataBand Name="Data2" Top="41.65" Width="226.8" Height="37.8" CanGrow="true" CanBreak="true" FirstRowStartsNewPage="true" DataSource="Table1" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text14" Left="103.95" Width="122.85" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[MonthlyEmployeeBenefitDataSource.BenefitName]" HorzAlign="Center" RightToLeft="true"/>
+      <TextObject Name="Text16" Width="103.95" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[MonthlyEmployeeBenefitDataSource.FinalValue]" HorzAlign="Center" RightToLeft="true"/>
+      <DataHeaderBand Name="DataHeader1" Width="226.8" Height="37.8">
+        <TextObject Name="Text15" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التعويضات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text17" Top="18.9" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="القيمة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text18" Left="103.95" Top="18.9" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم التعويض" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataHeaderBand>
+    </DataBand>
+  </ReportPage>
+  <ReportPage Name="Page3" Landscape="true" PaperWidth="80" PaperHeight="210" FirstPageSource="15" OtherPagesSource="15">
+    <DataBand Name="Data3" Top="41.65" Width="226.8" Height="37.8" CanGrow="true" CanBreak="true" FirstRowStartsNewPage="true" DataSource="Table2" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text21" Width="103.95" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[MonthlyEmployeeDeductionDataSource.FinalValue]" HorzAlign="Center" RightToLeft="true"/>
+      <TextObject Name="Text19" Left="103.95" Width="122.85" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[MonthlyEmployeeDeductionDataSource.DeductionName]" HorzAlign="Center" RightToLeft="true"/>
+      <DataHeaderBand Name="DataHeader2" Width="226.8" Height="37.8">
+        <TextObject Name="Text20" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحسميات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text22" Top="18.9" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="القيمة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text23" Left="103.95" Top="18.9" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الحسم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataHeaderBand>
+    </DataBand>
+  </ReportPage>
+  <ReportPage Name="Page4" Landscape="true" PaperWidth="80" PaperHeight="210" FirstPageSource="15" OtherPagesSource="15">
+    <DataBand Name="Data4" Top="41.65" Width="226.8" Height="37.8" CanGrow="true" CanBreak="true" FirstRowStartsNewPage="true" DataSource="Table3" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text24" Left="103.95" Width="122.85" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[EmployeeLoanDataSource.DonorLoanName]" HorzAlign="Center" RightToLeft="true"/>
+      <TextObject Name="Text26" Width="103.95" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" CanGrow="true" GrowToBottom="true" Text="[EmployeeLoanDataSource.PaymentValue]" HorzAlign="Center" RightToLeft="true"/>
+      <DataHeaderBand Name="DataHeader3" Width="226.8" Height="37.8">
+        <TextObject Name="Text25" Left="103.95" Top="18.9" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الجهة المانحة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text27" Top="18.9" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الدفعة الشهرية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text28" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="القروض" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataHeaderBand>
+    </DataBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="414" Height="356" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="210" Top="273" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label6" Left="288" Top="28" Width="102" Height="13" RightToLeft="Yes" TabIndex="2" Text="الرقم الذاتي للموظف"/>
+    <LabelControl Name="Label7" Left="288" Top="116" Width="36" Height="13" RightToLeft="Yes" TabIndex="2" Text="الشهر"/>
+    <ComboBoxControl Name="ComboBox3" Left="48" Top="112" Width="233" TabIndex="6" DataColumn="BasicInfoDataSource.MonthName" DropDownStyle="DropDownList" DropDownWidth="277" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="268" Top="88" Width="85" Height="17" TabIndex="9" Text="كل الموظفين" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+    <ComboBoxControl Name="ComboBox2" Left="48" Top="56" Width="233" TabIndex="10" DataColumn="BasicInfoDataSource.FullName" DropDownStyle="DropDownList" DropDownWidth="233" ItemHeight="13"/>
+    <LabelControl Name="Label2" Left="288" Top="60" Width="42" Height="13" TabIndex="12" Text="الموظف"/>
+    <CheckBoxControl Name="CheckBox2" Left="268" Top="144" Width="74" Height="17" TabIndex="13" Text="كل الأشهر" ClickEvent="CheckBox2_Click"/>
+    <LabelControl Name="Label4" Left="288" Top="180" Width="45" Height="13" RightToLeft="Yes" TabIndex="2" Text="من تاريخ"/>
+    <LabelControl Name="Label5" Left="288" Top="209" Width="48" Height="13" RightToLeft="Yes" TabIndex="2" Text="الى تاريخ"/>
+    <DateTimePickerControl Name="DateTimePicker1" Left="44" Top="176" Width="240" TabIndex="14" DataColumn="BasicInfoDataSource.MonthDate" FilterOperation="GreaterThanOrEqual" Format="Short" Value="03/24/2016 15:35:20"/>
+    <DateTimePickerControl Name="DateTimePicker2" Left="44" Top="204" Width="240" TabIndex="15" DataColumn="BasicInfoDataSource.MonthDate" FilterOperation="LessThanOrEqual" Format="Short" Value="03/24/2016 15:35:27"/>
+    <CheckBoxControl Name="CheckBox3" Left="268" Top="236" Width="75" Height="17" TabIndex="13" Text="كل التواريخ" ClickEvent="CheckBox3_Click"/>
+    <ComboBoxControl Name="ComboBox1" Left="48" Top="24" Width="233" TabIndex="10" DataColumn="BasicInfoDataSource.EmployeeCode" DropDownStyle="DropDownList" DropDownWidth="233" ItemHeight="13"/>
+  </DialogPage>
+</Report>

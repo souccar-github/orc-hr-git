@@ -1,0 +1,43 @@
+﻿@using DevExpress.Web.ASPxHtmlEditor.Internal
+@Html.Partial("QueryTreeEditHandler")
+@*@Html.Partial("ReportTemplateEditHandler")*@
+@*@Html.Partial("DisplayReport")*@
+<script>
+    function DisplayReport(reportId) {
+        //location.href = "ReportBuilder/DisplayReport?id=" + reportId;
+
+        var url = "ReportBuilder/DisplayReport?id=" + reportId;;
+        window.open(
+          url,
+          '_blank'
+        );
+    }
+</script>
+
+
+@*@using DevExpress.Web.ASPxHtmlEditor.Internal
+@Html.Partial("QueryTreeEditHandler")
+@*@Html.Partial("ReportTemplateEditHandler")*@
+@*@Html.Partial("DisplayReport")*@
+<script>
+    function DisplayReport(reportId) {
+        $.ajax({
+            url: '@Url.Action("GenerateReport", "ReportBuilder", new { area = "ReportGenerator" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: reportId }),
+            success: function (data) {
+
+                var url = "@Url.Action("DisplayReport", "ReportBuilder", new { area = "ReportGenerator" })";
+                console.log(url);
+                openReport(url);
+
+
+            }
+        });
+
+        function openReport(url) {
+            window.open( url,'_blank');
+        }
+    }
+</script>*@

@@ -1,0 +1,44 @@
+﻿
+<script type="text/javascript">
+
+    function workingExperienceEditHandler(e) {
+
+        authorizationToCheckClick();
+
+        e.container.find("[name='AuthorizationToCheck']").off("click").on("click", authorizationToCheckClick);
+
+    }
+
+    function authorizationToCheckClick() {
+        var container = $(".controls-container");
+        var authorizationToCheck = $("[name='AuthorizationToCheck']").is(":checked");
+        removeRequiredStar('ReferenceFullName');
+        removeRequiredStar('ReferenceJobTitle');
+        removeRequiredStar('ReferenceContact');
+
+        if (authorizationToCheck) {
+            container.find(".control-ReferenceFullName").show();
+            addRequiredStar('ReferenceFullName');
+
+            container.find(".control-ReferenceJobTitle").show();
+            addRequiredStar('ReferenceJobTitle');
+
+            container.find(".control-ReferenceContact").show();
+            addRequiredStar('ReferenceContact');
+
+            container.find(".control-ReferenceEmail").show();
+            
+        } else {
+            container.find(".control-ReferenceFullName").hide();
+            removeRequiredStar('ReferenceFullName');
+
+            container.find(".control-ReferenceJobTitle").hide();
+            removeRequiredStar('ReferenceJobTitle');
+
+            container.find(".control-ReferenceContact").hide();
+            removeRequiredStar('ReferenceContact');
+
+            container.find(".control-ReferenceEmail").hide();
+        }
+    }
+</script>

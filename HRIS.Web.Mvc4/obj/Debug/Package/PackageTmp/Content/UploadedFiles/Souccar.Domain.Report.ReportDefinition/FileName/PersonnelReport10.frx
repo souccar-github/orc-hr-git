@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/18/2016 12:55:22" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {         
+
+    private void Form1_Load(object sender, EventArgs e)
+    {     
+      CountryComboBox.SelectedIndex=-1;
+    }
+
+    private void AllCountryCheckBox_Click(object sender, EventArgs e)
+    {
+      
+      if (AllCountryCheckBox.Checked)
+      {
+        CountryComboBox.Enabled=false;  
+        CountryComboBox.SelectedIndex=-1;		 
+        CountryComboBox.AutoFilter=false;
+        CountryComboBox.AutoFill=false;
+      }else
+      {      
+        CountryComboBox.Enabled=true;  
+        CountryComboBox.AutoFilter=true;
+        CountryComboBox.AutoFill=true;
+      }
+    }
+  }
+}</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVFxAMKcRXoJPrg5QpSySEBCc9GQPrPHyVW9EblVRI++Gfb9v+XscaDZuNsZwVcoxQncMDqnrfkQvxP1Ji4KXyOU5HfSbWf00GtXQnVNNzvE/g=">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;CountryOfBirth_id, &#13;&#10;PlaceOfBirth_id,&#13;&#10;dbo.Country.Name AS CountryName, &#13;&#10;dbo.City.Name AS CityName&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;INNER JOIN dbo.Country ON dbo.Employee.CountryOfBirth_id = dbo.Country.Id &#13;&#10;INNER JOIN dbo.City ON dbo.Employee.PlaceOfBirth_id = dbo.City.Id&#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  dbo.AssigningEmployeeToPosition.IsPrimary='True'&#13;&#10;AND Employee.IsVertualDeleted = 0 AND  &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted = 0 AND &#13;&#10;Position.IsVertualDeleted = 0 AND &#13;&#10;EmployeeCard.IsVertualDeleted = 0 AND &#13;&#10;Country.IsVertualDeleted = 0 AND &#13;&#10;City.IsVertualDeleted = 0&#13;&#10;ORDER BY CountryOfBirth_id,PlaceOfBirth_id&#13;&#10;">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="CountryOfBirth_id" DataType="System.Int32"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="CountryName" DataType="System.String"/>
+        <Column Name="CityName" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Country" DataType="System.Int32" Enabled="true" TableName="Country" SelectCommand="SELECT C.Id, C.IsVertualDeleted, C.Name, C.ValueOrder&#13;&#10;FROM &quot;Country&quot; C&#13;&#10;WHERE C.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Country_Table1" ParentDataSource="Country" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="CountryOfBirth_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين حسب بلد الولادة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Top="56.7" Width="718.2" Height="37.8" Text="بلد الولادة: [CountryComboBox.Text]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="98.5" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="404.35" Width="190.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="217.35" Width="188.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text36" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="محل الولادة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="113.4" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="بلد الولادة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="121.4" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text1" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.CityName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Left="113.4" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.CountryName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="217.35" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Left="406.35" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="144.3" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Width="718.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر [TotalCount]" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="167.2" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="158" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="118" Top="71" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" ClickEvent="btnOk_Click" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="199" Top="24" Width="27" Height="13" RightToLeft="Yes" TabIndex="2" Text="البلد"/>
+    <ComboBoxControl Name="CountryComboBox" Left="20" Top="20" Width="175" RightToLeft="Yes" TabIndex="3" DataColumn="EmployeesDataSourse.Country.Name" DropDownStyle="DropDownList" DropDownWidth="149" ItemHeight="13"/>
+    <CheckBoxControl Name="AllCountryCheckBox" Left="180" Top="48" Width="83" Height="17" TabIndex="4" Text="جميع البلدان" ClickEvent="AllCountryCheckBox_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

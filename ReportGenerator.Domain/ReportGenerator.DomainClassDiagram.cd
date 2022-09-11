@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="Souccar.ReportGenerator.Domain.Classification.ReportTemplate" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classification\ReportTemplate.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.Classification.ReportTemplateContent" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAABIDAAAAAAACAACAAAAAAAA=</HashCode>
+      <FileName>Classification\ReportTemplateContent.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.FilterDescriptor" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\FilterDescriptor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.GroupDescriptor" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>QueryBuilder\GroupDescriptor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.QueryTree">
+    <Position X="9" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AACgEBCBUABIAAQEgAAAAAAAEAEAAAAAAQCgACBAAAg=</HashCode>
+      <FileName>QueryBuilder\QueryTree.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.QueryTreeFactory" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\QueryTreeFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.Report" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAQAAQAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>QueryBuilder\Report.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.SortDescriptor" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\SortDescriptor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.AggregateFilterDescriptor">
+    <Position X="5.75" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAgAAAAAgAABAAAA=</HashCode>
+      <FileName>QueryBuilder\AggregateFilterDescriptor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Souccar.ReportGenerator.Domain.QueryBuilder.QueryLeaf" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <Members>
+      <Method Name="GetAvailableDateTimeFilterOperators" Hidden="true" />
+      <Method Name="GetAvailableNumericFilterOperators" Hidden="true" />
+      <Method Name="GetAvailableStringFilterOperators" Hidden="true" />
+      <Method Name="IsNumericType" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ACACFBAAAAABEAIEAAMwAAAAEEACAAACAEACAADAAA4=</HashCode>
+      <FileName>QueryBuilder\QueryLeaf.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Souccar.ReportGenerator.Domain.Classification.IReportTemplateRepository" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classification\IReportTemplateRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Souccar.ReportGenerator.Domain.QueryBuilder.IQueryTreeParser" Collapsed="true">
+    <Position X="0.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\IQueryTreeParser.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Souccar.ReportGenerator.Domain.QueryBuilder.IQueryTreeService" Collapsed="true">
+    <Position X="2.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\IQueryTreeService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Souccar.ReportGenerator.Domain.QueryBuilder.IReportRepository" Collapsed="true">
+    <Position X="4" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\IReportRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Souccar.ReportGenerator.Domain.QueryBuilder.FilterOperator" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABCAAAAAAAAAAAAAAAAAAAAAAAQAAAgAAACIABAYAAA=</HashCode>
+      <FileName>QueryBuilder\FilterOperator.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Souccar.ReportGenerator.Domain.QueryBuilder.ListSortDirection" Collapsed="true">
+    <Position X="2.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>QueryBuilder\ListSortDirection.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Souccar.ReportGenerator.Domain.QueryBuilder.AggregateFunction">
+    <Position X="5.75" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAABAAAAAAEAAAAAQAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>QueryBuilder\AggregateFunction.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

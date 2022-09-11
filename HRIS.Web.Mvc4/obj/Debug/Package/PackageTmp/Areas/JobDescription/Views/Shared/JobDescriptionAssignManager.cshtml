@@ -1,0 +1,58 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    var assignManagerJDDatasource = [];
+    function JobDescriptionAssignManager(id) {
+        $.ajax({
+            url: '@Url.Action("GetAssignManager", "JobDescription", new { area = "JobDescription" })',
+            type: "POST",
+            data: JSON.stringify({jobDescrptionId:id}),
+            contentType: 'application/json',
+            success: function (data) {
+                var title = "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.AssignManager)";
+                var buttons = [
+                    { Name: "AssignManager_JobDescription_update", CssClass: "update", Title: "@GlobalResource.Save" },
+                    { Name: "AssignManager_JobDescription_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var containerId = "AssignManager_JobDescription_container";
+                var bodyHTML = "<div id='AssignManager_JobDescription' class='fix-custom-popup'></div>";
+                var popupDiv = $('<div></div>');
+
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+                assignManagerJDDatasource = data.Data;
+                assignManagerJDDatasource.unshift({ Id: 0, Name: "" });
+                window.AssignManagerDatabind = kendo.observable();
+                window.AssignManagerDatabind.JobDescription = data.ManagerId;
+                var tempdata = [
+                    { Name: "JobDescription", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.JobDescription)", Type: "Dropdown", DataSource: "assignManagerJDDatasource" }
+                ];
+                createCustomEditForm($("#AssignManager_JobDescription"), { Fields: tempdata, Key: "AssignManager_JD" }, window.AssignManagerDatabind);
+
+                $("#AssignManager_JobDescription_update").off('click').on('click', function() {
+
+                    if (AssignManagerDatabind.JobDescription ==null || AssignManagerDatabind.JobDescription==0) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Fail", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.SelectJobDescriptionFirst)", commands);
+                            
+                        return;
+                    }
+                    $.ajax({
+                        url: '@Url.Action("SaveAssignManager", "JobDescription", new {area = "JobDescription"})',
+                        type: "POST",
+                        data: JSON.stringify({ jobDescriptionId: parseInt(id), managerId: AssignManagerDatabind.JobDescription }),
+                        contentType: 'application/json',
+                        success: function(data) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            popupDiv.data("kendo-window").close();
+                            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                        }
+                    });
+                });
+
+                $("#AssignManager_JobDescription_cancel").off('click').on('click', function () {
+                    popupDiv.data("kendo-window").close();
+                });
+            }
+        });
+    }
+</script>

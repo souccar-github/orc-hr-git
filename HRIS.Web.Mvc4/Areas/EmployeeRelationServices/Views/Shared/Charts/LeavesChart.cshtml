@@ -1,0 +1,177 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+
+
+<div class="chart chart-width-full">
+    <div id="leave-setting-lc">
+        <div class="control control-leave-setting-lc">
+            <div class="k-edit-label">
+                <label for="leaveSettingLc">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveType)</label>
+            </div>
+            <div data-container-for="leaveSettingLc" class="k-edit-field">
+                <input id="leaveSettingLc" />
+            </div>
+
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+
+    <div id="leaves-chart" class="container-chart"></div>
+</div>
+<script type="text/javascript">
+
+    function getLeavesChart() {
+        generateLeaveSettingsDropdown();
+        setTimeout(function() {
+                var leaveSettingDropdownlist = $("#leaveSettingLc").data("kendoDropDownList");
+                leaveSettingDropdownlist.bind("change",
+                    function() {
+                        getLeaves(leaveSettingDropdownlist.value());
+                    });
+
+                getLeaves(leaveSettingDropdownlist.value());
+            },
+            500);
+
+    }
+
+    function generateLeaveSettingsDropdown() {
+
+        $("#leaveSettingLc").kendoDropDownList({
+            filter: "contains",
+            //optionLabel: "Select Site Code ...",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: {
+                type: "json",
+                //serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@Url.Action("GetLeaveSettingsForList", "Dashboard", new { area = "EmployeeRelationServices" })"
+                    }
+
+                }
+            }
+        });
+
+    }
+    function getLeaves(leaveSettingId) {
+        window.Souccar.ajax('@Url.Action("GetLeaveRequestsForCurrentYear", "Dashboard", new { area = "EmployeeRelationServices" })', { leaveSettingId: leaveSettingId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success) {
+                generateLeavesChart(data);
+            }
+        }
+        function erorrFunc() {
+            console.log("Error / func:getLeaveSettings");
+        }
+    }
+
+    function generateLeavesChart(data) {
+
+        var gaugeOptions = {
+
+            chart: {
+                type: 'solidgauge'
+            },
+            title: null,
+            pane: {
+                center: ['50%', '85%'],
+                size: '100%',
+                startAngle: -90,
+                endAngle: 90,
+                background: {
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                    innerRadius: '60%',
+                    outerRadius: '100%',
+                    shape: 'arc'
+                }
+            },
+
+            tooltip: {
+                enabled: false
+            },
+
+            yAxis: {
+                stops: [
+                    [0.1, '#55BF3B'], // green
+                    [0.5, '#DDDF0D'], // yellow
+                    [0.9, '#DF5353'] // red
+                ],
+                lineWidth: 0,
+                minorTickInterval: null,
+                tickAmount: 2,
+                title: {
+                    y: -70
+                },
+                labels: {
+                    y: 16
+                }
+            },
+
+            plotOptions: {
+                solidgauge: {
+                    dataLabels: {
+                        y: 5,
+                        borderWidth: 0,
+                        useHTML: true
+                    }
+                }
+            }
+        };
+
+        var remainText = '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)';
+        var maxNumText = '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MaximumNumber)';
+        var takenText = '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Taken)';
+        var leavesText = '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Leaves)';
+        debugger;
+        var maxYAxis = data.Balance;
+        if (data.HasMaxNum == true) {
+            maxYAxis = data.MaxNum;
+        }
+        var leavesChart = Highcharts.chart('leaves-chart', Highcharts.merge(gaugeOptions, {
+            yAxis: {
+                min: 0,
+                max: maxYAxis,
+                tickPositions: [0, maxYAxis],
+                title: {
+                    text: leavesText
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            colors: getDashboardColors(),
+            series: [{
+                name: takenText,
+                data: [data.Granted],
+                dataLabels: {
+                    format: '<table cellspacing="0" cellpadding="0" style="border: none;">' +
+                        '    <tr>' +
+                        '  <td style="text-align: center;background-color:white;border: none;"><span style="font-size:20px;color:' + ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">' + data.Granted + '</span></td>' +
+                        '  <td style="text-align: center;background-color:white;border: none;"><span style="font-size:20px;color:' + ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">' + data.Remain + '</span></td>' +
+                        ' </tr>'+
+                        ' <tr>'+
+                        ' <td style="text-align: center;background-color:white;border: none;"><span style="font-size:14px;color:silver">' + takenText + '</span></td>' +
+                        '<td style="text-align: center;background-color:white;border: none;"><span style="font-size:14px;color:silver">' + remainText + '</span></td>' +
+                        '</tr>'+
+                        '</table>'
+                },
+                tooltip: {
+                    valueSuffix: ''
+                }
+            }]
+
+        }));
+    }
+
+</script>
+<style>
+    .td-lc {
+        
+        
+        
+    }
+    
+</style>

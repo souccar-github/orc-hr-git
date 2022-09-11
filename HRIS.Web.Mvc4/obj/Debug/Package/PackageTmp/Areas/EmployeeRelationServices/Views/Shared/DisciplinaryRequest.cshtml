@@ -1,0 +1,293 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 05/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="employee-container-title"><label>@GlobalResource.Employee</label></div>
+
+<div class="employee-container"></div>
+<div class="approval-container-title"><label>@GlobalResource.PendingDisciplinaryRequest</label></div>
+<div class="approval-container"></div>
+<div class="disciplinary-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var disciplinaryId = window.localStorage.getItem('ServiceId');
+    var container = $('.employee-container');
+    var approval_container = $('.approval-container');
+    var workflowContainer = $(".disciplinary-request-workflow-container");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForDisciplinaryService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        $(".employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        container.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            approval_container.html('');
+            container.html("");
+            $(".employee-container-title").html('');
+            $(".approval-container-title").html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            var fullName = $(this).attr('data-fullname');
+
+            var employeeDisciplinaryTemplateData = [
+                { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                { Name: "DisciplinarySetting", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinarySettingName)", Type: "Reference", TypeName: "HRIS.Domain.EmployeeRelationServices.Configurations.DisciplinarySetting", Creatable: false, IsRequired: true },
+                { Name: "DisciplinaryDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinaryDate)", Type: "Date", IsRequired: true },
+                { Name: "DisciplinaryReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinaryReason)", Type: "Textarea" },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea" }
+            ];
+
+            var employeeDisciplinaryDatabind = kendo.observable(
+                {
+                    FullName: fullName,
+                    DisciplinarySettingId: 0,
+                    DisciplinarySetting: "",
+                    DisciplinaryDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    DisciplinaryReason: "",
+                    Comment: ""
+                });
+
+            createCustomEditForm(container, { Fields: employeeDisciplinaryTemplateData, Key: "employee-disciplinary" }, employeeDisciplinaryDatabind);
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            container.find(".control-Comment").after(applyButton);
+
+            container.find(".applyButton").off('click').on('click', function () {
+
+                var id = Number(container.find("#DisciplinarySetting_employee-disciplinary").data("kendoDropDownList").value());
+                var date = $("[name='DisciplinaryDate']").data("kendoDatePicker").value();
+                var reason = container.find("[name='DisciplinaryReason']").val();
+                var comment = container.find("[name='Comment']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeDisciplinaryItem: employeeDisciplinaryDatabind };
+
+                employeeDisciplinaryDatabind.DisciplinarySettingId = id;
+                employeeDisciplinaryDatabind.DisciplinaryReason = reason;
+                employeeDisciplinaryDatabind.Comment = comment;
+                employeeDisciplinaryDatabind.FullName = fullName;
+                employeeDisciplinaryDatabind.DisciplinaryDate = date;
+
+                $("[name='DisciplinaryReason']").focusout(function () {
+                    if ($("[name='DisciplinaryReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "DisciplinaryReason");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-DisciplinaryReason').remove();
+                    }
+
+                });
+
+                $("[name='DisciplinaryReason']").keyup(function () {
+                    if ($("[name='DisciplinaryReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "DisciplinaryReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-DisciplinaryReason').remove();
+                    }
+
+                });
+                if (reason == "") {
+                    if ($("[name='DisciplinaryReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "DisciplinaryReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-DisciplinaryReason').remove();
+                    }
+                }
+                if (id == "" || id == "0" || id == 0 || id == null) {
+                    debugger;
+                    var disciplinarySettingDropownlist = $("[name='DisciplinarySetting']").data("kendoDropDownList");
+                    var disciplinarySettingValue = disciplinarySettingDropownlist.value();
+                    if (disciplinarySettingValue == "0" || disciplinarySettingValue == "-1" || disciplinarySettingValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "DisciplinarySetting");
+                    }
+                    disciplinarySettingDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-DisciplinarySetting').remove();
+                    });
+                }
+                if (id == "" || id == "0" || id == 0 || id == null || date == null || reason == null || reason == "") {
+                 //   requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeeDisciplinaryItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+                //getEmployeeActionViewModel();
+            });
+
+            var disciplinarySettingButton = $('<button id="disciplinarySettingId" class="k-button applyDisciplinarySettingButton"><span class="k-icon k-i-note" style="vertical-align: sub;"></span></button>');
+            $("[data-container-for=DisciplinarySetting]").append(disciplinarySettingButton);
+            container.find(".applyDisciplinarySettingButton").off('click').on('click', function () {
+                openReferenceWindow('DisciplinarySetting', 'HRIS.Domain.EmployeeRelationServices.Configurations.DisciplinarySetting', '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinarySetting)');
+            });
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+    function showEmployeeApproval(data) {
+        $(".approval-container-title").html('@GlobalResource.PendingDisciplinaryRequest');
+        var template = kendo.template($("#employee-disciplinary-approval-template").html());
+        approval_container.html(template(data));
+        window.EmployeesDisciplinaryInfo = data;
+    }
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, disciplinaryId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, disciplinaryId) {
+        container.html('');
+        approval_container.html('');
+
+        $(".employee-container-title").html('');
+        $(".approval-container-title").html('');
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+            debugger;
+            var employeeDisciplinaryTemplateData = [
+                { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                { Name: "DisciplinarySetting", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinarySettingName)", Type: "Text", IsReadonly: true },
+                { Name: "DisciplinaryDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinaryDate)", Type: "Date", IsReadonly: true },
+                { Name: "DisciplinaryReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinaryReason)", Type: "Textarea", IsReadonly: true },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea", IsReadonly: true }
+            ];
+
+            var employeeDisciplinaryViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    DisciplinarySettingId: 0,
+                    DisciplinarySetting: "",
+                    DisciplinaryDate: null,
+                    DisciplinaryReason: "",
+                    Comment: ""
+                });
+
+            for (var i = 0; i < window.EmployeesDisciplinaryInfo.length; i++) {
+                if (window.EmployeesDisciplinaryInfo[i].WorkflowItemId == workflowId) {
+                    employeeDisciplinaryViewDatabind.FullName = window.EmployeesDisciplinaryInfo[i].FullName;
+                    employeeDisciplinaryViewDatabind.DisciplinarySettingId = window.EmployeesDisciplinaryInfo[i].DisciplinarySettingId;
+                    employeeDisciplinaryViewDatabind.DisciplinarySetting = window.EmployeesDisciplinaryInfo[i].DisciplinarySetting;
+                    employeeDisciplinaryViewDatabind.DisciplinaryDate = window.EmployeesDisciplinaryInfo[i].DisciplinaryDate;
+                    employeeDisciplinaryViewDatabind.DisciplinaryReason = window.EmployeesDisciplinaryInfo[i].DisciplinaryReason;
+                    employeeDisciplinaryViewDatabind.Comment = window.EmployeesDisciplinaryInfo[i].Comment;
+                    console.log(window.EmployeesDisciplinaryInfo[i].WorkflowItemId + '_' + workflowId);
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeDisciplinaryTemplateData, Key: "employee-disciplinary" }, employeeDisciplinaryViewDatabind);
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptDisciplinaryRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectDisciplinaryRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingDisciplinaryRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId, disciplinaryId: disciplinaryId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+
+</script>
+
+<script id="employee-disciplinary-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinarySetting)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinaryDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DisciplinaryReason)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i< data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=employee.DisciplinarySetting#</td>
+                <td>#=ToStringForDate(employee.DisciplinaryDate)#</td>
+                <td>#=employee.DisciplinaryReason#</td>
+                <td>#=employee.Comment#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.DisciplinaryId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

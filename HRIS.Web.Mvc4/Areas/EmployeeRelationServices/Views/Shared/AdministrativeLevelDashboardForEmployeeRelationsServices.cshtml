@@ -1,0 +1,186 @@
+﻿@using Project.Web.Mvc4
+
+<link href="~/CssAndJs/dashboard.css" rel="stylesheet" />
+<style>
+    .k-icon.k-clear-value.k-i-close {
+        display: none !important;
+    }
+</style>
+
+@Html.Partial("Charts/EmployeeLifeCycleChart")
+@Html.Partial("Charts/NodeLeavesPerYearChart")
+@Html.Partial("Charts/EmployeeLeavesPerYearChart")
+
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming.ToString();
+}
+
+<script type="text/javascript">
+    @{
+        var dir = "ltr";
+        var pageDir = "left";
+
+        if (CurrentLocale.Language == Locale.Rtl)
+        {
+            pageDir = "right";
+            dir = "rtl";
+        }
+    }
+
+    var $dir = '@dir';
+    var $pageDir = '@pageDir';
+    var $employees;
+
+    var $themeName = '@themingName';
+
+    $(function () {
+        getAllEmployeesForDropDown();
+
+        setTimeout(function () {
+            getEmployeeLifeCycleChart();
+            getEmployeeLeavesPerYearChart();
+            getNodeLeavesPerYearChart();
+            },
+            5000);
+
+    });
+
+    function getAllEmployeesForDropDown() {
+        $.get("@Url.Action("GetAllEmployees", "Dashboard", new { area = "EmployeeRelationServices" })",
+            function (data) {
+                $employees = data;
+            });
+    }
+
+    function generateDropdownList(selector, url, onChangeFunc) {
+
+        $(selector).kendoDropDownList({
+            filter: "contains",
+            optionLabel: "Select Employee ...",
+            autoBind: true,
+            minLength: 1,
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: getDataSource($employees),
+            dataBound: function () {
+                console.log(this.select());
+                if (this.select() === 0) {
+                    this.select(1);
+                    this.trigger("change");
+                }
+            },
+            change: function () {
+                var id = this.value();
+                onChangeFunc(id);
+            }
+        });
+
+    }
+
+    function getDataSource(data) {
+
+        var items = [];
+        if (data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+                var item = { Name: data[i].Name, Id: data[i].Id };
+                items.push(item);
+            }
+        }
+        return items;
+    }
+
+    function generateDropdownListServerSide(selector, url, mapUrl, onChangeFunc) {
+        $(selector).kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            noDataTemplate: 'No Data!',
+            filter: "contains",
+            minLength: 2,
+            virtual: {
+                itemHeight: 26,
+                valueMapper: function (options) {
+                    $.ajax({
+                        url: mapUrl,
+                        type: "GET",
+                        dataType: "json",
+                        data: convertValues(options.value),
+                        success: function (data) {
+                            options.success(data);
+                        }
+                    });
+                }
+            },
+            height: 75,
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                        $.ajax({
+                            url: url,
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            type: 'GET',
+                            data: options.data,
+                            success: function (result) {
+                                options.success(result);
+                            }
+                        });
+                    }
+                },
+                schema: {
+                    data: 'data',
+                    total: 'total',
+                    fields: [
+                        { field: 'Name', type: 'string' },
+                        { field: 'Id', type: 'number' },
+                    ]
+                },
+                pageSize: 11,
+                Type: "aspnetmvc-ajax",
+                serverPaging: true,
+                serverFiltering: true
+            },
+            optionLabel: {
+                Name: "Select",
+                Id: "0"
+            },
+            index: 1
+        });
+    }
+    function convertValues(value) {
+        var data = {};
+        
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+
+    function getDashboardColors() {
+        return [
+            getDefaultThemeColor(),
+            '#434348', '#7CB5EC', '#F45B5B',
+            '#2f7ed8', '#0d233a', '#8bbc21',
+            '#910000', '#1aadce', '#492970',
+            '#f28f43', '#77a1e5', '#c42525',
+            '#a6c96a', '#0000FF', '#008000'
+        ];
+    }
+
+    function getDefaultThemeColor() {
+        switch ($themeName) {
+        case 'lightblue':
+            return '#86c4bc';
+        case 'sepia':
+            return '#c0a48c';
+        case 'formal':
+            return '#87adc4';
+        case 'lady':
+            return '#9c8bc1';
+        default:
+            return '#818285';
+        }
+    }
+</script>

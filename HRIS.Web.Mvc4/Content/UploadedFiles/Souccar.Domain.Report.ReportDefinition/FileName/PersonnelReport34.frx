@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/08/2015 09:46:58" ReportInfo.Modified="08/16/2016 14:53:54" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {
+      if(CheckBox1.Checked)
+      { 
+        ComboBox1.Enabled=false;
+        ComboBox1.AutoFill=false;
+        ComboBox1.AutoFilter=false;
+        ComboBox1.SelectedIndex=-1;
+      }
+      else 
+      {  
+        ComboBox1.Enabled=true;         
+        ComboBox1.AutoFill=true;
+        ComboBox1.AutoFilter=true;
+      }       
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      ComboBox1.SelectedIndex=-1;
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW+SlWQYiJrY1tE4GntExzJvisKJgEDn89+JCmID8gF+f/58ALrFNBjmAe7T6TqLkNeJxz2981zpKJIYzSZIQcGpcYhJw3x9fioNx4pZUlsEdfXy9ZF16GKYZer5bfzJ3Nw==">
+      <TableDataSource Name="Employee" DataType="System.Int32" Enabled="true" TableName="Employee" SelectCommand="SELECT E.Id, E.IsVertualDeleted, E.FirstName, E.LastName, E.FatherName, E.MotherName, E.FirstNameL2, E.LastNameL2, E.FatherNameL2, E.MotherNameL2, E.PlaceOfBirthL2, E.Gender, E.MaritalStatus, E.DateOfBirth, E.CivilRecordPlaceAndNumber, E.PersonalRecordSource, E.NationalityIssue, E.OtherNationalityIssue, E.BloodType, E.Religion, E.MilitaryStatus, E.Status, E.Address, E.Phone, E.Mobile, E.Email, E.POBox, E.WebSite, E.Twitter, E.Facebook, E.IdentificationNo, E.Code, E.IsRetired, E.PhotoId, E.EmploymentStatus, E.SalaryStatus, E.DisabilityExist, E.PlaceOfBirth_id, E.CountryOfBirth_id, E.Nationality_id, E.OtherNationality_id, E.DisabilityType_id, E.RecruitmentInformation_id, E.OtherNationalityExist&#13;&#10;FROM &quot;Employee&quot; E&#13;&#10;WHERE E.IsVertualDeleted=0&#13;&#10;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="MotherName" DataType="System.String"/>
+        <Column Name="FirstNameL2" DataType="System.String"/>
+        <Column Name="LastNameL2" DataType="System.String"/>
+        <Column Name="FatherNameL2" DataType="System.String"/>
+        <Column Name="MotherNameL2" DataType="System.String"/>
+        <Column Name="PlaceOfBirthL2" DataType="System.String"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="CivilRecordPlaceAndNumber" DataType="System.String"/>
+        <Column Name="PersonalRecordSource" DataType="System.String"/>
+        <Column Name="NationalityIssue" DataType="System.DateTime"/>
+        <Column Name="OtherNationalityIssue" DataType="System.DateTime"/>
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="Religion" DataType="System.Int32"/>
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="Status" DataType="System.Int32"/>
+        <Column Name="Address" DataType="System.String"/>
+        <Column Name="Phone" DataType="System.String"/>
+        <Column Name="Mobile" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="POBox" DataType="System.String"/>
+        <Column Name="WebSite" DataType="System.String"/>
+        <Column Name="Twitter" DataType="System.String"/>
+        <Column Name="Facebook" DataType="System.String"/>
+        <Column Name="IdentificationNo" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsRetired" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PhotoId" DataType="System.String"/>
+        <Column Name="EmploymentStatus" DataType="System.Int32"/>
+        <Column Name="SalaryStatus" DataType="System.Int32"/>
+        <Column Name="DisabilityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="CountryOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="OtherNationality_id" DataType="System.Int32"/>
+        <Column Name="DisabilityType_id" DataType="System.Int32"/>
+        <Column Name="RecruitmentInformation_id" DataType="System.Int32"/>
+        <Column Name="OtherNationalityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, dbo.Employee.FirstName, dbo.Employee.LastName, &#13;&#10;                      dbo.Employee.Id, dbo.Employee.Code, dbo.Employee.FatherName, dbo.Position.Code AS PosCode, dbo.JobDescription.Name AS JDName, &#13;&#10;                      dbo.CustodiesType.Name AS CustodiesTypeName, dbo.CustodieDetails.Name AS CustodieName, dbo.EmployeeCustodie.Quantity, &#13;&#10;                      dbo.EmployeeCustodie.CustodyStartDate, dbo.EmployeeCustodie.CustodyEndDate, dbo.CustodieDetails.PurchaseDate, dbo.CustodieDetails.Period, &#13;&#10;                      dbo.CustodieDetails.DepreciationPeriod,dbo.CustodiesType.Id CustodiesTypeId&#13;&#10;FROM        dbo.EmployeeCustodie INNER JOIN&#13;&#10;            dbo.CustodiesType INNER JOIN&#13;&#10;            dbo.CustodieDetails ON dbo.CustodiesType.Id = dbo.CustodieDetails.CustodiesType_id ON &#13;&#10;            dbo.EmployeeCustodie.CustodyName_id = dbo.CustodieDetails.Id INNER JOIN&#13;&#10;            dbo.EmployeeCard ON dbo.EmployeeCustodie.EmployeeCard_id = dbo.EmployeeCard.Id INNER JOIN&#13;&#10;            dbo.AssigningEmployeeToPosition INNER JOIN&#13;&#10;            dbo.Employee ON dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id INNER JOIN&#13;&#10;            dbo.Position ON dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id INNER JOIN&#13;&#10;            dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id ON dbo.EmployeeCard.Employee_id = dbo.Employee.Id&#13;&#10;WHERE		EmployeeCustodie.IsVertualDeleted = 0 AND&#13;&#10;			CustodiesType.IsVertualDeleted = 0 AND&#13;&#10;			CustodieDetails.IsVertualDeleted = 0 AND&#13;&#10;			EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;			AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;			Employee.IsVertualDeleted = 0 AND&#13;&#10;			Position.IsVertualDeleted = 0 AND&#13;&#10;			JobDescription.IsVertualDeleted = 0">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PosCode" DataType="System.String"/>
+        <Column Name="JDName" DataType="System.String"/>
+        <Column Name="CustodiesTypeName" DataType="System.String"/>
+        <Column Name="CustodieName" DataType="System.String"/>
+        <Column Name="Quantity" DataType="System.Int32"/>
+        <Column Name="CustodyStartDate" DataType="System.DateTime"/>
+        <Column Name="CustodyEndDate" DataType="System.DateTime"/>
+        <Column Name="PurchaseDate" DataType="System.DateTime"/>
+        <Column Name="Period" DataType="System.Int32"/>
+        <Column Name="DepreciationPeriod" DataType="System.Int32"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Column" DataType="System.Int32" Calculated="true" Expression=""/>
+        <Column Name="CustodiesTypeId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="CustodiesTypeTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Id,Name FROM CustodiesType WHERE IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Employee_Table" ParentDataSource="Employee" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="Id" ChildColumns="CustodiesTypeId" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="113.4">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير العهد للموظف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d"/>
+      <TextObject Name="Text15" Left="529.2" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع العهدة المختارة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text16" Left="255.15" Top="75.6" Width="274.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[ComboBox1.Text]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="117.25" Width="718.2" Height="38.8" DataSource="Employee">
+      <TextObject Name="Text9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="491.4" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرمز" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text1" Left="132.3" Top="18.9" Width="359.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Employee.FirstName][Employee.FatherName][Employee.LastName]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 11pt"/>
+      <TextObject Name="Text8" Top="18.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Table.JDName]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 11pt"/>
+      <TextObject Name="Text3" Left="491.4" Top="18.9" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Employee.Code]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 11pt"/>
+      <TextObject Name="Text2" Left="132.3" Width="359.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الثلاثي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="201.54" Width="718.2" Height="18.9" DataSource="Table">
+        <TextObject Name="Text12" Left="491.4" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Table.CustodiesTypeName]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <TextObject Name="Text29" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Table.DepreciationPeriod]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <TextObject Name="Text19" Left="444.15" Width="47.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Table.Quantity]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <TextObject Name="Text10" Left="567" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Table.CustodieName]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <TextObject Name="Text22" Left="349.65" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.CustodyStartDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.CustodyStartDate] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <TextObject Name="Text23" Left="245.7" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.PurchaseDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.PurchaseDate] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <TextObject Name="Text27" Left="132.3" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[Switch([Table.Period] == 0,&quot;سنوي&quot;,[Table.Period] == 1,&quot;نصف سنوي&quot;,[Table.Period] == 2,&quot;ربعي&quot;,[Table.Period] == 3,&quot;شهري&quot;,[Table.Period] == 4,&quot;مخصص&quot;)]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Arial, 11pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="159.89" Width="718.2" Height="37.8">
+          <TextObject Name="Text20" Left="349.65" Top="-1" Width="94.5" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ بداية التعهيد" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text21" Left="245.7" Top="-1" Width="103.95" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="فترة الاهتلاك" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text28" Top="-1" Width="132.3" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="قيمة الاهتلاك الشهري" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text13" Left="491.4" Top="-1" Width="75.6" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع العهدة" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text11" Left="567" Top="-1" Width="151.2" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم العهدة" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text18" Left="444.15" Top="-1" Width="47.25" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العدد" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text26" Left="132.3" Top="-1" Width="113.4" Height="38.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="خلال" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="224.28" Width="718.2" Height="18.9">
+        <TextObject Name="Text17" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد العناصر ضمن التقرير" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text14" Width="529.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="247.03" Width="718.2" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="162" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="114" Top="83" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="196" Top="32" Width="54" Height="13" TabIndex="2" Text="نوع العهدة"/>
+    <ComboBoxControl Name="ComboBox1" Left="16" Top="28" Width="175" RightToLeft="Yes" TabIndex="3" DataColumn="Table.CustodiesTypeTable.Name" DropDownStyle="DropDownList" DropDownWidth="149" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="176" Top="60" Width="77" Height="17" TabIndex="4" Text="جميع العهد" ClickEvent="CheckBox1_Click"/>
+  </DialogPage>
+</Report>

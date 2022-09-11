@@ -1,0 +1,1358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="valueBasicInfoJobSummary.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <assembly alias="DevExpress.Utils.v11.2" name="DevExpress.Utils.v11.2, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+  <data name="valueBasicInfoJobSummary.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 175.2599</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="valueBasicInfoJobSummary.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.579, 58.42001</value>
+  </data>
+  <data name="valueBasicInfoJobSummary.Text" xml:space="preserve">
+    <value>valueBasicInfoJobSummary</value>
+  </data>
+  <data name="lblBasicInfoJobSummary.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblBasicInfoJobSummary.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001130422, 116.8399</value>
+  </data>
+  <data name="lblBasicInfoJobSummary.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.579, 58.42</value>
+  </data>
+  <data name="lblBasicInfoJobSummary.Text" xml:space="preserve">
+    <value>Job Summary</value>
+  </data>
+  <data name="valueBasicInfoNodeName.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueBasicInfoNodeName.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.816, 58.41998</value>
+  </data>
+  <data name="valueBasicInfoNodeName.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7629, 58.42001</value>
+  </data>
+  <data name="valueBasicInfoNodeName.Text" xml:space="preserve">
+    <value>valueBasicInfoNodeName</value>
+  </data>
+  <data name="valueBasicInfoNodeType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueBasicInfoNodeType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.053, 58.41998</value>
+  </data>
+  <data name="valueBasicInfoNodeType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7625, 58.42001</value>
+  </data>
+  <data name="valueBasicInfoNodeType.Text" xml:space="preserve">
+    <value>[NodeType]</value>
+  </data>
+  <data name="valueBasicInfoReportingTo.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueBasicInfoReportingTo.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.29, 58.41998</value>
+  </data>
+  <data name="valueBasicInfoReportingTo.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7634, 58.42001</value>
+  </data>
+  <data name="valueBasicInfoReportingTo.Text" xml:space="preserve">
+    <value>valueBasicInfoReportingTo</value>
+  </data>
+  <data name="lblBasicInfoReportingTo.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblBasicInfoReportingTo.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5261, 58.41998</value>
+  </data>
+  <data name="lblBasicInfoReportingTo.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7639, 58.42001</value>
+  </data>
+  <data name="lblBasicInfoReportingTo.Text" xml:space="preserve">
+    <value>Reporting To</value>
+  </data>
+  <data name="valueBasicInfoJobTilte.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueBasicInfoJobTilte.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>307.7634, 58.41998</value>
+  </data>
+  <data name="valueBasicInfoJobTilte.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7629, 58.42001</value>
+  </data>
+  <data name="valueBasicInfoJobTilte.Text" xml:space="preserve">
+    <value>valueBasicInfoJobTilte</value>
+  </data>
+  <data name="lblBasicInfoJobTilte.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblBasicInfoJobTilte.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblBasicInfoJobTilte.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7634, 58.42001</value>
+  </data>
+  <data name="lblBasicInfoJobTilte.Text" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="lblBasicInfoJobDescribtionTemplate.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblBasicInfoJobDescribtionTemplate.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblBasicInfoJobDescribtionTemplate.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.579, 58.42</value>
+  </data>
+  <data name="lblBasicInfoJobDescribtionTemplate.Text" xml:space="preserve">
+    <value>Job Describtion Template</value>
+  </data>
+  <data name="BasicInfoBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="BasicInfoBand.HeightF" type="System.Single, mscorlib">
+    <value>234</value>
+  </data>
+  <assembly alias="DevExpress.Data.v11.2" name="DevExpress.Data.v11.2, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+  <data name="BasicInfoBand.TextAlignment" type="DevExpress.XtraPrinting.TextAlignment, DevExpress.Data.v11.2">
+    <value>TopLeft</value>
+  </data>
+  <data name="TopMargin.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="TopMargin.HeightF" type="System.Single, mscorlib">
+    <value>66.87499</value>
+  </data>
+  <data name="TopMargin.TextAlignment" type="DevExpress.XtraPrinting.TextAlignment, DevExpress.Data.v11.2">
+    <value>TopLeft</value>
+  </data>
+  <data name="BottomMargin.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="BottomMargin.HeightF" type="System.Single, mscorlib">
+    <value>75.34149</value>
+  </data>
+  <data name="BottomMargin.TextAlignment" type="DevExpress.XtraPrinting.TextAlignment, DevExpress.Data.v11.2">
+    <value>TopLeft</value>
+  </data>
+  <metadata name="bindingSourceJobDescriptionTemplateDTO.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="valueRolesJobTitleAndWeight.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueRolesJobTitleAndWeight.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="valueRolesJobTitleAndWeight.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.579, 58.42</value>
+  </data>
+  <data name="valueRolesJobTitleAndWeight.Text" xml:space="preserve">
+    <value>Role :[Name] ([Weight])</value>
+  </data>
+  <data name="RolesDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="RolesDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="valueResponsibilitiesKpi.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueResponsibilitiesKpi.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.055, 0</value>
+  </data>
+  <data name="valueResponsibilitiesKpi.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5248, 58.42</value>
+  </data>
+  <data name="valueResponsibilitiesKpi.Text" xml:space="preserve">
+    <value>valueResponsibilitiesKpi</value>
+  </data>
+  <data name="valueResponsibilitiesWeight.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueResponsibilitiesWeight.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5258, 0</value>
+  </data>
+  <data name="valueResponsibilitiesWeight.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5247, 58.42</value>
+  </data>
+  <data name="valueResponsibilitiesWeight.Text" xml:space="preserve">
+    <value>valueResponsibilitiesWeight</value>
+  </data>
+  <data name="valueResponsibilitiesDescription.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueResponsibilitiesDescription.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="valueResponsibilitiesDescription.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5248, 58.42</value>
+  </data>
+  <data name="valueResponsibilitiesDescription.Text" xml:space="preserve">
+    <value>valueResponsibilitiesDescription</value>
+  </data>
+  <data name="ResponsibilitiesDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ResponsibilitiesDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58.42</value>
+  </data>
+  <data name="lblResponsibilitiesKpi.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblResponsibilitiesKpi.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.052, 0</value>
+  </data>
+  <data name="lblResponsibilitiesKpi.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5261, 58.42</value>
+  </data>
+  <data name="lblResponsibilitiesKpi.Text" xml:space="preserve">
+    <value>KPI</value>
+  </data>
+  <data name="lblResponsibilitiesWeight.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblResponsibilitiesWeight.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5258, 0</value>
+  </data>
+  <data name="lblResponsibilitiesWeight.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5261, 58.42</value>
+  </data>
+  <data name="lblResponsibilitiesWeight.Text" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="lblResponsibilitiesDescription.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblResponsibilitiesDescription.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblResponsibilitiesDescription.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5261, 58.42</value>
+  </data>
+  <data name="lblResponsibilitiesDescription.Text" xml:space="preserve">
+    <value>Responsibilities</value>
+  </data>
+  <data name="ResponsibilitiesHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ResponsibilitiesHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="ResponsibilitiesReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblRolesAndResponsibilities.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblRolesAndResponsibilities.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="lblRolesAndResponsibilities.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.565, 58.42</value>
+  </data>
+  <data name="lblRolesAndResponsibilities.Text" xml:space="preserve">
+    <value>Job Roles &amp; Responsibilities</value>
+  </data>
+  <data name="RolesHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="RolesHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="RolesReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblAuthoritiesTitle.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblAuthoritiesTitle.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.0003229777, 0</value>
+  </data>
+  <data name="lblAuthoritiesTitle.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.566, 58.42</value>
+  </data>
+  <data name="lblAuthoritiesTitle.Text" xml:space="preserve">
+    <value>lblAuthoritiesTitle</value>
+  </data>
+  <data name="AuthoritiesDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="AuthoritiesDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="lblAuthoritiesAuthorityLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblAuthoritiesAuthorityLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 116.8399</value>
+  </data>
+  <data name="lblAuthoritiesAuthorityLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.577, 58.42</value>
+  </data>
+  <data name="lblAuthoritiesAuthorityLevel.Text" xml:space="preserve">
+    <value>Authority Level:</value>
+  </data>
+  <data name="lblAuthoritiesOperatingBudget.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblAuthoritiesOperatingBudget.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41988</value>
+  </data>
+  <data name="lblAuthoritiesOperatingBudget.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7634, 58.42001</value>
+  </data>
+  <data name="lblAuthoritiesOperatingBudget.Text" xml:space="preserve">
+    <value>Operating Budget:</value>
+  </data>
+  <data name="lblAuthoritiesDimensions.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblAuthoritiesDimensions.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="lblAuthoritiesDimensions.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.577, 58.42</value>
+  </data>
+  <data name="lblAuthoritiesDimensions.Text" xml:space="preserve">
+    <value>Dimensions</value>
+  </data>
+  <data name="xrLabel1.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="xrLabel1.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>307.7672, 58.41988</value>
+  </data>
+  <data name="xrLabel1.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1538.798, 58.42</value>
+  </data>
+  <data name="xrLabel1.Text" xml:space="preserve">
+    <value>xrLabel1</value>
+  </data>
+  <data name="AuthoritiesHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="AuthoritiesHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>175.2599</value>
+  </data>
+  <data name="AuthoritiesReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueJobRelationshipsExternal.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueJobRelationshipsExternal.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 116.8399</value>
+  </data>
+  <data name="valueJobRelationshipsExternal.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1231.05, 58.42</value>
+  </data>
+  <data name="valueJobRelationshipsExternal.Text" xml:space="preserve">
+    <value>valueJobRelationshipsExternal</value>
+  </data>
+  <data name="lblJobRelationshipsExternal.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblJobRelationshipsExternal.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 116.8399</value>
+  </data>
+  <data name="lblJobRelationshipsExternal.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5261, 58.42</value>
+  </data>
+  <data name="lblJobRelationshipsExternal.Text" xml:space="preserve">
+    <value>External</value>
+  </data>
+  <data name="valueJobRelationshipsInternal.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueJobRelationshipsInternal.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 58.41998</value>
+  </data>
+  <data name="valueJobRelationshipsInternal.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1231.05, 58.42001</value>
+  </data>
+  <data name="valueJobRelationshipsInternal.Text" xml:space="preserve">
+    <value>valueJobRelationshipsInternal</value>
+  </data>
+  <data name="lblJobRelationshipsInternal.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblJobRelationshipsInternal.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblJobRelationshipsInternal.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5261, 58.42001</value>
+  </data>
+  <data name="lblJobRelationshipsInternal.Text" xml:space="preserve">
+    <value>Internal</value>
+  </data>
+  <data name="lblJobRelationships.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblJobRelationships.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="lblJobRelationships.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.576, 58.42</value>
+  </data>
+  <data name="lblJobRelationships.Text" xml:space="preserve">
+    <value>Job Relationships</value>
+  </data>
+  <data name="JobRelationshipsDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="JobRelationshipsDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>175</value>
+  </data>
+  <data name="JobRelationshipsReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="QualificationsDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="QualificationsDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="valueEducationType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueEducationType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.2913, 0</value>
+  </data>
+  <data name="valueEducationType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2887, 58.42</value>
+  </data>
+  <data name="valueEducationType.Text" xml:space="preserve">
+    <value>[Type.Name]</value>
+  </data>
+  <data name="valueEducationMajor.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueEducationMajor.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="valueEducationMajor.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2888, 58.42</value>
+  </data>
+  <data name="valueEducationMajor.Text" xml:space="preserve">
+    <value>valueEducationMajor</value>
+  </data>
+  <data name="EducationDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="EducationDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="lblEducationType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblEducationType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.2905, 58.41998</value>
+  </data>
+  <data name="lblEducationType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2864, 58.42001</value>
+  </data>
+  <data name="lblEducationType.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="lblEducationMajor.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblEducationMajor.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblEducationMajor.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2908, 58.42001</value>
+  </data>
+  <data name="lblEducationMajor.Text" xml:space="preserve">
+    <value>Major</value>
+  </data>
+  <data name="lblEducation.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblEducation.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="lblEducation.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.576, 58.42</value>
+  </data>
+  <data name="lblEducation.Text" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="EducationHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="EducationHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>117</value>
+  </data>
+  <data name="EducationReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueExperienceCareerLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueExperienceCareerLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.29, 0</value>
+  </data>
+  <data name="valueExperienceCareerLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2857, 58.42</value>
+  </data>
+  <data name="valueExperienceCareerLevel.Text" xml:space="preserve">
+    <value>[CareerLevel.Name]</value>
+  </data>
+  <data name="valueExperienceIndustry.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueExperienceIndustry.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.0009689328, 0</value>
+  </data>
+  <data name="valueExperienceIndustry.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2889, 58.42</value>
+  </data>
+  <data name="valueExperienceIndustry.Text" xml:space="preserve">
+    <value>[Industry]</value>
+  </data>
+  <data name="ExperienceDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ExperienceDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="lblExperience.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblExperience.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblExperience.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.576, 58.42</value>
+  </data>
+  <data name="lblExperience.Text" xml:space="preserve">
+    <value>Experience</value>
+  </data>
+  <data name="lblExperienceIndustry.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblExperienceIndustry.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.42005</value>
+  </data>
+  <data name="lblExperienceIndustry.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2908, 58.42</value>
+  </data>
+  <data name="lblExperienceIndustry.Text" xml:space="preserve">
+    <value>Industry</value>
+  </data>
+  <data name="lblExperienceCareerLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblExperienceCareerLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.2922, 58.42005</value>
+  </data>
+  <data name="lblExperienceCareerLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2831, 58.42</value>
+  </data>
+  <data name="lblExperienceCareerLevel.Text" xml:space="preserve">
+    <value>Career Level</value>
+  </data>
+  <data name="ExperienceHeaserBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ExperienceHeaserBand.HeightF" type="System.Single, mscorlib">
+    <value>117</value>
+  </data>
+  <data name="ExperienceReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueLanguageReading.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueLanguageReading.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.051, 0</value>
+  </data>
+  <data name="valueLanguageReading.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7615, 58.42</value>
+  </data>
+  <data name="valueLanguageReading.Text" xml:space="preserve">
+    <value>[Reading.Name]</value>
+  </data>
+  <data name="valueLanguageSpeaking.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueLanguageSpeaking.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 0</value>
+  </data>
+  <data name="valueLanguageSpeaking.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7614, 58.42</value>
+  </data>
+  <data name="valueLanguageSpeaking.Text" xml:space="preserve">
+    <value>[Speaking.Name]</value>
+  </data>
+  <data name="valueLanguageWriting.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueLanguageWriting.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.289, 0</value>
+  </data>
+  <data name="valueLanguageWriting.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7614, 58.42</value>
+  </data>
+  <data name="valueLanguageWriting.Text" xml:space="preserve">
+    <value>[Writing.Name]</value>
+  </data>
+  <data name="valueLanguageName.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueLanguageName.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="valueLanguageName.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42</value>
+  </data>
+  <data name="valueLanguageName.Text" xml:space="preserve">
+    <value>[Name.Name]</value>
+  </data>
+  <data name="valueLanguageListening.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueLanguageListening.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.813, 0</value>
+  </data>
+  <data name="valueLanguageListening.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7615, 58.42</value>
+  </data>
+  <data name="valueLanguageListening.Text" xml:space="preserve">
+    <value>[Listening.Name]</value>
+  </data>
+  <data name="LanguagesDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="LanguagesDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="lblLanguageListening.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblLanguageListening.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.813, 58.41998</value>
+  </data>
+  <data name="lblLanguageListening.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7615, 58.42001</value>
+  </data>
+  <data name="lblLanguageListening.Text" xml:space="preserve">
+    <value>Listening</value>
+  </data>
+  <data name="lblLanguageReading.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblLanguageReading.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.051, 58.41998</value>
+  </data>
+  <data name="lblLanguageReading.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7615, 58.42001</value>
+  </data>
+  <data name="lblLanguageReading.Text" xml:space="preserve">
+    <value>Reading</value>
+  </data>
+  <data name="lblLanguageWriting.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblLanguageWriting.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.289, 58.41998</value>
+  </data>
+  <data name="lblLanguageWriting.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7614, 58.42001</value>
+  </data>
+  <data name="lblLanguageWriting.Text" xml:space="preserve">
+    <value>Writing</value>
+  </data>
+  <data name="lblLanguageSpeaking.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblLanguageSpeaking.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 58.41998</value>
+  </data>
+  <data name="lblLanguageSpeaking.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7614, 58.42001</value>
+  </data>
+  <data name="lblLanguageSpeaking.Text" xml:space="preserve">
+    <value>Speaking</value>
+  </data>
+  <data name="lblLanguageName.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblLanguageName.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblLanguageName.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42001</value>
+  </data>
+  <data name="lblLanguageName.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="lblLanguage.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblLanguage.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblLanguage.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.576, 58.42</value>
+  </data>
+  <data name="lblLanguage.Text" xml:space="preserve">
+    <value>Languages</value>
+  </data>
+  <data name="LanguagesHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="LanguagesHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>117</value>
+  </data>
+  <data name="LanguagesReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valuePCSkillsType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valuePCSkillsType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="valuePCSkillsType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2908, 58.42</value>
+  </data>
+  <data name="valuePCSkillsType.Text" xml:space="preserve">
+    <value>[Type.Name]</value>
+  </data>
+  <data name="valuePCSkillsLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valuePCSkillsLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.2922, 0</value>
+  </data>
+  <data name="valuePCSkillsLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2834, 58.42</value>
+  </data>
+  <data name="valuePCSkillsLevel.Text" xml:space="preserve">
+    <value>[Level.Name]</value>
+  </data>
+  <data name="PCSkillsDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="PCSkillsDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="lblPCSkillsLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblPCSkillsLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.2913, 58.41998</value>
+  </data>
+  <data name="lblPCSkillsLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2834, 58.42001</value>
+  </data>
+  <data name="lblPCSkillsLevel.Text" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="lblPCSkillsType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblPCSkillsType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblPCSkillsType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2908, 58.42001</value>
+  </data>
+  <data name="lblPCSkillsType.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="lblPCSkills.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblPCSkills.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 0</value>
+  </data>
+  <data name="lblPCSkills.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.574, 58.42</value>
+  </data>
+  <data name="lblPCSkills.Text" xml:space="preserve">
+    <value>PC Skills</value>
+  </data>
+  <data name="PCSkillsHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="PCSkillsHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>117</value>
+  </data>
+  <data name="PCSkillsReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueOtherSkillsLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueOtherSkillsLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.289, 0</value>
+  </data>
+  <data name="valueOtherSkillsLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.282, 58.42</value>
+  </data>
+  <data name="valueOtherSkillsLevel.Text" xml:space="preserve">
+    <value>[Level.Name]</value>
+  </data>
+  <data name="valueOtherSkillsType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueOtherSkillsType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="valueOtherSkillsType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2888, 58.42</value>
+  </data>
+  <data name="valueOtherSkillsType.Text" xml:space="preserve">
+    <value>[Type.Name]</value>
+  </data>
+  <data name="OtherSkillsDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="OtherSkillsDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="lblOtherSkillsLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblOtherSkillsLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>923.2922, 58.42005</value>
+  </data>
+  <data name="lblOtherSkillsLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2822, 58.42</value>
+  </data>
+  <data name="lblOtherSkillsLevel.Text" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="lblOtherSkillsType.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblOtherSkillsType.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.42005</value>
+  </data>
+  <data name="lblOtherSkillsType.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>923.2888, 58.42</value>
+  </data>
+  <data name="lblOtherSkillsType.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="lblOtherSkills.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblOtherSkills.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblOtherSkills.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.58, 58.42</value>
+  </data>
+  <data name="lblOtherSkills.Text" xml:space="preserve">
+    <value>Other Skills</value>
+  </data>
+  <data name="OtherSkillsHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="OtherSkillsHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>117</value>
+  </data>
+  <data name="OtherSkillsReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblQualifications.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblQualifications.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblQualifications.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.58, 58.42</value>
+  </data>
+  <data name="lblQualifications.Text" xml:space="preserve">
+    <value>Qualifications</value>
+  </data>
+  <data name="QualificationsHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="QualificationsHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="QualificationsReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="Detail.HeightF" type="System.Single, mscorlib">
+    <value>114.9999</value>
+  </data>
+  <data name="ValueCompetenciesDescription.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ValueCompetenciesDescription.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 0</value>
+  </data>
+  <data name="ValueCompetenciesDescription.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5232, 58.42</value>
+  </data>
+  <data name="ValueCompetenciesDescription.Text" xml:space="preserve">
+    <value>[Description]</value>
+  </data>
+  <data name="ValueCompetenciesName.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ValueCompetenciesName.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="ValueCompetenciesName.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42</value>
+  </data>
+  <data name="ValueCompetenciesName.Text" xml:space="preserve">
+    <value>[Name]</value>
+  </data>
+  <data name="valueCompetenciesLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueCompetenciesLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.051, 0</value>
+  </data>
+  <data name="valueCompetenciesLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7616, 58.42</value>
+  </data>
+  <data name="valueCompetenciesLevel.Text" xml:space="preserve">
+    <value>[Level.Name]</value>
+  </data>
+  <data name="valueCompetenciesWeight.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueCompetenciesWeight.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.813, 0</value>
+  </data>
+  <data name="valueCompetenciesWeight.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7542, 58.42</value>
+  </data>
+  <data name="valueCompetenciesWeight.Text" xml:space="preserve">
+    <value>[Weight]</value>
+  </data>
+  <data name="CompetenciesDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="CompetenciesDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="valueCompetenciesTypeGroup.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="valueCompetenciesTypeGroup.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>307.7634, 0</value>
+  </data>
+  <data name="valueCompetenciesTypeGroup.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1538.802, 58.42</value>
+  </data>
+  <data name="valueCompetenciesTypeGroup.Text" xml:space="preserve">
+    <value>[Type.Name]</value>
+  </data>
+  <data name="lblCompetenciesWeight.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblCompetenciesWeight.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.817, 58.41998</value>
+  </data>
+  <data name="lblCompetenciesWeight.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7534, 58.42001</value>
+  </data>
+  <data name="lblCompetenciesWeight.Text" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="lblCompetenciesLevel.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblCompetenciesLevel.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.055, 58.41998</value>
+  </data>
+  <data name="lblCompetenciesLevel.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7616, 58.42001</value>
+  </data>
+  <data name="lblCompetenciesLevel.Text" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="lblCompetenciesDescription.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblCompetenciesDescription.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 58.41998</value>
+  </data>
+  <data name="lblCompetenciesDescription.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42001</value>
+  </data>
+  <data name="lblCompetenciesDescription.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="lblCompetenciesName.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblCompetenciesName.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblCompetenciesName.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42001</value>
+  </data>
+  <data name="lblCompetenciesName.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="lblCompetenciesTypeGroup.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblCompetenciesTypeGroup.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001130422, 0</value>
+  </data>
+  <data name="lblCompetenciesTypeGroup.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7623, 58.42</value>
+  </data>
+  <data name="lblCompetenciesTypeGroup.Text" xml:space="preserve">
+    <value>Competency Type: </value>
+  </data>
+  <data name="CompetenciesTypeGroupHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="CompetenciesTypeGroupHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>117</value>
+  </data>
+  <data name="lblCompetencies.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblCompetencies.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblCompetencies.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.58, 58.42</value>
+  </data>
+  <data name="lblCompetencies.Text" xml:space="preserve">
+    <value>Competencies</value>
+  </data>
+  <data name="CompetenciesHeaderBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="CompetenciesHeaderBand.HeightF" type="System.Single, mscorlib">
+    <value>58</value>
+  </data>
+  <data name="CompetenciesReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row3.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row3.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.817, 233.6799</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row3.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7493, 58.41998</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row3.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row3.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.056, 233.6799</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row3.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7563, 58.42001</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row3.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row3.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5284, 233.6799</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row3.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.527, 58.41998</value>
+  </data>
+  <data name="lblApprovalsHeadOfDepartment.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsHeadOfDepartment.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0.001211166, 233.6799</value>
+  </data>
+  <data name="lblApprovalsHeadOfDepartment.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5248, 58.42</value>
+  </data>
+  <data name="lblApprovalsHeadOfDepartment.Text" xml:space="preserve">
+    <value>Head Of Department</value>
+  </data>
+  <data name="lblApprovalsDirectLineManager.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsDirectLineManager.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 175.2599</value>
+  </data>
+  <data name="lblApprovalsDirectLineManager.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5271, 58.42001</value>
+  </data>
+  <data name="lblApprovalsDirectLineManager.Text" xml:space="preserve">
+    <value>Direct Line Manager</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row2.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row2.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.055, 175.26</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row2.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7572, 58.42</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row2.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row2.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5281, 175.2599</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row2.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5271, 58.42001</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row2.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row2.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.816, 175.2599</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row2.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7634, 58.42001</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row1.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row1.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.817, 116.8398</value>
+  </data>
+  <data name="lblApprovalsEmptyCell3Row1.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7488, 58.42</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row1.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row1.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.055, 116.8399</value>
+  </data>
+  <data name="lblApprovalsEmptyCell2Row1.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7616, 58.42</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row1.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row1.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5281, 116.8399</value>
+  </data>
+  <data name="lblApprovalsEmptyCell1Row1.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5271, 58.42</value>
+  </data>
+  <data name="lblApprovalsEmployee.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmployee.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 116.8399</value>
+  </data>
+  <data name="lblApprovalsEmployee.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42</value>
+  </data>
+  <data name="lblApprovalsEmployee.Text" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="lblApprovalsDate.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsDate.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1538.817, 58.41988</value>
+  </data>
+  <data name="lblApprovalsDate.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7488, 58.42</value>
+  </data>
+  <data name="lblApprovalsDate.Text" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="lblApprovalsSignature.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsSignature.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>1231.055, 58.41998</value>
+  </data>
+  <data name="lblApprovalsSignature.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>307.7616, 58.42001</value>
+  </data>
+  <data name="lblApprovalsSignature.Text" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="lblApprovalsName.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsName.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>615.5273, 58.41998</value>
+  </data>
+  <data name="lblApprovalsName.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5271, 58.42001</value>
+  </data>
+  <data name="lblApprovalsName.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="lblApprovalsEmptyCellCorner.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovalsEmptyCellCorner.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 58.41998</value>
+  </data>
+  <data name="lblApprovalsEmptyCellCorner.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>615.5273, 58.42001</value>
+  </data>
+  <data name="lblApprovals.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="lblApprovals.LocationFloat" type="DevExpress.Utils.PointFloat, DevExpress.Utils.v11.2">
+    <value>0, 0</value>
+  </data>
+  <data name="lblApprovals.SizeF" type="System.Drawing.SizeF, System.Drawing">
+    <value>1846.566, 58.42</value>
+  </data>
+  <data name="lblApprovals.Text" xml:space="preserve">
+    <value>Approvals</value>
+  </data>
+  <data name="ApprovalsDetailBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <data name="ApprovalsDetailBand.HeightF" type="System.Single, mscorlib">
+    <value>294.7457</value>
+  </data>
+  <data name="ApprovalsReportBand.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.Dpi" type="System.Single, mscorlib">
+    <value>254</value>
+  </data>
+  <assembly alias="DevExpress.XtraReports.v11.2" name="DevExpress.XtraReports.v11.2, Version=11.2.10.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+  <data name="$this.ReportUnit" type="DevExpress.XtraReports.UI.ReportUnit, DevExpress.XtraReports.v11.2">
+    <value>TenthsOfAMillimeter</value>
+  </data>
+  <data name="$this.SnapGridSize" type="System.Single, mscorlib">
+    <value>31.75</value>
+  </data>
+</root>

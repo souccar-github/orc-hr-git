@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"><Body><ReportItems><Textbox Name="Textbox23"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>................................إلى</Value><Style><FontFamily>arial</FontFamily><FontSize>14pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox23</rd:DefaultName><Top>2.86659cm</Top><Left>6.02525cm</Left><Height>0.86458cm</Height><Width>5.83375cm</Width><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Textbox Name="Textbox38"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>: الراتب المقطوع</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox38</rd:DefaultName><Top>7.02179cm</Top><Left>14.7578cm</Left><Height>0.67056cm</Height><Width>3.135cm</Width><ZIndex>1</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Textbox Name="Textbox40"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>:التعويضات بالقيمة الأولية</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox38</rd:DefaultName><Top>8.43346cm</Top><Left>13.44035cm</Left><Height>0.65292cm</Height><Width>4.42599cm</Width><ZIndex>2</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Tablix Name="Tablix6"><TablixBody><TablixColumns><TablixColumn><Width>2.12517cm</Width></TablixColumn><TablixColumn><Width>6.35713cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="InitialValue2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!InitialValue.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>InitialValue2</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="BenefitName1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!BenefitName.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>BenefitName1</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember><Group Name="Details1" /></TablixMember></TablixMembers></TablixRowHierarchy><DataSetName>MonthlyEmployeeBenefits</DataSetName><Top>9.51853cm</Top><Left>9.268cm</Left><Height>0.6cm</Height><Width>8.4823cm</Width><ZIndex>3</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix><Textbox Name="Textbox44"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>:الحسميات</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox38</rd:DefaultName><Top>8.39818cm</Top><Left>0.9291cm</Left><Height>0.6882cm</Height><Width>4.42599cm</Width><ZIndex>4</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Tablix Name="Tablix7"><TablixBody><TablixColumns><TablixColumn><Width>1.81208cm</Width></TablixColumn><TablixColumn><Width>3.16146cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="InitialValue3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!DeductionValue.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>InitialValue2</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="BenefitName2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!DeductionName.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>BenefitName1</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember><Group Name="Details5" /></TablixMember></TablixMembers></TablixRowHierarchy><DataSetName>MonthlyEmployeeDeductionDataSet</DataSetName><Top>9.77457cm</Top><Left>0.38155cm</Left><Height>0.6cm</Height><Width>4.97354cm</Width><ZIndex>5</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix><Tablix Name="Tablix8"><TablixBody><TablixColumns><TablixColumn><Width>1.78562cm</Width></TablixColumn><TablixColumn><Width>3.16146cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="InitialValue4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!PaymentValue.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>InitialValue2</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="BenefitName3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!DonorLoanName.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>BenefitName1</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember><Group Name="Details6" /></TablixMember></TablixMembers></TablixRowHierarchy><DataSetName>LoanDataSet</DataSetName><Top>12.44757cm</Top><Left>0.40801cm</Left><Height>0.6cm</Height><Width>4.94708cm</Width><ZIndex>6</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix><Textbox Name="Textbox45"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>:القروض</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox38</rd:DefaultName><Top>11.46834cm</Top><Left>0.98202cm</Left><Height>0.62646cm</Height><Width>4.42599cm</Width><ZIndex>7</ZIndex><Visibility><Hidden>=Sum(Fields!PaymentValue.Value, "LoanDataSet")=0</Hidden></Visibility><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Textbox Name="Textbox58"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>مدير مديرية الشؤون المالية</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox58</rd:DefaultName><Top>15.33097cm</Top><Left>0.98202cm</Left><Height>0.94396cm</Height><Width>4.59021cm</Width><ZIndex>8</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Textbox Name="Textbox46"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>:الصافي</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox38</rd:DefaultName><Top>13.0291cm</Top><Left>15.89078cm</Left><Height>0.70583cm</Height><Width>1.85953cm</Width><ZIndex>9</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Textbox Name="Textbox60"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=(Sum(Fields!BasicSalary.Value, "BasicInfoDataSet")+Sum(Fields!InitialValue.Value, "MonthlyEmployeeBenefits"))-(Sum(Fields!DeductionValue.Value, "MonthlyEmployeeDeductionDataSet")+Sum(Fields!PaymentValue.Value, "LoanDataSet"))</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox60</rd:DefaultName><Top>13.0291cm</Top><Left>13.21439cm</Left><Height>0.70583cm</Height><Width>2.5cm</Width><ZIndex>10</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Tablix Name="Tablix9"><TablixBody><TablixColumns><TablixColumn><Width>2.5cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="BasicSalary"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Sum(Fields!BasicSalary.Value)</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>BasicSalary</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember /></TablixMembers></TablixRowHierarchy><DataSetName>BasicInfoDataSet</DataSetName><Top>7.09235cm</Top><Left>12.08141cm</Left><Height>0.6cm</Height><Width>2.5cm</Width><ZIndex>11</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix><Tablix Name="Tablix10"><TablixBody><TablixColumns><TablixColumn><Width>1.78562cm</Width></TablixColumn><TablixColumn><Width>3.16146cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="InitialValue5"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!DeductionValue.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>InitialValue2</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="BenefitName4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!DeductionName.Value</Value><Style><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>BenefitName1</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember><Group Name="Details7" /></TablixMember></TablixMembers></TablixRowHierarchy><DataSetName>MonthlyEmployeeLeavesDeduction</DataSetName><Top>10.4804cm</Top><Left>0.40801cm</Left><Height>0.6cm</Height><Width>4.94708cm</Width><ZIndex>12</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix><Textbox Name="Textbox4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>الجمهورية العربية السورية </Value><Style><FontSize>11pt</FontSize><FontWeight>Bold</FontWeight><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph><Paragraph><TextRuns><TextRun><Value>مصرف سورية المركزي</Value><Style><FontSize>11pt</FontSize><FontWeight>Bold</FontWeight><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><rd:DefaultName>Textbox4</rd:DefaultName><Top>0.02778in</Top><Left>0cm</Left><Height>1.2cm</Height><Width>18.63061cm</Width><ZIndex>13</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom><Direction>RTL</Direction></Style></Textbox><Textbox Name="Textbox39"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>: الموظف</Value><Style><FontFamily>arial</FontFamily><FontSize>13pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox38</rd:DefaultName><Top>4.48208cm</Top><Left>14.73134cm</Left><Height>0.94396cm</Height><Width>3.135cm</Width><ZIndex>14</ZIndex><Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Tablix Name="Tablix11"><TablixBody><TablixColumns><TablixColumn><Width>3.95521cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.6cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="BasicSalary2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!FullName.Value</Value><Style><FontWeight>Bold</FontWeight><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>BasicSalary</rd:DefaultName><Style><Border><Color>LightGrey</Color><Style>Solid</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember /></TablixMembers></TablixRowHierarchy><DataSetName>BasicInfoDataSet</DataSetName><Top>4.55264cm</Top><Left>10.70558cm</Left><Height>0.6cm</Height><Width>3.95521cm</Width><ZIndex>15</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix></ReportItems><Height>16.27493cm</Height><Style /></Body><Width>18.63061cm</Width><Page><PageHeight>29.7cm</PageHeight><PageWidth>25cm</PageWidth><LeftMargin>2.54cm</LeftMargin><RightMargin>2.54cm</RightMargin><TopMargin>2.54cm</TopMargin><BottomMargin>2.54cm</BottomMargin><ColumnSpacing>1.27cm</ColumnSpacing><Style /></Page><AutoRefresh>0</AutoRefresh><DataSources><DataSource Name="SharedDataSource"><ConnectionProperties><DataProvider>SQL</DataProvider><ConnectString>Data Source=.;Initial Catalog=HR-MAIN-DB</ConnectString></ConnectionProperties><rd:SecurityType>DataBase</rd:SecurityType><rd:DataSourceID>0f5f43df-b9b8-4d68-8c9a-9c12be59019d</rd:DataSourceID></DataSource></DataSources><DataSets><DataSet Name="BasicInfoDataSet"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@month"><Value>=Parameters!month.Value</Value></QueryParameter><QueryParameter Name="@employee"><Value>=Parameters!employee.Value</Value></QueryParameter></QueryParameters><CommandText>SELECT        
+MonthlyCard.Id AS MonthlyCardId, 
+Employee.Code AS EmployeeCode, 
+Employee.FirstName + ' ' + Employee.FatherName+ ' ' + Employee.LastName AS FullName, 
+Month.Name AS MonthName, 
+Month.Id AS MonthId, 
+MonthType,
+Date, MonthNumber,
+MonthlyCard.BasicSalary, 
+MonthlyCard.Salary, 
+MonthlyCard.BenefitSalary,
+MonthlyCard.TaxableAmount,
+MonthlyCard.WorkDays,
+MonthlyCard.FinalMonthSalary,
+MonthlyCard.TotalEmployeeDeserved As TotalEmployeeDeserved,
+MonthlyCard.EmployeeDeserved As EmployeeDeserved,
+Employee.Id AS EmployeeId
+FROM            
+Month 
+INNER JOIN MonthlyCard ON MonthlyCard.Month_id = Month.Id 
+INNER JOIN PrimaryCard ON PrimaryCard.Id = MonthlyCard.PrimaryCard_id 
+INNER JOIN Employee ON Employee.Id = PrimaryCard.Employee_id 
+WHERE
+ MonthlyCard.ActualMonthSalary&gt;0 AND        
+(MonthlyCard.IsVertualDeleted = 0) AND 
+(Month.IsVertualDeleted = 0) AND 
+(PrimaryCard.IsVertualDeleted = 0) AND 
+(Employee.IsVertualDeleted = 0)  AND MonthlyCard.Id in (SELECT  top 1
+MonthlyCard.Id AS MonthlyCardId
+FROM            
+Month 
+INNER JOIN MonthlyCard ON MonthlyCard.Month_id = Month.Id 
+INNER JOIN PrimaryCard ON PrimaryCard.Id = MonthlyCard.PrimaryCard_id 
+INNER JOIN Employee ON Employee.Id = PrimaryCard.Employee_id 
+WHERE        
+(MonthlyCard.IsVertualDeleted = 0) AND 
+(Month.IsVertualDeleted = 0) AND 
+(PrimaryCard.IsVertualDeleted = 0) AND 
+(Employee.IsVertualDeleted = 0) AND 
+Month.Id = @month AND
+Employee.Id = @employee)</CommandText></Query><Fields><Field Name="MonthlyCardId"><DataField>MonthlyCardId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="EmployeeCode"><DataField>EmployeeCode</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="FullName"><DataField>FullName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="MonthName"><DataField>MonthName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="MonthId"><DataField>MonthId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="MonthType"><DataField>MonthType</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="Date"><DataField>Date</DataField><rd:TypeName>System.DateTime</rd:TypeName></Field><Field Name="MonthNumber"><DataField>MonthNumber</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="BasicSalary"><DataField>BasicSalary</DataField><rd:TypeName>System.Single</rd:TypeName></Field><Field Name="Salary"><DataField>Salary</DataField><rd:TypeName>System.Single</rd:TypeName></Field><Field Name="BenefitSalary"><DataField>BenefitSalary</DataField><rd:TypeName>System.Single</rd:TypeName></Field><Field Name="TaxableAmount"><DataField>TaxableAmount</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="WorkDays"><DataField>WorkDays</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="FinalMonthSalary"><DataField>FinalMonthSalary</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="TotalEmployeeDeserved"><DataField>TotalEmployeeDeserved</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="EmployeeDeserved"><DataField>EmployeeDeserved</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="EmployeeId"><DataField>EmployeeId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field></Fields></DataSet><DataSet Name="MonthlyEmployeeDeductionDataSet"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@month"><Value>=Parameters!month.Value</Value></QueryParameter><QueryParameter Name="@employee"><Value>=Parameters!employee.Value</Value></QueryParameter></QueryParameters><CommandText>SELECT        MonthlyEmployeeDeduction.MonthlyCard_id AS MonthlyCardId, DeductionCard.Name AS DeductionName, 
+                         CASE WHEN Month.MonthType = 0 THEN MonthlyEmployeeDeduction.FinalValue ELSE MonthlyEmployeeDeduction.FinalValue - MonthlyEmployeeDeduction.InitialValue END AS DeductionValue
+FROM            Month INNER JOIN
+                         MonthlyCard ON MonthlyCard.Month_id = Month.Id INNER JOIN
+                         MonthlyEmployeeDeduction ON MonthlyEmployeeDeduction.MonthlyCard_id = MonthlyCard.Id INNER JOIN
+                         DeductionCard ON DeductionCard.Id = MonthlyEmployeeDeduction.DeductionCard_id
+WHERE        (MonthlyEmployeeDeduction.DeductionCard_id NOT IN
+                             ((SELECT        HealthyLeaveDeduction_id
+                                 FROM            GeneralOption),
+                             (SELECT        UnpaidMaternityLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_6),
+                             (SELECT        MaternityLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_5),
+                             (SELECT        AdministrativeLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_4),
+                             (SELECT        UnpaidLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_3),
+                             (SELECT        OtherLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_2),
+                             (SELECT        UnspecifiedUnpaidLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_1))) AND (Month.IsVertualDeleted = 0) AND (MonthlyEmployeeDeduction.IsVertualDeleted = 0) AND (MonthlyCard.IsVertualDeleted = 0) AND (DeductionCard.IsVertualDeleted = 0) 
+                         AND (MonthlyCard.Id in (SELECT  top 1
+MonthlyCard.Id AS MonthlyCardId
+FROM            
+Month 
+INNER JOIN MonthlyCard ON MonthlyCard.Month_id = Month.Id 
+INNER JOIN PrimaryCard ON PrimaryCard.Id = MonthlyCard.PrimaryCard_id 
+INNER JOIN Employee ON Employee.Id = PrimaryCard.Employee_id 
+WHERE        
+(MonthlyCard.IsVertualDeleted = 0) AND 
+(Month.IsVertualDeleted = 0) AND 
+(PrimaryCard.IsVertualDeleted = 0) AND 
+(Employee.IsVertualDeleted = 0) AND 
+Month.Id = @month AND
+Employee.Id = @employee))</CommandText></Query><Fields><Field Name="MonthlyCardId"><DataField>MonthlyCardId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="DeductionName"><DataField>DeductionName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="DeductionValue"><DataField>DeductionValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field></Fields></DataSet><DataSet Name="LoanDataSet"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@month"><Value>=Parameters!month.Value</Value></QueryParameter><QueryParameter Name="@employee"><Value>=Parameters!employee.Value</Value></QueryParameter></QueryParameters><CommandText>SELECT        LoanPayment.MonthlyCard_id AS MonthlyCardId, DonorLoan.Name AS DonorLoanName, LoanPayment.PaymentValue, EmployeeLoan.TotalAmountOfLoan - (EmployeeLoan.PrePayed +
+                             (SELECT        ISNULL(SUM(PaymentValue), 0) AS Expr1
+                                FROM            LoanPayment AS N
+                                WHERE        (EmployeeLoan_id = EmployeeLoan.Id) AND (IsVertualDeleted = 0))) AS RemainingValue, LoanPayment.RemainingValueAfterPaymentValue
+FROM            MonthlyCard INNER JOIN
+                         LoanPayment ON LoanPayment.MonthlyCard_id = MonthlyCard.Id AND LoanPayment.IsExternalPayment = 0 INNER JOIN
+                         EmployeeLoan ON EmployeeLoan.Id = LoanPayment.EmployeeLoan_id INNER JOIN
+                         DonorLoan ON DonorLoan.Id = EmployeeLoan.DonorLoan_id
+WHERE        (MonthlyCard.IsVertualDeleted = 0) AND (LoanPayment.IsVertualDeleted = 0) AND (EmployeeLoan.IsVertualDeleted = 0) AND (DonorLoan.IsVertualDeleted = 0) AND (MonthlyCard.Id in (SELECT  top 1
+MonthlyCard.Id AS MonthlyCardId
+FROM            
+Month 
+INNER JOIN MonthlyCard ON MonthlyCard.Month_id = Month.Id 
+INNER JOIN PrimaryCard ON PrimaryCard.Id = MonthlyCard.PrimaryCard_id 
+INNER JOIN Employee ON Employee.Id = PrimaryCard.Employee_id 
+WHERE        
+(MonthlyCard.IsVertualDeleted = 0) AND 
+(Month.IsVertualDeleted = 0) AND 
+(PrimaryCard.IsVertualDeleted = 0) AND 
+(Employee.IsVertualDeleted = 0) AND 
+Month.Id = @month AND
+Employee.Id = @employee))</CommandText></Query><Fields><Field Name="MonthlyCardId"><DataField>MonthlyCardId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="DonorLoanName"><DataField>DonorLoanName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="PaymentValue"><DataField>PaymentValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="RemainingValue"><DataField>RemainingValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="RemainingValueAfterPaymentValue"><DataField>RemainingValueAfterPaymentValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field></Fields></DataSet><DataSet Name="MonthlyEmployeeBenefits"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@month"><Value>=Parameters!month.Value</Value></QueryParameter><QueryParameter Name="@employee"><Value>=Parameters!employee.Value</Value></QueryParameter></QueryParameters><CommandText>Select	MonthlyEmployeeBenefit.MonthlyCard_id MonthlyCardId,
+		BenefitCard.Name BenefitName,
+		MonthlyEmployeeBenefit.FinalValue,
+		MonthlyEmployeeBenefit.InitialValue,
+		MonthlyEmployeeBenefit.CrossDependencyInitialValue
+FROM	
+	 dbo.MonthlyCard 
+		INNER JOIN MonthlyEmployeeBenefit On(MonthlyEmployeeBenefit.MonthlyCard_id = MonthlyCard.Id)
+		INNER JOIN BenefitCard On(BenefitCard.Id = MonthlyEmployeeBenefit.BenefitCard_id)
+WHERE	
+		(dbo.MonthlyCard.IsVertualDeleted=0) AND
+		(dbo.MonthlyEmployeeBenefit.IsVertualDeleted=0) AND
+		(dbo.BenefitCard.IsVertualDeleted=0) AND MonthlyCard.Id in (SELECT  top 1
+MonthlyCard.Id AS MonthlyCardId
+FROM            
+Month 
+INNER JOIN MonthlyCard ON MonthlyCard.Month_id = Month.Id 
+INNER JOIN PrimaryCard ON PrimaryCard.Id = MonthlyCard.PrimaryCard_id 
+INNER JOIN Employee ON Employee.Id = PrimaryCard.Employee_id 
+WHERE        
+(MonthlyCard.IsVertualDeleted = 0) AND 
+(Month.IsVertualDeleted = 0) AND 
+(PrimaryCard.IsVertualDeleted = 0) AND 
+(Employee.IsVertualDeleted = 0) AND 
+Month.Id = @month AND
+Employee.Id = @employee)</CommandText></Query><Fields><Field Name="MonthlyCardId"><DataField>MonthlyCardId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="BenefitName"><DataField>BenefitName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="FinalValue"><DataField>FinalValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="InitialValue"><DataField>InitialValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="CrossDependencyInitialValue"><DataField>CrossDependencyInitialValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field></Fields></DataSet><DataSet Name="MonthlyEmployeeLeavesDeduction"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@month"><Value>=Parameters!month.Value</Value></QueryParameter><QueryParameter Name="@employee"><Value>=Parameters!employee.Value</Value></QueryParameter></QueryParameters><CommandText>SELECT        MonthlyEmployeeDeduction.MonthlyCard_id AS MonthlyCardId, DeductionCard.Name AS DeductionName, 
+                         CASE WHEN Month.MonthType = 0 THEN MonthlyEmployeeDeduction.FinalValue ELSE MonthlyEmployeeDeduction.FinalValue - MonthlyEmployeeDeduction.InitialValue END AS DeductionValue, 
+                         MonthlyEmployeeDeduction.InitialValue, MonthlyEmployeeDeduction.Value
+FROM            Month INNER JOIN
+                         MonthlyCard ON MonthlyCard.Month_id = Month.Id INNER JOIN
+                         MonthlyEmployeeDeduction ON MonthlyEmployeeDeduction.MonthlyCard_id = MonthlyCard.Id INNER JOIN
+                         DeductionCard ON DeductionCard.Id = MonthlyEmployeeDeduction.DeductionCard_id
+WHERE        (MonthlyEmployeeDeduction.DeductionCard_id IN
+                             ((SELECT        HealthyLeaveDeduction_id
+                                 FROM            GeneralOption),
+                             (SELECT        UnpaidMaternityLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_6),
+                             (SELECT        MaternityLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_5),
+                             (SELECT        AdministrativeLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_4),
+                             (SELECT        UnpaidLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_3),
+                             (SELECT        OtherLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_2),
+                             (SELECT        UnspecifiedUnpaidLeaveDeduction_id
+                                FROM            GeneralOption AS GeneralOption_1))) AND (Month.IsVertualDeleted = 0) AND (MonthlyEmployeeDeduction.IsVertualDeleted = 0) AND (MonthlyCard.IsVertualDeleted = 0) AND (DeductionCard.IsVertualDeleted = 0) 
+                         AND (MonthlyCard.Id in (SELECT  top 1
+MonthlyCard.Id AS MonthlyCardId
+FROM            
+Month 
+INNER JOIN MonthlyCard ON MonthlyCard.Month_id = Month.Id 
+INNER JOIN PrimaryCard ON PrimaryCard.Id = MonthlyCard.PrimaryCard_id 
+INNER JOIN Employee ON Employee.Id = PrimaryCard.Employee_id 
+WHERE        
+(MonthlyCard.IsVertualDeleted = 0) AND 
+(Month.IsVertualDeleted = 0) AND 
+(PrimaryCard.IsVertualDeleted = 0) AND 
+(Employee.IsVertualDeleted = 0) AND 
+Month.Id = @month AND
+Employee.Id = @employee))</CommandText></Query><Fields><Field Name="MonthlyCardId"><DataField>MonthlyCardId</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="DeductionName"><DataField>DeductionName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="DeductionValue"><DataField>DeductionValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="InitialValue"><DataField>InitialValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="Value"><DataField>Value</DataField><rd:TypeName>System.Double</rd:TypeName></Field></Fields></DataSet><DataSet Name="MonthDataSet"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@FilterMonth"><Value>=Parameters!FilterMonth.Value</Value></QueryParameter></QueryParameters><CommandText>SELECT        Id, Name, FORMAT(Date, 'MM/yyyy') AS Date
+
+FROM            Month
+WHERE        (IsVertualDeleted = 0) and (Month.Name  LIKE '%' + ISNULL(@FilterMonth, N'') + '%') </CommandText></Query><Fields><Field Name="Id"><DataField>Id</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="Name"><DataField>Name</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="Date"><DataField>Date</DataField><rd:TypeName>System.String</rd:TypeName></Field></Fields></DataSet><DataSet Name="EmployeeDataSet"><Query><DataSourceName>SharedDataSource</DataSourceName><QueryParameters><QueryParameter Name="@currentUserId"><Value>=Parameters!currentUserId.Value</Value></QueryParameter><QueryParameter Name="@month"><Value>=Parameters!month.Value</Value></QueryParameter><QueryParameter Name="@FilterEmployee"><Value>=Parameters!FilterEmployee.Value</Value></QueryParameter></QueryParameters><CommandText>
+IF (select Count(authElements.AuthorizableElementId) from Souccar_Security_User _user left join Souccar_Security_UserRole _user_role on _user.Id = _user_role.User_id 
+left join Souccar_Security_AuthorizableElementRole authElements on _user_role.Role_id = authElements.Role_id 
+where _user.Id = @currentUserId and
+ authElements.AuthorizableElementType = 9) &gt; 0
+BEGIN 
+SELECT DISTINCT Employee.Id, Employee.FirstName + ' ' + ISNULL(Employee.FatherName, '') + ' ' + Employee.LastName AS FullName
+FROM            Employee
+inner join PrimaryCard on PrimaryCard.Employee_id = Employee.Id
+inner join MonthlyCard on MonthlyCard.PrimaryCard_id = PrimaryCard.Id
+inner join month on month.Id = MonthlyCard.Month_id 
+where
+Employee.IsVertualDeleted = 0 and
+month.IsVertualDeleted = 0 and 
+MonthlyCard.IsVertualDeleted = 0 and 
+primarycard.IsVertualDeleted =0 and
+ month.id = @month and
+ Employee.Id in (select distinct _emp.Id from  Souccar_Security_User _user left join Employee _emp on _user.Username = CONVERT(varchar(10), _emp.Id)
+left join HistoryOfPosition _assign on _emp.Id = _assign.Employee_id 
+left join Position _position on _assign.Position_Id = _position.Id 
+left join JobDescription _jobDesc on _position.JobDescription_id = _jobDesc.Id 
+left join Node _node on _jobDesc.Node_id = _node.Id 
+where _user.IsVertualDeleted = 0 and 
+_emp.IsVertualDeleted = 0 and
+_assign.IsVertualDeleted = 0 and
+_position.IsVertualDeleted = 0 and
+_jobDesc.IsVertualDeleted = 0 and
+_node.IsVertualDeleted = 0  and
+_node.Id in (select authElements.AuthorizableElementId from Souccar_Security_User _user left join Souccar_Security_UserRole _user_role on _user.Id = _user_role.User_id 
+left join Souccar_Security_AuthorizableElementRole authElements on _user_role.Role_id = authElements.Role_id 
+where _user.Id = @currentUserId and authElements.AuthorizableElementType = 9)) AND (Employee.FirstName + ' ' + ISNULL(Employee.FatherName, N'') 
+                         + ' ' + Employee.LastName LIKE '%' + ISNULL(@FilterEmployee, N'') + '%')
+ORDER BY FullName
+END
+ELSE
+BEGIN
+
+SELECT DISTINCT Employee.Id, Employee.FirstName + ' ' + ISNULL(Employee.FatherName, '') + ' ' + Employee.LastName AS FullName
+FROM            Employee
+inner join PrimaryCard on PrimaryCard.Employee_id = Employee.Id
+inner join MonthlyCard on MonthlyCard.PrimaryCard_id = PrimaryCard.Id
+inner join month on month.Id = MonthlyCard.Month_id
+where
+Employee.IsVertualDeleted = 0 and
+month.IsVertualDeleted = 0 and 
+MonthlyCard.IsVertualDeleted = 0 and 
+primarycard.IsVertualDeleted =0 and
+ month.id = @month 
+
+AND (Employee.FirstName + ' ' + ISNULL(Employee.FatherName, N'') 
+                         + ' ' + Employee.LastName LIKE '%' + ISNULL(@FilterEmployee, N'') + '%')
+ORDER BY FullName
+
+END</CommandText></Query><Fields><Field Name="Id"><DataField>Id</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="FullName"><DataField>FullName</DataField><rd:TypeName>System.String</rd:TypeName></Field></Fields></DataSet></DataSets><ReportParameters><ReportParameter Name="FilterMonth"><DataType>String</DataType><DefaultValue><Values><Value /></Values></DefaultValue><AllowBlank>true</AllowBlank><Prompt>بحث</Prompt></ReportParameter><ReportParameter Name="month"><DataType>Integer</DataType><Prompt>الشهر</Prompt><ValidValues><DataSetReference><DataSetName>MonthDataSet</DataSetName><ValueField>Id</ValueField><LabelField>Name</LabelField></DataSetReference></ValidValues></ReportParameter><ReportParameter Name="FilterEmployee"><DataType>String</DataType><DefaultValue><Values><Value /></Values></DefaultValue><AllowBlank>true</AllowBlank><Prompt>بحث</Prompt></ReportParameter><ReportParameter Name="currentUserId"><DataType>Integer</DataType><DefaultValue><Values><Value>8410</Value></Values></DefaultValue><Prompt>currentUserId</Prompt><Hidden>true</Hidden></ReportParameter><ReportParameter Name="employee"><DataType>Integer</DataType><Prompt>الموظف</Prompt><ValidValues><DataSetReference><DataSetName>EmployeeDataSet</DataSetName><ValueField>Id</ValueField><LabelField>FullName</LabelField></DataSetReference></ValidValues></ReportParameter></ReportParameters><Language>en-US</Language><ConsumeContainerWhitespace>true</ConsumeContainerWhitespace><rd:ReportUnitType>Cm</rd:ReportUnitType><rd:ReportID>eaffd80e-ad0a-4976-9d4a-08aba77b1e58</rd:ReportID></Report>

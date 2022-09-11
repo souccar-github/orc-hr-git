@@ -1,0 +1,150 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+
+<div style="display: none" id="SuccessfulIssuanceUserWindow">
+    <div id="SuccessfulIssuanceUserGrid"></div>
+    <div class="k-edit-buttons k-state-default not-default-button">
+        <a class="k-button k-button-icontext k-grid-cancel" id="CancelSuccessfulIssuanceUserButton" href="#"><span class="k-icon k-cancel"></span>@GlobalResource.Cancel</a>
+        <a class="k-button primary-action k-button-icontext k-grid-cancel" id="AppointSuccessfulApplicantsButton" href="#"><span class="k-icon k-cancel"></span>@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.AppointSuccessfulApplicants)</a>
+    </div>
+</div>
+
+<script>
+
+    var successfulIssuanceUserWindow;
+    function SuccessfulIssuanceUser(recruitmentInformationId) {
+
+        successfulIssuanceUserWindow = $("#SuccessfulIssuanceUserWindow");
+        successfulIssuanceUserWindow.kendoWindow({
+            width: 900,
+            height: 500,
+            modal: true,
+            resizable: false,
+            title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.SuccessfulIssuanceUser)",
+            open: function () {
+                successfulIssuanceUserWindow.data("kendoWindow").center();
+            }
+        });
+        successfulIssuanceUserWindow.data("kendoWindow").open();
+
+        $.ajax({
+            url: '@Url.Action("GetFinalPassedPersons", "Home")',
+            type: "POST",
+            async: false,
+            data: JSON.stringify({
+                advertisementId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                recruitmentInformationId: recruitmentInformationId
+                //recruitmentInformationId: window.requestInformation.NavigationInfo.Previous[1].RowId
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+                CreateSuccessfulIssuanceUserGrid();
+                InitializeSuccessfulIssuanceUserDataSource(data);
+            }
+        });
+
+    };
+
+    $("#CancelSuccessfulIssuanceUserButton").click(function () {
+        CloseSuccessfulIssuanceUserWindow();
+    });
+
+    function CloseSuccessfulIssuanceUserWindow() {
+        //var window = $("#SuccessfulIssuanceUserWindow");
+        successfulIssuanceUserWindow.data("kendoWindow").close();
+    };
+
+
+    function CreateSuccessfulIssuanceUserGrid() {
+        $("#SuccessfulIssuanceUserGrid").kendoGrid({
+            height: 285,
+            dataSource: {
+                model: { id: "Id" },
+                pageSize: 10
+            },
+            selectable: "row",
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                messages: {
+                    display: "{2} items"
+                }
+            },
+            columns: [
+            {
+                field: "FullName",
+                width: 120,
+                title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.FullName)"
+            },
+            {
+                field: "WrittenMark",
+                width: 100,
+                title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.WrittenMark)"
+            },
+            {
+                field: "OralMark",
+                width: 70,
+                title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.OralMark)"
+            },
+            {
+                field: "OldnessLaborOfficeMark",
+                width: 150,
+                title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.OldnessLaborOfficeMark)"
+            },
+            {
+                field: "MartyrSonMark",
+                width: 100,
+                title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.MartyrSonMark)"
+            },
+            {
+                field: "FinalMark",
+                width: 70,
+                title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.FinalMark)"
+            }
+            ],
+
+        });
+    };
+
+    function InitializeSuccessfulIssuanceUserDataSource(passedPersons) {
+
+        var successfulIssuanceUserGrid = $("#SuccessfulIssuanceUserGrid").data("kendoGrid");
+        var successfulIssuanceUserGridDataSource = [];
+
+        for (var i = 0; i < passedPersons.length; i++) {
+            successfulIssuanceUserGridDataSource.push(passedPersons[i]);
+
+        }
+        successfulIssuanceUserGrid.setDataSource(new kendo.data.DataSource({ model: { id: "Id" }, data: successfulIssuanceUserGridDataSource }));
+
+    };
+
+    $("#AppointSuccessfulApplicantsButton").click(function () {
+
+        appointSuccessfulApplicants();
+    });
+
+    function appointSuccessfulApplicants() {
+
+        alert('koko');
+
+        $.ajax({
+            url: '@Url.Action("AppointSuccessfulApplicants", "Home")',
+            type: "POST",
+            data: JSON.stringify({
+                advertisementId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                recruitmentInformationId: window.requestInformation.NavigationInfo.Previous[1].RowId
+            }),
+            contentType: 'application/json',
+            async: false,
+            success: function (result) {
+                alert(result.Msg);
+            }
+        });
+
+        alert('lolo');
+    };
+
+</script>

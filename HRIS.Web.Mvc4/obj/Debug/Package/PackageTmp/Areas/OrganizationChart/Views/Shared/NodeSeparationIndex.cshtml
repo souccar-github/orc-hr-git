@@ -1,0 +1,263 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+<div class="k-content" id="NodeSeparationWindow">
+    <fieldset class="expandable-collapseable">
+        <legend>
+            @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeSeparationCaption)
+        </legend>
+
+        <div class="top_btns">
+            <span class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.PickNodeToSplitCaption)</span>
+            <div class="expand_collapse">
+                <a href="#" id="expandAllNodes"><span class="expand_icon"></span> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ExpandCaption)</a> /
+                <a href="#" id="collapseAllNodes"><span class="collapse_icon"></span> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.CollapseCaption)</a>
+            </div>
+        </div>
+        <div id="treeview" class="tree"></div>
+
+        <div class="first_second_node">
+            <div class="first_node">
+                <p class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.FirstNodeCaption)</p>
+                <div class="k-edit-label">
+                    <label for="FirstNodeName">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeNameCaption)</label>
+                </div>
+                <div data-container-for="FirstNodeName" class="k-edit-field">
+                    <input id="FirstNodeName" name="FirstNodeName" type="text" class="k-input k-textbox" data-bind="value:FirstName">
+                </div>
+                <div class="k-edit-label">
+                    <label for="FirstNodeCode">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeCodeCaption)</label>
+                </div>
+                <div data-container-for="FirstNodeCode" class="k-edit-field">
+                    <input id="FirstNodeCode" name="FirstNodeCode" type="text" class="k-input k-textbox" data-bind="value:FirstCode">
+                </div>
+
+                <div class="k-edit-label">
+                    <label for="FirstNodeType">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeTypeCaption)</label>
+                </div>
+                <div data-container-for="FirstNodeType" class="k-edit-field">
+                    <input id="FirstNodeType" name="FirstNodeType"
+                           data-role="dropdownlist" data-text-field="Name" data-source="firstTypeDataSource" data-value-primitive="true" data-value-field="Id" data-bind="value:FirstType" />
+                </div>
+            </div><!-- end of first node -->
+
+            <div class="second_node">
+                <p class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.SecondNodeCaption)</p>
+                <div class="k-edit-label">
+                    <label for="SecondNodeName">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeNameCaption)</label>
+                </div>
+                <div data-container-for="SecondNodeName" class="k-edit-field">
+                    <input id="SecondNodeName" name="SecondNodeName" type="text" class="k-input k-textbox" data-bind="value:SecondName">
+                </div>
+                <div class="k-edit-label">
+                    <label for="SecondNodeCode">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeCodeCaption)</label>
+                </div>
+                <div data-container-for="SecondNodeCode" class="k-edit-field">
+                    <input id="SecondNodeCode" name="SecondNodeCode" type="text" class="k-input k-textbox" data-bind="value:SecondCode">
+                </div>
+
+                <div class="k-edit-label">
+                    <label for="SecondNodeType">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeTypeCaption)</label>
+                </div>
+                <div data-container-for="SecondNodeType" class="k-edit-field">
+                    <input id="SecondNodeType" name="SecondNodeType"
+                           data-role="dropdownlist" data-text-field="Name" data-source="secondTypeDataSource" data-value-primitive="true" data-value-field="Id" data-bind="value:SecondType" />
+                </div>
+            </div><!-- end of second node -->
+        </div><!-- end of first_second_node -->
+        <p class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.SplitJobDescriptionsCaption)</p>
+        <div id="jobDescriptionsDiv"></div>
+
+        <p class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.SplitChildNodesCaption)</p>
+        <div id="nodesDiv">
+
+        </div>
+
+    </fieldset>
+    <div class="k-edit-buttons k-state-default not-default-button">
+        <a class="k-button k-button-icontext k-grid-update" id="NodeSeparationButton" href="#"><span class="k-icon k-update"></span>@GlobalResource.Save</a>
+    </div>
+
+</div>
+
+
+
+<script>
+    var jobDescriptionsDataSource = [];
+    var nodesDataSource = [];
+
+    createDualSelectList("jobDescriptions", jobDescriptionsDataSource, "jobDescriptionsDiv", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.JobDescriptionsIncludedInTheFirstNodeCaption)",
+        "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.JobDescriptionsIncludedInTheSecondNodeCaption)", false);
+    createDualSelectList("nodes", nodesDataSource, "nodesDiv", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ChildNodesIncludedInTheFirstNodeCaption)", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ChildNodesIncludedInTheSecondNodeCaption)", false);
+
+    var firstTypeDataSource = {
+        transport: {
+            read: {
+                url: "@Url.Action("ReadToList", "Reference", new { typeName = "HRIS.Domain.OrganizationChart.Configurations.NodeType", area = "" })"
+            }
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+
+    var secondTypeDataSource = {
+        transport: {
+            read: {
+                url: "@Url.Action("ReadToList", "Reference", new { typeName = "HRIS.Domain.OrganizationChart.Configurations.NodeType", area = "" })"
+            }
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+
+    var viewModel = kendo.observable();
+    kendo.init($("#NodeSeparationWindow"));
+    kendo.bind($("#NodeSeparationWindow"), viewModel);
+
+
+    $("#treeview").kendoTreeView({
+        dragAndDrop: false,
+        dataSource: getTreeViewDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: true,
+        change: function (e) {
+            var treeview = $("#treeview").data("kendoTreeView");
+            var selectedNode = treeview.select();
+            var uid = selectedNode.data("uid");
+            var nodeId = treeview.dataSource.getByUid(uid).Id;
+
+            $.ajax({
+                url: '@Url.Action("GetJobDescriptionsByNode", "Node")',
+                type: "POST",
+                data: JSON.stringify({
+                    nodeId: nodeId
+                }),
+
+                contentType: 'application/json',
+                success: function (data) {
+                    jobDescriptionsDataSource = data;
+                    window.createDualSelectList("jobDescriptions", jobDescriptionsDataSource, "jobDescriptionsDiv", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.JobDescriptionsIncludedInTheFirstNodeCaption)", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.JobDescriptionsIncludedInTheSecondNodeCaption)", false);
+                }
+            });
+
+            $.ajax({
+                url: '@Url.Action("GetChildrenByParentNode", "Node")',
+                type: "POST",
+                data: JSON.stringify({
+                    nodeId: nodeId
+                }),
+
+                contentType: 'application/json',
+                success: function (data) {
+                    nodesDataSource = data;
+                    window.createDualSelectList("nodes", nodesDataSource, "nodesDiv", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ChildNodesIncludedInTheFirstNodeCaption)", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ChildNodesIncludedInTheSecondNodeCaption)", false);
+                }
+            });
+        }
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+
+    function getTreeViewDataSource() {
+        var result = {};
+        result.transport = {
+            read: {
+                url: '@Url.Action("GetTreeNodes", "Node")',
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                //children: "Items",
+                hasChildren: "HasChildren"
+            }
+        };
+        return result;
+    }
+
+    function rebuildTree() {
+        var tree = $("#treeview").data("kendoTreeView");
+        tree.dataSource.read();
+    }
+
+    $("#expandAllNodes").click(function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        treeview.expand(".k-item");
+    });
+
+    $("#collapseAllNodes").click(function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        treeview.collapse(".k-item");
+    });
+
+    $("#NodeSeparationButton").off('click').on('click', function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        var selectedNode = treeview.select();
+        if (selectedNode.length == 0) {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectNodeFirst)", "k-icon w-b-error", commands);
+            return;
+        }
+        var uid = selectedNode.data("uid");
+        viewModel.Parent = treeview.dataSource.getByUid(uid).Id;
+        viewModel.FirstName = $("#FirstNodeName").val();
+        viewModel.FirstCode = $("#FirstNodeCode").val();
+        viewModel.FirstType = parseInt($("#FirstNodeType").val());
+        viewModel.SecondName = $("#SecondNodeName").val();
+        viewModel.SecondCode = $("#SecondNodeCode").val();
+        viewModel.SecondType = parseInt($("#SecondNodeType").val());
+
+        $.ajax({
+            url: '@Url.Action("SeperateNode", "Node")',
+            type: "POST",
+            data: JSON.stringify({
+                model: viewModel,
+                jobDescriptionSelectListValues: jobDescriptionsDataSource,
+                nodeSelectListValues: nodesDataSource
+            }),
+
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    $("#FirstNodeName").val("");
+                    $("#FirstNodeCode").val("");
+                    $("#SecondNodeName").val("");
+                    $("#SecondNodeCode").val("");
+                    //alert(data.Msg);
+                    rebuildTree();
+                } else {
+                    if (data.Errors != null) {
+                        if (data.Errors.Exception != null) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("@GlobalResource.Error", data.Errors.Exception, "k-icon w-b-error", commands);
+                        } else {
+                            for (var prop in data.Errors) {
+                                var messageText = data.Errors[prop];
+                                var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                                if (!$('[name="' + prop + '"]').next().hasClass("k-widget k-tooltip k-tooltip-validation k-invalid-msg")) {
+                                    $('[name="' + prop + '"]').after(t);
+                                } else {
+                                    $('[name="' + prop + '"]').next().html("<span class='k-icon k-warning'></span>" + messageText);
+                                }
+                            }
+                        }
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            }
+        });
+    });
+
+</script>
+
+
+

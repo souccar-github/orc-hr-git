@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 14:32:42" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLv8p5Wq5Cl34VY68JmvL0JsQ==">
+      <TableDataSource Name="Table1" Alias="LeavesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.LeaveRequest.EmployeeCard_id AS EmployeeCardId,&#13;&#10;(SELECT TOP 1 EC.Employee_id FROM dbo.EmployeeCard EC WHERE EC.Id=dbo.LeaveRequest.EmployeeCard_id AND EC.IsVertualDeleted=0) AS EmployeeId,&#13;&#10;dbo.LeaveSetting.Id AS LeaveSettingId,&#13;&#10;dbo.LeaveSetting.Name AS LeaveSettingName, &#13;&#10;dbo.LeaveSetting.Type_id AS LeaveSettingTypeId,&#13;&#10;(SELECT  TOP 1 Name FROM dbo.LeaveType LT WHERE LT.Id=dbo.LeaveSetting.Type_id AND LT.IsVertualDeleted=0) AS LeaveTypeName,&#13;&#10;dbo.LeaveRequest.StartDate,&#13;&#10;dbo.LeaveRequest.EndDate,&#13;&#10;dbo.LeaveRequest.RequestDate,&#13;&#10;dbo.LeaveRequest.LeaveReason_id,&#13;&#10;(SELECT  TOP 1 dbo.LeaveReason.Name FROM dbo.LeaveReason WHERE dbo.LeaveReason.Id=dbo.LeaveRequest.LeaveReason_id AND LeaveReason.IsVertualDeleted=0) AS LeaveReason,&#13;&#10;DATEDIFF(&quot;DD&quot;,dbo.LeaveRequest.StartDate,dbo.LeaveRequest.EndDate) AS LeaveDays,&#13;&#10;CASE	WHEN dbo.LeaveRequest.IsHourlyLeave=0 then  0&#13;&#10;		ELSE DATEDIFF(&quot;HH&quot;,dbo.LeaveRequest.FromTime,dbo.LeaveRequest.ToTime) END AS HourlyLeave,&#13;&#10;dbo.LeaveSetting.Balance, &#13;&#10;ISNULL((SELECT  TOP 1 BS.Balance FROM dbo.BalanceSlice BS WHERE BS.LeaveSetting_id = dbo.LeaveSetting.Id),0) AS BalanceSlice,&#13;&#10;dbo.LeaveRequest.SpentDays, &#13;&#10;CASE WHEN ISNULL((SELECT  TOP 1 BS.Balance FROM dbo.BalanceSlice BS WHERE BS.LeaveSetting_id = dbo.LeaveSetting.Id AND BS.IsVertualDeleted=0),0) != 0 THEN ISNULL((SELECT  TOP 1 BS.Balance FROM dbo.BalanceSlice BS WHERE BS.LeaveSetting_id = dbo.LeaveSetting.Id AND BS.IsVertualDeleted=0),0)&#13;&#10;	 ELSE dbo.LeaveSetting.Balance &#13;&#10;	 END AS LeaveBalance,&#13;&#10;(SELECT	 TOP 1 dbo.WorkFlowSettingLeaveBinder.LeaveType&#13;&#10; FROM		dbo.WorkFlowSettingLeaveBinder INNER JOIN dbo.WorkflowSetting ON dbo.WorkFlowSettingLeaveBinder.WorkflowSetting_id = dbo.WorkflowSetting.Id AND dbo.WorkflowSetting.Id=dbo.LeaveSetting.WorkflowSetting_id&#13;&#10; WHERE WorkFlowSettingLeaveBinder.IsVertualDeleted=0 AND WorkflowSetting.IsVertualDeleted=0) AS FixedLeaveType,&#13;&#10;dbo.LeaveSetting.HasMaximumNumber,&#13;&#10;dbo.LeaveSetting.MaximumNumber,&#13;&#10;(SELECT  TOP 1 COUNT(LR.Id) FROM dbo.LeaveRequest LR WHERE LR.EmployeeCard_id = dbo.LeaveRequest.EmployeeCard_id AND LR.LeaveSetting_id=dbo.LeaveRequest.LeaveSetting_id AND LR.IsVertualDeleted=0 GROUP BY LR.LeaveSetting_id) AS NumberOfGrantedLeave,&#13;&#10;dbo.LeaveSetting.MaximumNumber - (SELECT TOP 1  COUNT(LR.Id) FROM dbo.LeaveRequest LR WHERE LR.EmployeeCard_id = dbo.LeaveRequest.EmployeeCard_id AND LR.LeaveSetting_id=dbo.LeaveRequest.LeaveSetting_id AND LR.IsVertualDeleted=0 GROUP BY LR.LeaveSetting_id) AS NumberOfRemainLeave,&#13;&#10;0 as WorkflowStatus,&#13;&#10;(SELECT TOP 1  FirstName+' '+LastName+' '+FatherName FROM Employee WHERE Employee.Id=(SELECT TOP 1  EC.Employee_id FROM dbo.EmployeeCard EC WHERE EC.Id=dbo.LeaveRequest.EmployeeCard_id AND EC.IsVertualDeleted=0)) AS FullName,&#13;&#10;(SELECT top(1)dbo.Node.Id FROM dbo.Node &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.Node.Id = dbo.JobDescription.Node_id &#13;&#10;INNER JOIN dbo.Position ON dbo.JobDescription.Id = dbo.Position.JobDescription_id &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Position.AssigningEmployeeToPosition_id = dbo.AssigningEmployeeToPosition.Id &#13;&#10;AND Node.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0 AND Position.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0&#13;&#10;AND dbo.AssigningEmployeeToPosition.IsPrimary='TRUE' AND dbo.AssigningEmployeeToPosition.Employee_id=(SELECT  TOP 1 EC.Employee_id FROM dbo.EmployeeCard EC WHERE EC.Id=dbo.LeaveRequest.EmployeeCard_id AND EC.IsVertualDeleted=0)) AS NodeId,&#13;&#10;(SELECT top(1)dbo.Position.Code FROM dbo.Position &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Position.AssigningEmployeeToPosition_id = dbo.AssigningEmployeeToPosition.Id &#13;&#10;AND Position.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0 AND dbo.AssigningEmployeeToPosition.IsPrimary='TRUE' AND dbo.AssigningEmployeeToPosition.Employee_id=(SELECT TOP 1  EC.Employee_id FROM dbo.EmployeeCard EC WHERE EC.Id=dbo.LeaveRequest.EmployeeCard_id AND EC.IsVertualDeleted=0)) AS PositionCode&#13;&#10;FROM&#13;&#10;dbo.LeaveRequest &#13;&#10;INNER JOIN dbo.LeaveSetting ON dbo.LeaveRequest.LeaveSetting_id = dbo.LeaveSetting.Id&#13;&#10;WHERE LeaveRequest.IsVertualDeleted=0 AND LeaveSetting.IsVertualDeleted=0&#13;&#10;Order by dbo.LeaveSetting.Type_id&#13;&#10;">
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="LeaveTypeName" DataType="System.String"/>
+        <Column Name="LeaveBalance" DataType="System.Double"/>
+        <Column Name="SpentDays" DataType="System.Double"/>
+        <Column Name="HasMaximumNumber" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="MaximumNumber" DataType="System.Int32"/>
+        <Column Name="EmployeeCardId" DataType="System.Int32"/>
+        <Column Name="LeaveSettingId" DataType="System.Int32"/>
+        <Column Name="LeaveSettingName" DataType="System.String"/>
+        <Column Name="LeaveSettingTypeId" DataType="System.Int32"/>
+        <Column Name="StartDate" DataType="System.DateTime"/>
+        <Column Name="EndDate" DataType="System.DateTime"/>
+        <Column Name="RequestDate" DataType="System.DateTime"/>
+        <Column Name="LeaveReason_id" DataType="System.Int32"/>
+        <Column Name="LeaveReason" DataType="System.String"/>
+        <Column Name="LeaveDays" DataType="System.Int32"/>
+        <Column Name="HourlyLeave" DataType="System.Int32"/>
+        <Column Name="Balance" DataType="System.Double"/>
+        <Column Name="BalanceSlice" DataType="System.Double"/>
+        <Column Name="FixedLeaveType" DataType="System.Int32"/>
+        <Column Name="NumberOfGrantedLeave" DataType="System.Int32"/>
+        <Column Name="NumberOfRemainLeave" DataType="System.Int32"/>
+        <Column Name="WorkflowStatus" DataType="System.Int32"/>
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="NodeId" DataType="System.Int32"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Node" DataType="System.Int32" Enabled="true" TableName="Node" SelectCommand="SELECT N.Id, N.IsVertualDeleted, N.Name, N.Code, N.IsHistorical, N.Type_id, N.Parent_Id&#13;&#10;FROM &quot;Node&quot; N&#13;&#10;WHERE N.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsHistorical" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Type_id" DataType="System.Int32"/>
+        <Column Name="Parent_Id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="LeaveType" DataType="System.Int32" Enabled="true" TableName="LeaveType" SelectCommand="SELECT L.Id, L.IsVertualDeleted, L.Name, L.ValueOrder&#13;&#10;FROM &quot;LeaveType&quot; L&#13;&#10;WHERE  L.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table1" ParentDataSource="null" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Relation Name="Node_Table1" ParentDataSource="Node" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="NodeId" Enabled="true"/>
+    <Relation Name="LeaveType_Table1" ParentDataSource="LeaveType" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="LeaveSettingTypeId" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="170.1">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير اجازات موظفي عقدة بين تاريخين " HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text56" Left="359.1" Top="132.3" Width="359.1" Height="37.8" Text="من تاريخ: [FromDateTimePicker.Value]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold">
+        <Formats>
+          <DateFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+      <TextObject Name="Text57" Top="132.3" Width="359.1" Height="37.8" Text="الى تاريخ: [ToDateTimePicker.Value]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold">
+        <Formats>
+          <DateFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+      <TextObject Name="Text59" Top="56.7" Width="718.2" Height="37.8" Text="[NodesComboBox.Text]:العقدة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text60" Top="94.5" Width="718.2" Height="37.8" Text="[ComboBox1.Text]:نوع الاجازة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="176.45" Width="718.2" Height="18.9"/>
+    <DataBand Name="Data1" Top="201.7" Width="718.2" Height="122.85" DataSource="Table1">
+      <TextObject Name="Text40" Left="547.1" Top="18.9" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="547.1" Top="37.8" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Left="547.1" Top="56.7" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ بداية الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text43" Left="547.1" Top="75.6" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ نهاية الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text44" Left="547.1" Top="94.5" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الانشاء" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text47" Left="188" Top="37.8" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الساعات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text48" Left="188" Top="56.7" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="سبب الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text51" Top="113.4" Width="717.85" Height="9.45" Border.Lines="All" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      <TextObject Name="Text53" Left="189" Top="18.9" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الايام" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text54" Left="189" Top="75.6" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="منشىء الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="359.1" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.LeaveSettingName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Left="359.1" Top="37.8" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.LeaveTypeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text12" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text55" Top="94.5" Width="188.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text58" Left="189" Top="94.5" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="حالة الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text3" Left="359.1" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [LeavesDataSourse.StartDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[LeavesDataSourse.StartDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="359.1" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [LeavesDataSourse.EndDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[LeavesDataSourse.EndDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="359.1" Top="94.5" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [LeavesDataSourse.RequestDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[LeavesDataSourse.RequestDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text13" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.LeaveDays]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Top="37.8" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.HourlyLeave]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text10" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.LeaveReason]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text61" Left="547.1" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text62" Left="189" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text63" Left="359.1" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.FullName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text64" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[LeavesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="330.9" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="548.1" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="548.1" Height="18.9" Border.Lines="Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="356.15" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="290" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="142" Top="203" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <DateTimePickerControl Name="FromDateTimePicker" Left="40" Top="104" Width="175" TabIndex="5" DataColumn="LeavesDataSourse.StartDate" FilterOperation="GreaterThanOrEqual" Format="Short" Value="05/02/2015 12:59:14"/>
+    <DateTimePickerControl Name="ToDateTimePicker" Left="40" Top="152" Width="175" TabIndex="6" DataColumn="LeavesDataSourse.StartDate" FilterOperation="LessThanOrEqual" Format="Short" Value="05/02/2015 12:59:19"/>
+    <LabelControl Name="Label2" Left="224" Top="108" Width="45" Height="13" TabIndex="2" Text="من تاريخ"/>
+    <LabelControl Name="Label3" Left="224" Top="156" Width="48" Height="13" TabIndex="2" Text="الى تاريخ"/>
+    <LabelControl Name="Label4" Left="224" Top="80" Width="54" Height="13" TabIndex="2" Text="نوع الإجازة"/>
+    <ComboBoxControl Name="NodesComboBox" Left="40" Top="48" Width="175" TabIndex="3" ClickEvent="NodesComboBox_Click" DataColumn="LeavesDataSourse.Node.Name" DropDownWidth="175" ItemHeight="13"/>
+    <LabelControl Name="Label5" Left="224" Top="52" Width="36" Height="13" TabIndex="2" Text="العقدة"/>
+    <ComboBoxControl Name="ComboBox1" Left="40" Top="76" Width="175" TabIndex="3" ClickEvent="NodesComboBox_Click" DataColumn="LeavesDataSourse.LeaveType.Name" DropDownWidth="175" ItemHeight="13"/>
+    <LabelControl Name="Label6" Left="40" Top="128" Width="70" Height="13" ForeColor="Red" RightToLeft="Yes" TabIndex="4" Text=" dd/mm/yyyy"/>
+    <LabelControl Name="Label7" Left="40" Top="176" Width="70" Height="13" ForeColor="Red" RightToLeft="Yes" TabIndex="4" Text=" dd/mm/yyyy"/>
+  </DialogPage>
+</Report>

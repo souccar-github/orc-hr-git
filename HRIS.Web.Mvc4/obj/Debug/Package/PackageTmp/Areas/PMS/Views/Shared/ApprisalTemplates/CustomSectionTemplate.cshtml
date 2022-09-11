@@ -1,0 +1,80 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script id="customSection-workflow-template" type="text/x-kendo-template">
+    #var showKpisTemplate = kendo.template($("\\#show-kpis-template").html());#
+    <div>
+        <fieldset class="custom-info">
+            <legend>@GlobalResource.Information</legend>
+            <div class="appraisal-meta-info">
+                <div>
+                    <span>@GlobalResource.Name :</span>
+                    <span>#=Name#</span>
+                </div>
+                <div>
+                    <span>@GlobalResource.SectionWeight :</span>
+                    <span>#=SectionWeight#</span>
+                </div>
+
+            </div>
+            <div class="appraisal-meta-desc">
+                <span>@GlobalResource.Description:</span>
+                #if(Description==null||Description=="null"){#
+
+                #Description="";#
+                #}#
+                <textarea readonly>#=Description#</textarea>
+            </div>
+
+        </fieldset>
+
+        <div class="custom">
+            <table>
+                <colgroup>
+                    <col class="column-namecolumn">
+                    <col class="column-kpis">
+                    <col class="column-weight">
+                    <col class="column-rate">
+                    <col class="column-description">
+                </colgroup>
+
+                <thead>
+                    <tr>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                        <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #for (var i = 0; i < AppraisalItems.length; i++) {#
+                    #var item=AppraisalItems[i];#
+                    <tr class="custom-#=i#">
+                        <td><p>#=item.Name#</p></td>
+                        <td class="item-commands">
+                            <button data-item-index="#=i#" class="show-incentive-item k-button">
+                                <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                            </button>
+                            <div class="kpis-info">
+                                <div class="tooltip-wrapper">
+                                    #=showKpisTemplate({Kpis:item.Kpis})#
+                                </div>
+                            </div>
+                        </td>
+                        <td class="center-column"><input value="#=item.Weight#" data-role="numerictextbox" name="appraisal-custom-section-weight-#=item.Id#" class="appraisal-custom-section-weight" type="text" /></td>
+                        <td class="center-column"><input value="#=item.Rate#" name="appraisal-custom-section-rate-#=item.Id#" class="appraisal-custom-section-rate  appraisal-rate" type="text" /></td>
+                        <td class="center-column">
+                            #if(item.Note==null||item.Note=="null"){#
+                            #item.Note="";#
+                            #}#
+                            <textarea name="appraisal-custom-section-note#=item.Id#" class="appraisal-note appraisal-custom-section-note k-textbox">#=item.Note#</textarea>
+                        </td>
+                    </tr>
+                    #}#
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</script>

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 12:14:05" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {                   
+
+    private void AllMilitaryStatusCheckBox_Click(object sender, EventArgs e)
+    {   
+      if (AllMilitaryStatusCheckBox.Checked)
+      {
+        MilitaryStatusComboBox.SelectedIndex=-1;		 
+        MilitaryStatusComboBox.AutoFilter=false;
+        MilitaryStatusComboBox.Enabled=false;
+        MilitaryStatusComboBox.AutoFill=false;
+      }else
+      {
+        MilitaryStatusComboBox.AutoFilter=true;
+        MilitaryStatusComboBox.AutoFill=true;
+        MilitaryStatusComboBox.Enabled=true;
+      }    
+      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqtis+rNOUXql9HL1HltlmQ4xrZNcFdWmqbzG+em7BFI2SYgX0JmavMyZ62c5siTv8emusZ3BaHLjZ77wseBf54IpcUyR/Z6fpr0A/QSOW42fQ5BcgxHWIdBMEBH6MSkOF0DQx8KAVUPtx2aZ/ZFVqK5pAe25hxPHGMn1K0HBFoEOs0noiIyBhnzJ7TMKjUjCQ">
+      <TableDataSource Name="Table1" Alias="EmployeesMilitaryStatusDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;dbo.Employee.MilitaryStatus,&#13;&#10;CASE WHEN MilitaryStatus = 0 THEN 'أنهى خدمته' &#13;&#10;	 WHEN MilitaryStatus = 1 THEN 'معفى'&#13;&#10;	 WHEN MilitaryStatus = 2 THEN 'مؤجل'&#13;&#10;	 WHEN MilitaryStatus = 3 THEN 'وحيد'&#13;&#10;	 WHEN MilitaryStatus = 4 THEN 'احتفاظ'&#13;&#10;	 WHEN MilitaryStatus = 5 THEN 'على رأس خدمته'&#13;&#10;	 WHEN MilitaryStatus = 6 THEN 'احتياط'&#13;&#10;	 WHEN MilitaryStatus = 7 THEN 'غير محدد'&#13;&#10;	 END AS MilitaryStatusName,&#13;&#10;&#13;&#10;CASE WHEN MilitaryStatus = 2 THEN ISNULL((SELECT TOP(1) DelayReason FROM MilitaryService WHERE dbo.MilitaryService.Employee_id=dbo.Employee.Id AND MilitaryService.IsVertualDeleted=0 ORDER BY DateOfDelay DESC),'')&#13;&#10;	 ELSE '' &#13;&#10;	 END AS DelayReason,&#13;&#10;CASE WHEN MilitaryStatus = 2 THEN ISNULL((SELECT TOP(1) DateOfDelay FROM MilitaryService WHERE dbo.MilitaryService.Employee_id=dbo.Employee.Id AND MilitaryService.IsVertualDeleted=0 ORDER BY DateOfDelay DESC),'')&#13;&#10;	 END AS DateOfDelay&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0&#13;&#10;ORDER BY MilitaryStatusName">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="MilitaryStatusName" DataType="System.String"/>
+        <Column Name="DelayReason" DataType="System.String"/>
+        <Column Name="DateOfDelay" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="MilitaryStatusTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT 0 MilitaryStatus,'أنهى خدمته' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 1 MilitaryStatus,'معفى' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 2 MilitaryStatus,'مؤجل' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 3 MilitaryStatus,'وحيد' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 4 MilitaryStatus,'احتفاظ' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 5 MilitaryStatus,'على رأس خدمته' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 6 MilitaryStatus,'احتياط' MilitaryStatusName&#13;&#10;UNION&#13;&#10;SELECT 7 MilitaryStatus,'غير محدد' MilitaryStatusName">
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="MilitaryStatusName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table_Table1" ParentDataSource="Table" ChildDataSource="Table1" ParentColumns="MilitaryStatus" ChildColumns="MilitaryStatus" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير الموظفين حسب حالة خدمة العلم" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Top="56.7" Width="718.2" Height="37.8" Text="حالة خدمة العلم: [MilitaryStatusComboBox.Text]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 10pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="100.85" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="423.25" Width="171.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="302.4" Width="120.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text36" Left="113.4" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="سبب التأجيل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="207.9" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="حالة خدمة العلم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ إنتهاء التأجيل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="126.1" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text4" Left="425.25" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesMilitaryStatusDataSourse.FirstName] [EmployeesMilitaryStatusDataSourse.FatherName] [EmployeesMilitaryStatusDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesMilitaryStatusDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="302.4" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesMilitaryStatusDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EmployeesMilitaryStatusDataSourse.DateOfDelay])) == &quot;01/01/0001&quot;,&quot;&quot;,[EmployeesMilitaryStatusDataSourse.DateOfDelay] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="113.4" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesMilitaryStatusDataSourse.DelayReason]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="207.9" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesMilitaryStatusDataSourse.MilitaryStatusName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="151.35" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="595.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="176.6" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="362" Height="206" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="106" Top="99" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="186" Top="44" Width="81" Height="13" RightToLeft="Yes" TabIndex="2" Text="حالة خدمة العلم"/>
+    <ComboBoxControl Name="MilitaryStatusComboBox" Left="8" Top="40" Width="175" RightToLeft="Yes" TabIndex="3" DataColumn="EmployeesMilitaryStatusDataSourse.MilitaryStatusTable.MilitaryStatusName" DropDownStyle="DropDownList" DropDownWidth="149" ItemHeight="13"/>
+    <CheckBoxControl Name="AllMilitaryStatusCheckBox" Left="168" Top="72" Width="134" Height="17" TabIndex="4" Text="جميع حالات خدمة العلم" ClickEvent="AllMilitaryStatusCheckBox_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,194 @@
+﻿@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+@using Souccar.Infrastructure.Extenstions
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script>
+
+    function SetAsDefaultLanguage(id) {
+        var lan = getDataItemById(id);
+        var culture = lan.LanguageCulture;
+        //culture = culture.replace('-', '_');
+        //changeLang(culture.replace('-', '_'));
+        changeLang(id);
+    }
+
+    function GenerateValues(id) {
+
+        $.ajax({
+            url: '@Url.Action("GenerateLocalization", "Home", new { area = "Localization" })',
+            data: { langId: id },
+            success: function (data) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+            }
+        });
+
+    }
+
+    function GenerateReportsValues(id) {
+
+        $.ajax({
+            url: '@Url.Action("GenerateReportsLocalization", "Home", new { area = "Localization" })',
+            data: { langId: id },
+            success: function (data) {
+                if (data.Success == false) {
+                    var commands = [{ Title: "@GlobalResource.Warning", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Warning", data.Msg, "k-icon w-b-warning", commands);
+                }
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+            }
+        });
+    }
+
+    function UpdateReportsValues(id) {
+
+        $.ajax({
+            url: '@Url.Action("UpdateReportsValues", "Home", new { area = "Localization" })',
+            data: { langId: id },
+            success: function (data) {
+                if (data.Success == false) {
+                    debugger;
+                    var commands = [{ Title: "@GlobalResource.Error", ClassName: "k-icon k-cancel" }];
+                    ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                }
+                else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Success", data.Msg, "k-icon w-b-info", commands);
+                }
+            }
+        });
+    }
+
+    function ExportValues(id) {
+        window.location.href = '@Url.Action("ExportCsvFile", "Home", new { area = "Localization" })' + '?langId='+id;
+    }
+
+    function ImportValues(id) {
+
+        var fileUploaded = false;
+
+        if ($('#importValues-container').length > 0)
+            $('#importValues-container').remove();
+
+        var title = "@GlobalResource.ImportValues";
+
+        var buttons = [
+            { Name: "UpdateImportValues", CssClass: "save", Title: "@GlobalResource.Save" },
+            { Name: "CancelImportValues", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+
+        var containerId = "importValues-container";
+        var popupDiv = $("<div id='importValues-popup'></div>");
+        var importValuesBody = "<div class='importValuesWindow-body controls-div'></div>";
+        var importValuesFields = [];
+
+        createAndOpenCustomWindowForImportAndExport(popupDiv, importValuesBody, containerId, title, buttons, false);
+        createCustomEditForm(popupDiv.find(".importValuesWindow-body"), { Fields: importValuesFields, Key: "importValuesWindow-body" }, viewModel);
+
+        var template = kendo.template($("#fileImportAndExportTemplate").html());
+        popupDiv.find(".importValuesWindow-body").append(template);
+
+        $("#importFile").kendoUpload({
+            async: {
+                saveUrl: '@Url.Action("SaveCsvFile", "Home", new { area = "Localization" })',
+                //autoUpload: true
+            },
+            success: function (data) {
+                if (!data.response.Success) {
+                    var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", data.response.Msg, "k-icon w-b-error", commands);
+                } else {
+                    fileUploaded = true;
+                }
+            },
+            select:function(e){
+                if (e.files[0].extension.toLowerCase() != ".csv") {
+                    e.files.splice(0, 1);
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@GlobalResource.InvalidFileExtension", "k-icon w-b-error", commands);
+                }
+            },
+            validation: {
+                allowedExtensions: [".csv"]
+            },
+            multiple: false,
+        });
+
+        var viewModel = kendo.observable({
+            ImportFile: $("[name='files']").val()
+        });
+
+        $('#UpdateImportValues').off().on('click', function () {
+            if (fileUploaded) {
+                importFile(id);
+                popupDiv.data("kendoWindow").close();
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@GlobalResource.SelectingFileIsRequired", "k-icon w-b-error", commands);
+            }
+
+
+        });
+
+        $('#CancelImportValues').off().on('click', function () {
+            popupDiv.data("kendoWindow").close();
+        });
+
+    }
+
+    function importFile(id) {
+        window.Souccar.ajax('@Url.Action("ImportCsvFile", "Home", new { area = "Localization" })', { langId: id }, successFunc, erorrFunc);
+        function successFunc(data) {
+
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            if (data.Success)
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+            else
+                ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Fail", "k-icon w-b-error", commands);
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+
+    }
+
+    function createAndOpenCustomWindowForImportAndExport(windowElement, bodyHTML, containerId, title, Buttons, isTwoColumns) {
+        var width = 540;
+        if (isTwoColumns)
+            width = 560;
+        var templateData = {
+            BodyHTML: bodyHTML,
+            BodyHeight: 200,
+            ContainerId: containerId,
+            Buttons: Buttons
+        };
+        var templateHtml = getCustomPopupViewHTML(templateData);
+        windowElement.html(templateHtml);
+
+        createAndOpenWindow(windowElement, title, width, 320);
+    }
+
+    function localeStringResourcesAfterRequestEnd() {
+        $(".k-grid-add").remove();
+    }
+
+</script>
+
+<script id="fileImportAndExportTemplate" type="text/x-kendo-template">
+    <div class="importUploadFile">
+        <label for="fileUploadImportAndExport">Select a File to Upload (or drag and drop files to the below rectangle)</label>
+        <input type="file" id="importFile" name="files" />
+
+    </div>
+</script>
+<style>
+    .importUploadFile{
+        background-color:#c3c3c3;
+        margin:auto;
+        width:90%;
+        padding:10px;
+    }
+</style>

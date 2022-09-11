@@ -1,0 +1,284 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@using HRIS.Domain.Personnel.Configurations
+@using HRIS.Domain.Personnel.Indexes
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 26/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="custodies-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="custodies-employee-container"></div><br />
+<div class="custodies-approval-container-title"><label>@GlobalResource.PendingCustodiesRequest</label></div>
+<div class="custodies-approval-container"></div><br />
+<div class="custodies-request-workflow-container"></div>
+
+<script type="text/javascript">
+
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var notifyCustodiesId = window.localStorage.getItem('ServiceId');
+    var custodiesId = window.localStorage.getItem('ServiceId');
+    var container = $('.custodies-employee-container');
+    var approval_container = $('.custodies-approval-container');
+    var workflowContainer = $(".custodies-request-workflow-container");
+    var PendingType;
+
+    var custodyNameDataSource;
+
+    $.ajax({
+        url: window.applicationpath + 'Reference/ReadToList',
+        type: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify({ typeName: "@typeof(CustodieDetails).FullName", requestInformation: null }),
+        async: false,
+        success: function (data) {
+            custodyNameDataSource = data.Data;
+        }
+    });
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+        debugger;
+        Souccar.ajax('@Url.Action("GetDataForCustodiesService", "Service", new { area = "EmployeeRelationServices" })', null,
+         getData, failedMessage);
+    }
+    function getData(data) {
+
+        showEmployee(data.SubEmployees);
+        showEmployeeApproval(data.EmployeeApproval);
+    }
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        debugger;
+        $(".custodies-employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        container.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+            debugger;
+            approval_container.html('');
+            container.html("");
+            $(".custodies-employee-container-title").html('');
+            $(".custodies-approval-container-title").html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            var fullName = $(this).attr('data-fullname');
+
+            var employeeCustodiesTemplateData = [
+                { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                 { Name: "CustodyName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CustodyName)", Type: "Dropdown", DataSource: "custodyNameDataSource", IsRequired: true },
+                 { Name: "Quantity", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Quantity)", Type: "Number", IsRequired: true },
+               { Name: "AdditionalInformation", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdditionalInformation)", Type: "Index", TypeName: "HRIS.Domain.Personnel.Indexes.AdditionalInformation", Creatable: true, IsRequired: true },
+
+
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea" },
+
+            ];
+
+            var employeeCustodiesDatabind = kendo.observable(
+                {
+                    FullName: fullName,
+                    CustodyNameId: 0,
+                    AdditionalInformationId: 0,
+                    Quantity: 0,
+                    Note: ""
+                });
+
+            createCustomEditForm(container, { Fields: employeeCustodiesTemplateData, Key: "employee-custodies" }, employeeCustodiesDatabind);
+
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            container.find(".control-Note").after(applyButton);
+
+            container.find(".applyButton").off('click').on('click', function () {
+                debugger;
+                var custodyNameId = Number(container.find("#CustodyName_employee-custodies").data("kendoDropDownList").value());
+                var additionalInformationId = Number(container.find("#AdditionalInformation_employee-custodies").data("kendoDropDownList").value());
+                var Quantity = container.find("[name='Quantity']").val();
+                var note = container.find("[name='Note']").val();
+
+
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeCustodieItem: employeeCustodiesDatabind };
+                employeeCustodiesDatabind.CustodyNameId = custodyNameId;
+                employeeCustodiesDatabind.AdditionalInformationId = additionalInformationId;
+                employeeCustodiesDatabind.Quantity = Quantity;
+                employeeCustodiesDatabind.Note = note;
+
+                employeeCustodiesDatabind.FullName = fullName;
+
+                if (custodyNameId == "" || custodyNameId == "0" || custodyNameId == 0 || custodyNameId == null || Quantity == null || Quantity == "0" || Quantity == 0 ||
+                    additionalInformationId == "" || additionalInformationId == "0" || additionalInformationId == 0 || additionalInformationId == null) {
+                       requiredMessage();
+                    return;
+                }
+                Souccar.ajax('@Url.Action("SaveEmployeeCustodiesItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+                //getEmployeeActionViewModel();
+            });
+
+
+        });
+    }
+
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        debugger;
+        $(".custodies-approval-container-title").html('@GlobalResource.PendingCustodiesRequest');
+        var template = kendo.template($("#employee-custodies-approval-template").html());
+        approval_container.html(template(data));
+        window.EmployeesCustodiesInfo = data;
+    }
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+
+        approvalAction(notifyWorkflowId, notifyCustodiesId);
+        notifyWorkflowId = null;
+    }
+
+    function approvalAction(workflowId, custodiesId) {
+        debugger;
+        container.html('');
+        approval_container.html('');
+
+        $(".custodies-employee-container-title").html('');
+        $(".custodies-approval-container-title").html('');
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+
+        function initWorkflow() {
+
+
+            var employeeCustodiesTemplateData = [
+                    { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                    { Name: "CustodyName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CustodyName)", Type: "Dropdown", Type: "Text", IsReadonly: true },
+                    { Name: "Quantity", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Quantity)", Type: "Number", IsReadonly: true },
+
+                   { Name: "AdditionalInformation", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdditionalInformation)", Type: "Text", IsReadonly: true },
+
+                    { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea", IsReadonly: true }
+            ];
+
+
+
+
+            var employeeCustodiesViewDatabind = kendo.observable(
+                    {
+                        FullName: "",
+                        CustodyNameId: "",
+                        AdditionalInformationId: "",
+                        Quantity: "",
+                        Note: ""
+                    });
+
+            for (var i = 0; i < window.EmployeesCustodiesInfo.length; i++) {
+                if (window.EmployeesCustodiesInfo[i].WorkflowItemId == workflowId) {
+                    employeeCustodiesViewDatabind.FullName = window.EmployeesCustodiesInfo[i].FullName;
+                    employeeCustodiesViewDatabind.CustodyNameId = window.EmployeesCustodiesInfo[i].CustodyNameId;
+                    employeeCustodiesViewDatabind.CustodyName = window.EmployeesCustodiesInfo[i].CustodyName;
+
+                    employeeCustodiesViewDatabind.Quantity = window.EmployeesCustodiesInfo[i].Quantity;
+                    employeeCustodiesViewDatabind.AdditionalInformationId = window.EmployeesCustodiesInfo[i].AdditionalInformationId;
+                    employeeCustodiesViewDatabind.AdditionalInformation = window.EmployeesCustodiesInfo[i].AdditionalInformation;
+
+                    employeeCustodiesViewDatabind.Note = window.EmployeesCustodiesInfo[i].Note;
+
+
+
+
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeCustodiesTemplateData, Key: "employee-custodies" }, employeeCustodiesViewDatabind);
+
+        }
+
+
+        function acceptWorkflow() {
+
+
+            var url = "@Url.Action("AcceptCustodiesRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+
+        }
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectCustodiesRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingCustodiesRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            debugger;
+            var jsonParam = { workflowId: workflowId, custodiesId: custodiesId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+
+</script>
+
+<script id="employee-custodies-approval-template" type="text/x-kendo-template">
+    <table  style="width : 100%">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+               
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CustodyName)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdditionalInformation)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Quantity)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=employee.CustodyName#</td>
+                <td>#=employee.AdditionalInformation#</td>
+                <td>#=employee.Quantity#</td>
+                <td>#=employee.Note#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.CustodiesId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

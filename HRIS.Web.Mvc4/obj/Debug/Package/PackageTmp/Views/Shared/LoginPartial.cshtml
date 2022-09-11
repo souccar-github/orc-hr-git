@@ -1,0 +1,29 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+<!-- the whole login page -->
+
+<div id="login_container">
+    <div id="identity_holder"></div>
+    <div id="glow_holder"></div>
+    <div id="logo">
+    </div>
+    <!-- end of logo -->
+    <div id="login-form">
+        <form action="@Url.Action("Login", "Account")" method="post">
+            <input type="text" id="username_textbox" name="UserName" autofocus 
+                   placeholder="@AccountLocalizationHelper.GetResource(AccountLocalizationHelper.Username)" 
+                 />
+            <input type="password" id="password_textbox" name="Password" 
+                placeholder="@AccountLocalizationHelper.GetResource(AccountLocalizationHelper.Password)" />
+            @*<input type="checkbox" id="remember_password_checkbox" name="RememberMe" value="remember_password_checkbox" />
+            <label for="remember_password_checkbox"><span>&nbsp;</span>@AccountLocalizationHelper.GetResource(AccountLocalizationHelper.RememberPassword)</label>*@
+             @Html.ValidationSummary(true)
+            <input type="submit" name="login_btn" id="login_btn" value="@AccountLocalizationHelper.GetResource(AccountLocalizationHelper.Login)" />
+        </form>
+    </div>
+    <!-- end of controls -->
+            
+    <!-- end of copyright -->
+</div>
+<!-- end of container -->
+

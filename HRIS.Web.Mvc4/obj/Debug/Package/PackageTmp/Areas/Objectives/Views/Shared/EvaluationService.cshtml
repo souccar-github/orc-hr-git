@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "EvaluationService";
+}
+
+@using  Project.Web.Mvc4.Helpers
+
+<script src="~/Scripts/ActionPlan.js">
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function evaluationService() {
+        initEvaluationControls();
+    });
+
+</script>
+
+<div id="test"></div>
+
+<div id="EvaluationWorkflow">
+
+
+    <!--    <div id="EvaluatorName">
+                Evaluator Name
+            </div>
+
+        <div id="EvaluatorPosition">
+            Positions
+            <span>
+                <select id="PositionsSelect">
+                    <option>P1</option>
+                    <option>P2</option>
+                    <option>P3</option>
+                </select>
+            </span>
+        </div> -->
+    
+    <table cellpadding="5">
+        @*<tr id="PhasesTr" hidden="true">*@
+        <tr id="PhasesTr">
+            <td>
+                <div id="Phases">
+                    Evaluation periods
+                </div>
+            </td>
+            <td>
+                <div>
+                    <span>
+                        <select id="PhasesSelect">
+                        </select>
+                    </span>
+                </div>
+            </td>
+        </tr>
+
+        @*<tr id="EmployeesTr"  hidden="true">*@
+
+        <tr id="EmployeesTr">
+            <td>             
+                <div id="Employees">
+                    Employees
+                </div>
+            </td>
+            <td>
+                <div>
+                    <span>
+                        <select id="EmployeesSelect">
+                        </select>
+                    </span>
+                </div>
+            </td>
+        </tr>
+
+    </table>
+        <br />
+
+        <div id="Objectives">
+
+            <div id="ActionPlansWindow">
+            </div>
+
+            <div id="Grid">
+            </div>
+
+        </div>
+
+    </div>
+
+            <script type="text/x-kendo-template" id="ActionsTemplate">
+
+            <div id='ObjectiveName'>
+                <label for='ObjectiveName'>Objective name </label>
+                <span class='S-Objective-Evaluation'>${ data.Objective.ObjectiveName }</span>
+                <div id='ObjectiveEvaluationPercentage'>
+                    <label for='ObjectiveEvaluationPercentage'>Objective evaluation percentage </label>
+                    <span class='S-Objective-Evaluation'>${ data.Objective.PreviousObjectiveEvaluationPercentage }%</span>
+                </div>
+            </div>
+            <hr />
+           #var size=$(data.Actions.ActionsData).size();
+          for (var i = 0; i < size ; i++) {#
+
+           <div id='ActionPlan${ data.Actions.ActionsData[i].Id }'>
+              <div id='ActionPlanNumber'>
+                   <label for='Number'>Number </label>
+                    <span class='S-Action-Evaluation'>${ data.Actions.ActionsData[i].Number }</span>
+              </div>
+              <div class='control control-Description'>
+                   <div class='k-edit-label'>
+                       <label for='Description'>Description</label>
+                   </div>
+                   <div data-container-for='Description' class='k-edit-field'>
+                       <textarea id='DescriptionTextArea' disabled='disabled' data-bind='value: Description' name='Description' class='k-textbox'>${ data.Actions.ActionsData[i].Description }</textarea>
+                   </div>
+               </div>
+               <div class='control control-ExpectedOutcome required'>
+                   <div class='k-edit-label'>
+                       <label for='ExpectedOutcome'>Expected Outcome</label>
+                   </div>
+                   <div data-container-for='ExpectedOutcome' class='k-edit-field'>
+                       <textarea id='ExpectedOutcomeTextArea' disabled='disabled' data-bind='value: ExpectedOutcome' name='ExpectedOutcome' class='k-textbox'>${ data.Actions.ActionsData[i].ExpectedOutcome }</textarea>
+                   </div>
+               </div>
+               <div id='ActionPlanEvaluation' class='control control-ActionPlanEvaluation required'>
+               <div class='k-edit-label'>
+                       <label for='ActionPlanEvaluation'>Your Evaluation</label>
+                   </div>
+                   <div data-container-for='ActionPlanEvaluation' class='k-edit-field'>
+                       <input type="text" data-type="number" id='EvaluationPercentage${ data.Actions.ActionsData[i].Id }' name="EvaluationPercentage" data-role="numerictextbox" data-bind='value:EvaluationPercentage${ data.Actions.ActionsData[i].Id }'>
+                   </div>
+               </div>
+               <div class='control control-ActionPlanNotes required'>
+                   <div class='k-edit-label'>
+                       <label for='ActionPlanNotes'>Notes</label>
+                   </div>
+                   <div data-container-for='ActionPlanNotes' class='k-edit-field'>
+                       <textarea id='EvaluationNotes${ data.Actions.ActionsData[i].Id }' data-bind='value: ActionPlanNotes' name='ActionPlanNotes' class='k-textbox'></textarea>
+                   </div>
+               </div>
+           </div>
+            <hr />
+            # } #
+            <div>
+
+                <div id='YourObjectiveEvaluationPercentage'>
+                    <label for='YourObjectiveEvaluationPercentage'>Your Evaluation Percentage</label>
+                    <span id='YourEvaluationAveragePercentage' class='S-Objective-Evaluation'>
+                        0%
+                    </span>     
+                </div>
+@*                <div id="EvaluationCommands">
+                    <button id="EvaluateButton" class="k-button" type="button">Evaluate</button>
+                </div>*@
+
+            </script>

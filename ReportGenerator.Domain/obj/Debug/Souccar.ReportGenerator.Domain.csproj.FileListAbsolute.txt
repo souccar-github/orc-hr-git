@@ -1,0 +1,25 @@
+D:\Projects\HRIS\2010\HR System-PS\UI\Binaries\Souccar.ReportGenerator.Domain.dll
+D:\Projects\HRIS\2010\HR System-PS\UI\Binaries\Souccar.ReportGenerator.Domain.pdb
+D:\Projects\HRIS\2010\HR System-PS\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.dll
+D:\Projects\HRIS\2010\HR System-PS\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.pdb
+D:\Projects\HRIS\2010\HR System-PS\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.csprojResolveAssemblyReference.cache
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\UI\Binaries\Souccar.ReportGenerator.Domain.dll
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\UI\Binaries\Souccar.ReportGenerator.Domain.pdb
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.csprojResolveAssemblyReference.cache
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.dll
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.pdb
+C:\Projects\HR System\UI\Binaries\Souccar.ReportGenerator.Domain.dll
+C:\Projects\HR System\UI\Binaries\Souccar.ReportGenerator.Domain.pdb
+C:\Projects\HR System\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.csprojResolveAssemblyReference.cache
+C:\Projects\HR System\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.dll
+C:\Projects\HR System\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.pdb
+D:\Projects\ORC-HR\HR System\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\UI\Binaries\Souccar.ReportGenerator.Domain.dll
+D:\Projects\ORC-HR\HR System\UI\Binaries\Souccar.ReportGenerator.Domain.pdb
+D:\Projects\ORC-HR\HR System\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.dll
+D:\Projects\ORC-HR\HR System\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.pdb
+D:\Projects\ORC-HR\HR System-git\UI\Binaries\Souccar.ReportGenerator.Domain.dll
+D:\Projects\ORC-HR\HR System-git\UI\Binaries\Souccar.ReportGenerator.Domain.pdb
+D:\Projects\ORC-HR\HR System-git\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System-git\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.dll
+D:\Projects\ORC-HR\HR System-git\ReportGenerator.Domain\obj\Debug\Souccar.ReportGenerator.Domain.pdb

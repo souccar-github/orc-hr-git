@@ -1,0 +1,149 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="chart chart-width-half">
+    <div id="chart-params-mafp" class="chart-params">
+        @* Parent Nodes *@
+        <div id="p-node-mafp" style="width:48%;">
+            <div class="control control-p-node-mafp">
+                <div class="k-edit-label">
+                    <label for="pNodeMafp">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ParentNodes)</label>
+                </div>
+                <div data-container-for="pNodeMafp" class="k-edit-field">
+                    <input id="pNodeMafp" name="pNodeMafp" placeholder="@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.SelectParentNodes) ..." />
+                    <input id="hf_pNodeMafp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+        @* Child Nodes *@
+        <div id="c-node-mafp" style="width:48%;">
+            <div class="control control-c-node-mafp">
+                <div class="k-edit-label">
+                    <label for="cNodeMafp">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ChildNodes)</label>
+                </div>
+                <div data-container-for="cNodeMafp" class="k-edit-field">
+                    <input id="cNodeMafp" name="cNodeMafp"  />
+                    <input id="hf_cNodeMafp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+    </div>
+    <div id="males-and-fmales-percentage-chart" class="container-chart " ></div>
+
+    <div id="males-and-fmales-percentage-table" ></div>
+</div>
+
+<script type="text/javascript">
+
+    var $pNodeMafp = null;
+    var $cNodeMafp = null;
+
+    function generateMalesAndFemalesPercentageSection() {
+
+        $pNodeMafp = $parentNode;
+        $cNodeMafp = $childNode;
+
+        generateComboBox("#pNodeMafp", "pNodeMafp", $pNodeMafp);
+        generateComboBox("#cNodeMafp", "cNodeMafp", $cNodeMafp);
+
+        $('#c-node-mafp').css('float', $pageDir);
+        $('#p-node-mafp').css('float', $pageDir);
+
+        getMalesAndFemalesPercentageChartData();
+    }
+
+    function getMalesAndFemalesPercentageChartData() {
+        
+        window.Souccar.ajax('@Url.Action("GetMalesAndFemalesPercentageData", "Dashboard", new { area = "Personnel" })', { childrenNodes: $cNodeMafp, parentsNodes: $pNodeMafp }, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateMalesAndFemalesPercentageChart(data);
+                generateMalesAndFemalesPercentageTable(data);
+            }, 500);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getMalesAndFemalesPercentageChartData');
+        }
+
+    }
+
+    function generateMalesAndFemalesPercentageChart(data) {
+
+        //var colors = Highcharts.getOptions().colors;
+        //colors.unshift(getDefaultThemeColor());
+
+        Highcharts.chart('males-and-fmales-percentage-chart', {
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                    
+                }
+            },
+            title: {
+                text: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.MalesAndFemalesPercentage) '
+            },
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '<div style="color:{point.color};><b>{point.y:.2f} %</b></div> ',
+                
+            },
+            plotOptions: {
+                pie: {
+                    startAngle: 60,
+                    size: 220,
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 35,
+                    dataLabels: {
+                        distance: 5,
+                        enabled: true,
+                        format: $dir == 'ltr' ? '<p>{point.name}: <br />{point.percentage:.1f}  %' : '% {point.name}: <br />{point.percentage:.1f} </p>',
+                        useHTML: "hasBidiBug"
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                type: 'pie',
+                //startAngle:90,
+                name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.MalesAndFemalesPercentage)',
+                
+                data: [
+
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.PercentageOfMales)', y: data.PercentageOfMaleEmployees },//, color: colors[4]
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.PercentageOfFemales)', y: data.PercentageOfFemaleEmployees}
+
+                ]
+            }]
+        });
+    }
+
+    function generateMalesAndFemalesPercentageTable(data) {
+        var table = '<table id="maleAndFemalePercentageTable" dir="' + $dir + '" class="tbl dashboardTable" border="0" cellpadding="0" cellspacing="1" >';
+        table += '<tr>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.NumberOfMales) </th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.NumberOfFemales)</th>';
+        table += '</tr>';
+
+        table += '<tr>';
+        table += '<td style="background-color:#ffffff"> ' + data.NumberOfMales + ' </td>';
+        table += '<td style="background-color:#ffffff"> ' + data.NumberOfFemales + ' </td>';
+        table += '</tr>';
+
+        table += '</table>';
+
+        $('#males-and-fmales-percentage-table').html("");
+        $('#males-and-fmales-percentage-table').html(table);
+    }
+
+</script>

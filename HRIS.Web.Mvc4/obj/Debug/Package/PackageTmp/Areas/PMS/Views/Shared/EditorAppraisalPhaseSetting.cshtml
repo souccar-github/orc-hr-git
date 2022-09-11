@@ -1,0 +1,88 @@
+﻿@using  Project.Web.Mvc4.Helpers
+
+<script type="text/javascript" language="javascript">
+
+    function AppraisalPhaseSettingEditHandler(e) {
+
+        e.container.find(".fieldset-PMSGoupesNames_MarkRange").append('<div class="appraisal-phase-setting-mark-container first-column control"></div>');
+        var appraisalPhaseSettingTemplate = kendo.template($("#appraisal-phase-setting-editor-template").html());
+        e.container.find(".appraisal-phase-setting-mark-container").html(appraisalPhaseSettingTemplate({}));
+
+        var fromMarkTextBox = $('[name="FromMark"]');
+
+        e.container.find(".mark-title-name").html("@GlobalResource.Mark");
+        e.container.find(".min-mark").html($('[data-container-for="FromMark"]'));
+        e.container.find(".max-mark").html($('[data-container-for="ToMark"]'));
+
+
+        e.container.find(".below-expected-mark-title-name").html("@GlobalResource.MarkBelowExpected");
+        e.container.find(".min-below-expected-mark").html($('[data-container-for="FromMarkBelowExpected"]'));
+        e.container.find(".max-below-expected-mark").html($('[data-container-for="ToMarkBelowExpected"]'));
+
+        e.container.find(".mark-training-need-title-name").html("@GlobalResource.MarkNeedTraining");
+        e.container.find(".min-mark-training-need").html($('[data-container-for="FromMarkNeedTraining"]'));
+        e.container.find(".max-mark-training-need").html($('[data-container-for="ToMarkNeedTraining"]'));
+
+        e.container.find(".mark-expected-title-name").html("@GlobalResource.MarkExpected");
+        e.container.find(".min-mark-expected").html($('[data-container-for="FromMarkExpected"]'));
+        e.container.find(".max-mark-expected").html($('[data-container-for="ToMarkExpected"]'));
+
+        e.container.find(".mark-up-expected-title-name").html("@GlobalResource.MarkUpExpected");
+        e.container.find(".min-mark-up-expected").html($('[data-container-for="FromMarkUpExpected"]'));
+        e.container.find(".max-mark-up-expected").html($('[data-container-for="ToMarkUpExpected"]'));
+
+        e.container.find(".distinct-mark-title-name").html("@GlobalResource.MarkDistinct");
+        e.container.find(".min-distinct-mark").html($('[data-container-for="FromMarkDistinct"]'));
+        e.container.find(".max-distinct-mark").html($('[data-container-for="ToMarkDistinct"]'));
+        
+        e.container.find(".appraisal-phase-setting-mark-container").removeClass("first-column").removeClass("control");
+        e.container.find(".fieldset-PMSGoupesNames_MarkRange .control").not(".appraisal-phase-setting-mark-container").remove();
+
+    }
+
+
+</script>
+
+<script id="appraisal-phase-setting-editor-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>@GlobalResource.Min<span class="equired-star">*</span></th>
+                <th>@GlobalResource.Max<span class="equired-star">*</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="mark-title-name"></td>
+                <td class="min-mark"></td>
+                <td class="max-mark"></td>
+            </tr>
+            <tr>
+                <td class="below-expected-mark-title-name"></td>
+                <td class="min-below-expected-mark"></td>
+                <td class="max-below-expected-mark"></td>
+            </tr>
+            <tr>
+                <td class="mark-training-need-title-name"></td>
+                <td class="min-mark-training-need"></td>
+                <td class="max-mark-training-need"></td>
+            </tr>
+            <tr>
+                <td class="mark-expected-title-name"></td>
+                <td class="min-mark-expected"></td>
+                <td class="max-mark-expected"></td>
+            </tr>
+            <tr>
+                <td class="mark-up-expected-title-name"></td>
+                <td class="min-mark-up-expected"></td>
+                <td class="max-mark-up-expected"></td>
+            </tr>
+            <tr>
+                <td class="distinct-mark-title-name"></td>
+                <td class="min-distinct-mark"></td>
+                <td class="max-distinct-mark"></td>
+            </tr>
+        </tbody>
+    </table>
+</script>

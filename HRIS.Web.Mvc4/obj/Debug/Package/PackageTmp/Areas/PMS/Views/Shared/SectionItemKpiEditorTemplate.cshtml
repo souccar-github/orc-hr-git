@@ -1,0 +1,305 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script type="text/javascript" language="javascript">
+    function AppraisalSectionEditHandler(e) {
+
+        setTimeout(function() {
+                $('.k-grid-save-and-new').remove();
+                $('.k-grid-save-and-Copy').remove();
+            },
+            100);
+        
+
+        $.ajax({
+            url: '@Url.Action("GetSectionViewModel", "Section", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sectionViewModel) {
+                e.model.CustomInformation = sectionViewModel;
+
+                e.container.find(".controls-div").append('<div class="section-items-container control"></div>');
+                initEditForm(e, sectionViewModel);
+            }
+        });
+        function initEditForm(e, sectionViewModel) {
+            var template = kendo.template($("#section-items-template").html());
+            e.container.find(".section-items-container").html(template(sectionViewModel));
+
+            e.container.find(".controls-div .add-pms-item").off("click").on("click", function () {
+                addPmsItem(e, sectionViewModel);
+            });
+            e.container.find(".controls-div .edit-pms-item").off("click").on("click", function () {
+                var index = $(this).attr("data-item-index");
+                var item = sectionViewModel.Items[index];
+                item.Index = index;
+                editPmsItem(e, sectionViewModel, item);
+            });
+            e.container.find(".controls-div .remove-pms-item").off("click").on("click", function () {
+                var index = $(this).attr("data-item-index");
+                removePmsItem(e, sectionViewModel, index);
+            });
+
+            for (var i = 0; i < $(".show-appraisal-item").length; i++) {
+                $(".show-appraisal-item").eq(i).kendoTooltip({
+                    content: $(".tooltip-wrapper").eq(i),
+                    width: 400,
+                    position: "top",
+                });
+            }
+        }
+
+
+        function initEditItem(e, sectionViewModel, item) {
+
+            e.model.dirty = true;
+            var title = "@GlobalResource.AddItem";
+            var buttons = [
+               { Name: "edit_item_add", CssClass: "update", Title: "@GlobalResource.Save" },
+                { Name: "edit_item_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+            ];
+            var containerId = "edit-appraisal-item-container";
+            var bodyHTML = "<div class='edit-appraisal-item-body'></div>";
+            var div = $('<div class="edit-appraisal-item-div"></div>');
+            createAndOpenCustomWindow(div, bodyHTML, containerId, title, buttons, false);
+            var itemTemplate = kendo.template($("#section-item-editor-template").html());
+
+            $(".edit-appraisal-item-body").html(itemTemplate(item));
+            $(".edit-appraisal-item-body").find("[name='Weight']").kendoNumericTextBox({ max: 100, min: 0 });
+            $(".edit-appraisal-item-body .kpi-value").kendoNumericTextBox({});
+
+            $("#edit_item_cancel").off('click').on('click', function () {
+                div.data("kendo-window").close();
+                //initEditForm(e, sectionViewModel);
+            });
+
+            $("#edit_item_add").off('click').on('click', function () {
+                if ($("[name='Name']").last().val() == "" || Number($("[name='Weight']").val()) == 0 ) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectRequiredField)", "k-icon w-b-error", commands);
+
+                } else if ($("[name='kpi-description']").val() == "" || Number($("[name='kpi-value']").val()) == 0) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.SelectKpiRequiredField)", "k-icon w-b-error", commands);
+                }else {
+                    sectionViewModel.Items[item.Index] = getItemFromWindow();
+                    div.data("kendo-window").close();
+                    initEditForm(e, sectionViewModel);
+                }
+            });
+
+            $(".edit-appraisal-item-body .add-pms-kpi").off('click').on('click', function () {
+                var kpiTemplate = kendo.template($("#section-item-kpi-tr-template").html());
+                var trs = $(".edit-appraisal-item-body .kpis-table tbody tr");
+                trs.last().before(kpiTemplate({}));
+
+                var tr = trs.last().prev();
+                tr.find(".kpi-value").kendoNumericTextBox({});
+                tr.find(".remove-pms-item-kpi").off('click').on('click', function () {
+                    tr.remove();
+                });
+
+            });
+
+        }
+
+        function addPmsItem(e, sectionViewModel) {
+            initEditItem(e, sectionViewModel, { Index: sectionViewModel.Items.length, Id: 0, Name: "", Weight: 0, Description: "", Kpis: [] });
+        }
+
+        function editPmsItem(e, sectionViewModel, item) {
+            initEditItem(e, sectionViewModel, item);
+        }
+
+        function removePmsItem(e, sectionViewModel, index) {
+            var items = [];
+            for (var i = 0; i < sectionViewModel.Items.length; i++) {
+                if (i != index)
+                    items.push(sectionViewModel.Items[i]);
+            }
+            sectionViewModel.Items = items;
+            initEditForm(e, sectionViewModel);
+        }
+
+        function getItemFromWindow() {
+            var item = {};
+            item.Name = $(".edit-appraisal-item-body").find("[name='Name']").val();
+            item.Description = $(".edit-appraisal-item-body").find("[name='Description']").val();
+            item.Weight = $(".edit-appraisal-item-body").find("[name='Weight']").val();
+            item.Id = $(".edit-appraisal-item-body").find("[name='Id']").val();
+            item.Index = $(".edit-appraisal-item-body").find("[name='Index']").val();
+            item.Kpis = [];
+            var trs = $(".edit-appraisal-item-body .kpis-table tbody tr");
+            for (var i = 0; i < trs.length - 1; i++) {
+                var description = $(trs[i]).find("[name='kpi-description']").val();
+                //var weight = $(trs[i]).find("[name='kpi-weight']").val();
+                var value = $(trs[i]).find("[name='kpi-value']").val();
+                if (Number(value) != 0) {
+                    item.Kpis.push({ Id: i, Description: description, Value: value });
+                    }
+            }
+            return item;
+        }
+    }
+
+    function remove_pms_click(index) {
+        var selectedRow = ".tr-" + index;
+        $(selectedRow).remove();
+    }
+
+</script>
+<script id="section-items-template" type="text/x-kendo-template">
+    #var showKpisTemplate = kendo.template($("\\#show-kpis-template").html());#
+    <span>@GlobalResource.Items</span>
+    <div class=" inactive-section-items">
+        <table>
+            <colgroup>
+                <col />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>@GlobalResource.Name</th>
+                    <th>@GlobalResource.Weight</th>
+                    <th>@GlobalResource.Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < Items.length; i++) {#
+                #var item=Items[i];#
+                <tr>
+                    <td>#=item.Name#</td>
+                    <td>#=item.Weight#</td>
+                    <td>#=item.Description#</td>
+                    <td class="item-commands">
+                        <button data-item-index="#=i#" class="edit-pms-item k-button">
+                            <span class="k-icon k-edit" style="vertical-align: sub;"></span>
+                        </button>
+                        <button data-item-index="#=i#" class="remove-pms-item k-button">
+                            <span class="k-icon k-cancel" style="vertical-align: sub;"></span>
+                        </button>
+                        <button data-item-index="#=i#" class="show-appraisal-item k-button">
+                            <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                        </button>
+                        <div class="kpis-info">
+                            <div class="tooltip-wrapper">
+                                #=showKpisTemplate({Kpis:item.Kpis})#
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                #}#
+                <tr>
+                    <td colspan="4">
+                        <button class="add-pms-item k-button">
+                            <span class="k-icon k-add" style="vertical-align: sub;"></span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</script>
+<script id="section-item-editor-template" type="text/x-kendo-template">
+   <div class="controls-div">
+        <input type="hidden" name="Id" value="#=Id#"/>
+        <input type="hidden" name="Index" value="#=Index#"/>
+        <div class="control control-Name">
+            <div class="k-edit-label">
+                <label for="Name">@GlobalResource.Name<span class="equired-star">*</span></label></div>
+            <div data-container-for="Name" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="Name" value="#=Name#" />
+            </div>
+        </div>
+        <div class="control control-Weight">
+            <div class="k-edit-label">
+                <label for="Weight">@GlobalResource.Weight<span class="equired-star">*</span></label></div>
+            <div data-container-for="Weight" class="k-edit-field">
+                <input type="text" name="Weight" value="#=Weight#" />
+            </div>
+        </div>
+        <div class="control control-Description">
+            <div class="k-edit-label">
+                <label for="Description">@GlobalResource.Description</label>
+            </div>
+            <div data-container-for="Description" class="k-edit-field">
+                <textarea name="Description" class="k-textbox">#=Description# </textarea>
+            </div>
+        </div>
+        <div class="control kpis-table-container">
+            <span>@GlobalResource.Kpis</span>
+            <table class="kpis-table">
+                <thead>
+               
+                    <tr>
+                        <th>@GlobalResource.Description</th>                       
+                        <th>@GlobalResource.Value</th>
+                        <th></th>
+                    </tr>
+                
+                </thead>
+                <tbody>
+                    #for (var i = 0; i < Kpis.length; i++) {#
+                    #var kpi=Kpis[i];#
+                    <tr class="tr-#=i#">
+                        <td><textarea name="kpi-description" class="k-textbox kpi-description">#=kpi.Description# </textarea> </td>
+                        <td><input class="kpi-value" type="text" name="kpi-value" value="#=kpi.Value#" /></td>
+                        <td>
+                            <button class="remove-pms-item-kpi k-button" onclick="return remove_pms_click('#=i#')">
+                                <span class="k-icon k-cancel" style="vertical-align: sub;"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    #}#
+                    <tr>
+                        <td colspan="3">
+                            <button class="add-pms-kpi k-button">
+                                <span class="k-icon k-add" style="vertical-align: sub;"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+<script id="section-item-kpi-tr-template" type="text/x-kendo-template">
+   <tr>
+        <td><textarea name="kpi-description" class="k-textbox kpi-description"></textarea> </td>
+        @*<td><input class="kpi-weight" type="text" name="kpi-weight" value="0" /></td>*@
+        <td><input class="kpi-value" type="text" name="kpi-value" value="0" /></td>
+        <td>
+            <button class="remove-pms-item-kpi k-button">
+                <span class="k-icon k-cancel" style="vertical-align: sub;"></span>
+            </button>
+        </td>
+    </tr> 
+</script>
+
+<script id="show-kpis-template" type="text/x-kendo-template">
+   <table class="kpis-table">
+            <thead>
+                <tr>
+                    <th>@GlobalResource.Description</th>
+                    @*<th>@GlobalResource.Weight</th>*@
+                    <th>@GlobalResource.Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < Kpis.length; i++) {#
+                #var kpi=Kpis[i];#
+                <tr>
+                    <td><span>#=kpi.Description#</span></td>
+                    @*<td><span>#=kpi.Weight#</span></td>*@
+                    <td><span>#=kpi.Value#</span></td>
+                </tr>
+                #}#
+            </tbody>
+    </table>
+</script>

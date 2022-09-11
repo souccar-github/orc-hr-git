@@ -1,0 +1,27 @@
+﻿<div  id="c2c"></div>
+<script>
+    var databind = kendo.observable();
+    databind.FirstName = "Yaseen1";
+    databind.LastName = "ALrefaee";
+    databind.FatherName = "Fouad";
+    databind.Age = 24;
+    databind.Single = false;
+    databind.Birthday = new Date(2013, 1, 10);
+    databind.Gender = -1;
+    databind.Nationality = 3;
+    var toto = [{ Id: 0, Name: "hahaha" }, { Id: 1, Name: "lalala" }];
+    var tempdata = [
+        { Name: "FirstName", Title: "First Name", Type: "Text", IsRequired: true },
+        { Name: "LastName", Title: "Last Name", Type: "Text" },
+        { Name: "FatherName", Title: "Father Name", Type: "Text", IsRequired: true , IsReadonly: true},
+        { Name: "Age", Title: "Age", Type: "Number" },
+        { Name: "Single", Title: "Single", Type: "Boolean" },
+        { Name: "Birthday", Title: "Birthday", Type: "Date", IsRequired: true, IsReadonly: true },
+        { Name: "BirthPlace", Title: "Place of birth", Type: "Dropdown",DataSource:"toto" },
+        { Name: "Gender", Title: "Gender", Type: "Enum", TypeName: "HRIS.Domain.Personnel.Enums.Gender" ,IsRequired:false},
+        { Name: "Nationality", Title: "Nationality", Type: "Index", TypeName: "HRIS.Domain.Personnel.Indexes.Nationality", Creatable: true, IsRequired: true },
+        { Name: "Employee", Title: "Employee", Type: "Reference", TypeName: "HRIS.Domain.Personnel.RootEntities.Employee", Creatable: false, IsRequired: true },
+        { Name: "Summary", Title: "Summary", Type: "Textarea" },
+    ];
+    createCustomEditForm($("#c2c"), { Fields: tempdata, Key: "jjj" }, databind);
+</script>

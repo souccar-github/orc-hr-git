@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="10/10/2016 14:15:45" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+   
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVFADwCk1QrIhJqQnnrZ5Q6X5+3Zf2KDtv27j8EQgeEvpe9hZ5tgPxeVTNEIWuK6bzOSHDLYFuAOyqFbGuUuoWqqvn4d5C2LFTnbGV5uq4p9wPDkbXwTaJbOS7OvEx3ukcW">
+      <TableDataSource Name="Table" Alias="EmployeeListDataSource" DataType="System.Int32" Enabled="true" SelectCommand="WITH cte (Id, Name,IdList,FullName)&#13;&#10;AS(&#13;&#10;  select Id,Name,cast(Id as varchar) as IdList,cast(' - '+Name as varchar(255)) as FullName from Node where Parent_Id Is null&#13;&#10;  union all&#13;&#10;  select p.Id,p.Name,cast(c.IdList+' - '+cast(p.Id as varchar) as varchar),cast(c.FullName+' - '+p.Name as varchar(255)) from Node p&#13;&#10;  join cte c on c.Id = p.Parent_Id&#13;&#10;),&#13;&#10;listEmployee AS (&#13;&#10;SELECT&#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.Gender, &#13;&#10;dbo.Node.Id AS NodeId, &#13;&#10;dbo.Node.Name AS NodeName,&#13;&#10;cte.FullName,&#13;&#10;CASE WHEN dbo.Employee.Gender = 0 THEN 'أنثى' WHEN dbo.Employee.Gender = 1 THEN 'ذكر' END AS GenderName,&#13;&#10;(SELECT COUNT(*) FROM dbo.Employee AS e2 &#13;&#10;INNER JOIN dbo.EmployeeCard ON e2.Id = dbo.EmployeeCard.Employee_id &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.AssigningEmployeeToPosition.Employee_id = e2.Id&#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id &#13;&#10;INNER JOIN dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id&#13;&#10;INNER JOIN cte ON dbo.Node.Id = cte.Id &#13;&#10;WHERE cte.FullName LIKE '%'+ @NodeName +'%' AND dbo.EmployeeCard.CardStatus = 1 AND dbo.AssigningEmployeeToPosition.IsPrimary='True' AND e2.IsVertualDeleted=0 AND EmployeeCard.IsVertualDeleted=0) AS CountEmployeesOnHeadOfHisWork&#13;&#10;FROM	dbo.Employee &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id &#13;&#10;INNER JOIN dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id&#13;&#10;INNER JOIN cte ON dbo.Node.Id = cte.Id &#13;&#10;WHERE        &#13;&#10;cte.FullName LIKE '%'+ @NodeName +'%' AND&#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Node.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0&#13;&#10;)&#13;&#10;select &#13;&#10;Gender,&#13;&#10;GenderName,&#13;&#10;COUNT(Gender) AS COINT,&#13;&#10;CountEmployeesOnHeadOfHisWork,&#13;&#10;ROUND(COUNT(Gender)/CAST(CountEmployeesOnHeadOfHisWork AS FLOAT)*100, 2) AS Percentage&#13;&#10;from listEmployee&#13;&#10;GROUP BY &#13;&#10;Gender,&#13;&#10;GenderName,&#13;&#10;CountEmployeesOnHeadOfHisWork">
+        <Column Name="Percentage" DataType="System.Double"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="COINT" DataType="System.Int32"/>
+        <Column Name="GenderName" DataType="System.String"/>
+        <Column Name="CountEmployeesOnHeadOfHisWork" DataType="System.Int32"/>
+        <CommandParameter Name="NodeName" DataType="22" Size="255" Expression="NodesComboBox.Text"/>
+      </TableDataSource>
+      <TableDataSource Name="Node" DataType="System.Int32" Enabled="true" TableName="Node" SelectCommand="SELECT N.Id, N.IsVertualDeleted, N.Name, N.Code, N.IsHistorical, N.Type_id, N.Parent_Id&#13;&#10;FROM &quot;Node&quot; N&#13;&#10;WHERE N.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsHistorical" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Type_id" DataType="System.Int32"/>
+        <Column Name="Parent_Id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="425.25">
+      <MSChartObject Name="MSChart3" Left="18.9" Top="75.6" Width="670.95" Height="340.2" DataSource="Table" Filter="" AutoSeriesColumn="" ChartData="PENoYXJ0IFNpemU9IjI4OCwgMjMyIiBCb3JkZXJsaW5lQ29sb3I9IkRhcmtHcmF5IiBCb3JkZXJsaW5lV2lkdGg9IjIiIEJvcmRlcmxpbmVEYXNoU3R5bGU9IlNvbGlkIj4NCiAgPFNlcmllcz4NCiAgICA8U2VyaWVzIE5hbWU9IlNlcmllczEiIExlZ2VuZD0iRGVmYXVsdCIgWFZhbHVlVHlwZT0iU3RyaW5nIiBZVmFsdWVUeXBlPSJEb3VibGUiIENoYXJ0VHlwZT0iUGllIiBDaGFydEFyZWE9IkRlZmF1bHQiIExhYmVsPSIlI1ZBTFg6ICNWQUxZIiBDdXN0b21Qcm9wZXJ0aWVzPSJQaWVMYWJlbFN0eWxlPU91dHNpZGUsIFBpZUxpbmVDb2xvcj1EYXJrR3JheSI+DQogICAgICA8UG9pbnRzPg0KICAgICAgICA8RGF0YVBvaW50IFlWYWx1ZXM9IjEiIEF4aXNMYWJlbD0iQSIgLz4NCiAgICAgICAgPERhdGFQb2ludCBZVmFsdWVzPSIzIiBBeGlzTGFiZWw9IkIiIC8+DQogICAgICAgIDxEYXRhUG9pbnQgWVZhbHVlcz0iMiIgQXhpc0xhYmVsPSJDIiAvPg0KICAgICAgICA8RGF0YVBvaW50IFlWYWx1ZXM9IjQiIEF4aXNMYWJlbD0iRCIgLz4NCiAgICAgIDwvUG9pbnRzPg0KICAgIDwvU2VyaWVzPg0KICA8L1Nlcmllcz4NCiAgPExlZ2VuZHM+DQogICAgPExlZ2VuZCBOYW1lPSJEZWZhdWx0IiBJc1RleHRBdXRvRml0PSJGYWxzZSIgRW5hYmxlZD0iRmFsc2UiIEZvbnQ9IlRhaG9tYSwgOHB0Ij4NCiAgICA8L0xlZ2VuZD4NCiAgPC9MZWdlbmRzPg0KICA8VGl0bGVzPg0KICAgIDxUaXRsZSBOYW1lPSJUaXRsZTEiIFRleHQ9ItmG2LPYqNipINi52K/YryDYp9mE2LDZg9mI2LEg2YjYudiv2K8g2KfZhNil2YbYp9irINit2LPYqCDYp9mE2LnZgtivIiBGb250PSJUYWhvbWEsIDEwcHQsIHN0eWxlPUJvbGQiPg0KICAgIDwvVGl0bGU+DQogIDwvVGl0bGVzPg0KICA8Q2hhcnRBcmVhcz4NCiAgICA8Q2hhcnRBcmVhIE5hbWU9IkRlZmF1bHQiPg0KICAgICAgPEF4aXNZIElzTGFiZWxBdXRvRml0PSJGYWxzZSI+DQogICAgICAgIDxNYWpvckdyaWQgTGluZUNvbG9yPSI2NCwgNjQsIDY0LCA2NCIgLz4NCiAgICAgICAgPExhYmVsU3R5bGUgRm9udD0iVGFob21hLCA4cHQiIC8+DQogICAgICA8L0F4aXNZPg0KICAgICAgPEF4aXNYIElzTGFiZWxBdXRvRml0PSJGYWxzZSI+DQogICAgICAgIDxNYWpvckdyaWQgTGluZUNvbG9yPSI2NCwgNjQsIDY0LCA2NCIgLz4NCiAgICAgICAgPExhYmVsU3R5bGUgRm9udD0iVGFob21hLCA4cHQiIC8+DQogICAgICA8L0F4aXNYPg0KICAgICAgPEF4aXNYMiBJc0xhYmVsQXV0b0ZpdD0iRmFsc2UiPg0KICAgICAgICA8TWFqb3JHcmlkIExpbmVDb2xvcj0iNjQsIDY0LCA2NCwgNjQiIC8+DQogICAgICAgIDxMYWJlbFN0eWxlIEZvbnQ9IlRhaG9tYSwgOHB0IiAvPg0KICAgICAgPC9BeGlzWDI+DQogICAgICA8QXhpc1kyIElzTGFiZWxBdXRvRml0PSJGYWxzZSI+DQogICAgICAgIDxNYWpvckdyaWQgTGluZUNvbG9yPSI2NCwgNjQsIDY0LCA2NCIgLz4NCiAgICAgICAgPExhYmVsU3R5bGUgRm9udD0iVGFob21hLCA4cHQiIC8+DQogICAgICA8L0F4aXNZMj4NCiAgICA8L0NoYXJ0QXJlYT4NCiAgPC9DaGFydEFyZWFzPg0KICA8Qm9yZGVyU2tpbiBTa2luU3R5bGU9IkVtYm9zcyIgLz4NCjwvQ2hhcnQ+">
+        <MSChartSeries Name="Series1" GroupBy="XValue" XValue="[EmployeeListDataSource.GenderName]" YValue1="[EmployeeListDataSource.Percentage]"/>
+      </MSChartObject>
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="نسبة الذكور والإناث حسب العقدة المختارة" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="429.1" Width="718.2" Height="18.9">
+      <TextObject Name="Text27" Left="18.9" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="النسبة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text28" Left="207.9" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الجنس" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="113.4" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العدد" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="302.4" Width="387.45" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العقدة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="451.84" Width="718.2" Height="37.8" CanGrow="true" CanBreak="true" DataSource="Table">
+      <TextObject Name="Text4" Left="113.4" Width="94.5" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeeListDataSource.COINT]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text8" Left="207.9" Width="94.5" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[IIf([EmployeeListDataSource.Gender]==0, &quot;أنثى&quot;, &quot;ذكر&quot;)]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="302.4" Width="387.45" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[NodesComboBox.Text]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="18.9" Width="94.5" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeeListDataSource.Percentage]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="493.49" Width="718.2" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="282" Height="134" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="118" Top="67" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" ClickEvent="btnOk_Click" DialogResult="OK"/>
+    <LabelControl Name="Label2" Left="204" Top="40" Width="36" Height="13" RightToLeft="Yes" TabIndex="6" Text="العقدة"/>
+    <ComboBoxControl Name="NodesComboBox" Left="16" Top="36" Width="175" RightToLeft="Yes" TabIndex="4" ClickEvent="NodesComboBox_Click" ResizeEvent="" AutoFilter="false" DataColumn="Node.Name" DropDownStyle="DropDownList" DropDownWidth="185" ItemHeight="13" SelectedIndexChangedEvent=""/>
+  </DialogPage>
+</Report>

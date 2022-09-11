@@ -1,0 +1,151 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<script>
+    function InterviewTemplateViewHandler(e) {
+       
+        $.ajax({
+            url: '@Url.Action("GetCustomSection", "Template", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sections) {
+                e.model.dirty = true;
+                e.model.CustomInformation = sections;
+
+                $(".fieldset-PMSGoupesNames_AppraisalTemplateFixedSection").remove();
+
+                var customSectionsTemplate = kendo.template($("#interview-template-viewer-template").html());
+                $(".fieldset-PMSGoupesNames_AppraisalTemplateInformation").after(customSectionsTemplate({ CustomSection: sections }));
+                
+            }
+        });
+    }
+
+    function ViewStaticAppraisalSectionWeight(e) {
+        $.ajax({
+            url: '@Url.Action("GetCustomSection", "Template", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sections) {
+                e.model.dirty = true;
+                e.model.CustomInformation = sections;
+
+                e.container.find(".fieldset-PMSGoupesNames_AppraisalTemplateFixedSection").append('<div class="sections-container control"></div>');
+                var sectionsTemplate1 = kendo.template($("#pms-template-viewer-template").html());
+                e.container.find(".sections-container").html(sectionsTemplate1({ CustomSection: sections }));
+
+                e.container.find(".objective-name").html($('[for="Objective"]').html());
+                e.container.find(".jd-name").html($('[for="JobDescription"]').html());
+                e.container.find(".competence-name").html($('[for="Competency"]').html());
+
+                e.container.find(".objective-weight").html(e.model.ObjectiveWeight);
+                e.container.find(".jd-weight").html(e.model.JobDescriptionWeight);
+                e.container.find(".competence-weight").html(e.model.CompetencyWeight);
+                var checkStatus = "";
+                if (e.model.Objective) {
+                    checkStatus = 'checked="checked"';
+                }
+                e.container.find(".objective-ckb").html('<input type="checkbox" ' + checkStatus + ' disabled="disabled"  />');
+                checkStatus = "";
+                if (e.model.JobDescription) {
+                    checkStatus = 'checked="checked"';
+                }
+                e.container.find(".jd-ckb").html('<input type="checkbox" ' + checkStatus + ' disabled="disabled"  />');
+                checkStatus = "";
+                if (e.model.Competency) {
+                    checkStatus = 'checked="checked"';
+                }
+                e.container.find(".competence-ckb").html('<input type="checkbox" ' + checkStatus + ' disabled="disabled"  />');
+
+                e.container.find(".fieldset-PMSGoupesNames_AppraisalTemplateFixedSection .control").not(".sections-container").remove();
+            }
+        });
+    }
+</script>
+
+
+
+<script id="pms-template-viewer-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.Type</th>
+                <th>@GlobalResource.Name</th>
+                <th></th>
+                <th>@GlobalResource.Weight</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="3">@GlobalResource.Fixed</td>
+                <td class="jd-name"></td>
+                <td class="jd-ckb"></td>
+                <td class="jd-weight"></td>
+            </tr>
+            <tr>
+                <td class="objective-name"></td>
+                <td class="objective-ckb"></td>
+                <td class="objective-weight"></td>
+            </tr>
+            <tr>
+                <td class="competence-name"></td>
+                <td class="competence-ckb"></td>
+                <td class="competence-weight"></td>
+            </tr>
+
+            #for (var i = 0; i < CustomSection.length; i++) {#
+            <tr>
+                #if(i==0){#
+                <td rowspan=#=CustomSection.length#>@GlobalResource.Custom</td>
+                #}#
+                #var checkStatus="";#
+                #if(CustomSection[i].IsIncluded){#
+                #checkStatus='checked="checked"';#
+                #}#
+
+                <td>#=CustomSection[i].Name#</td>
+                <td><input type="checkbox" disabled="disabled" #=checkStatus# class="custom-section-include" name="custom-section-#=CustomSection[i].Name#" data-index="#=i#" /></td>
+                <td>
+                    #=CustomSection[i].Weight#
+                </td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+
+<script id="interview-template-viewer-template" type="text/x-kendo-template">
+    <fieldset class="fieldset-AppraisalTemplateCustomSection">
+        <legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.AppraisalCustomSections)</legend>
+        <table style="margin-left:auto;margin-right:auto;">
+            <thead>
+                <tr>
+                    <th>@GlobalResource.Type</th>
+                    <th>@GlobalResource.Name</th>
+                    <th></th>
+                    <th>@GlobalResource.Weight</th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < CustomSection.length; i++) {#
+                <tr>
+                    #if(i==0){#
+                    <td rowspan=#=CustomSection.length#>@GlobalResource.Custom</td>
+                    #}#
+                    #var checkStatus="";#
+                    #if(CustomSection[i].IsIncluded){#
+                    #checkStatus='checked="checked"';#
+                    #}#
+
+                    <td>#=CustomSection[i].Name#</td>
+                    <td><input type="checkbox" disabled="disabled" #=checkStatus# class="custom-section-include" name="custom-section-#=CustomSection[i].Name#" data-index="#=i#" /></td>
+                    <td>
+                        #=CustomSection[i].Weight#
+                    </td>
+                </tr>
+                #}#
+            </tbody>
+        </table>
+    </fieldset>
+</script>

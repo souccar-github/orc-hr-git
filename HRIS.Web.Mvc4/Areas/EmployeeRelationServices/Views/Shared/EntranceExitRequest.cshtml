@@ -1,0 +1,292 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<div class="entrance-exit-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="entrance-exit-employee-container"></div><br />
+<div class="entrance-exit-employee-container-info"></div><br />
+<div class="entrance-exit-approval-container-title"><label>@GlobalResource.PendingEntranceExitRequest</label></div>
+<div class="entrance-exit-approval-container"></div><br />
+<div class="entrance-exit-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var entranceExitId = window.localStorage.getItem('ServiceId');
+    var employeeContainer = $('.entrance-exit-employee-container');
+    var employeeEntranceExitInfoContainer = $('.entrance-exit-employee-container-info');
+    var approvalContainer = $('.entrance-exit-approval-container');
+    var workflowContainer = $(".entrance-exit-request-workflow-container");
+    var employeeTitleContainer = $(".entrance-exit-employee-container-title");
+    var entranceExitApprovalTitleContainer = $(".entrance-exit-approval-container-title");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForPSEntranceExitService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            console.log(data.EmployeeApproval);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        employeeContainer.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            employeeContainer.html('');
+            approvalContainer.html('');
+            employeeTitleContainer.html('');
+            entranceExitApprovalTitleContainer.html('');
+
+
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            window.logTypes = [];
+            Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/GetLogTypes", {}, function (data) { window.logTypes = data.Data; }, failedMessage);
+
+
+            var employeeEntranceExitTemplateData = [
+                { Name: "RecordDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RecordDate)", Type: "Date", IsRequired: true },
+                { Name: "RecordTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RecordTime)", Type: "Time", IsRequired: true },
+                { Name: "LogType", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LogType)", Type: "Dropdown", DataSource: "logTypes", Creatable: false, IsRequired: true },
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea" }
+            ];
+
+            var employeeEntranceExitDatabind = kendo.observable(
+                {
+                    RecordDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    RecordTime: null,
+                    LogType: -1,
+                    Note: ""
+                });
+
+            createCustomEditForm(employeeEntranceExitInfoContainer, { Fields: employeeEntranceExitTemplateData, Key: "employee-entranceExit" }, employeeEntranceExitDatabind);
+
+            removeRequiredStar('RecordTime');
+            addRequiredStar('RecordTime');
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            employeeEntranceExitInfoContainer.find("[name='Note']").after(applyButton);
+            if (!employeeEntranceExitDatabind.RecordTime)
+                 employeeEntranceExitDatabind.RecordTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+            $("[name='RecordTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeEntranceExitDatabind.RecordTime));
+
+            var entranceExitSettingDropownlist = $("[name='EntranceExitSetting']").data("kendoDropDownList");
+
+            var RecordDate = $('[name="RecordDate"]');
+            var RecordTime = $('[name="RecordTime"]');
+            var LogType = $('[name="LogType"]');
+
+            employeeEntranceExitInfoContainer.find(".applyButton").off('click').on('click', function () {
+                var logType = Number(employeeEntranceExitInfoContainer.find("#LogType_employee-entranceExit").data("kendoDropDownList").value());
+                var recordDate = $("[name='RecordDate']").data("kendoDatePicker").value();
+                var recordTime = $("[name='RecordTime']").val();
+                var note = employeeEntranceExitInfoContainer.find("[name='Note']").val();
+                employeeEntranceExitDatabind.set("LogType", logType);
+                employeeEntranceExitDatabind.set("RecordDate", recordDate);
+                employeeEntranceExitDatabind.set("RecordTime", recordTime);
+                employeeEntranceExitDatabind.set("Note", note);
+                var jsonParam = { employeeId: employeeId, positionId: positionId, record: employeeEntranceExitDatabind };
+
+
+                var logTypeDropownlist = $("[name='LogType']").data("kendoDropDownList");
+
+                var logTypeValue = logTypeDropownlist.value();
+                if (logTypeValue == "0" || logTypeValue == "-1") {
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "LogType");
+            }
+                 logTypeDropownlist.bind("change", function () {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-LogType').remove();
+                });
+                
+                if (logType == null || logType == -1) {
+                 
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "LogType");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-LogType').remove();
+                }
+                var recordTimelist = $("[name='RecordTime']");
+
+                var recordTimeValue = recordTimelist.val();
+                if (recordTimeValue == "0" || recordTimeValue == "-1") {
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "RecordTime");
+                }
+                recordTimelist.bind("change", function () {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RecordTime').remove();
+                });
+                if (recordTime == -1 || RecordTime == -1 || recordTime == null) {
+                    if (recordTime == null || RecordTime == null) {
+                        if ($("[name='RecordTime']").val() == "") {
+
+                            addCustomValidationMessage("@GlobalResource.RequiredMessage", "RecordTime");
+                        } else {
+
+                            $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RecordTime').remove();
+                        }
+                    }
+                }
+                debugger;
+                if (logType == null || logType == -1 || recordTime == null || RecordTime == null) {
+                  //  requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePSEntranceExitItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+            });
+
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            employeeEntranceExitInfoContainer.html('');
+            employeeEntranceExitInfoContainer.html('');
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        //alert(JSON.stringify(data));
+        @*$(".entrance-exit-approval-container-title").html('@GlobalResource.PendingEntranceExitRequest');*@
+        var template = kendo.template($("#employee-entrance-exit-approval-template").html());
+        approvalContainer.html(template(data));
+        window.EmployeesEntranceExitInfo = data;
+    }
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, entranceExitId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, entranceExitId) {
+
+        employeeContainer.html('');
+        approvalContainer.html('');
+        employeeTitleContainer.html('');
+        entranceExitApprovalTitleContainer.html('');
+
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+
+            var employeeEntranceExitTemplateData = [
+                {Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "LogType", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LogType)", Type: "Text", IsReadonly: true },
+                { Name: "RecordDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RecordDate)", Type: "Date", IsReadonly: true },
+                { Name: "RecordTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RecordTime)", Type: "Time", IsReadonly: true },
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea", IsReadonly: true }
+            ];
+            var employeeEntranceExitViewDatabind = kendo.observable(
+                {
+                    FullName:"",
+                    LogType: "",
+                    RecordDate: null,
+                    RecordTime: null,
+                    Note: ""
+                });
+
+            for (var i = 0; i < window.EmployeesEntranceExitInfo.length; i++) {
+                if (window.EmployeesEntranceExitInfo[i].WorkflowItemId == workflowId) {
+                    employeeEntranceExitViewDatabind.FullName = window.EmployeesEntranceExitInfo[i].FullName;
+                    employeeEntranceExitViewDatabind.LogType = window.EmployeesEntranceExitInfo[i].LogTypeString;
+                    employeeEntranceExitViewDatabind.RecordDate = window.EmployeesEntranceExitInfo[i].RecordDate;
+                    employeeEntranceExitViewDatabind.RecordTime = window.EmployeesEntranceExitInfo[i].RecordTime;
+                    employeeEntranceExitViewDatabind.Note = window.EmployeesEntranceExitInfo[i].Note;
+                    console.log(window.EmployeesEntranceExitInfo[i].WorkflowItemId + '_' + workflowId);
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeEntranceExitTemplateData, Key: "employee-entranceExit" }, employeeEntranceExitViewDatabind);
+
+            $("[name='RecordTime']").prop('disabled', true);
+            $("[name='RecordTime']").parent().find('span').remove();
+            $("[name='RecordTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeEntranceExitViewDatabind.RecordTime));
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptPSEntranceExitRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectPSEntranceExitRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingPSEntranceExitRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId, recordId: entranceExitId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-entrance-exit-approval-template" type="text/x-kendo-template">
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RecordDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RecordTime)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=window.Souccar.toStringForDate(employee.RecordDate)#</td>
+                <td>#=window.Souccar.toStringForTime(employee.RecordTime)#</td>
+                <td>#=employee.Note#</td>
+                <td style="display: flex; justify-content: center; align-items: center;"><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.RecordId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

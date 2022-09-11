@@ -1,0 +1,237 @@
+﻿@*//todo : Mhd Update changeset no.1*@
+@using  Project.Web.Mvc4.Helpers
+<script type="text/javascript">
+    function entranceExitGridHandler() {
+        var grid = $("#grid").data("kendoGrid");
+        grid.bind("dataBound", entrance_exit_records_grid_dataBound);
+    }
+    function entrance_exit_records_grid_dataBound(e) {
+        if (e.sender.dataSource.view().length == 0) {
+
+            var colspan = e.sender.thead.find("th").length;
+            var emptyRow = "<tr><td colspan='" + colspan + "'></td></tr>";
+            e.sender.tbody.html(emptyRow);
+        }
+        else {
+            var _data = e.sender.dataSource._data;
+            for (var obj in _data) {
+                changeEERRowColor(_data[obj]);
+            }
+        }
+    }
+    function changeEERRowColor(dataItem) {
+        var grid = $("#grid").data("kendoGrid");
+        if (dataItem != null && dataItem.uid != undefined) {
+            var row = grid.tbody.find("tr[data-uid='" + dataItem.uid + "']");
+            if (dataItem.LogType.Id == 0) {
+                row.addClass("k-alt");
+                row.addClass("row-diff-color");
+            }
+            else
+                row.removeClass("k-alt");
+        }
+
+    }
+    function EntranceExitRecordAfterRequestEnd(e) {
+        @*$(".AcceptEntranceExitRecordButton").off("click").on("click", function () {
+
+            var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                         { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+            var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                width: "300px",
+                height: "150px",
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+            });
+            var objWindow = kendoWindow.data("kendoWindow");
+            objWindow.open();
+            kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+            objWindow
+                .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.AreYouSureYouWantToAcceptEntranceExitRecord", IconClass: "k-icon w-b-question", Commands: commands }))
+                .center().open();
+            kendoWindow
+                .find(gedCommandsClassNames(commands))
+                .click(function () {
+                    for (var i = 0; i < commands.length - 1; i++) {
+                        if ($(this).hasClass("Accept")) {
+                            AcceptEntranceExitRecord();
+                        }
+                    }
+                    objWindow.close();
+                })
+                .end();
+        });*@
+
+        $(".DeleteEntranceExitRecordButton").off("click").on("click", function () {
+
+            var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                         { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+            var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                width: "300px",
+                height: "150px",
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+            });
+            var objWindow = kendoWindow.data("kendoWindow");
+            objWindow.open();
+            kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+            objWindow
+                .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.AreYouSureYouWantToDeleteEntranceExitRecord", IconClass: "k-icon w-b-question", Commands: commands }))
+                .center().open();
+            kendoWindow
+                .find(gedCommandsClassNames(commands))
+                .click(function () {
+                    for (var i = 0; i < commands.length - 1; i++) {
+                        if ($(this).hasClass("Accept")) {
+                            DeleteEntranceExitRecord();
+                        }
+                    }
+                    objWindow.close();
+                })
+                .end();
+        });
+
+        $(".CheckEntranceExitRecordsButton").off("click").on("click", function () {
+            kendo.ui.progress($('#dynamic_content'), true);
+            try {
+                 $.ajax({
+                    url: '@Url.Action("CheckEnternaceExitRecords", "EntranceExitRecord")',
+                    type: "POST",
+                    data: JSON.stringify({ filter: $("#grid").data("kendoGrid").dataSource.filter() }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                        if (data.Success) {
+                            console.log(data);
+                            ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                        } else {
+                            ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                        }
+                        $("#grid").data("kendoGrid").dataSource.fetch();
+                        kendo.ui.progress($('#dynamic_content'), false);
+                    }
+                });
+            } catch (error) {
+                kendo.ui.progress($('#dynamic_content'), false);
+            }
+        });
+
+
+
+
+        @*$(".GenerateEntranceExitRecordErrorsButton").off("click").on("click", function () {
+
+            var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                         { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+            var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                width: "300px",
+                height: "150px",
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+            });
+            var objWindow = kendoWindow.data("kendoWindow");
+            objWindow.open();
+            kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+            objWindow
+                .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.AreYouSureYouWantToGenerateEntranceExitRecordErrors", IconClass: "k-icon w-b-question", Commands: commands }))
+                .center().open();
+            kendoWindow
+                .find(gedCommandsClassNames(commands))
+                .click(function () {
+                    for (var i = 0; i < commands.length - 1; i++) {
+                        if ($(this).hasClass("Accept")) {
+                            GenerateEntranceExitRecordErrors();
+                        }
+                    }
+                    objWindow.close();
+                })
+                .end();
+        });*@
+
+    }
+
+    function EntranceExitRecordEditHandler(e) {
+        if (!e.model.isNew()) {
+            checkUpdateReason(e);
+        }
+    }
+
+    @*function AcceptEntranceExitRecord() {
+        $.ajax({
+            url: '@Url.Action("AcceptEntranceExitRecords", "EntranceExitRecord")',
+            type: "POST",
+            data: JSON.stringify({ filter: $("#grid").data("kendoGrid").dataSource.filter() }),
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    console.log(data);
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+                $("#grid").data("kendoGrid").dataSource.fetch();
+            }
+        });
+    };*@
+
+
+    function DeleteEntranceExitRecord() {
+        $.ajax({
+            url: '@Url.Action("DeleteEntranceExitRecords", "EntranceExitRecord")',
+            type: "POST",
+            data: JSON.stringify({ filter: $("#grid").data("kendoGrid").dataSource.filter() }),
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    console.log(data);
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+                $("#grid").data("kendoGrid").dataSource.fetch();
+            }
+        });
+    };
+
+    @*function GenerateEntranceExitRecordErrors() {
+        $.ajax({
+            url: '@Url.Action("GenerateEntranceExitRecordErrors", "EntranceExitRecord")',
+            type: "POST",
+            data: JSON.stringify({ filter: $("#grid").data("kendoGrid").dataSource.filter() }),
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    console.log(data);
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+                $("#grid").data("kendoGrid").dataSource.fetch();
+            }
+        });
+    };*@
+
+    function checkUpdateReason(e) {
+        if ($("[name='UpdateReason']").val() == "") {
+            addRequiredStar('UpdateReason');
+        }
+    }
+
+    function addRequiredStar(fieldName) {
+        $("label[for='" + fieldName + "']").append('<span class="equired-star">*</span>');
+    }
+
+</script>

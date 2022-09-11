@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/07/2015 11:39:18" ReportInfo.Modified="07/04/2016 14:18:46" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {  
+
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {     
+     
+      if(CheckBox1.Checked)
+      { 
+        ComboBox1.Enabled=false;
+        ComboBox1.AutoFill=false;
+        ComboBox1.AutoFilter=false;
+        ComboBox1.SelectedIndex=-1;
+      }
+      else 
+      {  
+        ComboBox1.Enabled=true;         
+        ComboBox1.AutoFill=true;
+        ComboBox1.AutoFilter=true;
+      }     
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW+SlWQYiJrY1tE4GntExzJvisKJgEDn89+JCmID8gF+f/58ALrFNBjmAe7T6TqLkNeJxz2981zpKJIYzSZIQcGpcYhJw3x9fioNx4pZUlsEdXFHrnmv1B7GytARodu7IAA==">
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     &#13;&#10;dbo.Employee.Id,&#13;&#10;dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, &#13;&#10;dbo.Employee.Code AS EmpCode, &#13;&#10;dbo.Position.Code AS PosCode, &#13;&#10;dbo.EmployeeCard.StartWorkingDate,&#13;&#10;dbo.EmployeeCard.ProbationPeriodEndDate, &#13;&#10;dbo.BankingInformation.AccountNumber, &#13;&#10;dbo.BankingInformation.AccountName, &#13;&#10;dbo.BankingInformation.StartDate,&#13;&#10;dbo.BankingInformation.ExpiryDate, &#13;&#10;dbo.BankingInformation.BankInformation_id AS BankInformationId, &#13;&#10;dbo.JobDescription.Name AS JobDescriptionName,&#13;&#10;dbo.EmployeeCard.Id AS EmployeeCardId&#13;&#10;FROM         dbo.JobDescription INNER JOIN&#13;&#10;                      dbo.Employee INNER JOIN&#13;&#10;                      dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id INNER JOIN&#13;&#10;                      dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id INNER JOIN&#13;&#10;                      dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id ON dbo.JobDescription.Id = dbo.Position.JobDescription_id INNER JOIN&#13;&#10;                      dbo.BankingInformation ON dbo.EmployeeCard.Id = dbo.BankingInformation.EmployeeCard_id&#13;&#10;WHERE		dbo.EmployeeCard.CardStatus = 1 AND&#13;&#10;		JobDescription.IsVertualDeleted = 0 AND&#13;&#10;			Employee.IsVertualDeleted = 0 AND&#13;&#10;			EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;			AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;			Position.IsVertualDeleted = 0 AND&#13;&#10;			BankingInformation.IsVertualDeleted = 0 ">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="EmpCode" DataType="System.String"/>
+        <Column Name="PosCode" DataType="System.String"/>
+        <Column Name="StartWorkingDate" DataType="System.DateTime"/>
+        <Column Name="ProbationPeriodEndDate" DataType="System.DateTime"/>
+        <Column Name="AccountNumber" DataType="System.String"/>
+        <Column Name="AccountName" DataType="System.String"/>
+        <Column Name="StartDate" DataType="System.DateTime"/>
+        <Column Name="ExpiryDate" DataType="System.DateTime"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="BankInformationId" DataType="System.Int32"/>
+        <Column Name="JobDescriptionName" DataType="System.String"/>
+        <Column Name="EmployeeCardId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="BankInformationTable" DataType="System.Int32" Enabled="true" SelectCommand="select Id,BankName From BankInformation WHERE IsVertualDeleted = 0 ">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="BankName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="Id" ChildColumns="BankInformationId" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="122.85">
+      <TextObject Name="Text24" Top="18.9" Width="718.2" Height="47.25" Fill.Color="WhiteSmoke" Text="تقرير المعلومات المصرفية للموظفين" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text25" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d"/>
+      <TextObject Name="Text15" Left="510.3" Top="85.05" Width="207.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم المصرف المختار" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text16" Top="85.05" Width="510.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[ComboBox1.Text]" HorzAlign="Right" Font="Arial, 12pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="129.2" Width="718.2" Height="39.8">
+      <TextObject Name="Text9" Left="396.9" Width="85.05" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text11" Left="302.4" Width="94.5" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم المصرف" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text13" Left="226.8" Width="75.6" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="رقم الحساب" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="481.95" Width="151.2" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الثلاثي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="633.15" Width="85.05" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرمز" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text18" Left="151.2" Width="75.6" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الحساب" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text20" Left="75.6" Width="75.6" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="فتح الحساب" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text21" Width="75.6" Height="39.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="انتهاء الحساب" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="175.35" Width="718.2" Height="55.7" DataSource="Table">
+      <TextObject Name="Text10" Left="302.4" Width="94.5" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.BankInformationTable.BankName]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text12" Left="226.8" Width="75.6" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.AccountNumber]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text1" Left="481.95" Width="151.2" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.FullName]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text3" Left="633.15" Width="85.05" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.EmpCode]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text19" Left="151.2" Width="75.6" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.AccountName]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text22" Left="75.6" Width="75.6" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.StartDate]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text23" Width="75.6" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.ExpiryDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.ExpiryDate] )]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <TextObject Name="Text5" Left="396.9" Width="85.05" Height="55.7" Border.Lines="All" Border.Color="Silver" Text="[Table.PosCode]" Format="Date" Format.Format="d" HorzAlign="Right" VertAlign="Center" Font="Arial, 9pt"/>
+      <DataFooterBand Name="DataFooter1" Top="237.4" Width="718.2" Height="18.9">
+        <TextObject Name="Text17" Left="481.95" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الموظفين ضمن التقرير" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text7" Width="481.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" HorzAlign="Right" Font="Arial, 12pt"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="262.65" Width="718.2" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="178" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="118" Top="91" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <ComboBoxControl Name="ComboBox1" Left="16" Top="32" Width="175" TabIndex="2" DataColumn="Table.BankInformationTable.BankName" DropDownStyle="DropDownList" DropDownWidth="175" ItemHeight="13"/>
+    <LabelControl Name="Label1" Left="196" Top="36" Width="69" Height="13" TabIndex="3" Text="اسم المصرف" ClickEvent="Label1_Click"/>
+    <CheckBoxControl Name="CheckBox1" Left="176" Top="64" Width="92" Height="17" TabIndex="4" Text="جميع المصارف" ClickEvent="CheckBox1_Click"/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,77 @@
+﻿@Html.Partial("UpdateObjectiveAppraisalPhaseView")
+@Html.Partial("PhasePeriodHandler")
+<script>
+    //**********************Objective Props**********************
+    //var InitRelatedObjectivesUrl = 'Home/RelatedObjectives';
+    //************************************************************
+    
+    //**********************Const Variables**********************
+    var ObjectiveTypes = { Individual: "Individual", Departmental: "Departmental" };
+    //************************************************************
+
+
+    var ObjectiveId;
+
+    //**********************Event Handlers**********************
+
+    function dropDownListType_Change(e) {
+
+        var dropDownListObjectiveType = $("#dropDownListType").data("kendoDropDownList");
+        var dataItem = dropDownListObjectiveType.dataItem(dropDownListObjectiveType.select());
+        if (dataItem) {
+
+            disableSuitedDropdowns(dataItem.Name);
+        }
+    }
+
+    ////************************************************************
+
+    //the first method called.
+    function initObjectiveType(e) {
+
+        ObjectiveId = e.model.Id;
+        addDropDownListHandlers();
+        
+        if (ObjectiveId > 0) { //for edit
+            
+            disableSuitedDropdowns(e.model.Type.Name);
+            
+        }
+        else {//for insert
+            //Default value is "Departmental".
+            disableSuitedDropdowns(ObjectiveTypes.Departmental);
+            
+        }
+    }
+
+    function addDropDownListHandlers() {
+         
+        var objectiveTypeDropdownList = $("#dropDownListType").data("kendoDropDownList");
+        objectiveTypeDropdownList.bind("change", dropDownListType_Change);
+     }
+
+    function disableSuitedDropdowns(selectedObjectiveType) {
+  
+
+        var strategicObjectivesDropdownList = $("#dropDownListStrategicObjective").data("kendoDropDownList");
+        var parentObjectivesDropdownList = $("#dropDownListParentObjective").data("kendoDropDownList");
+        
+        if (selectedObjectiveType == ObjectiveTypes.Departmental) {
+            
+            //disable parent objectives.
+            strategicObjectivesDropdownList.enable(true);
+            parentObjectivesDropdownList.enable(false);
+            //$(".control-StrategicObjective").show();
+            //$(".control-ParentObjective").hide();
+        }
+        else {
+            
+            //disable strategic objectives.
+            strategicObjectivesDropdownList.enable(false);
+            parentObjectivesDropdownList.enable(true);
+            //$(".control-StrategicObjective").hide();
+            //$(".control-ParentObjective").show();
+        }
+    }
+     
+ </script>

@@ -1,0 +1,426 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 5/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="promotion-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="promotion-employee-container"></div><br />
+<div class="promotion-approval-container-title"><label>@GlobalResource.PendingPromotionRequest</label></div>
+<div class="promotion-approval-container"></div><br />
+<div class="promotion-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var promotionId = window.localStorage.getItem('ServiceId');
+    var container = $('.promotion-employee-container');
+    var approval_container = $('.promotion-approval-container');
+    var workflowContainer = $(".promotion-request-workflow-container");
+    var newJobTitle;
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForPromotionService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        $(".promotion-employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        container.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            approval_container.html('');
+            container.html("");
+            $(".promotion-employee-container-title").html('');
+            $(".promotion-approval-container-title").html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            var fullName = $(this).attr('data-fullname');
+
+            var employeePromotionTemplateData = [
+                 { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                { Name: "NewJobTitleId", Title: "@GlobalResource.JobTitle", Type: "Dropdown", DataSource: "jobTitles", Creatable: false, IsRequired: true },
+                { Name: "NewPositionId", Title: "@GlobalResource.Position", Type: "Dropdown", DataSource: "positions", Creatable: false, IsRequired: true },
+                { Name: "PositionSeparationDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PositionSeparationDate)", Type: "Date", IsRequired: true },
+                { Name: "PositionJoiningDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PositionJoiningDate)", Type: "Date", IsRequired: true },
+                { Name: "PromotionReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PromotionReason)", Type: "Textarea", IsRequired: true },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea" }
+            ];
+            debugger;
+            var employeePromotionDatabind = kendo.observable(
+                {
+                    FullName: fullName,
+                    NewJobTitleId: 0,
+                    NewPositionId: 0,
+                    PositionSeparationDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    PositionJoiningDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    PromotionReason: "",
+                    Comment: ""
+                });
+
+            createCustomEditForm(container, { Fields: employeePromotionTemplateData, Key: "employee-promotion" }, employeePromotionDatabind);
+            $.ajax({
+                url: '@Url.Action("ReadJobTitles", "Reference", new { area = "EmployeeRelationServices" })',
+                type: "GET",
+                contentType: 'application/json',
+                success: function (data) {
+                    debugger;
+                    data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                    var dataSource = new kendo.data.DataSource({
+                        data: data.Data
+                    });
+                    $('[name="NewJobTitleId"]').kendoDropDownList({
+                        filter: "contains",
+                        autoBind: true,
+                        minLength: 1,
+                        dataTextField: "Name",
+                        dataValueField: "Id",
+                    });
+                    jobTitles = data.Data;
+                    var dropdownlist = $('[name="NewJobTitleId"]').data("kendoDropDownList");
+                    dropdownlist.setDataSource(jobTitles);
+                    dropdownlist.text("@GlobalResource.Select");
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("ReadPositions", "Reference", new { area = "EmployeeRelationServices" })',
+                type: "GET",
+                contentType: 'application/json',
+                success: function (data) {
+                    debugger;
+                    data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                    var dataSource = new kendo.data.DataSource({
+                        data: data.Data
+                    });
+                    $('[name="NewPositionId"]').kendoDropDownList({
+                        filter: "contains",
+                        autoBind: true,
+                        minLength: 1,
+                        dataTextField: "Name",
+                        dataValueField: "Id",
+                    });
+                    positions = data.Data;
+                    var dropdownlist = $('[name="NewPositionId"]').data("kendoDropDownList");
+                    dropdownlist.setDataSource(positions);
+                    dropdownlist.text("@GlobalResource.Select");
+                }
+            });
+            //container.find("#NewPositionId_employee-promotion").kendoDropDownList({
+            //    dataTextField: "Name",
+            //    dataValueField: "Id",
+            //    dataSource: [{ Name: "", Id: 0 }]
+            //});
+
+            //container.find("#NewJobTitleId_employee-promotion").kendoDropDownList({
+            //    dataTextField: "Name",
+            //    dataValueField: "Id",
+            //    dataSource: [{ Name: "", Id: 0 }]
+            //});
+                //.bind("change", jobTitleChange);
+            container.find("#NewJobTitleId_employee-promotion").bind("change", jobTitleChange);
+            function jobTitleChange(e) {
+                debugger;
+                var url = '@Url.Action("ReadAllPositionCascadeToJobTitle", "Reference", new { area = "EmployeeRelationServices" })';
+                var newJobTitle = Number(container.find("#NewJobTitleId_employee-promotion").data("kendoDropDownList").value());
+                var jsonParam = { jobTitleId: newJobTitle, employeeId: employeeId };
+                if (newJobTitle > 0) {
+                    Souccar.ajax(url, jsonParam, function (data) {
+                        $('[name="NewPositionId"]').kendoDropDownList({
+                            filter: "contains",
+                            autoBind: true,
+                            minLength: 1,
+                            dataTextField: "Name",
+                            dataValueField: "Id",
+                        });
+                        fillPostionFromJobTitle(data);
+                    }, failedMessage);
+                }
+                else {
+                    var dropdownlist = $('[name="NewPositionId"]').data("kendoDropDownList");
+                    dropdownlist.setDataSource([]);
+                }
+
+                function fillPostionFromJobTitle(data) {
+                    debugger;
+                    
+                    var targetControl = $("#NewPositionId_employee-promotion").data("kendoDropDownList");
+                    
+                    data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+
+                    var dataSource = new kendo.data.DataSource({
+                        data: data
+                    });
+
+                    targetControl.setDataSource(dataSource);
+                    targetControl.text("@GlobalResource.Select");
+                }
+            }
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            container.find(".control-Comment").after(applyButton);
+
+            container.find(".applyButton").off('click').on('click', function () {
+
+                var jtId = Number(container.find("#NewJobTitleId_employee-promotion").data("kendoDropDownList").value());
+                var id = Number(container.find("#NewPositionId_employee-promotion").data("kendoDropDownList").value());
+                var separationDate = $("[name='PositionSeparationDate']").data("kendoDatePicker").value();
+                var joiningDate = $("[name='PositionJoiningDate']").data("kendoDatePicker").value();
+                var reason = container.find("[name='PromotionReason']").val();
+                var comment = container.find("[name='Comment']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeePromotionItem: employeePromotionDatabind };
+
+                employeePromotionDatabind.PromotionReason = reason;
+                employeePromotionDatabind.FullName = fullName;
+                employeePromotionDatabind.Comment = comment;
+                employeePromotionDatabind.PositionJoiningDate = joiningDate;
+                employeePromotionDatabind.PositionSeparationDate = separationDate;
+                employeePromotionDatabind.NewPositionId = id;
+                employeePromotionDatabind.NewJobTitleId = jtId;
+            
+                if (id == "" || id == "0" || id == 0 || id == null || id == -1) {
+                    debugger;
+                    var destNodeDropownlist = $("[name='NewPositionId']").data("kendoDropDownList");
+                    var destNodeValue = destNodeDropownlist.value();
+                    if (destNodeValue == "0" || destNodeValue == "-1" || destNodeValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "NewPositionId");
+                    }
+                    destNodeDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-NewPositionId').remove();
+                    });
+                }
+                if (jtId == "" || jtId == "0" || jtId == 0 || jtId == null) {
+                    debugger;
+                    var destPositionDropownlist = $("[name='NewJobTitleId']").data("kendoDropDownList");
+                    var destPositionValue = destPositionDropownlist.value();
+                    if (destPositionValue == "0" || destPositionValue == "-1" || destPositionValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "NewJobTitleId");
+                    }
+                    destPositionDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-NewJobTitleId').remove();
+                    });
+                }
+                $("[name='PromotionReason']").focusout(function () {
+                    debugger;
+                    if ($("[name='PromotionReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "PromotionReason");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-PromotionReason').remove();
+                    }
+
+                });
+
+                $("[name='PromotionReason']").keyup(function () {
+                    if ($("[name='PromotionReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "PromotionReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-PromotionReason').remove();
+                    }
+
+                });
+                if (reason == "") {
+                    if ($("[name='PromotionReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "PromotionReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-PromotionReason').remove();
+                    }
+                }
+
+                if (id == "" || id == "0" || id == 0 || id == null ||
+                    jtId == "" || jtId == "0" || jtId == 0 || jtId == null ||
+                    separationDate == null || joiningDate == null || reason == null || reason == "") {
+                   // requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePromotionItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+                //getEmployeeActionViewModel();
+            });
+            
+            var jobTitleButton = $('<button id="jobTitleId" class="k-button applyJobTitleButton"><span class="k-icon k-i-note" style="vertical-align: sub;"></span></button>');
+            $("[data-container-for=NewJobTitleId]").append(jobTitleButton);
+            container.find(".applyJobTitleButton").off('click').on('click', function () {
+                debugger;
+                openReferenceWindow('NewJobTitleId', 'HRIS.Domain.Grades.Entities.JobTitle', '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.JobTitle)');
+            });
+            
+            var positionButton = $('<button id="positionId" class="k-button applyPositionButton"><span class="k-icon k-i-note" style="vertical-align: sub;"></span></button>');
+            $("[data-container-for=NewPositionId]").append(positionButton);
+            container.find(".applyPositionButton").off('click').on('click', function () {
+                openReferenceWindow('NewPositionId', 'HRIS.Domain.JobDescription.Entities.Position', '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Position)');
+            });
+        });
+    }
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, promotionId);
+        notifyWorkflowId = null;
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+    function showEmployeeApproval(data) {
+        $(".promotion-approval-container-title").html('@GlobalResource.PendingPromotionRequest');
+        var template = kendo.template($("#employee-promotion-approval-template").html());
+        approval_container.html(template(data));
+        window.EmployeesPromotionInfo = data;
+    }
+    function approvalAction(workflowId, promotionId) {
+        container.html('');
+        approval_container.html('');
+
+        $(".promotion-employee-container-title").html('');
+        $(".promotion-approval-container-title").html('');
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+
+            var employeePromotionTemplateData = [
+                { Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "PositionName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.CurrentPosition)", Type: "Text", IsReadonly: true },
+                { Name: "NewJobTitleName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NewJobTitle)", Type: "Text", IsReadonly: true },
+                { Name: "NewPositionName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NewPosition)", Type: "Text", IsReadonly: true },
+                { Name: "PositionSeparationDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PositionSeparationDate)", Type: "Date", IsReadonly: true },
+                { Name: "PositionJoiningDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PositionJoiningDate)", Type: "Date", IsReadonly: true },
+                { Name: "PromotionReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PromotionReason)", Type: "Textarea", IsReadonly: true },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea", IsReadonly: true }
+            ];
+
+            var employeePromotionViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    PositionName: "",
+                    NewJobTitleName: "",
+                    NewPositionName: "",
+                    PositionSeparationDate: null,
+                    PositionJoiningDate: null,
+                    PromotionReason: "",
+                    Comment: ""
+                });
+
+            for (var i = 0; i < window.EmployeesPromotionInfo.length; i++) {
+                if (window.EmployeesPromotionInfo[i].WorkflowItemId == workflowId) {
+                    employeePromotionViewDatabind.FullName = window.EmployeesPromotionInfo[i].FullName;
+                    employeePromotionViewDatabind.PositionName = window.EmployeesPromotionInfo[i].PositionName;
+                    employeePromotionViewDatabind.NewJobTitleName = window.EmployeesPromotionInfo[i].NewJobTitleName;
+                    employeePromotionViewDatabind.NewPositionName = window.EmployeesPromotionInfo[i].NewPositionName;
+                    employeePromotionViewDatabind.PositionSeparationDate = window.EmployeesPromotionInfo[i].PositionSeparationDate;
+                    employeePromotionViewDatabind.PositionJoiningDate = window.EmployeesPromotionInfo[i].PositionJoiningDate;
+                    employeePromotionViewDatabind.PromotionReason = window.EmployeesPromotionInfo[i].PromotionReason;
+                    employeePromotionViewDatabind.Comment = window.EmployeesPromotionInfo[i].Comment;
+                    console.log(window.EmployeesPromotionInfo[i].WorkflowItemId + '_' + workflowId);
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeePromotionTemplateData, Key: "employee-promotion" }, employeePromotionViewDatabind);
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptPromotionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectPromotionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingPromotionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId, promotionId: promotionId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-promotion-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NewPosition)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NewJobTitle)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PositionSeparationDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PositionJoiningDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PromotionReason)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++) {#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=employee.NewPositionName#</td>
+                <td>#=employee.NewJobTitleName#</td>
+                <td>#=ToStringForDate(employee.PositionSeparationDate)#</td>
+                <td>#=ToStringForDate(employee.PositionJoiningDate)#</td>
+                <td>#=employee.PromotionReason#</td>
+                <td>#=employee.Comment#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.PromotionId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

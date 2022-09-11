@@ -1,0 +1,161 @@
+﻿@using HRIS.Domain.PayrollSystem.Enums
+@using HRIS.Domain.Personnel.Enums;
+<script type="text/javascript">
+    
+
+    function PrimaryEmployeeBenefit_EditHandler(e) {
+        $("[name='HasStartDate']").off("click").on("click", controlClick);
+        $("[name='HasExpiryDate']").off("click").on("click", controlClick);
+        controlClick();
+        
+        function controlClick() {
+            var hasStartDate = $("[name='HasStartDate']").is(":checked");
+            if (!hasStartDate)
+                e.model.StartDate = null;
+            var hasExpiryDate = $("[name='HasExpiryDate']").is(":checked");
+            if (!hasExpiryDate)
+                e.model.ExpiryDate = null;
+            spouseUpdateEditView1(container, hasStartDate);
+            spouseUpdateEditView2(container, hasExpiryDate);
+        }
+        function spouseUpdateEditView1(container, hasStartDate) {
+            if (hasStartDate) {
+                $(".control-StartDate").show();
+            } else {
+                $(".control-StartDate").hide();
+                $("[name='StartDate']").val(null);
+                e.model.StartDate = null;
+            }
+        }
+        function spouseUpdateEditView2(container, hasExpiryDate) {
+            if (hasExpiryDate) {
+                $(".control-ExpiryDate").show();
+            } else {
+                $(".control-ExpiryDate").hide();
+                $("[name='ExpiryDate']").val(null);
+                e.model.ExpiryDate = null;
+            }
+        }
+        
+
+            BenefitItem_Changed(e);
+
+        
+        //ChangeViewBySelectedField(e);
+    }
+
+    function BenefitItem_Changed(e) {
+        if ($("#dropDownListBenefitCard").data("kendoDropDownList")!=null){
+        $("#dropDownListBenefitCard").data("kendoDropDownList").bind("change", onBenefitCardSelect);
+        $("#dropDownListBenefitCard").data("kendoDropDownList").dataSource.one("change", onBenefitCardSelect);
+}
+        function onBenefitCardSelect() {
+            var benefitCardId = $("#dropDownListBenefitCard").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: window.applicationpath + 'BenefitCard/GetBenefitCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: benefitCardId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if ($("[name=Value]").data("kendoNumericTextBox") != null)
+                    {
+                    $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                    e.model.Value = data.result.Value;
+                    }
+                    if ($("[name=ExtraValue]").data("kendoNumericTextBox") != null)
+                    {
+                    $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                    e.model.ExtraValue = data.result.ExtraValue;
+                    }
+                    if ($("[name=CeilValue]").data("kendoNumericTextBox") != null)
+                    {
+                    $("[name=CeilValue]").data("kendoNumericTextBox").value(data.result.CeilValue);
+                    e.model.CeilValue = data.result.CeilValue;
+                    }
+                    if ( $("#dropDownListFormula").data("kendoDropDownList") != null)
+                    {
+                    $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                    e.model.Formula = data.result.Formula;
+                    }
+                    if ( $("#dropDownListExtraValueFormula").data("kendoDropDownList") != null)
+                    {
+                    $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                    e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+                    }
+                    if ( $("#dropDownListCeilFormula").data("kendoDropDownList") != null)
+                    {
+                    $("#dropDownListCeilFormula").data("kendoDropDownList").value(data.result.CeilFormula);
+                    e.model.CeilFormula = data.result.CeilFormula;
+                    }
+                    
+                }
+            });
+        }
+    }
+    @*--------------إظهار وإخفاء حقول في التعويضات------------------*@
+    @*function ChangeViewBySelectedField(e) {
+        if (!e.model.isNew()) {
+            formulaChange(e.model.Formula.Id);
+            extraFormulaChange(e.model.ExtraValueFormula.Id);
+            ceilFormulaChange(e.model.CeilFormula.Id);
+        }
+        var formulaDropdownlist = $("[name='Formula']").data("kendoDropDownList");
+        formulaDropdownlist.bind("change", function () {
+            formulaChange(formulaDropdownlist.value());
+        });
+        formulaDropdownlist.bind("select", function () {
+            formulaChange(formulaDropdownlist.value());
+        });
+        function formulaChange(formula) {
+            @{ var nothing = ((int)Formula.Nothing).ToString();}
+            if (formula == "@nothing") {
+                $(".control-Value").hide();
+                $("[name='Value']").val('0');
+            }
+            else {
+                $(".control-Value").show();
+            }
+                
+        }
+        
+        var extraFormulaDropdownlist = $("[name='ExtraValueFormula']").data("kendoDropDownList");
+        extraFormulaDropdownlist.bind("change", function () {
+            extraFormulaChange(extraFormulaDropdownlist.value());
+        });
+        extraFormulaDropdownlist.bind("select", function () {
+            extraFormulaChange(extraFormulaDropdownlist.value());
+        });
+        function extraFormulaChange(extraFormula) {
+            @{ var none = ((int)ExtraValueFormula.None).ToString();}
+            if (extraFormula == "@none") {
+                $(".control-ExtraValue").hide();
+                $("[name='ExtraValue']").val(0);
+            }
+            else {
+                $(".control-ExtraValue").show();
+            }
+                
+        }
+        
+        var ceilFormulaDropdownlist = $("[name='CeilFormula']").data("kendoDropDownList");
+        ceilFormulaDropdownlist.bind("change", function () {
+            ceilFormulaChange(ceilFormulaDropdownlist.value());
+        });
+        ceilFormulaDropdownlist.bind("select", function () {
+            ceilFormulaChange(ceilFormulaDropdownlist.value());
+        });
+        function ceilFormulaChange(ceilFormula) {
+             @{ var nothing1 = ((int)Formula.Nothing).ToString();}
+            if (ceilFormula == "@nothing1") {
+                $(".control-CeilValue").hide();
+                $("[name='CeilValue']").val(0);
+            }
+            else {
+                $(".control-CeilValue").show();
+            }
+                
+        }
+    }*@
+
+</script>

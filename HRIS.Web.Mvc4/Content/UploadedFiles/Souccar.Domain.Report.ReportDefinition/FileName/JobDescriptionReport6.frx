@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/16/2015 12:35:21" ReportInfo.Modified="05/03/2016 12:16:30" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+    private void Label1_Click(object sender, EventArgs e)
+    {
+      
+    }
+
+    private void btnOk_Click(object sender, EventArgs e)
+    {
+      
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvg+IOZG+tOCUg0YJbrZRPOA==">
+      <TableDataSource Name="Table1" Alias="JobSkills" DataType="System.Int32" Enabled="true" SelectCommand="SELECT       &#13;&#10;(select dbo.SkillType.Name from dbo.SkillType where dbo.SkillType.Id=JSkill.Type_id AND SkillType.IsVertualDeleted=0) AS Skillname,&#13;&#10;Required  AS SkillRequired,&#13;&#10;(select dbo.LevelType.Name from dbo.LevelType where dbo.LevelType.Id=Level_id AND LevelType.IsVertualDeleted=0) AS Skilllevel,&#13;&#10;JobDescription_id, &#13;&#10;Weight  AS Skillweight,&#13;&#10;(select dbo.JobDescription.Name from dbo.JobDescription where dbo.JobDescription.Id=JobDescription_id AND JobDescription.IsVertualDeleted=0) AS JobDes&#13;&#10;FROM dbo.JSkill &#13;&#10;WHERE JSkill.IsVertualDeleted=0">
+        <Column Name="skilllevel" DataType="System.String"/>
+        <Column Name="JobDes" DataType="System.String"/>
+        <Column Name="Skillname" DataType="System.String"/>
+        <Column Name="SkillRequired" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="JobDescription_id" DataType="System.Int32"/>
+        <Column Name="Skillweight" DataType="System.Single"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="Emp" DataType="System.Int32" Enabled="true" SelectCommand="SELECT  &#13;&#10;dbo.Employee.Id  AS EMPID,&#13;&#10;dbo.Employee.FirstName+' '+dbo.Employee.FatherName+' '+ dbo.Employee.LastName  AS FullName,&#13;&#10;(select dbo.Position.Code from dbo.Position &#13;&#10;where dbo.Position.Id=dbo.AssigningEmployeeToPosition.Position_Id AND Position.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0) AS PosCode,&#13;&#10;(SELECT dbo.JobDescription.Id FROM dbo.JobDescription INNER JOIN dbo.Position ON dbo.JobDescription.Id = dbo.Position.JobDescription_id&#13;&#10;WHERE dbo.Position.Id = AssigningEmployeeToPosition.Position_Id AND JobDescription.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0) AS JobDescription_id&#13;&#10;FROM dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id&#13;&#10;INNER JOIN dbo.EmployeeCard on dbo.Employee.Id=dbo.EmployeeCard.Employee_id &#13;&#10;WHERE (dbo.EmployeeCard.CardStatus = 1 AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0 AND EmployeeCard.IsVertualDeleted=0)">
+        <Column Name="EMPID" DataType="System.Int32"/>
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="PosCode" DataType="System.String"/>
+        <Column Name="JobDescription_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table2" Alias="EmpSkill" DataType="System.Int32" Enabled="true" SelectCommand="SELECT &#13;&#10;dbo.Skill.Employee_id, &#13;&#10;dbo.Skill.Description,&#13;&#10;dbo.Skill.Comments,      &#13;&#10;(select  dbo.SkillType.Name from dbo.SkillType where dbo.SkillType.Id=dbo.Skill.Name_id AND SkillType.IsVertualDeleted=0)AS skillname,&#13;&#10;(select  dbo.LevelType.Name from dbo.LevelType where dbo.LevelType.Id=dbo.Skill.Level_id AND LevelType.IsVertualDeleted=0)AS skilllevel &#13;&#10;FROM dbo.Skill WHERE Skill.IsVertualDeleted=0">
+        <Column Name="skillname" DataType="System.String"/>
+        <Column Name="skilllevel" DataType="System.String"/>
+        <Column Name="Description" DataType="System.String"/>
+        <Column Name="Comments" DataType="System.String"/>
+        <Column Name="Employee_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table3" Alias="JobDesc" DataType="System.Int32" Enabled="true" SelectCommand="SELECT J.Name,J.Id&#13;&#10;FROM &quot;JobDescription&quot; J&#13;&#10;WHERE J.IsVertualDeleted=0&#13;&#10;">
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Relation Name="Table3_Table11" ParentDataSource="Table3" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Total Name="Counter" TotalType="Count" Evaluator="Data1" ResetAfterPrint="false"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Guides="0">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="37.8">
+      <TextObject Name="Text5" Left="-28.35" Width="765.45" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير مطابقة المهارات " HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="41.8" Width="718.2" Height="56.7">
+      <TextObject Name="Text1" Left="567" Top="9.45" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الاصدار" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text3" Left="415.8" Top="9.45" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text28" Left="567" Top="28.35" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الوصف الوظيفي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="415.8" Top="28.35" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[ComboBox1.Text]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="102.5" Width="718.2" Height="18.9" DataSource="Table3">
+      <DataBand Name="Data2" Top="148.3" Width="718.2" Height="18.9" DataSource="Table1">
+        <TextObject Name="Text4" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[JobSkills.Skillname]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <TextObject Name="Text6" Left="160.65" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[JobSkills.Skillweight]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <TextObject Name="Text38" Left="311.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[JobSkills.skilllevel]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <CheckBoxObject Name="CheckBox1" Left="132.3" Width="28.35" Height="18.9" DataColumn="JobSkills.SkillRequired"/>
+        <TextObject Name="Text46" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <DataHeaderBand Name="DataHeader1" Top="125.4" Width="718.2" Height="18.9">
+          <TextObject Name="Text15" Left="160.65" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الوزن" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text17" Left="311.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المستوى" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text18" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع المهارة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مطلوبة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+      <DataBand Name="Data3" Top="171.2" Width="718.2" Height="37.8" DataSource="Table" Filter="[JobSkills.JobDescription_id] == [Emp.JobDescription_id]">
+        <TextObject Name="Text39" Left="529.2" Top="18.35" Width="189" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Emp.PosCode]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <TextObject Name="Text40" Left="311.85" Top="18.35" Width="217.35" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Emp.FullName]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <TextObject Name="Text41" Top="18.35" Width="311.85" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Emp.PosCode]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+        <TextObject Name="Text31" Width="311.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="كود الموقع الوظيفي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text32" Left="311.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text33" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <DataBand Name="Data4" Top="235.9" Width="718.2" Height="18.9" DataSource="Table2" Filter="[Emp.EMPID] == [EmpSkill.Employee_id]">
+          <TextObject Name="Text44" Left="160.65" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EmpSkill.Description]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text42" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EmpSkill.skillname]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text43" Left="311.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EmpSkill.skilllevel]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text45" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EmpSkill.Comments]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Trimming="EllipsisCharacter"/>
+          <DataHeaderBand Name="DataHeader3" Top="213" Width="718.2" Height="18.9">
+            <TextObject Name="Text36" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم المهارة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+            <TextObject Name="Text34" Left="160.65" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الوصف" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+            <TextObject Name="Text35" Left="311.85" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المستوى" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+            <TextObject Name="Text37" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="ملاحظات" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          </DataHeaderBand>
+        </DataBand>
+      </DataBand>
+    </DataBand>
+    <ColumnFooterBand Name="ColumnFooter1" Top="258.8" Width="718.2" Height="28.35"/>
+    <PageFooterBand Name="PageFooter1" Top="291.15" Width="718.2" Height="37.8"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="334" Height="190" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="130" Top="83" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <ComboBoxControl Name="ComboBox1" Left="28" Top="48" Width="175" TabIndex="2" DataColumn="JobDesc.Name" DropDownStyle="DropDownList" DropDownWidth="169" ItemHeight="13"/>
+    <LabelControl Name="Label1" Left="208" Top="52" Width="79" Height="13" TabIndex="3" Text="الوصف الوظيفي"/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,773 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+<script>
+    var viewModel = kendo.observable();
+    var viewModelCustom = kendo.observable();
+    @*var roleDataSource = {
+        type: "json",
+        serverFiltering: false,
+        transport: {
+            read: {
+                cache: true,
+                url: "@Url.Action("GetAllRoles", "Role", new {area = "Security"})"
+            }
+        },
+        requestEnd: function (e) {
+
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };*@
+    
+</script>
+
+<script id="MetadataButtonsTemplate" type="text/x-kendo-template">
+
+    <div>
+        <input value="@GlobalResource.Editable" type="button" class="k-button" onclick="clickAddMetadata('#= data.Name#','Edit')" />
+        <input value="@GlobalResource.Insertable" type="button" class="k-button" onclick="clickAddMetadata('#= data.Name#','Insert')" />
+        <input value="@GlobalResource.Deleteable" type="button" class="k-button" onclick="clickAddMetadata('#= data.Name#','Delete')" />
+
+        <input value="@GlobalResource.EditableAll" type="button" class="k-button" onclick="clickAddMetadataAll('#= data.Name#', 'Edit')" />
+        <input value="@GlobalResource.InsertableAll" type="button" class="k-button" onclick="clickAddMetadataAll('#= data.Name#','Insert')" />
+        <input value="@GlobalResource.DeleteableAll" type="button" class="k-button" onclick="clickAddMetadataAll('#= data.Name#', 'Delete')" />
+    </div>
+    <div>
+        <input value="@GlobalResource.UnEditable" type="button" class="k-button" onclick="clickRemoveMetadata('#= data.Name#', 'Edit')" />
+        <input value="@GlobalResource.UnInsertable" type="button" class="k-button" onclick="clickRemoveMetadata('#= data.Name#', 'Insert')" />
+        <input value="@GlobalResource.UnDeleteable" type="button" class="k-button" onclick="clickRemoveMetadata('#= data.Name#', 'Delete')" />
+
+        <input value="@GlobalResource.UnEditableAll" type="button" class="k-button" onclick="clickRemoveMetadataAll('#= data.Name#', 'Edit')" />
+        <input value="@GlobalResource.UnInsertableAll" type="button" class="k-button" onclick="clickRemoveMetadataAll('#= data.Name#', 'Insert')" />
+        <input value="@GlobalResource.UnDeleteableAll" type="button" class="k-button" onclick="clickRemoveMetadataAll('#= data.Name#', 'Delete')" />
+    </div>
+</script>
+
+<div class="manage-roles-div">
+    <fieldset>
+        <legend>@GlobalResource.RoleManagement</legend>
+
+        <div>
+            <label for="roles">@GlobalResource.Role</label>
+        </div>
+        <br />
+        <div data-container-for="roles">
+            <input id="roles"
+                   name="roles"
+                   data-role="dropdownlist"
+                   data-text-field="Name"
+                   data-value-field="Id"
+                   data-source="listOfRoles"
+                   data-value-primitive="true"
+                   data-bind="value:RoleName" />
+        </div>
+        <br />
+        <input value="@GlobalResource.Save" type="button" class="k-button" id="save" />
+        <div id="tabstrip">
+            <ul>
+                <li class="k-state-active">@GlobalResource.Module</li>
+                <li>@GlobalResource.Dashboard</li>
+                <li>@GlobalResource.Configuration</li>
+                <li>@GlobalResource.Aggregate</li>
+                <li>@GlobalResource.Details</li>
+                <li>@GlobalResource.ActionList</li>
+                <li>@GlobalResource.Index</li>
+                <li>@GlobalResource.Service</li>
+                <li>@GlobalResource.Report</li>
+
+            </ul>
+            <div id="module-div">
+                <div id="module-div-dual-select-list"></div>
+            </div>
+
+            <div id="dashboard-div">
+                <div id="dashboard-div-dual-select-list"></div>
+            </div>
+            <div id="configuration-div">
+                <div id="configuration-div-dual-select-list"></div>
+                <div id="configuration_metadata_buttons"></div>
+            </div>
+            <div id="aggregate-div">
+                <div id="aggregate-div-dual-select-list"></div>
+                <div id="aggregate_metadata_buttons"></div>
+            </div>
+
+            <div id="detail-div">
+                <div id="detail-div-dual-select-list"></div>
+                <div id="detail_metadata_buttons"></div>
+            </div>
+
+            <div id="action-list-div">
+                <div id="action-list-div-dual-select-list"></div>
+            </div>
+
+            <div id="index-div">
+                <div id="index-div-dual-select-list"></div>
+                <div id="index_metadata_buttons"></div>
+            </div>
+
+            <div id="service-div">
+                <div id="service-div-dual-select-list"></div>
+            </div>
+
+            <div id="report-div">
+                <div id="report-div-dual-select-list"></div>
+            </div>
+
+
+        </div>
+    </fieldset>
+
+</div>
+<script>
+    function clickAddMetadata(type, metadata) {
+        var selectedItems = $("#selectList" + type + "Right :selected");
+        var items = null;
+        for (var i = 0; i < selectedItems.length; i++) {
+            switch (type) {
+                case "aggregate":
+                    items = viewModel.AuthorizableAggregates;
+                    break;
+                case "configuration":
+                    items = viewModel.AuthorizableConfigurations;
+                    break;
+                case "index":
+                    items = viewModel.AuthorizableIndexs;
+                    break;
+                case "detail":
+                    items = viewModel.AuthorizableDetails;
+                    break;
+                default:
+            }
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].Value == selectedItems[i].value) {
+                    if (!inMetadata(items[j].Metadata, { Name: metadata, Id: metadata }))
+                        items[j].Metadata.push({ Name: metadata, Id: metadata });
+                    //break;
+                }
+            }
+        }
+        var temp = [];
+        for (i = 0; i < selectedItems.length; i++) {
+            temp[i] = selectedItems[i].value;
+        }
+        updateLists();
+        $("#selectList" + type + "Right").val(temp);
+    }
+
+    function inMetadata(set, item) {
+        for (var i = 0; i < set.length; i++) {
+            if (set[i].Id == item.Id)
+                return true;
+        }
+        return false;
+    }
+
+    function clickRemoveMetadata(type, metadata) {
+        var selectedItems = $("#selectList" + type + "Right :selected");
+        var items = null;
+        for (var i = 0; i < selectedItems.length; i++) {
+            switch (type) {
+                case "aggregate":
+                    items = viewModel.AuthorizableAggregates;
+                    break;
+                case "configuration":
+                    items = viewModel.AuthorizableConfigurations;
+                    break;
+                case "index":
+                    items = viewModel.AuthorizableIndexs;
+                    break;
+                case "detail":
+                    items = viewModel.AuthorizableDetails;
+                    break;
+                default:
+            }
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].Value == selectedItems[i].value) {
+                    items[j].Metadata = removeFromMetadata(items[j].Metadata, { Name: metadata, Id: metadata });
+                    //break;
+                }
+            }
+        }
+        var temp = [];
+        for (i = 0; i < selectedItems.length; i++) {
+            temp[i] = selectedItems[i].value;
+        }
+        updateLists();
+        $("#selectList" + type + "Right").val(temp);
+    }
+
+    function removeFromMetadata(set, item) {
+        var result = [];
+        for (var i = 0; i < set.length; i++) {
+            if (set[i].Id != item.Id)
+                result.push(set[i]);
+        }
+        return result;
+    }
+
+
+    function clickAddMetadataAll(type, metadata) {
+        var selectedItems = $("#selectList" + type + "Right")[0];
+        var items = null;
+        for (var i = 0; i < selectedItems.length; i++) {
+            switch (type) {
+                case "aggregate":
+                    items = viewModel.AuthorizableAggregates;
+                    break;
+                case "configuration":
+                    items = viewModel.AuthorizableConfigurations;
+                    break;
+                case "index":
+                    items = viewModel.AuthorizableIndexs;
+                    break;
+                case "detail":
+                    items = viewModel.AuthorizableDetails;
+                    break;
+                default:
+            }
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].Value == selectedItems[i].value) {
+                    if (!inMetadata(items[j].Metadata, { Name: metadata, Id: metadata }))
+                        items[j].Metadata.push({ Name: metadata, Id: metadata });
+                    //break;
+                }
+            }
+        }
+        updateLists();
+    }
+
+    function clickRemoveMetadataAll(type, metadata) {
+        var selectedItems = $("#selectList" + type + "Right")[0];
+        var items = null;
+        for (var i = 0; i < selectedItems.length; i++) {
+            switch (type) {
+                case "aggregate":
+                    items = viewModel.AuthorizableAggregates;
+                    break;
+                case "configuration":
+                    items = viewModel.AuthorizableConfigurations;
+                    break;
+                case "index":
+                    items = viewModel.AuthorizableIndexs;
+                    break;
+                case "detail":
+                    items = viewModel.AuthorizableDetails;
+                    break;
+                default:
+            }
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].Value == selectedItems[i].value) {
+                    items[j].Metadata = removeFromMetadata(items[j].Metadata, { Name: metadata, Id: metadata });
+                    //break;
+                }
+            }
+        }
+        updateLists();
+    }
+
+
+    $("#save").click(function () {
+        viewModelCustom.AuthorizableAggregates = [];
+        viewModelCustom.AuthorizableDetails = [];
+        viewModelCustom.AuthorizableDashboards = [];
+        viewModelCustom.AuthorizableIndexs = [];
+        viewModelCustom.AuthorizableServices = [];
+        viewModelCustom.AuthorizableReports = [];
+        viewModelCustom.AuthorizableConfigurations = [];
+        viewModelCustom.AuthorizableModules = [];
+        viewModelCustom.AuthorizableActionLists = [];
+        for (var i = 0; i < viewModel.AuthorizableModules.length; i++) {
+            if (viewModel.AuthorizableModules[i].Dir == "Right") {
+                viewModelCustom.AuthorizableModules.push(viewModel.AuthorizableModules[i]);
+
+                var elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableAggregates);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableAggregates.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableDetails);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableDetails.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableActionLists);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableActionLists.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableDashboards);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableDashboards.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableIndexs);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableIndexs.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableServices);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableServices.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableReports);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableReports.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableConfigurations);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableConfigurations.push(elementForModule[j]);
+                }
+            }
+        }
+        viewModelCustom.RoleId = parseInt($("#roles").val());
+
+        $.ajax({
+            url: '@Url.Action("Save", "Role")',
+            type: "POST",
+            data: JSON.stringify(viewModelCustom),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+            }
+        });
+    });
+
+    function rolesChange(e) {
+        $.ajax({
+            url: '@Url.Action("GetAuthorizableElements", "Role")',
+            type: "POST",
+            data: JSON.stringify({
+                roleId: $("#roles").val()
+            }),
+
+            contentType: 'application/json',
+            success: function (data) {
+                viewModel = data.Data;
+
+
+                updateLists();
+
+
+            }
+        });
+    }
+    kendo.init($(".manage-roles-div"));
+
+    function updateLists() {
+        createDualSelectList("module", viewModel.AuthorizableModules, "module-div-dual-select-list", '@GlobalResource.AvailableModules', '@GlobalResource.AssignedModules', false);
+        viewModelCustom.AuthorizableAggregates = [];
+        viewModelCustom.AuthorizableDashboards = [];
+        viewModelCustom.AuthorizableConfigurations = [];
+        viewModelCustom.AuthorizableDetails = [];
+        viewModelCustom.AuthorizableActionLists = [];
+        viewModelCustom.AuthorizableIndexs = [];
+        viewModelCustom.AuthorizableServices = [];
+        viewModelCustom.AuthorizableReports = [];
+        var detailsValues = [];
+        for (var i = 0; i < viewModel.AuthorizableModules.length; i++) {
+            var moduleName = viewModel.AuthorizableModules[i].Value;
+
+            if (viewModel.AuthorizableModules[i].Dir == "Right") {
+
+                var elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableDashboards);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableDashboards.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableConfigurations);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableConfigurations.push(elementForModule[j]);
+                }
+
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableAggregates);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableAggregates.push(elementForModule[j]);
+                }
+
+                for (var c = 0; c < viewModel.AuthorizableConfigurations.length; c++) {
+                    if (viewModel.AuthorizableConfigurations[c].Group == moduleName) {
+                        if (viewModel.AuthorizableConfigurations[c].Dir == "Right") {
+                            var elementForConfigurations = [];
+                            getElementForParent(viewModel.AuthorizableConfigurations[c].Value, viewModel.AuthorizableDetails, elementForConfigurations);
+                            for (var j = 0; j < elementForConfigurations.length; j++) {
+                                if (!detailsValues.includes(elementForConfigurations[j].Value)) {
+                                    viewModelCustom.AuthorizableDetails.push(elementForConfigurations[j]);
+                                    detailsValues.push(elementForConfigurations[j].Value);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (var a = 0; a < viewModel.AuthorizableAggregates.length; a++) {
+                    if (viewModel.AuthorizableAggregates[a].Group == moduleName) {
+                        if (viewModel.AuthorizableAggregates[a].Dir == "Right") {
+                            var elementForAggregates = [];
+                            getElementForParent(viewModel.AuthorizableAggregates[a].Value, viewModel.AuthorizableDetails, elementForAggregates);
+                            for (var j = 0; j < elementForAggregates.length; j++) {
+                                if (!detailsValues.includes(elementForAggregates[j].Value)) {
+                                    viewModelCustom.AuthorizableDetails.push(elementForAggregates[j]);
+                                    detailsValues.push(elementForAggregates[j].Value);
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                for (var c = 0; c < viewModel.AuthorizableConfigurations.length; c++) {
+                    if (viewModel.AuthorizableConfigurations[c].Group == moduleName) {
+                        if (viewModel.AuthorizableConfigurations[c].Dir == "Right") {
+                            var elementForConfigurations = [];
+                            getElementForParent(viewModel.AuthorizableConfigurations[c].Value, viewModel.AuthorizableActionLists, elementForConfigurations);
+                            for (var j = 0; j < elementForConfigurations.length; j++) {
+                                if (!viewModelCustom.AuthorizableActionLists.includes(elementForConfigurations[j]))
+                                   viewModelCustom.AuthorizableActionLists.push(elementForConfigurations[j]);
+                            }
+                        }
+                    }
+                }
+
+                for (var a = 0; a < viewModel.AuthorizableAggregates.length; a++) {
+                    if (viewModel.AuthorizableAggregates[a].Group == moduleName) {
+                        if (viewModel.AuthorizableAggregates[a].Dir == "Right") {
+                            var elementForAggregates = [];
+                            getElementForParent(viewModel.AuthorizableAggregates[a].Value, viewModel.AuthorizableActionLists, elementForAggregates);
+                            for (var j = 0; j < elementForAggregates.length; j++) {
+                                if (!viewModelCustom.AuthorizableActionLists.includes(elementForAggregates[j]))
+                                    viewModelCustom.AuthorizableActionLists.push(elementForAggregates[j]);
+
+                            }
+                        }
+                    }
+                }
+
+                for (var d = 0; d < viewModel.AuthorizableDetails.length; d++) {
+                    if (viewModel.AuthorizableDetails[d].Group == moduleName) {
+                        if (viewModel.AuthorizableDetails[d].Dir == "Right") {
+                            var elementForDetails = [];
+                            getElementForParent(viewModel.AuthorizableDetails[d].Value, viewModel.AuthorizableActionLists, elementForDetails);
+                            for (var j = 0; j < elementForDetails.length; j++) {
+                                if (!viewModelCustom.AuthorizableActionLists.includes(elementForDetails[j]))
+                                    viewModelCustom.AuthorizableActionLists.push(elementForDetails[j]);
+                            }
+                        }
+                    }
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableIndexs);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableIndexs.push(elementForModule[j]);
+                }
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableServices);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableServices.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableReports);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableReports.push(elementForModule[j]);
+                }
+            }
+        }
+        createDualSelectList("dashboard", viewModelCustom.AuthorizableDashboards, "dashboard-div-dual-select-list", '@GlobalResource.AvailableDashboards', '@GlobalResource.AssignedDashboards', false);
+        createDualSelectList("configuration", viewModelCustom.AuthorizableConfigurations, "configuration-div-dual-select-list", '@GlobalResource.AvailableConfigurations', '@GlobalResource.AssignedConfigurations', true);
+        createDualSelectList("aggregate", viewModelCustom.AuthorizableAggregates, "aggregate-div-dual-select-list", '@GlobalResource.AvailableAggregates', '@GlobalResource.AssignedAggregates', true);
+        createDualSelectList("detail", viewModelCustom.AuthorizableDetails, "detail-div-dual-select-list", '@GlobalResource.AvailableDetails', '@GlobalResource.AssignedDetails', true);
+        createDualSelectList("actionList", viewModelCustom.AuthorizableActionLists, "action-list-div-dual-select-list", '@GlobalResource.AvailableActionLists', '@GlobalResource.AssignedActionLists', true);
+        createDualSelectList("index", viewModelCustom.AuthorizableIndexs, "index-div-dual-select-list", '@GlobalResource.AvailableIndexs', '@GlobalResource.AssignedIndexs', true);
+        createDualSelectList("service", viewModelCustom.AuthorizableServices, "service-div-dual-select-list", '@GlobalResource.AvailableServices', '@GlobalResource.AssignedServices', true);
+        createDualSelectList("report", viewModelCustom.AuthorizableReports, "report-div-dual-select-list", '@GlobalResource.AvailableReports', '@GlobalResource.AssignedReports', true);
+
+        var metadataButtonsTemplate = kendo.template($("#MetadataButtonsTemplate").html());
+        $("#aggregate_metadata_buttons").html(metadataButtonsTemplate({ Name: "aggregate" }));
+        $("#configuration_metadata_buttons").html(metadataButtonsTemplate({ Name: "configuration" }));
+        $("#detail_metadata_buttons").html(metadataButtonsTemplate({ Name: "detail" }));
+        $("#index_metadata_buttons").html(metadataButtonsTemplate({ Name: "index" }));
+
+        $("#butMoveRightmodule").off('click').on('click', function () {
+            var items = viewModel.AuthorizableModules;
+            var selectedItems = $("#selectListmoduleLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListmoduleRight").val(temp);
+        });
+
+        $("#butMoveRightAllmodule").click(function () {
+            var items = viewModel.AuthorizableModules;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftmodule").click(function () {
+            var items = viewModel.AuthorizableModules;
+            var selectedItems = $("#selectListmoduleRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+        });
+
+        $("#butMoveLeftAllmodule").click(function () {
+            var items = viewModel.AuthorizableModules;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+
+        $("#butMoveRightaggregate").off('click').on('click', function () {
+            var items = viewModelCustom.AuthorizableAggregates;
+            var selectedItems = $("#selectListaggregateLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListaggregateRight").val(temp);
+        });
+
+        $("#butMoveRightAllaggregate").click(function () {
+            var items = viewModelCustom.AuthorizableAggregates;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftaggregate").click(function () {
+            var items = viewModelCustom.AuthorizableAggregates;
+            var selectedItems = $("#selectListaggregateRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListaggregateLeft").val(temp);
+        });
+
+        $("#butMoveLeftAllaggregate").click(function () {
+            var items = viewModelCustom.AuthorizableAggregates;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+
+        $("#butMoveRightconfiguration").off('click').on('click', function () {
+            var items = viewModelCustom.AuthorizableConfigurations;
+            var selectedItems = $("#selectListconfigurationLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListconfigurationRight").val(temp);
+        });
+
+        $("#butMoveRightAllconfiguration").click(function () {
+            var items = viewModelCustom.AuthorizableConfigurations;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftconfiguration").click(function () {
+            var items = viewModelCustom.AuthorizableConfigurations;
+            var selectedItems = $("#selectListconfigurationRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListconfigurationLeft").val(temp);
+        });
+
+        $("#butMoveLeftAllconfiguration").click(function () {
+            var items = viewModelCustom.AuthorizableConfigurations;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+
+        $("#butMoveRightdetail").off('click').on('click', function () {
+            var items = viewModelCustom.AuthorizableDetails;
+            var selectedItems = $("#selectListdetailLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListdetailRight").val(temp);
+        });
+
+        $("#butMoveRightAlldetail").click(function () {
+            var items = viewModelCustom.AuthorizableDetails;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftdetail").click(function () {
+            var items = viewModelCustom.AuthorizableDetails;
+            var selectedItems = $("#selectListdetailRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListdetailLeft").val(temp);
+        });
+
+        $("#butMoveLeftAlldetail").click(function () {
+            var items = viewModelCustom.AuthorizableDetails;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+    }
+
+    function setDir(dir, list) {
+        for (var i = 0; i < list.length; i++) {
+            list[i].Dit = dir;
+        }
+    }
+
+    function getElementForGroup(groupName, list) {
+        var result = [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].Group == groupName)
+                result.push(list[i]);
+        }
+        return result;
+    }
+
+    // New function to get elements by their parent
+    function getElementForParent(parentName, list, result) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].Parent == parentName) {
+                if(!result.includes(list[i]))
+                   result.push(list[i]);
+                getElementForParent(list[i].Value, list, result)
+            }
+        }
+    }
+    $.ajax({
+        url: '@Url.Action("GetAllRoles", "Role", new { area = "Security" })',
+        type: "GET",
+        contentType: 'application/json',
+        success: function (data) {
+            debugger;
+            data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+            var dataSource = new kendo.data.DataSource({
+                data: data.Data
+            });
+            $('[name="roles"]').kendoDropDownList({
+                filter: "contains",
+                autoBind: true,
+                minLength: 1,
+                dataTextField: "Name",
+                dataValueField: "Id",
+            });
+            listOfRoles = data.Data;
+            var dropdownlist = $('[name="roles"]').data("kendoDropDownList");
+            dropdownlist.setDataSource(listOfRoles);
+            dropdownlist.text("@GlobalResource.Select");
+
+            dropdownlist.bind("dataBound", rolesChange);
+            dropdownlist.bind("change", rolesChange);
+        }
+    });
+
+
+    kendo.bind($(".manage-roles-div"), viewModel);
+    $("#tabstrip").kendoTabStrip({
+        animation: {
+            close: {
+                duration: 100,
+                effects: "fadeOut"
+            },
+            open: {
+                duration: 100,
+                effects: "fadeIn"
+            }
+
+        }
+    });
+
+</script>
+
+

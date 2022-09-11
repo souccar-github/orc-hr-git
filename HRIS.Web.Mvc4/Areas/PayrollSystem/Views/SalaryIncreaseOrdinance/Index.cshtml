@@ -1,0 +1,76 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<script type="text/javascript">
+    function GenerateSalaryIncreaseEmployees(id) {
+            $.ajax({
+                url: window.applicationpath + 'PayrollSystem/SalaryIncreaseOrdinance/GetPrimaryCardGridModel',
+                type: "POST",
+                contentType: 'application/json',
+                success: function (data) {
+                    //$("#dynamic_content").html("<div id='grid'></div>");
+                    $("#ribbonContainer").html("");
+                    $("#dynamic_content").html("<div id='gridCards'></div>");
+                    //$("#FilterInfo").html(GenerateFilterHtml(monthId));
+                    data.Name = "gridCards";
+                    new Grid(data).CreateSimpleGrid();
+                    //generateGrid(data);
+                    $(".SalaryIncreaseEmployeesGenerator").off("click").on("click", function () {
+                        GenerateFilteredPrimaryCardsSalaryIncrease(id);
+                    });
+                }
+            });
+    }
+
+    function GenerateFilteredPrimaryCardsSalaryIncrease(salaryIncreaseOrdinanceId) {
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/SalaryIncreaseOrdinance/GenerateFilteredPrimaryCards',
+            type: "POST",
+            data: JSON.stringify({ salaryIncreaseOrdinanceId: salaryIncreaseOrdinanceId, filter: $("#gridCards").data("kendoGrid").dataSource.filter() }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+                //generateGrid(gridModel);
+            }
+        });
+    }
+    
+    function CalculateSalaryIncreaseOrdinance(salaryIncreaseOrdinanceId) {
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/SalaryIncreaseOrdinance/CalculateSalaryIncreaseOrdinance',
+            type: "POST",
+            data: JSON.stringify({ salaryIncreaseOrdinanceId: salaryIncreaseOrdinanceId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    };
+
+    function AcceptSalaryIncreaseOrdinance(salaryIncreaseOrdinanceId) {
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/SalaryIncreaseOrdinance/AcceptSalaryIncreaseOrdinance',
+            type: "POST",
+            data: JSON.stringify({ salaryIncreaseOrdinanceId: salaryIncreaseOrdinanceId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    };
+ </script>

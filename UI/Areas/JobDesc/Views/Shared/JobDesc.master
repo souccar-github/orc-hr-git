@@ -1,0 +1,24 @@
+<%@ Master Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<asp:Content ID="Title" ContentPlaceHolderID="TitleContent" runat="server">
+    <%: Resources.Areas.JobDesc.Views.Shared.JobDescMaster.JobDescMaster.JobDescription %>
+</asp:Content>
+<asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
+    <div>
+        <div id="MainData">
+            <div id="Ribbon">
+                <% Html.RenderAction("GetRibbonPartial", "JobDesc", new { area = "JobDesc" }); %>
+            </div>
+            <div id="Navigator">
+                <% Html.RenderPartial("Navigator"); %>
+            </div>
+            <div id="menucontainer">
+                <%--<% Html.RenderPartial("ModulesMenu"); %>--%>
+            </div>
+            <div id="ContentPlaceHolder">
+                <% Html.RenderPartial("GlobalError"); %>
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </div>
+</asp:Content>

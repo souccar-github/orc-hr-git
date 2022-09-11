@@ -1,0 +1,82 @@
+@Html.Partial("SetResult")
+@Html.Partial("SetOralExaminationMark")
+@*@Html.Partial("WrittenExamInfo")
+@Html.Partial("OralExamInfo")*@
+@Html.Partial("RecruitmentCancellation")
+@Html.Partial("GetPassedPersonsInOralExam")
+@Html.Partial("SuccessfulIssuanceUser")
+@Html.Partial("SetWrittenExaminationMark")
+@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+
+<input type="hidden" id="advertisementId" />
+
+@*<div class="SetWrittenExaminationMarkDiv"></div>*@
+
+<script>
+
+    function AdvertisementEditHandler() {
+
+        enableDisableDateControlsForAdvertisement(false);
+
+        $("[name='CentralAgencyAgreementNo']").kendoNumericTextBox({
+            change: function () {
+                if (this.value() > 0) {
+                    enableDisableDateControlsForAdvertisement(true);
+                } else {
+                    enableDisableDateControlsForAdvertisement(false);
+                }
+            }
+        });
+    }
+
+    function enableDisableDateControlsForAdvertisement(isEnabled) {
+        $('[Name="Date"]').data("kendoDatePicker").enable(isEnabled);
+        $('[Name="StartingDate"]').data("kendoDatePicker").enable(isEnabled);
+        $('[Name="EndingDate"]').data("kendoDatePicker").enable(isEnabled);
+    }
+    
+    function RJobRelatedInfoEditHandler() {
+
+        enableDisableDateControlsForWorkPreviously();
+        enableDisableDateControlsForFamiliesMartyrs();
+        
+        $('[Name="IsWorkPreviously"]').click(function () {
+            enableDisableDateControlsForWorkPreviously();
+        });
+        
+        $('[Name="IsFamiliesMartyrs"]').click(function () {
+            enableDisableDateControlsForFamiliesMartyrs();
+        });
+        
+        function enableDisableDateControlsForWorkPreviously() {
+            if ($("[name='IsWorkPreviously']").is(':checked')) {
+                $('[Name="WorkSide"]').data("kendoDropDownList").enable(true);
+                $("[name='WorkSideAgreementNumber']").removeAttr("disabled");
+                $('[Name="WorkSideAgreementDate"]').data("kendoDatePicker").enable(true);
+                $("[name='files']").removeAttr("disabled");
+            } else {
+                $('[Name="WorkSide"]').data("kendoDropDownList").enable(false);
+                $("[name='WorkSideAgreementNumber']").attr("disabled", "disabled");
+                $('[Name="WorkSideAgreementDate"]').data("kendoDatePicker").enable(false);
+                $("[name='files']").attr("disabled", "disabled");
+            }
+        }
+        
+        function enableDisableDateControlsForFamiliesMartyrs() {
+            if ($("[name='IsFamiliesMartyrs']").is(':checked')) {
+                $('[Name="KinshipType"]').data("kendoDropDownList").enable(true);
+                $('[Name="IssuedBy"]').data("kendoDropDownList").enable(true);
+                $("[name='DocumentNumber']").removeAttr("disabled");
+                $('[Name="DocumentDate"]').data("kendoDatePicker").enable(true);
+            } else {
+                $('[Name="KinshipType"]').data("kendoDropDownList").enable(false);
+                $('[Name="IssuedBy"]').data("kendoDropDownList").enable(false);
+                $("[name='DocumentNumber']").attr("disabled", "disabled");
+                $('[Name="DocumentDate"]').data("kendoDatePicker").enable(false);
+            }
+        }
+    }
+
+</script>

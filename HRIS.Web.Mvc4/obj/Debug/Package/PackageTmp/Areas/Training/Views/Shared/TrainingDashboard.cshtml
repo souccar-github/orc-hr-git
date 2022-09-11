@@ -1,0 +1,385 @@
+﻿@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers.Resource
+<link href="~/CssAndJs/dashboard.css" rel="stylesheet" />
+
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming.ToString();
+}
+
+<div>
+    @Html.Partial("Charts/CoursesAttendanceRateChart")
+    @Html.Partial("Charts/EmployeeParticipationRateInTheCoursesChart")
+</div>
+<div>
+    @Html.Partial("Charts/TrainingNeedsPercentageChart")
+    @Html.Partial("Charts/NumberOfTraineesAndCandidatesForEachTrainingCourseChart")
+</div>
+<div>
+    @Html.Partial("Charts/NumberOfCoursesPerTraineesNodesChart")
+    @Html.Partial("Charts/NumberOfTraineesInEachCourseDistributedByNodeChart")
+</div>
+
+<script type="text/javascript">
+
+    var $themeName = '@themingName';
+
+    var $isItemChecked = false;
+    var $nodesTypes = null;
+    var $nodes = null;
+    var $plans = null;
+    var $courses = null;
+    var $employees = null;
+    var $coursesByPlanAndStatus = null;
+
+    $(function () {
+        getTrainingPlans();
+        getNodesTypes();
+        console.log($themeName);
+        setTimeout(function () {
+            getCourseAttendanceRate($plans, $courses);
+            getEmployeeParticipationRate($nodesTypes, $nodes, $employees);
+            getTrainingNeedsPercentage();
+            getNumberOfTraineesAndCandidatesForEachCourse($plans, $coursesByPlanAndStatus);
+            getNumberOfCoursesPerTraineesNodes($nodesTypes, $nodes);
+            getNumberOfTraineesDistributedByNode($plans, $coursesByPlanAndStatus);
+        }, 500);
+
+    });
+
+    function getTrainingPlans() {
+        window.Souccar.ajax('@Url.Action("GetTrainingPlans", "Dashboard", new { area = "Training" })', {}, successFunc, erorrFunc);
+        function successFunc(data) {
+            $plans = data;
+            getTrainingCourses(data);
+            getCoursesByPlanAndStatus(data);
+        }
+        function erorrFunc() {
+            console.log("Error / func:getTrainingPlans");
+        }
+    }
+
+    function getTrainingCourses(plans) {
+        window.Souccar.ajax('@Url.Action("GetTrainingPlanCourses", "Dashboard", new { area = "Training" })', { plans: plans }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $courses = data;
+
+        }
+        function erorrFunc() {
+            console.log("Error / func:getTrainingCourses");
+        }
+    }
+
+    function getNodesTypes() {
+        window.Souccar.ajax('@Url.Action("GetNodesTypes", "Dashboard", new { area = "Training" })', {}, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesTypes = data;
+            getNodes(data);
+        }
+        function erorrFunc() {
+            console.log("Error / func:get nodes types");
+        }
+
+    }
+
+    function getNodes(nodesTypes) {
+
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Training" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodes = data;
+            getEmployeesByNodes(nodesTypes, data);
+
+        }
+        function erorrFunc() {
+            console.log("Error / func:getChildrenNodesByParents");
+        }
+    }
+
+    function getEmployeesByNodes(nodesTypes, nodes) {
+        window.Souccar.ajax('@Url.Action("GetEmployees", "Dashboard", new { area = "Training" })', { nodes: nodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $employees = data;
+
+        }
+        function erorrFunc() {
+            console.log("Error / func:getChildrenNodesByParents");
+        }
+    }
+
+    function getCoursesByPlanAndStatus(plans) {
+        window.Souccar.ajax('@Url.Action("GetCoursesByPlanAndStatus", "Dashboard", new { area = "Training" })', { plans: plans, status: getCourseStatus() }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $coursesByPlanAndStatus = data;
+        }
+        function erorrFunc() {
+            console.log("Error / func:getChildrenNodesByParents");
+        }
+    }
+
+    function getCourseStatus() {
+        //in controller status = id -1
+        return [
+            { 'Id': 1, 'Name': '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.Planned)' },
+            { 'Id': 2, 'Name': '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.Activated)' },
+            { 'Id': 3, 'Name': '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.Closed)' },
+            { 'Id': 4, 'Name': '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.Cancelled)' }
+        ];
+    }
+
+
+    //=================
+    function generateComboBox(selector, name, data, onChangeHandler) {
+        removeCheckBoxesFromDom(name, data);
+        var comboName = name;
+        var comboTemplateText = "<input type='checkbox' id='chk_" + comboName + "_#=data.Id #' onclick='updateIdinHf(this);' value='#=data.Id #' name='" + comboName + "'  />" + " " + "${ data.Name }";
+        var dataSource = getComboDataSource(data);
+
+        $(selector).kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: dataSource,
+            filter: "contains",
+            index: -1,
+            suggest: true,
+            autoWidth: false,
+            template: comboTemplateText,
+            close: onClose,
+            select: onChangeHandler,
+            open: function (e) {
+                e.sender.value(null);
+            },
+            dataBound: function (e) {
+
+                var name = e.sender.element.context.name;
+                var selector = "#hf_" + name;
+                var data = $(selector).get(0).value.split(",");
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] != "") {
+                        var selector = "#chk_" + name + "_" + data[i];
+                        var chk = $(selector).get(0);
+                        if (chk) {
+                            chk.checked = 'checked';
+                            checkIfAllSelected(name);
+                        }
+
+                    }
+
+                }
+            }
+        });
+
+        //To checked all items
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Id != "") {
+                var eleSelector = "#chk_" + name + "_" + data[i].Id;
+                var chk = $(eleSelector).get(0);
+                if (chk) {
+                    chk.checked = 'checked';
+                    updateIdinHf(chk);
+                }
+            }
+        }
+
+        // generate dropdown list text
+        var thisDropDownList = $(selector).data("kendoDropDownList");
+        var text = getComboBoxText(data, name);
+        thisDropDownList.text(text);
+    }
+
+    function onChange(e) {
+
+        var filterText = e.sender.filterInput.val();
+        if (filterText) {
+            e.preventDefault();
+        }
+        $isItemChecked = true;
+
+    }
+
+    function onClose(e) {
+
+        if ($isItemChecked == true) {
+            $isItemChecked = false;
+            e.preventDefault();
+        }
+        e.sender.text('');
+
+        // generate dropdown list text
+        var items = e.sender.dataSource._pristineData.slice(1); // shift to remove first item that is (select all)
+        if (items != null) {
+            var name = e.sender.element.context.name;
+            var text = getComboBoxText(items, name);
+            e.sender.text(text);
+        }
+    }
+
+    function removeCheckBoxesFromDom(name, items) {
+        var eleName = '#' + name + '_listbox #chk_' + name + '_';
+        //select all check box
+        var selectAllSelector = eleName + '0';
+        if ($(selectAllSelector).length > 0) {
+            $(selectAllSelector).remove();
+        }
+
+        for (var i = 0; i < items.length; i++) {
+            var selector = eleName + items[i].Id;
+            if ($(selector).length > 0) {
+                $(selector).remove();
+            }
+        }
+    }
+
+
+    function getComboBoxText(items, name) {
+
+        var text = '';
+        var eleName = "chk_" + name + "_";
+
+        for (var i = 0; i < items.length; i++) {
+            var selector = '#' + eleName + items[i].Id;
+            if ($(selector).is(':checked')) {
+
+                text += items[i].Name + ' , ';
+            }
+        }
+        return text.slice(0, -2); // slice to remove lase two characters from text (', ')
+    }
+
+    function updateIdinHf(obj) {
+
+        var id = $(obj).attr('id');
+        var name = $(obj).attr('name');
+        var value = parseInt($(obj).attr('value'));
+        var IsChecked = $(obj).is(':checked');
+        var hf = $("#hf_" + name).get(0);
+
+        if (value != 0) {
+            updateIdInHiddenField(hf, value, IsChecked);
+            checkIfAllSelected(name);
+        }
+        else {
+            $('input[id*="chk_' + name + '"]').each(function () {
+                if (parseInt($(this).val()) != 0) {
+                    if (IsChecked == true) {
+                        $(this).prop("checked", true);
+                        updateIdInHiddenField(hf, $(this).val(), IsChecked);
+                    }
+                    else {
+                        $(this).prop("checked", false);
+                        updateIdInHiddenField(hf, $(this).val(), IsChecked);
+                    }
+                }
+            });
+        }
+        $isItemChecked = true;
+
+    }
+
+    function checkIfAllSelected(name) {
+        var totalchk = $('input[id*="chk_' + name + '"]').not("#chk_" + name + "_0").length;
+        var checkedchk = $('input[id*="chk_' + name + '"]:checked').not("#chk_" + name + "_0").length;
+
+        if (totalchk == checkedchk) {
+            $("#chk_" + name + "_0").prop("checked", true);
+        }
+        else {
+            $("#chk_" + name + "_0").prop("checked", false);
+        }
+    }
+
+
+    function updateIdInHiddenField(hf, id, IsAdd) {
+
+        if (hf.value == "") {
+            hf.value = ",";
+        }
+
+        if (IsAdd == true) {
+            if (hf.value.indexOf("," + id + ",") == -1) {
+                hf.value = hf.value + id + ",";
+            }
+        }
+        else if (IsAdd == false) {
+            if (hf.value.indexOf("," + id + ",") >= 0) {
+                hf.value = hf.value.replace("," + id + ",", ",");
+            }
+        }
+    }
+
+    function getComboDataSource(data) {
+
+        var items = [];
+        if (data.length > 0) {
+            items = [{ Name: "Select All", Id: "0" }];
+            for (var i = 0; i < data.length; i++) {
+                var item = { Name: data[i].Name, Id: data[i].Id };
+                items.push(item);
+            }
+        }
+        return items;
+    }
+
+    function getDefaultThemeColor() {
+        switch ($themeName) {
+            case 'lightblue':
+                return '#86c4bc';
+            case 'sepia':
+                return '#c0a48c';
+            case 'formal':
+                return '#87adc4';
+            case 'lady':
+                return '#9c8bc1';
+            default:
+                return '#818285';
+        }
+    }
+
+</script>
+<style>
+    #exp {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    .label {
+        z-index: 1 !important;
+    }
+
+    .highcharts-tooltip span {
+        opacity: 1;
+        z-index: 9999 !important;
+    }
+
+    .tooltip {
+        padding: 5px;
+        text-align: center;
+    }
+
+    .chart-lot-label {
+        text-align: center;
+        display: block;
+    }
+
+    .chart-tooltip > span {
+        display: block;
+    }
+
+
+    .chart-tooltip {
+        font-size: 13px;
+        text-align: center;
+        font-family: Lato;
+        line-height: 18px;
+        padding: 4px 7px;
+    }
+
+        .chart-tooltip.tval {
+            color: #33658a;
+            font-weight: bold;
+        }
+
+        .chart-tooltip.tlabel {
+            color: #000;
+        }
+</style>

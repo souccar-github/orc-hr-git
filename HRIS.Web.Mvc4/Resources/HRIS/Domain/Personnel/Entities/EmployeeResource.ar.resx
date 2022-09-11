@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ObjectName" xml:space="preserve">
+    <value>الموظفين</value>
+  </data>
+  <data name="LoginName" xml:space="preserve">
+    <value>اسم تسجيل الدخول</value>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>تاريخ الولادة</value>
+  </data>
+  <data name="PlaceOfBirth" xml:space="preserve">
+    <value>مكان الولادة</value>
+  </data>
+  <data name="IdentificationNo" xml:space="preserve">
+    <value>الرقم الوطني</value>
+  </data>
+  <data name="SocialSecurityNo" xml:space="preserve">
+    <value>رقم التأمين الإجتماعي</value>
+  </data>
+  <data name="NoOfChildren" xml:space="preserve">
+    <value>عدد الأطفال</value>
+  </data>
+  <data name="NoOfDependents" xml:space="preserve">
+    <value>عدد المعاليين</value>
+  </data>
+  <data name="DisabilityDescription" xml:space="preserve">
+    <value>وصف العجز</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>الاسم الأول</value>
+  </data>
+  <data name="MiddleName" xml:space="preserve">
+    <value>الاسم الأوسط</value>
+  </data>
+  <data name="FatherName" xml:space="preserve">
+    <value>اسم الأب</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>الاسم الأخير</value>
+  </data>
+  <data name="MotherName" xml:space="preserve">
+    <value>اسم الأم</value>
+  </data>
+  <data name="FirstNameL2" xml:space="preserve">
+    <value>الاسم الأول باللغة العربية</value>
+  </data>
+  <data name="MiddleNameL2" xml:space="preserve">
+    <value>الاسم الأوسط باللغة العربية</value>
+  </data>
+  <data name="FatherNameL2" xml:space="preserve">
+    <value>اسم الأب باللغة العربية</value>
+  </data>
+  <data name="LastNameL2" xml:space="preserve">
+    <value>الاسم الأخير باللغة العربية </value>
+  </data>
+  <data name="MotherNameL2" xml:space="preserve">
+    <value>اسم الأم باللغة العربية</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="FullNameL2" xml:space="preserve">
+    <value>Full Name L2</value>
+  </data>
+  <data name="SocialInsuranceNo" xml:space="preserve">
+    <value>رقم التأمين الصحي</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="EmployeeStatus" xml:space="preserve">
+    <value>حالة الموظف</value>
+  </data>
+  <data name="CountryOfBirth" xml:space="preserve">
+    <value>بلد الولادة</value>
+  </data>
+  <data name="Race" xml:space="preserve">
+    <value>العرق</value>
+  </data>
+  <data name="BloodType" xml:space="preserve">
+    <value>زمرة الدم</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>الجنس</value>
+  </data>
+  <data name="MilitaryStatus" xml:space="preserve">
+    <value>حالة الخدمة العسكرية</value>
+  </data>
+  <data name="MaritalStatus" xml:space="preserve">
+    <value>الحالة الإجتماعية</value>
+  </data>
+  <data name="Religion" xml:space="preserve">
+    <value>الديانة</value>
+  </data>
+  <data name="DisabilityExist" xml:space="preserve">
+    <value>حالة العجز</value>
+  </data>
+  <data name="SocialInsuranceNoStatus" xml:space="preserve">
+    <value>حالة التأمين الصحي</value>
+  </data>
+  <data name="Nationality" xml:space="preserve">
+    <value>الجنسية الرئيسية</value>
+  </data>
+  <data name="OtherNationality" xml:space="preserve">
+    <value>جنسيات أخرى</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Spouse" xml:space="preserve">
+    <value>Spouse</value>
+  </data>
+  <data name="Children" xml:space="preserve">
+    <value>Children</value>
+  </data>
+  <data name="Dependents" xml:space="preserve">
+    <value>Dependents</value>
+  </data>
+  <data name="Educations" xml:space="preserve">
+    <value>Educations</value>
+  </data>
+  <data name="Trainings" xml:space="preserve">
+    <value>Trainings</value>
+  </data>
+  <data name="Experiences" xml:space="preserve">
+    <value>Experiences</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="Certifications" xml:space="preserve">
+    <value>Certifications</value>
+  </data>
+  <data name="DrivingLicense" xml:space="preserve">
+    <value>Driving License</value>
+  </data>
+  <data name="Passports" xml:space="preserve">
+    <value>Passports</value>
+  </data>
+  <data name="Residencies" xml:space="preserve">
+    <value>Residencies</value>
+  </data>
+  <data name="MilitaryService" xml:space="preserve">
+    <value>Military Service</value>
+  </data>
+  <data name="Convictions" xml:space="preserve">
+    <value>Convictions</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>Languages</value>
+  </data>
+</root>

@@ -1,0 +1,210 @@
+﻿@using  Project.Web.Mvc4
+@using  Project.Web.Mvc4.Helpers
+
+@{
+    var dir = "";
+    var kdir = "";
+    var localdir = "";
+
+
+
+
+
+
+    if (CurrentLocale.Language == Locale.Ltr)
+    {
+        dir = "ltr";
+        localdir = "local-ltr";
+    }
+    else if (CurrentLocale.Language == Locale.Rtl)
+    {
+        dir = "rtl";
+        kdir = "k-rtl";
+        localdir = "local-rtl";
+    }
+    var themingName =Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+    var temp =Url.Content("~/favicons/favicon-" + themingName + ".png");
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" dir="@dir" id="html">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    
+    <title>@ViewBag.Title</title>
+
+    <link rel="icon" type="image/png" href="@temp" /> 
+    
+    
+    @* First include bundle Javascripts *@
+    @Scripts.Render("~/bundles/underscore")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/kendo")
+    @Scripts.Render("~/bundles/Highcharts")
+    @Scripts.Render("~/bundles/highChartsModules")
+    @Scripts.Render("~/bundles/mainTheme")
+    @Scripts.Render("~/bundles/json")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/clockPicker")
+    @Scripts.Render("~/bundles/orgChart")
+    @* Second include custom CSS *@
+    @{
+        if (CurrentLocale.Language == Locale.Ltr)
+        {
+            <link type="text/css" rel="stylesheet" href="~/Content/template/bootstrap.css" />
+            <link type="text/css" rel="stylesheet" href="~/Content/template/layout.css" />
+            <link type="text/css" rel="stylesheet" href="~/Content/template/styles.css" />
+            <link type="text/css" rel="stylesheet" href="~/Content/template/common.css" />
+            <script src="~/Scripts/mainTheme/jquery.tipsy.js"></script>
+        }
+        else if (CurrentLocale.Language == Locale.Rtl)
+        {
+            <link type="text/css" rel="stylesheet" href="~/Content/template/bootstrap-ar.css" />
+            <link type="text/css" rel="stylesheet" href="~/Content/template/layout-ar.css" />
+            <link type="text/css" rel="stylesheet" href="~/Content/template/styles-ar.css" />
+            <link type="text/css" rel="stylesheet" href="~/Content/template/common-ar.css" />
+            @Styles.Render("~/Content/kendo-rtl")
+            <script src="~/Scripts/mainTheme/jquery.tipsy-ar.js"></script>
+        }
+
+    }
+    <script>
+        window.applicationpath = "@Url.Content("~")";
+        
+        if ("@TempData["ChangeLanguage"]" == "True") {
+            $(document).ready(function () {
+                window.requestInformation = JSON.parse(@Html.Raw(Json.Encode(TempData["requestInformation"])));
+                    $.ajax({
+                        url: window.applicationpath + "Crud/UpdateRequestInformation",
+                        type: "POST",
+                        contentType: 'application/json',
+                        data: JSON.stringify(window.requestInformation),
+                        success: function (data) {
+                            window.requestInformation = data.requestInfo;
+                            // if (window.requestInformation.NavigationInfo.Status == "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Aggregate" || window.requestInformation.NavigationInfo.Status == "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Index") {
+                            changeLocation();
+                            //}
+                        }
+                    });
+                });
+            }
+    </script>
+    @* Third include bundle CSS *@
+    @Styles.Render("~/Content/kendo")
+    @Styles.Render("~/Content/mainTheme")
+    @Styles.Render("~/Content/orgChart")
+    @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/clockPicker")
+    
+    @* <link href="~/Content/template/maestro-style/theme-default.css" rel="stylesheet" /> *@
+    @Html.Partial("ThemePartial")
+</head>
+
+    <body id="theme-default" class="full_block @kdir @localdir">
+        <div id="action-lists"></div>
+        @Html.Partial("_ControlPartial")
+        @Html.Partial("Templates/GridTemplates")
+        @Html.Partial("Templates/GlobalTemplate")
+    
+
+        @Html.Partial("_HeaderPartial")
+
+        <div id="left_bar">
+            @Html.Partial("_NavigationBarPartial")
+        </div>
+
+        <div id="container" style="overflow: auto">
+            @*<div id="closeNav"></div>
+            *@
+            <div class="page_title">
+                @Html.Partial("_PageTitlePartial")
+            </div>
+
+            <div id="ribbonContainer">
+            </div>
+
+            <div id="content">
+                @RenderSection("scripts", required: false)
+                <div id="main">
+                    <div id="bodyPanel">
+                        @RenderBody()
+                    </div>
+                </div>
+                @RenderSection("featured", required: false)
+
+                <span class="clear"></span>
+            </div>
+            <!--<div class="copyright copyright-inner">
+                <span> @GlobalResource.Copyright &copy; @DateTime.Now.Year @GlobalResource.ORC.</span>
+            </div>-->
+        </div>
+
+        <div id="windowInformation"></div>
+        @*<div id="windowReferenceInformation"></div>*@
+        <div id="action_list" style="visibility: hidden;"></div>
+        <div id="maestro_action_list"  class="maestro-menu" style="display:none"></div>
+
+        <script type="text/javascript">
+
+            function changeLang(newLang) {
+                $('body').append('<form id="changeLangForm" action="' + window.applicationpath + 'Sys/ChangeLan" method="POST"><input id="requestInformation" type="hidden" name="requestInformation"  ><input id="lan" type="hidden" name="lan"  ></form>');
+                try {
+                    $("#requestInformation").val(JSON.stringify(window.requestInformation));
+                } catch (ex) {
+                    $("#requestInformation").val("");
+                }
+
+                $("#lan").val(newLang);
+                $("#changeLangForm").submit();
+            }
+
+            function getCurrentLocale() {
+                return $.cookie("userLanguage");
+            }
+            function setCurrentLanguageDirection() {
+                $.ajax({
+                    url: window.applicationpath + "Notification/getLangDir",
+                    type: "POST",
+                    contentType: 'application/json',
+                    success: function (data) {
+                        $.cookie("dirLanguage", data);
+                    }
+                });
+                    
+            }
+            function getCurrentLanguageDirection(){
+                 return $.cookie("dirLanguage");
+            }
+            function getDateFormat() {
+                var dateFormat = "dd/MM/yyyy";
+                if (getCurrentLanguageDirection() == "false") {
+                    dateFormat = "MM/dd/yyyy";
+                }
+
+                return dateFormat;
+            }
+
+            $(document.body).keydown(function (e) {
+                if (e.altKey && e.keyCode == 87) {
+                    var grid = $("#grid").data("kendoGrid");
+                    if (grid != null)
+                        grid.table.focus();
+                }
+            });
+            if ($(window).width() <= 1024) {
+                $("body").addClass("small-screen");
+            }
+            
+        </script>
+       
+
+
+    </body>
+    
+</html>

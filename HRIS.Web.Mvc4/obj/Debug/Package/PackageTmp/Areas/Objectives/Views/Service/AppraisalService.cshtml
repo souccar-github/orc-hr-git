@@ -1,0 +1,178 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using Souccar.Domain.Workflow.Enums
+@using  Project.Web.Mvc4.Helpers.Resource
+<div class="objective-Appraisal-container">
+    <div class="objective-Appraisal-employees-grid"></div>
+    <div class="objective-Appraisal-workflow"></div>
+</div>
+
+
+<script type="text/javascript">
+    var workflowId = window.localStorage.getItem('workflowId');
+    var objectiveId = window.localStorage.getItem('ServiceId');
+
+    if (workflowId != null) {
+        localStorage.clear();
+        AppraisalObjectiveAction(objectiveId, workflowId);
+        workflowId = null;
+    }
+    showObjectiveGrid();
+    function showObjectiveGrid() {
+        $.ajax({
+            url: '@Url.Action("GetObjectiveForAppraisal", "AppraisalService", new { area = "Objectives" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                generateGridObjectivesForAppraisal(data);
+                window.ObjectivesForAppraisal = data;
+            }
+        });
+    }
+
+    function generateGridObjectivesForAppraisal(data) {
+        var gridContainer = $(".objective-Appraisal-employees-grid");
+        var workflowContainer = $(".objective-Appraisal-workflow");
+
+        var template = kendo.template($("#objective-grid-template").html());
+        gridContainer.html(template(data));
+    }
+
+    function AppraisalObjectiveAction(objectiveId,workflowId) {
+        var gridContainer = $(".objective-Appraisal-employees-grid");
+        var workflowContainer = $(".objective-Appraisal-workflow");
+        gridContainer.html('');
+        workflowContainer.html('');
+
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+            gridContainer.empty();
+            var template = kendo.template($("#objective-Appraisal-workflow-template").html());
+            var obj = Souccar.getItemByPropName(window.ObjectivesForAppraisal.Objectives, 'ObjectiveId', objectiveId);
+            $("#workflow_data").html(template(obj));
+            $(".action-plan-mark").kendoNumericTextBox({ min: 0, max: 100 });
+        }
+        function acceptWorkflow() {
+            var acceptUrl = "@Url.Action("AcceptAppraisal", "AppraisalService", new { area = "Objectives" })";
+            saveWorkflow(acceptUrl);
+        }
+
+        function pendingWorkflow() {
+            var acceptUrl = "@Url.Action("PendingAppraisal", "AppraisalService", new { area = "Objectives" })";
+            saveWorkflow(acceptUrl);
+        }
+        function rejectWorkflow() {
+            var acceptUrl = "@Url.Action("RejectAppraisal", "AppraisalService", new { area = "Objectives" })";
+            saveWorkflow(acceptUrl);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var obj = Souccar.getItemByPropName(window.ObjectivesForAppraisal.Objectives, 'ObjectiveId', objectiveId);
+            for (var i = 0; i < obj.ActionPlans.length; i++) {
+                obj.ActionPlans[i].Mark = $("#actionPlanMark_" + obj.ActionPlans[i].ActionPlanId).data("kendoNumericTextBox").value();
+            }
+            $.ajax({
+                url: saveUrl,
+                type: "POST",
+                data: JSON.stringify({ workflowId: workflowId, objective: obj, note: $("#NewStepDescription").val() }),
+                contentType: 'application/json',
+                success: function (e) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-info" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                    $(".objective-Appraisal-workflow").html("");
+                    showObjectiveGrid();
+                }
+            });
+        }
+    }
+    function showObjectiveInfo(id) {
+        openViewWindow("HRIS.Domain.Objectives.RootEntities.Objective", "@GlobalResource.ObjectiveInformation", id);
+    }
+
+</script>
+
+
+<script id="objective-grid-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.ObjectiveName)</th>
+                <th>@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.ObjectiveCode)</th>
+                <th>@GlobalResource.Owner</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i<data.Objectives.length;i++){# 
+              #var obj=data.Objectives[i];#
+                <tr>
+                    <td>#=obj.ObjectiveName#</td>
+                    <td>#=obj.ObjectiveCode#</td>
+                    <td>#=obj.EmployeeFullName#</td>
+
+                    <td><button class="k-button primary-action" onclick="AppraisalObjectiveAction('#=obj.ObjectiveId#', '#=obj.WorkflowId#')">@GlobalResource.Appraisal</button></td>
+                </tr>
+                #}#
+        </tbody>
+    </table>
+
+
+</script>
+<script id="objective-Appraisal-workflow-template" type="text/x-kendo-template">
+    <fieldset class="">
+        <legend>@GlobalResource.Information</legend>
+        <div>
+            <span class="workflow-key">@GlobalResource.ObjectiveInformation</span>
+            <span class="control-FullName">
+                #=ObjectiveName#
+            </span>
+            <a href="\#" onclick="showObjectiveInfo('#=ObjectiveId#')">
+                <span class="k-icon k-i-employee-info phase-employee-info-but"></span>
+            </a>
+        </div>
+        <span>
+            @GlobalResource.ActionPlan
+        </span>
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2">@GlobalResource.Owner</th>
+                    <th rowspan="2">@GlobalResource.Description</th>
+                    <th rowspan="2">@GlobalResource.ExpectedResult</th>
+                    <th colspan="2">@GlobalResource.Planning</th>
+                    <th colspan="2">@GlobalResource.Actually</th>
+                    <th rowspan="2">@GlobalResource.Status</th>
+                    <th rowspan="2">@GlobalResource.PercentageOfCompletion</th>
+                    <th rowspan="2">@GlobalResource.Mark</th>
+                </tr>
+                <tr>
+                    <th>@GlobalResource.StartDate</th>
+                    <th>@GlobalResource.EndDate</th>
+                    <th>@GlobalResource.StartDate</th>
+                    <th>@GlobalResource.EndDate</th>
+                </tr>
+            </thead>
+            <tbody>
+             
+                #for(var i=0;i<ActionPlans.length;i++){#
+                #var actionplan=ActionPlans[i];#
+                    <tr>
+                        <td>#=actionplan.Owner#</td>
+                        <td>#=actionplan.Description#</td>
+                        <td>#=actionplan.ExpectedResult#</td>
+                        <td>#=ToStringForDate(actionplan.PlannedStartDate)#</td>
+                        <td>#=ToStringForDate(actionplan.PlannedEndDate)#</td>
+                        <td>#=ToStringForDate(actionplan.ActualStartDate)#</td>
+                        <td>#=ToStringForDate(actionplan.ActualEndDate)#</td>
+                        <td>#=actionplan.StatusText#</td>
+                        <td>#=actionplan.PercentageOfCompletion#</td>
+                        <td class="action-plan-mark-container"><input class="action-plan-mark" value="#=actionplan.Mark#" id="actionPlanMark_#=actionplan.ActionPlanId#" name="actionPlanMark_#=actionplan.ActionPlanId#" /></td>
+                    </tr>
+                    #}#
+            </tbody>
+        </table>
+    </fieldset>
+</script>
+
+
+

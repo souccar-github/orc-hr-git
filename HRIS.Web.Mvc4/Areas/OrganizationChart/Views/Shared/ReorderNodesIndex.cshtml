@@ -1,0 +1,249 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+<div class="k-content">
+
+    <div class="reorder_nodes">
+        <fieldset class="expandable-collapseable">
+            <legend>
+                @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ReorderNodesCaption)
+            </legend>
+
+            <div class="top_btns">
+                <div class="expand_collapse">
+                    <a href="#" id="expandAllNodes"><span class="expand_icon"></span> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ExpandCaption)</a> /
+                    <a href="#" id="collapseAllNodes"><span class="collapse_icon"></span> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.CollapseCaption)</a>
+                </div>
+            </div>
+
+            <div id="treeview" class="tree"></div>
+        </fieldset>
+    </div> <!-- end of reorder nodes -->
+</div>
+<script id="ReorderMessageBoxTemplate" type="text/x-kendo-template">
+    <div class="message-box">
+        <span class="#=IconClass#"></span>
+        <p class="message-box-body ">#=Message#</p>
+    </div>
+    <div class="k-edit-buttons k-state-default message-box-buttons not-default-button">
+        #for(var i=0;i< Commands.length;i++){ #
+        <a class="k-button #=Commands[i].Name#" href="\\#">
+            <span class="#=Commands[i].ClassName#"></span>#=Commands[i].Title#
+        </a>
+        #}#
+    </div>
+
+</script>
+
+<script>
+    var result = null;
+    var x = null;
+    var dataSource = {
+        transport: {
+            read: {
+                url: "@Url.Action("ReadToList", "Reference", new { typeName = "HRIS.Domain.OrganizationChart.Configurations.NodeType", area = "" })"
+            }
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+
+
+    $("#treeview").kendoTreeView({
+        dragAndDrop: true,
+        dataSource: getTreeViewDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: false,
+        drop: onDrop
+
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+    function onDrop(e) {
+
+        var sourceNodeId = this.dataItem(e.sourceNode).id;
+        var targetNodeId = this.dataItem(e.destinationNode).id;
+        result = null;
+        x = e;
+        $.ajax({
+            url: '@Url.Action("IsAllowedToReorderThisNode", "Node")',
+            type: "POST",
+            data: JSON.stringify({
+                sourceNodeId: sourceNodeId,
+                targetNodeId: targetNodeId
+            }),
+            async:   false,
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    if (sourceNodeId == targetNodeId) {
+
+                    }
+                    else{
+                        var commands = [{ Name: "ConfirmReorder", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                             { Name: "CancelReorder", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+                    @*ShowMessageBox("@Project.Web.Mvc4.Helpers.GlobalResource.Delete", data.Msg, "k-icon w-b-question", commands);*@
+
+                    var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                        width: "300px",
+                        height: "150px",
+                        modal: true,
+                        resizable: false,
+                        title: "@Project.Web.Mvc4.Helpers.GlobalResource.Delete",
+                    });
+                    var objWindow = kendoWindow.data("kendoWindow");
+                    objWindow.open();
+                    kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+                    objWindow
+                        .content(kendo.template($("#ReorderMessageBoxTemplate").html())({ Message: data.Msg, IconClass: "k-icon w-b-question", Commands: commands }))
+                        .center().open();
+                    kendoWindow
+                        .find(gedCommandsClassNames(commands))
+                        .click(function () {
+                            for (var i = 0; i < commands.length - 1; i++) {
+                                if ($(this).hasClass("ConfirmReorder")) {
+                                    $.ajax({
+                                        url: '@Url.Action("ReorderNode", "Node")',
+                                        type: "POST",
+                                        async:   false,
+                                        data: JSON.stringify({
+                                            nodeId: sourceNodeId,
+                                            targetParentId: targetNodeId
+                                        }),
+                                        contentType: 'application/json',
+                                        success: function (data) {
+                                            if (data.Success) {
+                                                result = true;
+                                                window.rebuildTree();
+                                                //expandParentOfNode(targetNodeId);
+                                            }
+                                            else {
+                                                result=false;
+                                                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                                ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                                            }
+                                        }
+                                    });
+
+                                }
+                                else {
+
+                                    result = false;
+                                }
+                            }
+                            objWindow.close();
+                        })
+                        .end();
+                }
+                }
+                else {
+                        result = false;
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                    
+                }
+
+            }
+        });
+        var check = function() {
+            if (result != null) {
+                this.x.setValid(result);
+                console.log(result);
+            } else {
+                setTimeout(check, 1); // check again in a second
+            }
+
+        };
+            check();
+            x.setValid(result);
+            console.log(result);
+    }
+
+    function reorderNode(sourceNodeId, targetNodeId,e) {
+         $.ajax({
+            url: '@Url.Action("ReorderNode", "Node")',
+            type: "POST",
+            data: JSON.stringify({
+                nodeId: sourceNodeId,
+                targetParentId: targetNodeId
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    e.setValid(true);
+                }
+                else {
+                    e.setValid(false);
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+    function expandParentOfNode(id) {
+        debugger;
+        var treeView = $("#treeview").data('kendoTreeView');
+        var dataSource = treeView.dataSource;
+        var dataItem = dataSource.get(id);
+        var node = treeView.findByUid(dataItem.uid);
+        console.log(node);
+        expandParentRecursive(parent, treeView);
+        treeView.expand(node);
+    }
+    function expandParentRecursive(node, treeView) {
+        debugger;
+        var parent = treeView.parent(node);
+        console.log(parent);
+        if(parent != undefined)
+        {
+            treeView.expand(parent);
+            expandParentRecursive(parent)
+        }
+    }
+    function cancelReorderNode() {
+        e.setValid(false);
+    }
+
+    function getTreeViewDataSource() {
+        var result = {};
+        result.transport = {
+            read: {
+                url: '@Url.Action("GetTreeNodes", "Node")',
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                //children: "Items",
+                hasChildren: "HasChildren"
+            }
+        };
+        return result;
+    }
+
+    function rebuildTree() {
+        var tree = $("#treeview").data("kendoTreeView");
+        tree.dataSource.read();
+    }
+
+    $("#expandAllNodes").click(function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        treeview.expand(".k-item");
+    });
+
+    $("#collapseAllNodes").click(function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        treeview.collapse(".k-item");
+    });
+
+
+
+</script>
+
+
+

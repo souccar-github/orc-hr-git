@@ -1,0 +1,28 @@
+﻿<script type="text/javascript">
+ 
+    function PassportEditHandler(e) {
+        if (e.model.Id == 0) {
+            $.ajax({
+                url: '@Url.Action("GetEmployeeBasicInfo", "Employee", new { area = "Personnel" })',
+                type: "POST",
+                data: JSON.stringify({ employeeId: window.requestInformation.NavigationInfo.Previous[0].RowId }),
+                async: false,
+                contentType: 'application/json',
+                success: function (data) {
+                    $('[name="FirstName"]').val(data.FirstName);
+                    $('[name="LastName"]').val(data.LastName);
+                    $('[name="FirstNameL2"]').val(data.FirstNameL2);
+                    $('[name="LastNameL2"]').val(data.LastNameL2);
+                    $('[name="FatherName"]').val(data.FatherName);
+                    $('[name="MotherName"]').val(data.MotherName);
+                    e.model.FirstName = data.FirstName;
+                    e.model.LastName = data.LastName;
+                    e.model.FirstNameL2 = data.FirstNameL2;
+                    e.model.LastNameL2 = data.LastNameL2;
+                    e.model.FatherName = data.FatherName;
+                    e.model.MotherName = data.MotherName;
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,39 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="~/Scripts/kendo-2014.1.528/kendo.all.min.js"></script>
+  
+    <link type="text/css" rel="stylesheet" href="~/Content/template/common.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/kendo-2014.1.528/kendo.common.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/kendo-2014.1.528/kendo.flat.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/template/reset.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/template/maestro-style/main.css" />
+ 
+  
+
+  
+   
+  
+</head>
+<body>
+ @Html.Partial("Control/_MessageBox")
+    
+
+
+
+<script>
+      function h1() {
+     
+      window.close();
+     }
+    var commands = [
+        { Title: "@GlobalResource.Yes", ClassName: "k-icon k-update", Name: "Yes",Handler: h1 }];
+   
+        ShowMessageBox("error", "Not Valid Licence", "k-icon w-b-error", commands);
+      
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+﻿@using Project.Web.Mvc4.Helpers
+
+@Html.Partial("ActivateTrainingCourseActionList")
+@Html.Partial("AddTrainingNeedsToTrainingCourseActionList")
+@Html.Partial("SuggestStaffsToTrainingCourseActionList")
+@Html.Partial("AddTraineesToTrainingCourseActionList")
+@Html.Partial("CancelTrainingCourseActionList")
+@Html.Partial("CloseTrainingCourseActionList")
+
+
+<script type="text/javascript">
+    var $trainingNeedsCount = 0;
+
+    function showErrorMessage(message) {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", message, "k-icon w-b-error", commands);
+    }
+
+    function showSuccessMessage(message) {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", message, "k-icon w-b-info", commands);
+    }
+
+    function removeEditOrDeleteFromCourseActionList(actionListItems, dataItem) {
+        
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].HandlerName == "update") {
+                if (dataItem.Status.Id != 0 && dataItem.Status.Id != 1) {
+                    actionListItems[i].ShowCommand = false;
+
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "destroy") {
+                if (dataItem.Status.Id == 0 ) {
+                    actionListItems[i].ShowCommand = true;
+                } else {
+                    actionListItems[i].ShowCommand = false;
+                }
+            }
+            
+            if (actionListItems[i].HandlerName == "AddTrainingNeedsToTrainingCourse") {
+                if (dataItem.Status.Id == 0 || dataItem.Status.Id == 1) {
+                    actionListItems[i].ShowCommand = true;
+                } else {
+                    actionListItems[i].ShowCommand = false;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "ActivateTrainingCourse") {
+                if (dataItem.Status.Id == 0) {
+                    actionListItems[i].ShowCommand = true;
+                } else {
+                    actionListItems[i].ShowCommand = false;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "SuggestStaffsToTrainingCourse") {
+                if (dataItem.Status.Id == 0 || dataItem.Status.Id == 1) {
+                    actionListItems[i].ShowCommand = true;
+                } else {
+                    actionListItems[i].ShowCommand = false;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "AddTraineesToTrainingCourse") {
+                if (dataItem.Status.Id == 1 || dataItem.Status.Id == 0) {
+                    actionListItems[i].ShowCommand = true;
+                } else {
+                    actionListItems[i].ShowCommand = false;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "CloseTheTrainingCourse") {
+                if (dataItem.Status.Id == 1) {
+                    actionListItems[i].ShowCommand = true;
+                } else {
+                    actionListItems[i].ShowCommand = false;
+                }
+            }
+
+            if (actionListItems[i].HandlerName == "TrainingCourseCancellation") {
+                if (dataItem.Status.Id != 1 && dataItem.Status.Id != 0) {
+                    actionListItems[i].ShowCommand = false;
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+        }
+    }
+
+
+    @*function checkIfTrainingNeedsIsAssigned(actionListItems, dataItem) {
+        $.ajax({
+            url: '@Url.Action("GetTrainingNeedsForCourse", "Home", new {area = "Training"})',
+            type: "POST",
+            data: { 'courseId': dataItem.Id },
+            //contentType: 'application/json',
+            success: function (data) {
+                $trainingNeedsCount = data.TrainingNeedsCount;
+                showOrHideDestroyActionList(actionListItems, data.TrainingNeedsCount);
+            }
+        });
+        
+    }
+
+    function showOrHideDestroyActionList(actionListItems, count) {
+        
+        for (var i = 0; i < actionListItems.length; i++) {
+           
+            if (actionListItems[i].HandlerName == "destroy") {
+                debugger;
+                if (count > 0) {
+
+                    actionListItems[i].ShowCommand = false;
+                } else {
+                    actionListItems[i].ShowCommand = true;
+                }
+            }
+        }
+        
+    }*@
+    
+
+</script>

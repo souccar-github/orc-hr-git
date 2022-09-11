@@ -1,0 +1,241 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Helpers
+@using HRIS.Domain.EmployeeRelationServices.Enums;
+
+
+<script>
+
+    function LeaveRequestEditHandler(e) {
+
+        $(".control-IsHourlyLeave").hide();
+        $(".control-FromTime").hide();
+        $(".control-ToTime").hide();
+        activateControlsByHourlyLeaveCheck(e);
+        reOrderControls($(".fieldset-EmployeeRelationServicesGroupNames_Details"));
+
+        $("[name='IsHourlyLeave']").click(function () {
+            debugger;
+            $("[name='EndDate']").data("kendoDatePicker").value(e.container.find("[name='StartDate']").data("kendoDatePicker").value());
+            e.model.EndDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+            activateControlsByHourlyLeaveCheck(e,this.checked);
+
+
+        });
+
+        if (e.container.find('[name="Balance"]').length == 0) {
+            $(".fieldset-EmployeeRelationServicesGroupNames_LeaveKind").after('<fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.BalanceInformation)</legend></fieldset>');
+            addLabelInControl($(".fieldset-BalanceInformation"), "Balance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MonthlyBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MonthlyBalance)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "Granted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Granted)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MonthlyGranted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MonthlyGranted)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "Remain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MonthlyRemain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MonthlyRemain)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MaximumNumber", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MaximumNumber)", 0, "Text");
+            reOrderControls($(".fieldset-BalanceInformation"));
+        }
+        $("[name='StartDate']").data("kendoDatePicker").bind("change", onDateOfStartChange);
+        function onDateOfStartChange() {
+            debugger;
+            if ($("[name='IsHourlyLeave']").is(':checked') == true) {
+                if ($("[name='FromTime']").val() > $("[name='ToTime']").val()) {
+                    //  $("[name='EndDate']").data("kendoDatePicker").value(e.container.find("[name='StartDate']").data("kendoDatePicker").value());
+                    var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 1);
+                    $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                    e.model.EndDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+                }
+                else
+                {
+                    var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 0);
+                    $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                    e.model.EndDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+                }
+            }
+        }
+        var FromTime = $('[name="FromTime"]');
+        var ToTime = $('[name="ToTime"]');
+        FromTime.bind("change", onTimeChange);
+        ToTime.bind("change", onTimeChange);
+        function onTimeChange() {
+            activateControlsByHourlyLeaveCheck(e);
+            debugger;
+            if ($("[name='IsHourlyLeave']").is(':checked') == true) {
+                if ($("[name='FromTime']").val() > $("[name='ToTime']").val()) {
+
+                    var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 1);
+                    $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                    e.model.EndDate = e.container.find("[name='EndDate']").data("kendoDatePicker").value();
+
+                    if (e.model.StartDate == e.model.EndDate) {
+                      //  var startDate = 0;
+                        //   startDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value().getDate();
+                            var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 1);
+                            $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                   //     $("[name='EndDate']").data("kendoDatePicker").value().setDate( startDate + 1);
+                     //   $("[name='EndDate']").data("kendoDatePicker").value($("[name='EndDate']").data("kendoDatePicker").value());
+                     //   $("[name='StartDate']").data("kendoDatePicker").value().setDate(startDate);
+                        e.model.EndDate = e.container.find("[name='EndDate']").data("kendoDatePicker").value();
+                    }
+                } else {
+                   // $("[name='EndDate']").value($("[name='StartDate']").value());
+                    var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 0);
+                    $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                    e.model.EndDate = e.container.find("[name='EndDate']").data("kendoDatePicker").value();
+                }
+            }
+        }
+        $(".control-MonthlyBalance").hide();
+        $(".control-MonthlyGranted").hide();
+        $(".control-MaximumNumber").hide();
+        $(".control-MonthlyRemain").hide();
+        reOrderControls($(".fieldset-BalanceInformation"));
+
+        var leaveSettingDropownlist = $("[name='LeaveSetting']").data("kendoDropDownList");
+        leaveSettingDropownlist.bind("change", function () {
+            var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+            getBalanceInformationForLeaveRequest(e, leaveSettingDropownlist.value(), startDate);
+        });
+        leaveSettingDropownlist.bind("select", function () {
+            var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+            getBalanceInformationForLeaveRequest(e, leaveSettingDropownlist.value(), startDate);
+        });
+        var StartDate = $('[name="StartDate"]');
+        StartDate.data("kendoDatePicker").bind("change", function () {
+            var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+            getBalanceInformationForLeaveRequest(e, leaveSettingDropownlist.value(), startDate);
+        });
+        if (!e.model.isNew()) {
+            var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+            getBalanceInformationForLeaveRequest(e, e.model.LeaveSetting.Id, startDate);
+        }
+
+
+    }
+
+    function getBalanceInformationForLeaveRequest(e, leaveSettingId, startDate) {
+
+        $.ajax({
+            url: '@Url.Action("GetInformationForLeaveRequest", "LeaveRequest", new { area = "EmployeeRelationServices" })',
+                type: "POST",
+                data: JSON.stringify({
+                    employeeCardId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                    leaveSettingId: leaveSettingId,
+                    startDate:startDate
+                }),
+                async: false,
+                contentType: 'application/json',
+                success: function (data) {
+                    var balance = data.Balance;
+                    var granted = data.Granted;
+                    var remain = data.Remain;
+                    var monthlyBalance = data.MonthlyBalance;
+                    var monthlyGranted = data.MonthlyGranted;
+                    var monthlyRemain = data.MonthlyRemain;
+                    var hasMonthlyBalance = data.HasMonthlyBalance;
+                    var isDivisibleToHours = data.IsDivisibleToHours;
+                    var isIndivisible = data.IsIndivisible;
+                    var MaximumNumber = data.MaximumNumber;
+                    var HasMaximumNumber = data.HasMaximumNumber;
+                    e.container.find('[name="Balance"]').val(balance);
+                    e.container.find('[name="Granted"]').val(granted);
+                    e.container.find('[name="Remain"]').val(remain);
+                    e.container.find('[name="MonthlyBalance"]').val(monthlyBalance);
+                    e.container.find('[name="MonthlyGranted"]').val(monthlyGranted);
+                    e.container.find('[name="MonthlyRemain"]').val(monthlyRemain);
+                    e.container.find('[name="MaximumNumber"]').val(MaximumNumber);
+
+                    if (isDivisibleToHours) {
+                        $(".control-IsHourlyLeave").show();
+                    } else {
+                        $(".control-IsHourlyLeave").hide();
+                    }
+                    if (isIndivisible) {
+                        $(".control-EndDate").hide();
+                    } else {
+                        $(".control-EndDate").show();
+                    }
+                    if (HasMaximumNumber) {
+                        if (granted < balance)
+                            granted = 0;
+                        else
+                            granted = granted / MaximumNumber;
+                        balance = balance / MaximumNumber;
+                        remain = balance - granted;
+                        e.container.find('[name="Balance"]').val(balance);
+                        e.container.find('[name="Granted"]').val(granted);
+                        e.container.find('[name="Remain"]').val(remain);
+                        e.container.find(".control-MaximumNumber").show();
+                    }
+                    else {
+                        e.container.find(".control-MaximumNumber").hide();
+                    }
+                    if (hasMonthlyBalance) {
+                        $(".control-MonthlyBalance").show();
+                        $(".control-MonthlyGranted").show();
+                        $(".control-MonthlyRemain").show();
+                    } else {
+                        $(".control-MonthlyBalance").hide();
+                        $(".control-MonthlyGranted").hide();
+                        $(".control-MonthlyRemain").hide();
+                    }
+                    reOrderControls($(".fieldset-EmployeeRelationServicesGroupNames_Details"));
+                    reOrderControls($(".fieldset-BalanceInformation"));
+                }
+        });
+
+    }
+
+    function activateControlsByHourlyLeaveCheck(e) {
+        if ($("[name='IsHourlyLeave']").is(':checked')) {
+            $(".control-FromTime").show();
+            $(".control-ToTime").show();
+            if (!e.model.FromTime && !e.model.ToTime) {
+                e.model.FromTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+                e.model.ToTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+            }
+            $("[name='FromTime']").val(getTimeAsStandardToShowInClockTimePicker(e.model.FromTime));
+            $("[name='ToTime']").val(getTimeAsStandardToShowInClockTimePicker(e.model.ToTime));
+            $("[name='EndDate']").data("kendoDatePicker").enable(false);
+            //$(".control-StartDate").hide();
+            //$(".control-EndDate").hide();
+        }
+        else {
+            $(".control-FromTime").hide();
+            $(".control-ToTime").hide();
+            $("[name='EndDate']").data("kendoDatePicker").enable(true);
+            //$(".control-StartDate").show();
+            //$(".control-EndDate").show();
+        }
+        reOrderControls($(".fieldset-EmployeeRelationServicesGroupNames_Details"));
+    }
+
+    function LeaveRequestViewHandler(e) {
+
+        var isHourlyLeave = e.model.IsHourlyLeave;
+
+        if (isHourlyLeave) {
+
+            var fromTime = (e.model.FromTime != null) ? window.Souccar.toStringForTime(e.model.FromTime):"";
+            var toTime = (e.model.ToTime != null) ? window.Souccar.toStringForTime(e.model.ToTime) : "";
+
+            console.log(fromTime);
+            console.log(toTime);
+
+            $(".control-FromTime .k-edit-field").html(fromTime);
+            $(".control-ToTime .k-edit-field").html(toTime);
+            e.container.find(".control-FromTime").show();
+            e.container.find(".control-ToTime").show();
+
+        } else {
+
+            e.container.find(".control-FromTime").hide();
+            e.container.find(".control-ToTime").hide();
+
+        }
+        if (e.model.IsTransferToPayroll) {
+            e.container.find("#view_edit").remove();
+
+        }
+        //reOrderControls(e.container);
+    }
+
+</script>

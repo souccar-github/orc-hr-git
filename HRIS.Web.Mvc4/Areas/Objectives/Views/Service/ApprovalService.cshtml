@@ -1,0 +1,185 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using Souccar.Domain.Workflow.Enums
+@using Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Core
+<div class="objective-approval-container">
+    <div class="objective-approval-employees-grid"></div>
+    <div class="objective-approval-workflow"></div>
+</div>
+
+
+<script type="text/javascript">
+    var workflowId = window.localStorage.getItem('workflowId');
+    var objectiveId = window.localStorage.getItem('ServiceId');
+    showObjectiveGrid();
+
+    if (workflowId != null) {
+        localStorage.clear();
+        approvalObjectiveAction(objectiveId, workflowId);
+        workflowId = null;
+    }
+    function showObjectiveGrid() {
+       
+        $.ajax({
+            url: '@Url.Action("GetObjectiveForApproval", "ApprovalService", new { area = "Objectives" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                generateGridObjectivesForApproval(data);
+                window.ObjectivesForApproval = data;
+            }
+        });
+    }
+
+    function generateGridObjectivesForApproval(data) {
+        var gridContainer = $(".objective-approval-employees-grid");
+        var workflowContainer = $(".objective-approval-workflow");
+
+        var template = kendo.template($("#objective-grid-template").html());
+        gridContainer.html(template(data));
+    }
+
+    function approvalObjectiveAction(objectiveId, workflowId) {
+        var gridContainer = $(".objective-approval-employees-grid");
+        var workflowContainer = $(".objective-approval-workflow");
+       
+       
+
+      createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+            gridContainer.empty();
+            var template = kendo.template($("#objective-approval-workflow-template").html());
+            var obj = Souccar.getItemByPropName(window.ObjectivesForApproval.Objectives, 'ObjectiveId', objectiveId);
+            $("#workflow_data").html(template(obj));
+        }
+        function acceptWorkflow() {
+            var acceptUrl = "@Url.Action("AcceptApproval", "ApprovalService", new { area = "Objectives" })";
+            saveWorkflow(acceptUrl);
+        }
+
+        function pendingWorkflow() {
+            var acceptUrl = "@Url.Action("PendingApproval", "ApprovalService", new { area = "Objectives" })";
+            saveWorkflow(acceptUrl);
+        }
+        function rejectWorkflow() {
+            var acceptUrl = "@Url.Action("RejectApproval", "ApprovalService", new { area = "Objectives" })";
+            saveWorkflow(acceptUrl);
+        }
+
+        function saveWorkflow(saveUrl) {
+            $.ajax({
+                url: saveUrl,
+                type: "POST",
+                data: JSON.stringify({ workflowId: workflowId, objectiveId: objectiveId, note: $("#NewStepDescription").val() }),
+                contentType: 'application/json',
+                success: function (e) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-info" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                    workflowContainer.html("");
+                    showObjectiveGrid();
+                }
+            });
+        }
+    }
+    function showObjectiveInfo(id) {
+        openViewWindow("HRIS.Domain.Objectives.RootEntities.Objective", "@GlobalResource.ObjectiveInformation", id);
+    }
+
+</script>
+
+
+<script id="objective-grid-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.ObjectiveName)</th>
+                <th>@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.ObjectiveCode)</th>
+                <th>@GlobalResource.Owner</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i<data.Objectives.length;i++){# 
+                #var obj=data.Objectives[i];#
+                <tr>
+                    <td>#=obj.ObjectiveName#</td>
+                    <td>#=obj.ObjectiveCode#</td>
+                    <td>#=obj.EmployeeFullName#</td>
+                   
+                    <td><button class="k-button primary-action" onclick="approvalObjectiveAction('#=obj.ObjectiveId#', '#=obj.WorkflowId#')">@GlobalResource.Approval</button></td>
+                </tr>
+                #}#
+            </tbody>
+    </table>
+
+
+</script>
+<script id="objective-approval-workflow-template" type="text/x-kendo-template">
+    <fieldset class="">
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Name")</span>
+            <span class="control-Name workflow-labelvalue">
+                #=ObjectiveName#
+            </span>
+            <a href="\#" onclick="showObjectiveInfo('#=ObjectiveId#')">
+                <span class="k-icon k-i-employee-info phase-employee-info-but"></span>
+            </a>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Code")</span>
+            <span class="control-Code workflow-labelvalue">
+                #=ObjectiveCode#
+            </span>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Owner")</span>
+            <span class="control-Employee workflow-labelvalue">
+                #=EmployeeFullName#
+            </span>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.PlannedStartingDate")</span>
+            <span class="control-PlannedStartingDate workflow-labelvalue">
+                #=PlannedStartingDate#
+            </span>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.PlannedClosingDate")</span>
+            <span class="control-PlannedClosingDate workflow-labelvalue">
+                #=PlannedClosingDate#
+            </span>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Type")</span>
+            <span class="control-Type workflow-labelvalue">
+                #=Type#
+            </span>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Priority")</span>
+            <span class="control-Priority workflow-labelvalue">
+                #=Priority#
+            </span>
+        </div>
+        <div class="m-2">
+            <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Weight")</span>
+            <span class="control-Weight workflow-labelvalue">
+                #=Weight#
+            </span>
+        </div>
+        <div class="m-2">
+            <div class="workflow-label">
+                <span class="workflow-label">@ServiceFactory.LocalizationService.GetResource("HRIS.Domain.Objectives.RootEntities.Objective.Description")</span>
+            </div>
+            <div class="workflow-labelvalue">
+                <textarea class="control-Weight workflow-labelvalue" disabled  style="margin: -12px 5.5rem 1px 5.5rem;" cols="28" rows="3">
+                    #=Description#
+                </textarea>
+                </div>
+            </div>
+    </fieldset>
+</script>
+
+
+

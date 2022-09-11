@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/08/2015 12:00:24" ReportInfo.Modified="11/14/2016 08:55:19" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVFlnkXqzD1VNqRCkSavrdXiIf+lj0vOFUlkMzi4+Olo92l+WuZ/TRneJ8XO81bLaaSzmNoMnA20oGnPeTlhg3p/kpqJdCtUAL/ET45T8xkAkKt6OLB5H6RuK347bo+j5LL">
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     &#13;&#10;dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName,&#13;&#10;dbo.Employee.Id AS EmployeeId, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.JobDescription.Name AS JobDescriptionName, &#13;&#10;dbo.Conviction.No AS ConvictionNump,&#13;&#10;dbo.ConvictionType.Name AS ConvictionTypeName, &#13;&#10;dbo.Conviction.ReleaseDate, &#13;&#10;dbo.Conviction.ExpirationDate, &#13;&#10;dbo.Conviction.Reason, &#13;&#10;dbo.Employee.Code&#13;&#10;FROM         &#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.Conviction ON dbo.Employee.Id = dbo.Conviction.Employee_id &#13;&#10;INNER JOIN dbo.ConvictionType ON dbo.Conviction.Type_id = dbo.ConvictionType.Id &#13;&#10;INNER JOIN dbo.Position ON dbo.Employee.Id = dbo.Position.Id &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE     &#13;&#10;(dbo.EmployeeCard.CardStatus = 1) AND &#13;&#10;(dbo.AssigningEmployeeToPosition.IsPrimary= 'True') AND&#13;&#10;(dbo.Conviction.IsConvicted= 'True') AND&#13;&#10;(dbo.Employee.IsVertualDeleted = 0) AND &#13;&#10;(dbo.Conviction.IsVertualDeleted = 0) AND &#13;&#10;(dbo.ConvictionType.IsVertualDeleted = 0) AND &#13;&#10;(dbo.Position.IsVertualDeleted = 0) AND &#13;&#10;(dbo.JobDescription.IsVertualDeleted = 0) AND &#13;&#10;(dbo.EmployeeCard.IsVertualDeleted = 0)">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="JobDescriptionName" DataType="System.String"/>
+        <Column Name="ConvictionNump" DataType="System.String"/>
+        <Column Name="ConvictionTypeName" DataType="System.String"/>
+        <Column Name="ReleaseDate" DataType="System.DateTime"/>
+        <Column Name="ExpirationDate" DataType="System.DateTime"/>
+        <Column Name="Reason" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Employee" DataType="System.Int32" Enabled="true" TableName="Employee" SelectCommand="SELECT E.Id, E.IsVertualDeleted, E.FirstName, E.LastName, E.FatherName, E.MotherName, E.FirstNameL2, E.LastNameL2, E.FatherNameL2, E.MotherNameL2, E.PlaceOfBirthL2, E.Gender, E.MaritalStatus, E.DateOfBirth, E.CivilRecordPlaceAndNumber, E.PersonalRecordSource, E.NationalityIssue, E.OtherNationalityIssue, E.BloodType, E.Religion, E.MilitaryStatus, E.Status, E.Address, E.Phone, E.Mobile, E.Email, E.POBox, E.WebSite, E.Twitter, E.Facebook, E.IdentificationNo, E.Code, E.IsRetired, E.PhotoId, E.EmploymentStatus, E.SalaryStatus, E.DisabilityExist, E.PlaceOfBirth_id, E.CountryOfBirth_id, E.Nationality_id, E.OtherNationality_id, E.DisabilityType_id, E.RecruitmentInformation_id, E.OtherNationalityExist&#13;&#10;FROM &quot;Employee&quot; E&#13;&#10;WHERE E.IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="MotherName" DataType="System.String"/>
+        <Column Name="FirstNameL2" DataType="System.String"/>
+        <Column Name="LastNameL2" DataType="System.String"/>
+        <Column Name="FatherNameL2" DataType="System.String"/>
+        <Column Name="MotherNameL2" DataType="System.String"/>
+        <Column Name="PlaceOfBirthL2" DataType="System.String"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="CivilRecordPlaceAndNumber" DataType="System.String"/>
+        <Column Name="PersonalRecordSource" DataType="System.String"/>
+        <Column Name="NationalityIssue" DataType="System.DateTime"/>
+        <Column Name="OtherNationalityIssue" DataType="System.DateTime"/>
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="Religion" DataType="System.Int32"/>
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="Status" DataType="System.Int32"/>
+        <Column Name="Address" DataType="System.String"/>
+        <Column Name="Phone" DataType="System.String"/>
+        <Column Name="Mobile" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="POBox" DataType="System.String"/>
+        <Column Name="WebSite" DataType="System.String"/>
+        <Column Name="Twitter" DataType="System.String"/>
+        <Column Name="Facebook" DataType="System.String"/>
+        <Column Name="IdentificationNo" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsRetired" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PhotoId" DataType="System.String"/>
+        <Column Name="EmploymentStatus" DataType="System.Int32"/>
+        <Column Name="SalaryStatus" DataType="System.Int32"/>
+        <Column Name="DisabilityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="CountryOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="OtherNationality_id" DataType="System.Int32"/>
+        <Column Name="DisabilityType_id" DataType="System.Int32"/>
+        <Column Name="RecruitmentInformation_id" DataType="System.Int32"/>
+        <Column Name="OtherNationalityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Employee_Table" ParentDataSource="Employee" ChildDataSource="Table" ParentColumns="Id" ChildColumns="EmployeeId" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="85.05">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين المحكومين" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" RightToLeft="true"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="88.9" Width="718.2" Height="75.6" CanGrow="true" CanBreak="true" DataSource="Employee">
+      <TextObject Name="Text8" Top="18.9" Width="274.05" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.JobDescriptionName]" RightToLeft="true" Font="Arial, 11pt"/>
+      <TextObject Name="Text3" Left="491.4" Top="18.9" Width="226.8" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.Code]" RightToLeft="true" Font="Arial, 11pt"/>
+      <TextObject Name="Text1" Left="274.05" Top="18.9" Width="217.35" Height="37.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Employee.FirstName] [Table.FatherName] [Employee.LastName]" RightToLeft="true" Font="Arial, 11pt"/>
+      <TextObject Name="Text9" Width="274.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="274.05" Width="217.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="491.4" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="193.54" Width="718.2" Height="38.8" CanGrow="true" CanBreak="true" DataSource="Table">
+        <TextObject Name="Text12" Left="387.45" Width="103.95" Height="38.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.ConvictionTypeName]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text19" Left="274.05" Width="113.4" Height="38.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.ReleaseDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.ReleaseDate] )]" Format="Date" Format.Format="d" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text10" Left="491.4" Width="207.9" Height="38.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.ConvictionNump]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text31" Left="699.3" Width="18.9" Height="38.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+        <TextObject Name="Text25" Width="141.75" Height="38.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[Table.Reason]" RightToLeft="true" Font="Arial, 11pt"/>
+        <TextObject Name="Text22" Left="141.75" Width="132.3" Height="38.8" Border.Lines="All" Border.Color="Silver" CanGrow="true" GrowToBottom="true" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [Table.ExpirationDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[Table.ExpirationDate] )]" Format="Date" Format.Format="d" RightToLeft="true" Font="Arial, 11pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="168.34" Width="718.2" Height="21.35">
+          <TextObject Name="Text20" Left="141.75" Top="0.45" Width="132.3" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الانتهاء" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text13" Left="387.45" Width="103.95" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع الحكم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text11" Left="491.4" Width="207.9" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="رقم الحكم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text18" Left="274.05" Top="0.45" Width="113.4" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الاصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Left="699.3" Width="18.9" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text24" Top="0.45" Width="141.75" Height="20.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="سبب الحكم" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="236.18" Width="718.2" Height="18.9">
+        <TextObject Name="Text17" Left="491.4" Top="-0.55" Width="226.8" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد العناصر ضمن التقرير" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text14" Top="-0.55" Width="491.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" RightToLeft="true" Font="Arial, 12pt"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="258.93" Width="718.2" Height="29.35">
+      <TextObject Name="Text7" Left="604.8" Top="9.45" Width="113.4" Height="18.9" Text="الصفحة [Page]" RightToLeft="true"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

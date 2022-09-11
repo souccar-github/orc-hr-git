@@ -1,0 +1,121 @@
+﻿<script id="ReportTemplateEditor" type="text/x-kendo-template">
+    @*<form class="k-edit-form-container" action="/Crud/Update" enctype="multipart/form-data" method="post">*@
+    <div class="k-edit-form-container">
+        <div class="k-edit-label">
+        </div>
+        <div class="k-edit-field">
+        </div>
+    
+        <div class="k-edit-label">
+            <label for="Input"> Name </label>
+        </div>
+        <div class="k-edit-field">
+            <input id="Input" type="text" class="k-input k-textbox" data-bind="value: Name" />
+        </div>
+        
+        <div class="k-edit-label">
+            <label for="ShowDateTime"> Show Date Time </label>
+        </div>
+        <div class="k-edit-field">
+            <input type="checkbox" id="checkbox1" data-bind="checked: ShowDateTime" />
+        </div>
+
+        <div class="k-edit-label">
+            <label for="ShowUserName"> Show User Name </label>
+        </div>
+        <div class="k-edit-field">
+            <input type="checkbox" id="checkbox2" data-bind="checked: ShowUserName" />
+        </div>
+
+        <div class="k-edit-label">
+            <label for="ShowPageNumber"> Show Page Number </label>
+        </div>
+        <div class="k-edit-field">
+            <input type="checkbox" id="checkbox3" data-bind="checked: ShowPageNumber" />
+        </div>
+
+        <div class="k-edit-label">
+            <label for="ShowHeader"> Show Header </label>
+        </div>
+        <div class="k-edit-field">
+            <input type="checkbox" id="checkbox4" data-bind="checked: ShowHeader" />
+        </div>
+
+        <div class="k-edit-label">
+            <label for="ShowFooter"> Show Footer </label>
+        </div>
+        <div class="k-edit-field">
+            <input type="checkbox" id="checkbox5" data-bind="checked: ShowFooter" />
+        </div>
+    
+        <div class="k-edit-label">
+            <label for="headerFiles"> Header Files </label>
+        </div>
+        <div class="k-edit-field">
+            <input name="RtfReportHeader" id="RtfReportHeader" type="file" />
+        </div>
+    
+        <div class="k-edit-label">
+            <label for="footerFiles"> Footer Files </label>
+        </div>
+        <div class="k-edit-field">
+            <input name="RtfReportFooter" id="RtfReportFooter" type="file"  />
+        </div>
+
+        @*<div class="k-edit-label">
+            <label for="Number"> Number </label>
+        </div>
+        <div class="k-edit-field">
+            <input id="Number" type="text" data-role="numerictextbox" />
+        </div>
+    
+        <div class="k-edit-label">
+            <label for="Country"> Country </label>
+        </div>
+        <div class="k-edit-field">
+            <input id="Country" data-role="dropdownlist" data-text-field="Name" data-value-field="Id" />
+        </div>*@
+    </div>
+    @*</form>*@
+</script>
+
+<script type="text/javascript">
+    function initializeReportTemplateEditor(e) {
+        //var countryDropDownList = e.container.find("#Country").data("kendoDropDownList");
+        //var dataSource = new kendo.data.DataSource({
+        //    type: "json",
+        //    serverFiltering: false,
+        //    transport: {
+        //        read: {
+        //            url: window.applicationpath + 'Index/ReadDropDownList/' + 'HRIS.Domain.Personnel.Indexes.Nationality'
+        //        }
+        //    },
+        //    schema: {
+        //        model: {
+        //            id: "Id"
+        //        },
+        //        data: "Data"
+        //    }
+        //});
+
+        //countryDropDownList.setDataSource(dataSource);
+        
+        $("#RtfReportHeader").kendoUpload({
+            async: {
+                saveUrl: "/UpLoadFile/Save?UploadInfo=RtfReportHeader",
+                removeUrl: "/UpLoadFile/Remove",
+                autoUpload: true
+            }
+        }
+        
+        );
+        
+        $("#RtfReportFooter").kendoUpload({
+            async: {
+                saveUrl: "/UpLoadFile/Save?UploadInfo=RtfReportFooter",
+                removeUrl: "/UpLoadFile/Remove",
+                autoUpload: true
+            }
+        });
+    }
+</script>

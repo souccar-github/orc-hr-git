@@ -1,0 +1,25 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function UpdateAppraisalPhase(phaseId) {
+
+        var msg = "@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.AreYouSureUpdatePhase)";
+        var commands = [{ Title: "@GlobalResource.Ok", Name: "ok", ClassName: "k-icon k-update", Handler: okHandler },
+                        { Title: "@GlobalResource.No", Name: "no", ClassName: "k-icon k-cancel" }];
+        ShowMessageBox("@GlobalResource.Information", msg, "k-icon w-b-info", commands);
+
+        function okHandler() {
+            $.ajax({
+                url: '@Url.Action("UpdateAppraisalPhase", "Reference", new { area = "PMS" })',
+                type: "POST",
+                data: JSON.stringify({ phaseId: phaseId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                }
+            });
+
+        }
+    }
+</script>

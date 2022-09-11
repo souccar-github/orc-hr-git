@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/26/2016 15:11:23" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {  
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {         
+      if (CheckBox1.Checked)
+      {        
+        JobDescriptionComboBox.SelectedIndex=-1;
+        JobDescriptionComboBox.AutoFilter=false;
+        JobDescriptionComboBox.AutoFill=false;
+        JobDescriptionComboBox.Enabled=false;
+      }else
+      {
+        JobDescriptionComboBox.AutoFilter=true;	
+        JobDescriptionComboBox.AutoFill=true;
+        JobDescriptionComboBox.Enabled=true;         
+      }  
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvWcd5HFnWbEVwjKag+gXVLA==">
+      <TableDataSource Name="Table1" Alias="JobDescriptionDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT&#13;&#10;N.Id, &#13;&#10;N.Code, &#13;&#10;AssigningEmployeeToPosition_id, &#13;&#10;AssigningEmployeeToPosition.IsPrimary,&#13;&#10;(SELECT Name FROM dbo.JobDescription WHERE Id=N.JobDescription_id AND JobDescription.IsVertualDeleted=0) AS JobDescriptionName,&#13;&#10;(SELECT Id FROM dbo.JobDescription WHERE Id=N.JobDescription_id AND JobDescription.IsVertualDeleted=0) AS JobDescriptionId,&#13;&#10;(SELECT dbo.JobTitle.Name FROM dbo.JobTitle INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;WHERE dbo.JobDescription.Id=N.JobDescription_id AND JobTitle.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0) AS JobTitleName,&#13;&#10;(SELECT dbo.Node.Name FROM dbo.JobDescription INNER JOIN dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id &#13;&#10;WHERE dbo.JobDescription.Id=N.JobDescription_id AND Node.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0) AS NodeName,&#13;&#10;(SELECT dbo.Grade.Name FROM dbo.JobDescription &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id &#13;&#10;INNER JOIN dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id &#13;&#10;WHERE dbo.JobDescription.Id=N.JobDescription_id AND JobTitle.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0 AND Grade.IsVertualDeleted=0) AS GradeName,&#13;&#10;(SELECT dbo.OrganizationalLevel.Name FROM dbo.JobDescription &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id &#13;&#10;INNER JOIN dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id &#13;&#10;INNER JOIN dbo.OrganizationalLevel ON dbo.Grade.OrganizationalLevel_id = dbo.OrganizationalLevel.Id &#13;&#10;WHERE dbo.JobDescription.Id=N.JobDescription_id AND JobTitle.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0 AND Grade.IsVertualDeleted=0 AND OrganizationalLevel.IsVertualDeleted=0) AS OrganizationalLevelName,&#13;&#10;Manager_id, &#13;&#10;(SELECT FirstName+' '+LastName+' '+FatherName FROM dbo.AssigningEmployeeToPosition &#13;&#10;INNER JOIN dbo.Employee ON dbo.AssigningEmployeeToPosition.Employee_id = dbo.Employee.Id WHERE AssigningEmployeeToPosition.Position_Id=Manager_id AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0) AS ManagerName,&#13;&#10;(SELECT Code FROM dbo.Position P WHERE P.Id=N.Manager_id AND N.IsVertualDeleted=0) AS ManagerPositionCode,&#13;&#10;(SELECT Count(*) FROM dbo.Position P WHERE P.Manager_id=N.Manager_id AND P.IsVertualDeleted=0) AS EmployeeCount,&#13;&#10;ManagerJobTitle_id,&#13;&#10;dbo.AssigningEmployeeToPosition.Employee_id,&#13;&#10;(SELECT FirstName+' '+LastName+' '+FatherName FROM dbo.Employee WHERE Id=dbo.AssigningEmployeeToPosition.Employee_id) AS EmployeeName,&#13;&#10;(SELECT Code FROM dbo.Employee WHERE Id=dbo.AssigningEmployeeToPosition.Employee_id AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0) AS EmployeeCode&#13;&#10;FROM            &#13;&#10;dbo.Position N INNER JOIN dbo.AssigningEmployeeToPosition &#13;&#10;ON N.AssigningEmployeeToPosition_id = dbo.AssigningEmployeeToPosition.Id&#13;&#10;WHERE AssigningEmployeeToPosition_id IS NOT NULL AND N.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0&#13;&#10;ORDER BY N.JobDescription_id">
+        <Column Name="JobTitleName" DataType="System.String"/>
+        <Column Name="NodeName" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="AssigningEmployeeToPosition_id" DataType="System.Int32"/>
+        <Column Name="IsPrimary" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="JobDescriptionName" DataType="System.String"/>
+        <Column Name="GradeName" DataType="System.String"/>
+        <Column Name="OrganizationalLevelName" DataType="System.String"/>
+        <Column Name="Manager_id" DataType="System.Int32"/>
+        <Column Name="ManagerName" DataType="System.String"/>
+        <Column Name="ManagerPositionCode" DataType="System.String"/>
+        <Column Name="EmployeeCount" DataType="System.Int32"/>
+        <Column Name="ManagerJobTitle_id" DataType="System.Int32"/>
+        <Column Name="Employee_id" DataType="System.Int32"/>
+        <Column Name="EmployeeName" DataType="System.String"/>
+        <Column Name="EmployeeCode" DataType="System.String"/>
+        <Column Name="JobDescriptionId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="JobDescription" DataType="System.Int32" Enabled="true" TableName="JobDescription" SelectCommand="SELECT J.Id, J.IsVertualDeleted, J.Name, J.Summary, J.JobTitle_id, J.Node_id&#13;&#10;FROM &quot;JobDescription&quot; J&#13;&#10;WHERE  J.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Summary" DataType="System.String"/>
+        <Column Name="JobTitle_id" DataType="System.Int32"/>
+        <Column Name="Node_id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table11" ParentDataSource="JobDescription" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescriptionId" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير المواقع الوظيفية حسب الوصف الوظيفي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text52" Top="56.7" Width="718.2" Height="37.8" Text="[JobDescriptionComboBox.Text]:الوصف الوظيفي المختار" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="98.62" Width="718.2"/>
+    <DataBand Name="Data1" Top="102.75" Width="718.2" Height="122.85" DataSource="Table1">
+      <TextObject Name="Text50" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text30" Left="547.1" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="547.1" Top="18.9" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text40" Left="547.1" Top="37.8" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="كود الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="547.1" Top="56.7" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الوصف الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Left="547.1" Top="75.6" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العقدة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text43" Left="547.1" Top="94.5" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المسمى الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text44" Left="188" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="هل الموقع اساسي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text45" Left="188" Top="18.9" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الفئة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text46" Left="188" Top="37.8" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المستوى التنظيمي للفئة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text47" Left="188" Top="56.7" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي للمدير المباشر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text48" Left="188" Top="75.6" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم المدير المباشر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text49" Left="188" Top="94.5" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الموظفين المرؤوسين" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text1" Left="359.1" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.EmployeeCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Left="359.1" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.EmployeeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="359.1" Top="37.8" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="359.1" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.JobDescriptionName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="359.1" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.NodeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text10" Left="359.1" Top="94.5" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.JobTitleName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <CheckBoxObject Name="CheckBox2" Left="85.05" Width="18.9" Height="18.9" DataColumn="JobDescriptionDataSourse.IsPrimary"/>
+      <TextObject Name="Text12" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.GradeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text13" Top="37.8" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.OrganizationalLevelName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text14" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.ManagerPositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text16" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.ManagerName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text17" Top="94.5" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[JobDescriptionDataSourse.EmployeeCount]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text51" Top="113.4" Width="717.85" Height="9.45" Border.Lines="Right, Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      <DataFooterBand Name="DataFooter1" Top="229.72" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="548.1" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="548.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="252.74" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="170" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="106" Top="103" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="184" Top="48" Width="79" Height="13" TabIndex="2" Text="الوصف الوظيفي"/>
+    <ComboBoxControl Name="JobDescriptionComboBox" Left="8" Top="44" Width="175" TabIndex="3" ClickEvent="" DataColumn="JobDescriptionDataSourse.JobDescription.Name" DropDownStyle="DropDownList" DropDownWidth="141" ItemHeight="13" SelectedIndexChangedEvent="CheckBox1_CheckedChanged"/>
+    <CheckBoxControl Name="CheckBox1" Left="168" Top="76" Width="46" Height="17" TabIndex="4" Text="الكل" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

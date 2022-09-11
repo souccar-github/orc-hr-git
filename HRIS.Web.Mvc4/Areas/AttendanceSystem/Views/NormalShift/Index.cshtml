@@ -1,0 +1,34 @@
+﻿<script>
+    function NormalShiftEditHandler(e) {
+        if (e.model.isNew()) {
+            $("[name='EntryTime']").val("");
+            $("[name='ExitTime']").val("");
+            $("[name='ShiftRangeStartTime']").val("");
+            $("[name='ShiftRangeEndTime']").val("");
+            $("[name='RestRangeStartTime']").val("");
+            $("[name='RestRangeEndTime']").val("");
+            e.model.EntryTime = null;
+            e.model.ExitTime = null;
+            e.model.ShiftRangeStartTime = null;
+            e.model.ShiftRangeEndTime = null;
+            e.model.RestRangeStartTime = null;
+            e.model.RestRangeEndTime = null;
+
+            $("#grid").data("kendoGrid").editable.options.model.EntryTime = null;
+            $("#grid").data("kendoGrid").editable.options.model.ExitTime = null;
+            $("#grid").data("kendoGrid").editable.options.model.ShiftRangeStartTime = null;
+            $("#grid").data("kendoGrid").editable.options.model.ShiftRangeEndTime = null;
+            $("#grid").data("kendoGrid").editable.options.model.RestRangeStartTime = null;
+            $("#grid").data("kendoGrid").editable.options.model.RestRangeEndTime = null;
+        } else {
+            if (e.model.RestPeriod == 0 || e.model.RestPeriod == '' || e.model.RestPeriod == null) {
+                $("[name='RestRangeStartTime']").val("");
+                $("[name='RestRangeEndTime']").val("");
+                e.model.RestRangeStartTime = null;
+                e.model.RestRangeEndTime = null;
+                $("#grid").data("kendoGrid").editable.options.model.RestRangeStartTime = null;
+                $("#grid").data("kendoGrid").editable.options.model.RestRangeEndTime = null;
+            }
+        }
+    }
+</script>

@@ -1,0 +1,271 @@
+﻿
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Factories
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Models
+@using Project.Web.Mvc4.Models.GridModel
+@using Project.Web.Mvc4.ProjectModels
+@using Souccar.Infrastructure.Core
+@using Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Services
+@using Souccar.Domain.Notification
+
+
+
+@{
+
+
+    var moduleName = "";
+    var moduleStep = (RequestInformation.Navigation.Step)TempData["NavigationStep"];
+
+    if (moduleStep != null && moduleStep.Name != "")
+    {
+        moduleName = moduleStep.Name;
+
+        <script>
+
+            window.requestInformation = {};
+
+            window.requestInformation.NavigationInfo = { Status: "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Module", Module: { Name: "@moduleStep.Name", Title: "@moduleStep.Title", ImageClass: "@moduleStep.ImageClass", SmallImageClass: "@moduleStep.SmallImageClass" } };
+
+            window.requestInformation.NavigationInfo.Previous = [];
+
+            $(document).ready(function () {
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+            });
+        </script>
+    }
+
+    var kdir = "";
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        kdir = "k-rtl";
+    }
+    var currertTab = BuildNavigation.GetTab(moduleName);
+    var currentModule = BuildNavigation.GetModule(moduleName);
+
+}
+<div id="tabs">
+
+    <ul class="tabs_list">
+        @foreach (var tab in BuildNavigation.Tabs.OrderBy(x => x.Order))
+        {
+            var activeTabClass = (currertTab != null && currertTab.Name == tab.Name) ? "active_tab" : "";
+            <li class="tab_@tab.Name @activeTabClass"><a href="#" onclick="onChangeTab('@tab.Name')"><span class="tab_name">@tab.Title</span></a></li>
+        }
+    </ul>
+
+</div>
+<div id="primary_nav" class="g_blue">
+    @foreach (var tab in BuildNavigation.Tabs.OrderBy(x => x.Order))
+    {
+        var tabStyle = (currertTab == null || currertTab.Name != tab.Name) ? "display:none" : "display:block";
+        <div id="@tab.Name" class="tab_modules" style="@tabStyle">
+            <ul>
+                @foreach (var module in tab.Modules.Where(x => x.IsAuthorized))
+                {
+                    var active = (module.ModuleId == moduleName) ? "icon_module_active_" + moduleName.ToLower() : "";
+                    var activeModuleLink = (module.ModuleId == moduleName) ? "active_module" : "";
+                    <li>
+                        <a href="@Url.Action("Welcome", "Module", new { area = "", id = module.ModuleId })" class="@activeModuleLink" id="@module.ModuleId" title="@module.Title">
+                            <span class="icon_block @module.ImageClass @active">@module.Title</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+<div id="sidebar">
+
+    @{if (currentModule != null)
+            {
+            <div id="secondary_nav">
+                <ul id="sidenav" class="accordion_mnu collapsible">
+
+                    @if (currentModule.Dashboards.Count > 0)
+                {
+                        <li>
+                            <a href="#">
+                                <span class="nav_icon dashboard"></span>
+                                <span class="sub_nav">
+                                    @GlobalResource.Dashboard
+                                </span>
+
+                                @if (currentModule.Dashboards.Count > 0)
+                                {
+                                    <span class="up_down_arrow">&nbsp;</span>
+                                }
+                            </a>
+                            <ul class="acitem">
+                                @foreach (var dashboard in currentModule.Dashboards.Where(x => x.IsAuthorized).OrderBy(x => x.Order))
+                                {
+                                    <li>
+                                        <div>
+                                            <a class="menuItemLink" id="@dashboard.DashboardId" onclick="onclickDashboard('@dashboard.DashboardId', '@dashboard.Title', '@dashboard.Controller', '@dashboard.Action')">
+                                                @dashboard.Title
+                                                <span class="list-icon">&nbsp;</span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (currentModule.Aggregates.Count > 0)
+                {
+                        <li>
+                            <a href="#">
+                                <span class="nav_icon tlo"></span>
+                                <span class="sub_nav">
+                                    @GlobalResource.Aggregate
+                                </span>
+
+                                @if (currentModule.Aggregates.Count > 0)
+                                {
+                                    <span class="up_down_arrow">&nbsp;</span>
+                                }
+                            </a>
+                            <ul class="acitem">
+                                @foreach (var aggregate in currentModule.Aggregates.Where(x => x.IsAuthorized).OrderBy(x => x.Order))
+                                {
+                                    <li>
+                                        <div>
+                                            <a class="menuItemLink" id="@aggregate.AggregateId" onclick="onclickAggregate('@aggregate.TypeFullName', '@aggregate.AggregateId', '@aggregate.Controller', '@aggregate.Action', '@aggregate.Title',@Project.Web.Mvc4.Models.GridModel.GridViewModel.DefaultPageSize) ">
+                                                @aggregate.Title
+                                                <span class='list-icon'>&nbsp;</span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (currentModule.Indexes.Count > 0)
+                {
+                        <li>
+                            <a href="#">
+                                <span class="nav_icon indexes"></span>
+                                <span class="sub_nav">
+                                    @GlobalResource.Index
+                                </span>
+
+                                @if (currentModule.Indexes.Count > 0)
+                                {
+                                    <span class="up_down_arrow">&nbsp;</span>
+                                }
+                            </a>
+                            <ul class="acitem">
+                                @foreach (var index in currentModule.Indexes.Where(x => x.IsAuthorized).OrderBy(x => x.Order))
+                                {
+                                    <li>
+                                        <a class="menuItemLink" id="@index.IndexId.Replace('.', '_')" onclick="onclickIndex('@index.Title','@index.IndexId')">
+                                            <span class="list-icon">&nbsp;</span>
+                                            @index.Title
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (currentModule.Services.Count > 0)
+                {
+                        <li>
+                            <a href="#">
+                                <span class="nav_icon services"></span>
+                                <span class="sub_nav">
+                                    @GlobalResource.Service
+                                </span>
+
+                                @if (currentModule.Services.Count > 0)
+                                {
+                                    <span class="up_down_arrow">&nbsp;</span>
+                                }
+                            </a>
+                            <ul class="acitem">
+                                @foreach (var service in currentModule.Services.Where(x => x.IsAuthorized).OrderBy(x => x.Order))
+                                {
+                                    <li>
+                                        <a class="menuItemLink" id="@service.ServiceId" onclick="onclickService('@service.ServiceId','@service.Title','@service.Controller','@service.Action')">
+                                            <span class="list-icon">&nbsp;</span>
+                                            @service.Title
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (currentModule.Reports.Count > 0)
+                {
+                        <li>
+                            <a href="#">
+                                <span class="nav_icon reports"></span>
+                                <span class="sub_nav">
+                                    @GlobalResource.Report
+                                </span>
+
+                                @if (currentModule.Reports.Count > 0)
+                                {
+                                    <span class="up_down_arrow">&nbsp;</span>
+                                }
+                            </a>
+                            <ul class="acitem">
+                                @foreach (var report in ReportFactory.Create(currentModule.ModuleId).Where(x => x.IsAuthorized).OrderBy(x => x.Order))
+                                {
+                                    <li>
+                                        <a class="menuItemLink" id="@report.ReportId" onclick="onclickReport('@report.ReportId','@report.Title','@report.Controller','@report.Action')">
+                                            <span class="list-icon">&nbsp;</span>
+                                            @report.Title
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (currentModule.Configurations.Count > 0)
+                {
+                        <li>
+                            <a href="#">
+                                <span class="nav_icon configurations"></span>
+                                <span class="sub_nav">
+                                    @GlobalResource.Configuration
+                                </span>
+
+                                @if (currentModule.Configurations.Count > 0)
+                                {
+                                    <span class="up_down_arrow">&nbsp;</span>
+                                }
+                            </a>
+                            <ul class="acitem">
+                                @foreach (var configuration in currentModule.Configurations.Where(x => x.IsAuthorized).OrderBy(x => x.Order))
+                                {
+                                    <li>
+                                        <div>
+                                            <a class="menuItemLink" id="@configuration.ConfigurationId" onclick="onclickConfigurations('@configuration.TypeFullName' , '@configuration.ConfigurationId' , '@configuration.Controller' ,
+                                           '@configuration.Action' , '@configuration.Title' ,@Project.Web.Mvc4.Models.GridModel.GridViewModel.DefaultPageSize) ">
+                                                @configuration.Title
+                                                <span class='list-icon'>&nbsp;</span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
+
+<script type="text/javascript">
+    function onChangeTab(tabName) {
+
+        $(".tab_modules").css("display", "none");
+        $("#" + tabName).css("display", "block");
+        $(".active_tab").removeClass("active_tab");
+        $(".tab_" + tabName).addClass("active_tab");
+    }
+</script>
+
+<div id="closeNav"></div>

@@ -1,0 +1,131 @@
+﻿@using HRIS.Domain.Personnel.Enums
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+@using HRIS.Domain.Global.Constant
+@Html.Partial("MilitaryHandler")
+@Html.Partial("PassportHandler")
+@Html.Partial("ResidencieHandler")
+@Html.Partial("PrimaryEmployeeBenefitHandler")
+@Html.Partial("PrimaryEmployeeDeductionHandler")
+@Html.Partial("ConvictionHandler")
+@Html.Partial("DependentHandler")
+@Html.Partial("ExperienceHandler")
+@Html.Partial("LoanPaymentHandler")
+@Html.Partial("EmployeeViewHandler")
+@Html.Partial("EmployeeEditHandler")
+
+@Html.Partial("SpouseHandler")
+@Html.Partial("ChildHandler")
+
+<script type="text/javascript">
+
+    function LoanPaymentActionListHandler(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function LoanPaymentViewHandler(e) {
+        e.container.find("#view_edit").remove();
+    }
+
+    function initializeEmployeeCardActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@ServiceFactory.LocalizationService.GetResource(CommandsNames.ResourceGroupName + '_'  +CommandsNames.TerminateAfterPreparationPeriod)") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function initializeAssigningEmployeeToPositionActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function AssignEToPAfterRequestEndHandler(e) {
+        if (e.type != "read")
+            e.sender.fetch();
+    }
+
+    function initializeEmployeeActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].Name == "Additional") {
+                if (dataItem.Gender.Name == "Male") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function ActiveUserForEmployee(modelId) {
+        window.Souccar.ajax('@Url.Action("ActiveUserForEmployee", "Service", new { area = "Personnel" })', { id: modelId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Status) {
+                window.Souccar.showInfoMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+                $('#grid').data("kendoGrid").dataSource.read();
+            } else {
+                window.Souccar.showErrorMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+            }
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+    }
+    function DeactiveUserForEmployee(modelId) {
+        window.Souccar.ajax('@Url.Action("DeactiveUserForEmployee", "Service", new { area = "Personnel" })', { id: modelId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Status) {
+                window.Souccar.showInfoMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+                $('#grid').data("kendoGrid").dataSource.read();
+            } else {
+                window.Souccar.showErrorMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+            }
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+    }
+    function showOrHideActivateEmployee(actionListItems, dataItem) {
+        debugger;
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (dataItem.IsActive == true && actionListItems[i].HandlerName == "@CommandsNames.ActiveUserForEmployee") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (dataItem.IsActive == false && actionListItems[i].HandlerName == "@CommandsNames.DeactiveUserForEmployee") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+</script>

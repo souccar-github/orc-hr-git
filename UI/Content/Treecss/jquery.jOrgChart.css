@@ -1,0 +1,71 @@
+/* Custom chart styling */
+.jOrgChart {
+  margin                : 10px;
+  padding               : 20px;
+}
+
+/* Custom node styling */
+.jOrgChart .node {
+	font-family 		: tahoma;
+	font-size 			: 12px;
+	border-radius 		: 4px;
+	border 				: 2px solid #a4abb2;
+	color 				: #666666;
+	-moz-border-radius 	: 4px;
+	background			:#e8ebee url(imgs/person_icon.png) 10px 10px no-repeat;
+	display             : inline-block;
+	width               : 140px;
+	height              : 90px;
+	z-index 			: 10;
+	margin              : 0 2px;
+	text-align			:left;
+	padding-left		:60px;
+	padding-top			:10px;
+}
+.node p{
+
+	font-size 		: 10px;
+	line-height 	: 11px;
+	padding 		: 2px;
+}
+/* Basic styling */
+/* Draw the lines */
+.jOrgChart .line {
+  height                : 20px;
+  width                 : 2px;
+}
+
+.jOrgChart .down {
+  background-color 		: #a4abb2;	
+  margin 				: 0px auto;
+}
+
+.jOrgChart .top {
+  border-top          : 2px solid #a4abb2;
+}
+
+.jOrgChart .left {
+  border-right          :1px solid #a4abb2;
+}
+
+.jOrgChart .right {
+  border-left           : 1px solid #a4abb2;
+}
+
+/* node cell */
+.jOrgChart td {
+  text-align            : center;
+  vertical-align        : top;
+  padding               : 0;
+}
+
+/* jQuery drag 'n drop */
+
+.drag-active {
+  border-style			: dotted !important;
+}
+
+.drop-hover {
+  border-style			: solid !important;
+  border-color 			: #E05E00 !important;
+}

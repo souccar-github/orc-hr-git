@@ -1,0 +1,96 @@
+﻿
+<script type="text/javascript">
+    function SpouseEditHandler(e) {
+        if (e.model.isNew()) {
+            $("[name='ResidencyExpiryDate']").val('');
+            $("[name='PassportExpiryDate']").val('');
+            e.model.ResidencyExpiryDate = null;
+            e.model.PassportExpiryDate = null;
+        }
+        $("[name='HasJob']").off("click").on("click", controlClick);
+        $("[name='IsGovernmentWork']").off("click").on("click", controlClick);
+        $("[name='IsDivorce']").off("click").on("click", controlClick); 
+        $("[name='IsDeath']").off("click").on("click", controlClick);
+        $("[name='HasChildBenefit']").off("click").on("click", controlClick);
+        controlClick();
+        function controlClick() {
+            var container = e.container.find(".fieldsets-div");
+            var hasJob = $("[name='HasJob']").is(":checked");
+            var hasChildBenefit = $("[name='HasChildBenefit']").is(":checked");
+            var isGovernmentWork = $("[name='IsGovernmentWork']").is(":checked");
+            var isDivorce = $("[name='IsDivorce']").is(":checked");
+            var isDeath = $("[name='IsDeath']").is(":checked");
+            if (isGovernmentWork) {
+                container.find(".control.control-IsInternalJob").show();
+            } else {
+                e.model.IsInternalJob = false;
+                container.find(".control.control-IsInternalJob input").prop("checked",false);
+                container.find(".control.control-IsInternalJob").hide();
+            }
+            spouseUpdateEditView(container, hasJob, isGovernmentWork, isDivorce, isDeath, hasChildBenefit);
+            reOrderControls($(".fieldset-PersonnelGoupesNames_SpouseInfo"));
+            reOrderControls($(".fieldset-PersonnelGoupesNames_MarriageInfo"));
+            reOrderControls($(".fieldset-PersonnelGoupesNames_JobInfo"));
+        }
+    }
+    
+    function SpouseViewHandler(e) {
+        var container = $(".show-fieldsets-div");
+        var hasJob = e.model.HasJob;
+        var isGovernmentWork = e.model.IsGovernmentWork;
+        var isDivorce =e.model.IsDivorce;
+        var isDeath = e.model.IsDeath;
+        var hasChildBenefit = e.model.HasChildBenefit;
+        spouseUpdateEditView(container, hasJob, isGovernmentWork, isDivorce, isDeath, hasChildBenefit);
+        reOrderControls($(".fieldset-PersonnelGoupesNames_SpouseInfo"));
+        reOrderControls($(".fieldset-PersonnelGoupesNames_MarriageInfo"));
+        reOrderControls($(".fieldset-PersonnelGoupesNames_JobInfo"));
+    }
+    
+
+    function spouseUpdateEditView(container, hasJob, isGovernmentWork, isDivorce, isDeath, hasChildBenefit) {
+        if (isDeath) {
+            container.find(".control.control-DeathDate").show();
+        } else {
+            container.find(".control.control-DeathDate").hide();
+            $("[name='DeathDate']").val(null);
+        }
+
+        if (isDivorce) {
+            container.find(".control.control-DivorceDate").show();
+        } else {
+            container.find(".control.control-DivorceDate").hide();
+            $("[name='DivorceDate']").val(null);
+        }
+        
+        if (hasChildBenefit) {
+            container.find(".control.control-DateOfFamilyBenefitActivation").show();
+        } else {
+            container.find(".control.control-DateOfFamilyBenefitActivation").hide();
+        }
+        if (hasJob) {
+            container.find(".control.control-IsGovernmentWork").show();
+            container.find(".control.control-JobTitle").show();
+            container.find(".control.control-CompanyName").show();
+            container.find(".control.control-WorkAddress").show();
+            container.find(".control.control-WorkPhone").show();
+            container.find(".control.control-WorkEmail").show();
+            container.find(".control.control-WorkAddress").show();
+            if (isGovernmentWork) {
+                container.find(".control.control-IsInternalJob").show();
+            } else {
+                container.find(".control.control-IsInternalJob").hide();
+            }
+        } else {
+            container.find(".control.control-IsGovernmentWork").hide();
+            container.find(".control.control-JobTitle").hide();
+            container.find(".control.control-CompanyName").hide();
+            container.find(".control.control-WorkAddress").hide();
+            container.find(".control.control-WorkPhone").hide();
+            container.find(".control.control-WorkEmail").hide();
+            container.find(".control.control-WorkAddress").hide();
+            container.find(".control.control-IsInternalJob").hide();
+        }
+    }
+
+</script>

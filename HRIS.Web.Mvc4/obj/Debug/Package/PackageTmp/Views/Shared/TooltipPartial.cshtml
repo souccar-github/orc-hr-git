@@ -1,0 +1,19 @@
+﻿@model Project.Web.Mvc4.Models.Tooltip
+<div class="dairy-details">
+    <img src="@Model.ImgPath" alt="Nuha"/>
+    <h3>
+        @Model.Title, <br /> @Model.Role.
+    </h3>
+    <style scoped="scoped">
+        .dairy-details {
+            padding: 10px 0 0 0;
+        }
+        .dairy-details h3 {
+            font-weight: normal;
+            font-size: 1.5em;
+            margin-top: 10px;
+            line-height: initial;
+        }
+    </style>
+</div>
+

@@ -1,0 +1,49 @@
+﻿@using Project.Web.Mvc4.Models
+@{
+    var moduleStep = (RequestInformation.Navigation.Step)TempData["Module"];
+    ViewBag.Title = moduleStep.Title;
+}
+
+<div id="dynamic_content">
+    <h2>@ViewBag.Title</h2>
+</div>
+
+
+
+@*<div id="example" class="k-content">
+    <div style="width: 45%">
+        <div class="demo-section">
+            <input name="files" id="fileUploader" type="file" />
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var allowMultiple = true;// this could be as parameter
+            var fileUploaderSuffix = "suffix1";// this could be as parameter
+
+            $("#fileUploader").attr("id", "fileUploader_" + fileUploaderSuffix);
+
+            $("#fileUploader_" + fileUploaderSuffix).kendoUpload({
+                async: {
+                    saveUrl: "../Attachment/SaveFilesTemporary?fileUploaderSuffix=" + fileUploaderSuffix,
+                    removeUrl: "../Attachment/RemoveTemporaryFiles?fileUploaderSuffix=" + fileUploaderSuffix,
+                    autoUpload: true
+                },
+                multiple: allowMultiple
+            });
+        });
+    </script>
+</div>*@
+
+
+
+@*@Html.ActionLink("Test Save Attachment", "TestAttachment", "Home")
+
+
+@Html.ActionLink("Test Delete Attachment", "TestDeleteAttachment", "Home")*@
+
+
+@Html.Partial("ActionListTemplate")
+@Html.Partial("EditorTemplate")
+@Html.Partial("ReportTemplateEditor")

@@ -1,0 +1,299 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+@using HRIS.Domain.Recruitment.Enums
+@{
+    int accepted = (int)RequestStatus.Accepted;
+    int rejected = (int)RequestStatus.Rejected;
+    int finished = (int)RequestStatus.Finished;
+}
+<script type="text/javascript">
+
+    function showMessage (title, message, buttomTitle) {
+        var commands = [{ Title: buttomTitle, ClassName: "k-icon k-update" }];
+        ShowMessageBox(title, message, "k-icon w-b-success", commands);
+    };
+
+    function recruitmentRequestEditHandler(e) {
+
+        var requestedPositionDropdownlist = $("[name='RequestedPosition']").data("kendoDropDownList");
+
+        requestedPositionDropdownlist.bind("change", function () {
+            updateJobDescriptionInfo(requestedPositionDropdownlist.value());
+        });
+        requestedPositionDropdownlist.bind("select", function () {
+            updateJobDescriptionInfo(requestedPositionDropdownlist.value());
+        });
+    }
+
+    function updateJobDescriptionInfo(requestedPositionId) {
+
+        window.Souccar.ajax('@Url.Action("GetJobDescriptionInfo", "Home", new { area = "Recruitment" })', { requestedPositionId: requestedPositionId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            generateJobDescriptionFieldsAndHide();
+
+            $("[name='Node']").val(data.Node);
+            $("[name='NodeType']").val(data.NodeType);
+            $("[name='PositionType']").val(data.PositionType);
+            $("[name='PositionGrade']").val(data.PositionGrade);
+            $("[name='PositionCode']").val(data.PositionCode);
+            $("[name='PositionLevel']").val(data.PositionLevel);
+
+
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+
+
+
+    }
+
+    function generateJobDescriptionFieldsAndHide() {
+        debugger;
+        
+        if (!$("[name='NodeType']").length)
+            addControlToGroup($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"), "NodeType", "NodeType", "", "Text");
+
+        if (!$("[name='Node']").length)
+            addControlToGroup($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"), "Node", "Node", "", "Textarea");
+
+        if (!$("[name='PositionCode']").length)
+            addControlToGroup($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"), "PositionCode", "PositionCode", "", "Textarea");
+
+        if (!$("[name='PositionType']").length)
+            addControlToGroup($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"), "PositionType", "PositionType", "", "Text");
+
+        if (!$("[name='PositionGrade']").length)
+            addControlToGroup($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"), "PositionGrade", "PositionGrade", "", "Text");
+
+        if (!$("[name='PositionLevel']").length)
+            addControlToGroup($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"), "PositionLevel", "PositionLevel", "", "Text");
+
+        reOrderControls($(".fieldset-RecruitmentGroupsNames_JobDescriptionInfo"));
+
+    }
+
+    //====================================================//
+    //============Set Recruitment Request Status=============//
+    //====================================================//
+
+    function SetRecruitmentRequestStatus(id) {
+
+        window.Souccar.ajax('@Url.Action("CheckRecruitmentRequestStatus", "Home", new { area = "Recruitment" })',
+                    {  id: id },
+                    successFunc,
+                    erorrFunc);
+                function successFunc(data) {
+                    if (data.Success) {
+                        generateRecruitmentRequestStatusWindow(id);
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                        ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+                    }
+                }
+                function erorrFunc() {
+                    window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+                }
+
+
+
+    }
+
+    function generateRecruitmentRequestStatusWindow(id) {
+        var requestStatus = [
+            { 'Name': '', 'Id': '-1' },
+            { 'Name': '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Accepted)', 'Id': '@accepted' },
+            { 'Name': '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Rejected)', 'Id': '@rejected' },
+            { 'Name': '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Finished)', 'Id': '@finished' }
+        ];
+        debugger;
+        if ($('#setRecruitmentRequestStatus-container').length > 0)
+            $('#setRecruitmentRequestStatus-container').remove();
+
+        var title = "";
+
+        var buttons = [
+            { Name: "UpdateButtonSetRecruitmentRequestStatus", CssClass: "save", Title: "@GlobalResource.Save" },
+            { Name: "CancelButtonSetRecruitmentRequestStatus", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+
+        var containerId = "setRecruitmentRequestStatus-container";
+        var popupDiv = $("<div id='setRecruitmentRequestStatus-popup' class='k-edit-form-container one-column-popup'></div>");
+        var body = "<div class='cfms-setRecruitmentRequestStatus-body  controls-container controls-div'></div>";
+
+        var viewModel = kendo.observable();
+
+        var fields = [
+            { Name: "RequestStatus", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.RequestStatus)", Type: "Enum", TypeName: "HRIS.Domain.Recruitment.Enums.RequestStatus", IsRequired: false },
+            { Name: "RequestCode", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.RequestCode)", Type: "Text", IsRequired: false }
+        ];
+
+        var viewModel = kendo.observable();
+
+        $("label[for='RequestStatus']").append('<span class="required-star">*</span>');
+        $("label[for='RequestCode']").append('<span class="required-star">*</span>');
+
+        createAndOpenCustomWindowForManualFinish(popupDiv, body, containerId, title, buttons, false);
+        createCustomEditForm(popupDiv.find(".cfms-setRecruitmentRequestStatus-body"), { Fields: fields, Key: "cfms-setRecruitmentRequestStatus-body" }, viewModel);
+
+
+        removeRequiredStar('RequestStatus');
+        addRequiredStar("RequestStatus");
+        removeRequiredStar('RequestCode');
+        addRequiredStar("RequestCode");
+
+        var requestStatusDropdown = $("[name='RequestStatus']").data("kendoDropDownList");
+        requestStatusDropdown.setDataSource(requestStatus);
+        requestStatusDropdown.dataSource.read();
+
+        initialElementsValues(id);
+
+        $(document).on('click', '#UpdateButtonSetRecruitmentRequestStatus', function () {
+
+            var requestStatusValue = requestStatusDropdown.value();
+            var requestCodeValue = $("[name='RequestCode']").val();
+
+            if (requestStatusValue == "" || requestStatusValue == "-1") {
+                addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestStatus");
+            }
+
+            if (requestCodeValue == "") {
+                addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestCode");
+            }
+
+            if (requestCodeValue != "" &&
+                requestStatusValue != "-1" &&
+                requestStatusValue != "") {
+
+                window.Souccar.ajax('@Url.Action("SetRecruitmentRequestStatus", "Home", new { area = "Recruitment" })',
+                    { requestStatus: requestStatusValue, requestCode: requestCodeValue, id: id },
+                    successFunc,
+                    erorrFunc);
+                function successFunc(data) {
+                    if (data.Success) {
+                        popupDiv.data("kendoWindow").close();
+
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                        ShowMessageBox("@GlobalResource.Success", data.Message, "k-icon w-b-info", commands);
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                        ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+                    }
+                }
+                function erorrFunc() {
+                    window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+                }
+            }
+        });
+
+        $(document).on('click', '#CancelButtonSetRecruitmentRequestStatus', function () {
+            popupDiv.data("kendoWindow").close();
+        });
+
+        $("[name='RequestCode']").focusout(function () {
+            if ($("[name='RequestCode']").val() == "") {
+
+                addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestCode");
+            } else {
+
+                $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestCode').remove();
+            }
+
+        });
+
+        $("[name='RequestCode']").keyup(function () {
+            if ($("[name='RequestCode']").val() == "") {
+
+                addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestCode");
+            } else {
+                $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestCode').remove();
+            }
+
+        });
+
+        requestStatusDropdown.bind("change",function() {
+            $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestStatus').remove();
+        });
+    }
+
+    function initialElementsValues(id) {
+        window.Souccar.ajax('@Url.Action("InitialElementsValues", "Home", new { area = "Recruitment" })', { id : id }, successFunc, erorrFunc);
+                function successFunc(data) {
+                    if (data.Success) {
+                        var requestStatusDropdown = $("[name='RequestStatus']").data("kendoDropDownList");
+                        requestStatusDropdown.refresh();
+                        requestStatusDropdown.value(data.Status);
+
+                        $('[name="RequestCode"]').val(data.Code);
+                    }
+                }
+                function erorrFunc() {
+                    window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+                }
+    }
+
+    function createAndOpenCustomWindowForManualFinish(windowElement, bodyHTML, containerId, title, Buttons, isTwoColumns) {
+        var width = 600;
+        if (isTwoColumns)
+            width = 540;
+        var templateData = {
+            BodyHTML: bodyHTML,
+            BodyHeight: 270,
+            ContainerId: containerId,
+            Buttons: Buttons
+        };
+        var templateHtml = getCustomPopupViewHTML(templateData);
+        windowElement.html(templateHtml);
+
+        createAndOpenWindow(windowElement, title, width, 350);
+    }
+
+    function addCustomValidationMessage(validationMessage,type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage,type: type});
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-'+type).remove();
+        $("[data-container-for='"+type+"']").append(template);
+    }
+
+    function addLabelBeforeControlTextArea(control, name, title, value) {
+        control.before(showLabelControl(name, title, value, type));
+    }
+
+    function initialControl(name, title, value, type) {
+        //type{Text,Date,Textarea,Number}
+        var template = kendo.template($("#recruitmentRequest-template").html());
+        return template({ Name: name, Title: title, Value: value, Type: type });
+    }
+
+
+    function addControlToGroup(control, name, title, value, type) {
+        debugger;
+        var text = initialControl(name, title, value, type);
+        control.append(initialControl(name, title, value, type));
+    }
+
+</script>
+
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>
+
+<script id="recruitmentRequest-template" type="text/x-kendo-template">
+    <div class="control control-#=Name#">
+        <div class="k-edit-label">
+            <label for="#=Name#">#=Title#</label>
+        </div>
+        <div data-container-for="#=Name#" class="k-edit-field">
+            #if(Type == "Textarea"){#
+            <textarea class="k-input k-textbox" name="#=Name#" disabled="disabled" rows="2" cols="20" wrap="hard"> #=Value# </textarea>
+            #}else{#
+            <input type="text" class="k-input k-textbox" name="#=Name#" value="#=Value#" disabled="disabled" />
+            #}#
+            
+        </div>
+    </div>
+</script>
+

@@ -1,0 +1,50 @@
+﻿@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 18/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<script type="text/javascript">
+
+    function FinancialPromotionEditHandler(e) {
+        if (!e.model.isNew()) {
+            $('[name="Salary"]').data('kendoDropDownList').readonly();
+        }
+        e.container.find(".control-Percentage").hide();
+        var isPercentageCkb = e.container.find('[name="IsPercentage"]');
+        if (e.model.IsPercentage == true) {
+            e.container.find(".control-FixedValue").hide();
+            e.container.find(".control-Percentage").show();
+            if (e.container.find("[name='FixedValue']").data("kendoNumericTextBox")!=null){
+                e.container.find("[name='FixedValue']").data("kendoNumericTextBox").value(0);
+                $("#grid").data("kendoGrid")._data[0].FixedValue = $("[name='FixedValue']").val();}
+        } else {
+                e.container.find(".control-FixedValue").show();
+                e.container.find(".control-Percentage").hide();
+                if (e.container.find("[name='Percentage']").data("kendoNumericTextBox") != null){
+                e.container.find("[name='Percentage']").data("kendoNumericTextBox").value(0);
+                $("#grid").data("kendoGrid")._data[0].Percentage = $("[name='Percentage']").val();}
+            }
+        isPercentageCkb.change(function () {
+            if (this.checked == true) {
+                e.container.find(".control-FixedValue").hide();
+                e.container.find(".control-Percentage").show();
+                if (e.container.find("[name='FixedValue']").data("kendoNumericTextBox")!=null){
+                e.container.find("[name='FixedValue']").data("kendoNumericTextBox").value(0);
+                $("#grid").data("kendoGrid")._data[0].FixedValue = $("[name='FixedValue']").val();}
+            } else {
+                e.container.find(".control-FixedValue").show();
+                e.container.find(".control-Percentage").hide();
+                if (e.container.find("[name='Percentage']").data("kendoNumericTextBox") != null){
+                e.container.find("[name='Percentage']").data("kendoNumericTextBox").value(0);
+                $("#grid").data("kendoGrid")._data[0].Percentage = $("[name='Percentage']").val();}
+            }
+
+            reOrderControls(e.container);
+        });
+        
+    }
+</script>

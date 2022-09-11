@@ -1,0 +1,300 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 26/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="reward-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="reward-employee-container"></div><br />
+<div class="reward-approval-container-title"><label>@GlobalResource.PendingRewardRequest</label></div>
+<div class="reward-approval-container"></div><br />
+<div class="reward-request-workflow-container"></div>
+
+<script type="text/javascript">
+
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var notifyRewardId = window.localStorage.getItem('ServiceId');
+    var rewardId = window.localStorage.getItem('ServiceId');
+    var container = $('.reward-employee-container');
+    var approval_container = $('.reward-approval-container');
+    var workflowContainer = $(".reward-request-workflow-container");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForRewardService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        $(".reward-employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        container.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            approval_container.html('');
+            container.html("");
+            $(".reward-employee-container-title").html('');
+            $(".reward-approval-container-title").html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            var fullName = $(this).attr('data-fullname');
+
+            var employeeRewardTemplateData = [
+                 { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                { Name: "RewardSetting", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardSettingName)", Type: "Reference", TypeName: "HRIS.Domain.EmployeeRelationServices.Configurations.RewardSetting", Creatable: false, IsRequired: true },
+                { Name: "RewardDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardDate)", Type: "Date", IsRequired: true },
+                { Name: "RewardReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardReason)", Type: "Textarea"},
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea" }
+            ];
+
+            var employeeRewardDatabind = kendo.observable(
+                {
+                    FullName: fullName,
+                    RewardSettingId: 0,
+                    RewardSettingName: "",
+                    RewardDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    RewardReason: "",
+                    Comment: ""
+                });
+
+            createCustomEditForm(container, { Fields: employeeRewardTemplateData, Key: "employee-reward" }, employeeRewardDatabind);
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            container.find(".control-Comment").after(applyButton);
+
+            container.find(".applyButton").off('click').on('click', function () {
+
+                var id = Number(container.find("#RewardSetting_employee-reward").data("kendoDropDownList").value());
+                var date = $("[name='RewardDate']").data("kendoDatePicker").value();
+                var reason = container.find("[name='RewardReason']").val();
+                var comment = container.find("[name='Comment']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeRewardItem: employeeRewardDatabind };
+
+                employeeRewardDatabind.RewardSettingId = id;
+                employeeRewardDatabind.RewardReason = reason;
+                employeeRewardDatabind.Comment = comment;
+                employeeRewardDatabind.RewardDate = date;
+                employeeRewardDatabind.FullName = fullName;
+
+                $("[name='RewardReason']").focusout(function () {
+                    if ($("[name='RewardReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RewardReason");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RewardReason').remove();
+                    }
+
+                });
+
+                $("[name='RewardReason']").keyup(function () {
+                    if ($("[name='RewardReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RewardReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RewardReason').remove();
+                    }
+
+                });
+                if (reason == "") {
+                    if ($("[name='RewardReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RewardReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RewardReason').remove();
+                    }
+                }
+                if (id == "" || id == "0" || id == 0 || id == null) {
+                    debugger;
+                    var rewardSettingDropownlist = $("[name='RewardSetting']").data("kendoDropDownList");
+                    var rewardSettingValue = rewardSettingDropownlist.value();
+                    if (rewardSettingValue == "0" || rewardSettingValue == "-1" || rewardSettingValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RewardSetting");
+                    }
+                    rewardSettingDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RewardSetting').remove();
+                    });
+                }
+                if (id == "" || id == "0" || id == 0 || id == null || date == null || reason == null || reason == "") {
+                   // requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeeRewardItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+                //getEmployeeActionViewModel();
+            });
+
+            var rewardSettingButton = $('<button id="rewardSettingId" class="k-button applyRewardSettingButton"><span class="k-icon k-i-note" style="vertical-align: sub;"></span></button>');
+            $("[data-container-for=RewardSetting]").append(rewardSettingButton);
+            container.find(".applyRewardSettingButton").off('click').on('click', function () {
+                openReferenceWindow('RewardSetting', 'HRIS.Domain.EmployeeRelationServices.Configurations.RewardSetting', '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardSetting)');
+            });
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        $(".reward-approval-container-title").html('@GlobalResource.PendingRewardRequest');
+        var template = kendo.template($("#employee-reward-approval-template").html());
+        approval_container.html(template(data));
+        window.EmployeesRewardInfo = data;
+    }
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+
+        approvalAction(notifyWorkflowId, notifyRewardId);
+        notifyWorkflowId = null;
+    }
+
+    function approvalAction(workflowId, rewardId) {
+        debugger;
+        container.html('');
+        approval_container.html('');
+
+        $(".reward-employee-container-title").html('');
+        $(".reward-approval-container-title").html('');
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+
+            var employeeRewardTemplateData = [
+                { Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "RewardSetting", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardSettingName)", Type: "Text", IsReadonly: true },
+                { Name: "RewardDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardDate)", Type: "Date", IsReadonly: true },
+                { Name: "RewardReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardReason)", Type: "Textarea", IsReadonly: true },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea", IsReadonly: true }
+            ];
+
+            var employeeRewardViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    RewardSettingId: 0,
+                    RewardSettingName: "",
+                    RewardDate: null,
+                    RewardReason: "",
+                    Comment: ""
+                });
+
+            for (var i = 0; i < window.EmployeesRewardInfo.length; i++) {
+                if (window.EmployeesRewardInfo[i].WorkflowItemId == workflowId) {
+                    employeeRewardViewDatabind.FullName = window.EmployeesRewardInfo[i].FullName;
+                    employeeRewardViewDatabind.RewardSettingId = window.EmployeesRewardInfo[i].RewardSettingId;
+                    employeeRewardViewDatabind.RewardSetting = window.EmployeesRewardInfo[i].RewardSettingName;
+                    employeeRewardViewDatabind.RewardDate = window.EmployeesRewardInfo[i].RewardDate;
+                    employeeRewardViewDatabind.RewardReason = window.EmployeesRewardInfo[i].RewardReason;
+                    employeeRewardViewDatabind.Comment = window.EmployeesRewardInfo[i].Comment;
+                    console.log(window.EmployeesRewardInfo[i].WorkflowItemId + '_' + workflowId);
+                   
+
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeRewardTemplateData, Key: "employee-reward" }, employeeRewardViewDatabind);
+
+        }
+
+        function acceptWorkflow() {
+            debugger;
+            var url = "@Url.Action("AcceptRewardRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectRewardRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingRewardRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            debugger;
+            var jsonParam = { workflowId: workflowId, rewardId: rewardId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-reward-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardSetting)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardReason)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=employee.RewardSettingName#</td>
+                <td>#=ToStringForDate(employee.RewardDate)#</td>
+                <td>#=employee.RewardReason#</td>
+                <td>#=employee.Comment#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.rewardId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/27/2016 15:16:52" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {  
+      if (CheckBox1.Checked)
+      {        
+        GradeComboBox.SelectedIndex=-1;
+        GradeComboBox.AutoFilter=false;
+        GradeComboBox.AutoFill=false;
+        GradeComboBox.Enabled=false;
+      }else
+      {
+        GradeComboBox.AutoFilter=true;
+        GradeComboBox.AutoFill=true;
+        GradeComboBox.Enabled=true;	         
+      }        
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW+SlWQYiJrY1tE4GntExzJvisKJgEDn89+JCmID8gF+f/58ALrFNBjmAe7T6TqLkNaNKBtR0xGIAi8eL0I8Q62qz8HWXkQMjIV8Af0UpypAdtXIcJqiH+LB6zz1p+DoR3A==">
+      <TableDataSource Name="Table1" Alias="BenefitCardDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        TOP (100) PERCENT dbo.BenefitCard.Name, dbo.GradeBenefitDetail.Value, dbo.GradeBenefitDetail.Formula, dbo.GradeBenefitDetail.ExtraValue, &#13;&#10;                         dbo.GradeBenefitDetail.ExtraValueFormula, dbo.GradeBenefitDetail.Grade_id&#13;&#10;FROM            dbo.GradeBenefitDetail INNER JOIN&#13;&#10;                         dbo.BenefitCard ON dbo.GradeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id&#13;&#10;WHERE	GradeBenefitDetail.IsVertualDeleted=0 AND &#13;&#10;		BenefitCard.IsVertualDeleted=0">
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Value" DataType="System.Double"/>
+        <Column Name="Formula" DataType="System.Int32"/>
+        <Column Name="ExtraValue" DataType="System.Double"/>
+        <Column Name="ExtraValueFormula" DataType="System.Int32"/>
+        <Column Name="Grade_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Grade" DataType="System.Int32" Enabled="true" TableName="Grade" SelectCommand="SELECT G.Id, G.IsVertualDeleted, G.Category, G.Name, G.Grade_Order, G.PayGroup, G.MinSalary, G.MaxSalary, G.OrganizationalLevel_id, G.GradeByEducation_id, G.CurrencyType_id, G.LeaveTemplateMaster_id, G.AttendanceForm_id, G.LatenessForm_id, G.OvertimeForm_id, G.AbsenceForm_id, G.HealthInsuranceTypes_id&#13;&#10;FROM &quot;Grade&quot; G&#13;&#10;WHERE G.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Category" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Grade_Order" DataType="System.Int32"/>
+        <Column Name="PayGroup" DataType="System.String"/>
+        <Column Name="MinSalary" DataType="System.Single"/>
+        <Column Name="MaxSalary" DataType="System.Single"/>
+        <Column Name="OrganizationalLevel_id" DataType="System.Int32"/>
+        <Column Name="GradeByEducation_id" DataType="System.Int32"/>
+        <Column Name="CurrencyType_id" DataType="System.Int32"/>
+        <Column Name="LeaveTemplateMaster_id" DataType="System.Int32"/>
+        <Column Name="AttendanceForm_id" DataType="System.Int32"/>
+        <Column Name="LatenessForm_id" DataType="System.Int32"/>
+        <Column Name="OvertimeForm_id" DataType="System.Int32"/>
+        <Column Name="AbsenceForm_id" DataType="System.Int32"/>
+        <Column Name="HealthInsuranceTypes_id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="Grade_Table1" ParentDataSource="Grade" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="Grade_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+    <Total Name="SubTotal" TotalType="Count" Evaluator="Data2" PrintOn="DataFooter2"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير تعويضات الفئة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Top="56.7" Width="718.2" Height="37.8" Text="[GradeComboBox.Text]:الفئة المختارة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="98.5" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="264.6" Width="266.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحد الادنى للاجر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="530.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الفئة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Width="266.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحد الاعلى للاجر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="121.4" Width="718.2" Height="37.8" DataSource="Grade">
+      <TextObject Name="Text1" Left="531.2" Width="187" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.Name]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Left="266.6" Width="264.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.MinSalary]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Width="266.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Grade.MaxSalary]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text45" Left="529.2" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم التعويض" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text46" Left="396.9" Top="18.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="قيمة التعويض" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text47" Left="264.6" Top="18.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="صيغة التعويض" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text48" Left="132.3" Top="18.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="القيمة الاضافية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text49" Top="18.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="صيغة القيمة الاضافية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="163.2" Width="718.2" Height="18.9" DataSource="Table1">
+        <TextObject Name="Text4" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BenefitCardDataSourse.Name]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text5" Left="396.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BenefitCardDataSourse.Value]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text7" Left="264.6" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BenefitCardDataSourse.Formula]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text9" Left="132.3" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BenefitCardDataSourse.ExtraValue]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text10" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BenefitCardDataSourse.ExtraValueFormula]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <DataFooterBand Name="DataFooter2" Top="186.1" Width="718.2" Height="18.9">
+          <TextObject Name="Text12" Width="718.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[SubTotal]:عدد البنود" HorzAlign="Right" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </DataFooterBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="209" Width="718.2" Height="18.9">
+        <TextObject Name="Text6" Width="718.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]:عدد الفئات" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="231.9" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="318" Height="174">
+    <ButtonControl Name="btnOk" Left="130" Top="83" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقارير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="207" Top="36" Width="29" Height="13" TabIndex="2" Text="الفئة"/>
+    <ComboBoxControl Name="GradeComboBox" Left="28" Top="32" Width="175" TabIndex="3" ClickEvent="" DataColumn="BenefitCardDataSourse.Grade.Name" DropDownStyle="DropDownList" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="188" Top="60" Width="46" Height="17" TabIndex="4" Text="الكل" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

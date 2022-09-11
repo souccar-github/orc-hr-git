@@ -1,0 +1,82 @@
+﻿@import url("common.css");
+
+#primary_nav {  /* Only with AR */
+    right: 0px;
+}
+
+.acitem li a .list-icon { /* Only with AR */
+	background: url(/Content/images/sprite-icons/ar.png) no-repeat;
+	height:12px;
+	width:18px;
+	display:block;
+	position:absolute;
+	right:10px; 
+	top:10px;
+}
+
+
+.switch_bar ul {
+    padding-right: 15px;
+}
+
+#breadcrumb {
+    margin: 0px;
+    padding: 0px 10px 0 50px;
+    font-size: 13px;
+    line-height: 49px;
+    color: #444;
+    text-shadow: 1px 1px 0px #fff;
+    font-weight: bold;
+}
+
+.breadcrumb_area {
+    float: right;
+    margin: 0 50px 0 0;
+}
+
+form.k-filter-menu .k-textbox{
+    width: 100%;
+}
+
+.k-popup {
+    width:145px;
+}
+
+.breadcrumb_links {
+    float: right;
+}
+
+#breadcrumb a {
+    color: #444;
+}
+
+#breadcrumb a:hover {
+    color: #06C;
+}
+
+.arrowbread {
+    background-image: url(../images/breadcrumb/bc_separator_ar.png);
+    height: 30px;
+    background-repeat: no-repeat;
+    float: right;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.maestro_logo {
+    display: block;
+    width: 235px;
+    height: 214px;
+    float: left;
+    margin-left: 0px;
+    margin-top: 60px;
+    background: url(../images/maestro/icons.png) 0 -150px no-repeat;
+}
+
+.hris_header {
+    width: 235px;
+    height: 72px;
+    background: url("../images/maestro/icons.png") 10px 10px no-repeat;
+    margin-top: -12px;
+    margin-right: -85px;
+}

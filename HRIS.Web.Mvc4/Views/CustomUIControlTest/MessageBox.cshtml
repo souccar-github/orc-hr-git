@@ -1,0 +1,35 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<button class="show-question-message-box k-button">Show Question Message</button>
+<button class="show-warning-message-box k-button">Show Warning Message</button>
+<button class="show-info-message-box k-button">Show Info Message</button>
+<button class="show-error-message-box k-button">Show Error Message</button>
+
+<script>
+    function h1() {
+        alert("haha");
+    }
+    function h2(e) {
+        alert(e.Name);
+    }
+    var commands = [
+        { Title: "@GlobalResource.Yes", ClassName: "k-icon k-update", Name: "Yes", Handler: h1 },
+        { Title: "@GlobalResource.No", ClassName: "k-icon k-update", Name: "No", Handler: h2, HandlerParameter: { Name: "Yaseen" } },
+        { Title: "@GlobalResource.Cancel", ClassName: "k-icon k-cancel", Name: "Cancel" }];
+
+
+    $(".show-question-message-box").off("click").on("click", function () {
+        ShowMessageBox("question", "Message ...", "k-icon w-b-question", commands);
+    });
+   
+    $(".show-warning-message-box").off("click").on("click", function () {
+        ShowMessageBox("warning", "Message ...", "k-icon w-b-warning", commands);
+    });
+    
+    $(".show-info-message-box").off("click").on("click", function () {
+        ShowMessageBox("info", "Message ...", "k-icon w-b-info", commands);
+    });
+    
+    $(".show-error-message-box").off("click").on("click", function () {
+        ShowMessageBox("error", "Message ...", "k-icon w-b-error", commands);
+    });
+</script>

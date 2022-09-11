@@ -1,0 +1,65 @@
+﻿@using Project.Web.Mvc4
+
+<link href="~/CssAndJs/dashboard.css" rel="stylesheet" />
+<style>
+    .k-icon.k-clear-value.k-i-close {
+        display: none !important;
+    }
+</style>
+
+@Html.Partial("Charts/LeavesChart")
+@Html.Partial("Charts/LeavesByMonthChart")
+@Html.Partial("Charts/CurrentEmployeeLeavesPerYearChart")
+
+@{
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming.ToString();
+}
+
+<script type="text/javascript">
+    @{
+        var dir = "ltr";
+        var pageDir = "left";
+
+        if (CurrentLocale.Language == Locale.Rtl)
+        {
+            pageDir = "right";
+            dir = "rtl";
+        }
+    }
+
+    var $dir = '@dir';
+    var $pageDir = '@pageDir';
+
+    var $themeName = '@themingName';
+
+    $(function () {
+        getLeavesChart();
+        getLeavesByMonthChart();
+    });
+
+    function getDashboardColors() {
+        return [
+            getDefaultThemeColor(),
+            '#434348', '#7CB5EC', '#F45B5B',
+            '#2f7ed8', '#0d233a', '#8bbc21',
+            '#910000', '#1aadce', '#492970',
+            '#f28f43', '#77a1e5', '#c42525',
+            '#a6c96a', '#0000FF', '#008000'
+        ];
+    }
+
+    function getDefaultThemeColor() {
+        switch ($themeName) {
+        case 'lightblue':
+            return '#86c4bc';
+        case 'sepia':
+            return '#c0a48c';
+        case 'formal':
+            return '#87adc4';
+        case 'lady':
+            return '#9c8bc1';
+        default:
+            return '#818285';
+        }
+    }
+</script>

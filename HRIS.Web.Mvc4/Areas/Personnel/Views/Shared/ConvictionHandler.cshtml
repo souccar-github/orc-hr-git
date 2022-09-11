@@ -1,0 +1,28 @@
+﻿<script type="text/javascript">
+    function ConvictionEditHandler(e) {
+        var isConvicted = e.container.find('[name="IsConvicted"]').is(':checked');
+        var container = e.container.find(".controls-div");
+        updateEditViewConvictionByIsConvicted(container, isConvicted);
+        
+        e.container.find('[name="IsConvicted"]').change(function () {
+            updateEditViewConvictionByIsConvicted(container, this.checked);
+        });
+    }
+
+    function ConvictionViewHandler(e) {
+        var isConvicted = e.model.IsConvicted;
+        var container = e.container.find("#default-view-controls");
+        updateEditViewConvictionByIsConvicted(container, isConvicted);
+    }
+
+    function updateEditViewConvictionByIsConvicted(container, isConvicted) {
+        
+        if (isConvicted == true) {
+            container.find(".control-Reason").show();
+        } else {
+            container.find(".control-Reason").hide();
+        }
+        reOrderControls(container);
+    }
+
+</script>

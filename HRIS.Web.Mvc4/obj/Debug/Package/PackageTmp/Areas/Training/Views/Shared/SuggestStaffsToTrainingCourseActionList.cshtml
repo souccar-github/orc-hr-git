@@ -1,0 +1,539 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+<div id="suggestStaffGrids"></div>
+
+<script type="text/javascript">
+
+    function SuggestStaffsToTrainingCourse(id) {
+        $.ajax({
+            url: '@Url.Action("CheckCourseStatus", "Home", new {area = "Training"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({courseId: id }),
+            success: function (data) {
+                if (!data.Success)
+                    showErrorMessage(data.Message);
+                else {
+                    if (data.CourseStatus != 0 && data.CourseStatus != 1) {
+                        showErrorMessage('@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TheCourseStatusMustBePlannedOrActivated)');
+                    } else {
+                        generateAddSuggestStaffsToTrainingCourseWindow(id);
+                    }
+                }
+            }
+        });
+
+    }
+
+    function generateAddSuggestStaffsToTrainingCourseWindow(id)
+    {
+        var title = "@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.SuggestStaffsToTrainingCourse)";
+        var buttons = [
+            { Name: "add_training_need_to_course_cancel", CssClass: "cancel", Title: "@GlobalResource.Close" },
+        ];
+        var containerId = "add-suggest-staff-to-course-container";
+        var popupDiv = $("<div></div>");
+        var bodyHTML =
+            "<div class='add-suggest-staff-to-course-body'><div><label>@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.AllEmployees)</label></div><div id='suggest-staff-grid'></div><br /><div><label>@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.SelectedEmployees)</label></div><div id='selected-suggest-staff-grid'></div></div>";
+
+        createAndOpenSuggestStaffWindow(popupDiv, bodyHTML, containerId, title, buttons, true);
+
+        
+        $("#add_training_need_to_course_cancel").off('click').on('click',
+            function () {
+                popupDiv.data("kendo-window").close();
+            });
+
+
+        refreshUnSelectedSuggestStaffGrids(id);
+        refreshSelectedSuggestStaffGrids(id);
+
+
+        $(document).on("click", ".AddSuggestStaffButton",
+            function (e) {
+
+                var notSelectedSuggestStaffsGrid = $("#suggest-staff-grid").data("kendoGrid");;
+                var rows = notSelectedSuggestStaffsGrid.select();
+                if (rows.length > 0) {
+                    var dataItems = [];
+                    for (var i = 0; i < rows.length; i++) {
+                        var selectedDataItem = notSelectedSuggestStaffsGrid.dataItem(rows[i]);
+                        //selectedDataItem.TestDate = kendo.parseDate(selectedDataItem.TestDate, 'dd/MM/yyyy');
+                        dataItems.push(selectedDataItem);
+                    }
+
+                    $.ajax({
+                        url: '@Url.Action("SaveSelectedSuggestStaff", "ActionList", new {area = "Training"})',
+                        type: "POST",
+                        contentType: 'application/json',
+                        data: JSON.stringify({ model: dataItems, courseId: id }),
+                        success: function (data) {
+                            refreshUnSelectedSuggestStaffGrids(id);
+                            refreshSelectedSuggestStaffGrids(id);
+                        }
+                    });
+                } else {
+                    showErrorMessage('@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.YouMustSelectAtLeastOneRow)');
+                }
+            });
+
+        $(document).on("click", ".RemoveSuggestStaffButton",
+            function (e) {
+
+                var selectedSuggestStaffsGrid = $("#selected-suggest-staff-grid").data("kendoGrid");;
+                var rows = selectedSuggestStaffsGrid.select();
+                if (rows.length > 0) {
+                    var dataItems = [];
+                    for (var i = 0; i < rows.length; i++) {
+                        var selectedDataItem = selectedSuggestStaffsGrid.dataItem(rows[i]);
+                        //selectedDataItem.TestDate = kendo.parseDate(selectedDataItem.TestDate, 'dd/MM/yyyy');
+                        dataItems.push(selectedDataItem);
+                    }
+
+                    $.ajax({
+                        url: '@Url.Action("SaveUnSelectedSuggestStaff", "ActionList", new {area = "Training"})',
+                        type: "POST",
+                        contentType: 'application/json',
+                        data: JSON.stringify({ model: dataItems, courseId: id }),
+                        success: function (data) {
+                            refreshUnSelectedSuggestStaffGrids(id);
+                            refreshSelectedSuggestStaffGrids(id);
+                        }
+                    });
+                } else {
+                    showErrorMessage('@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.YouMustSelectAtLeastOneRow)');
+                }
+
+            });
+    }
+
+    function refreshUnSelectedSuggestStaffGrids(id) {
+        $.ajax({
+            url: window.applicationpath + 'Training/ActionList/GetUnSelectedSuggestStaffGridModel/' + id,
+            type: "POST",
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+                data.Name = "suggest-staff-grid";
+                new CreateSuggestionStuffGrid(data).CreateSimpleGrid();
+                var grid = $("#suggest-staff-grid").data("kendoGrid");
+                //grid.hideColumn("IsChecked");
+            }
+        });
+    }
+
+    function refreshSelectedSuggestStaffGrids(id) {
+        $.ajax({
+            url: window.applicationpath + 'Training/ActionList/GetSelectedSuggestStaffGridModel/' + id,
+            type: "POST",
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {
+                data.Name = "selected-suggest-staff-grid";
+                new CreateSuggestionStuffGrid(data).CreateSimpleGrid();
+
+                var grid = $("#selected-suggest-staff-grid").data("kendoGrid");
+                grid.hideColumn("IsChecked");
+            }
+        });
+    }
+
+    function onCheckboxChangeSuggestStaff(id) {
+        var data = $(".selected-suggest-staff-grid").data("kendoGrid").dataSource._data;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Id == Number(id)) {
+
+                data[i].IsChecked = $("input[data-id='" + id + "']").is(":checked");
+                break;
+            }
+        }
+
+    }
+
+    function createAndOpenSuggestStaffWindow(windowElement, bodyHTML, containerId, title, Buttons, isTwoColumns, defualt) {
+        if (defualt == null) {
+            defualt = true;
+        }
+        var width = 600;
+        if (isTwoColumns)
+            width = 900;
+        var templateData = {
+            BodyHTML: bodyHTML,
+            BodyHeight: 600,
+            ContainerId: containerId,
+            Buttons: Buttons
+        };
+        var templateHtml = getCustomPopupViewHTML(templateData);
+        windowElement.html(templateHtml);
+        createAndOpenWindow(windowElement, title, width, 665, defualt);
+    }
+
+</script>
+
+<script>
+
+    function CreateSuggestionStuffGrid(gridModel) {
+        this.GridModel = gridModel;
+        this.CreateSimpleGrid = function () {
+            var height = $(window).height() - 250;
+            height += 108;
+            if (height < 380) {
+                height = 380;
+            }
+            $("#" + this.GridModel.Name).html("").kendoGrid({
+                dataSource: this.GetSimpleDataSource(),
+                dataBound: function (e) {
+                    if (e.sender.dataSource.view().length == 0) {
+                        var colspan = e.sender.thead.find("th").length;
+                        //insert empty row with colspan equal to the table header th count
+                        var emptyRow = "<tr><td colspan='" + colspan + "'></td></tr>";
+                        e.sender.tbody.html(emptyRow);
+                    }
+                },
+                selectable: "multiple, row",
+                filterable: this.FilterableMessage,
+                sortable: { mode: "multiple" },
+                navigatable: true,
+                pageable: this.PageableMessage,
+                toolbar: getToolbarCommands(this.GridModel.ToolbarCommands),
+                columns: gridColumns,//this.GetSimpleColumns(),//
+                height: 250,
+                editable: false,
+                edit: function (e) {
+
+                    if (!e.model.isNew()) {
+                        // Disable the editor of the "id" column when editing data items
+                        //.data("kendoNumericTextBox");
+
+                        if (gridModel.Name === "selected-suggest-staff-grid") {
+                            this.closeCell();
+                        } else {
+                            var fieldName = e.container.find("input").attr("name");
+                            if (fieldName === "Name" || fieldName === "Level") {
+                                this.closeCell();
+                            }
+                        }
+
+                    }
+                }
+            });
+            //initializeToolbarCommands(this.GridModel.ToolbarCommands, this.GridModel.Name);
+        };
+
+        var gridColumns = [
+            { field: "Id", hidden: true }
+            , {
+                field: "Name", title: "@GlobalResource.Name",
+                type: "string",
+                filterable: true,
+                sortable: true,
+                editable: false,
+                width: 185
+            }
+            , {
+                field: "Position", title: "@GlobalResource.Position",
+                type: "string",
+                filterable: true,
+                sortable: true,
+                editable: false,
+                width: 185
+            }
+            , {
+                field: "Node", title: "@GlobalResource.Node",
+                type: "string",
+                filterable: true,
+                sortable: true,
+                editable: false,
+                width: 185
+            }
+            , {
+                field: "IsChecked",
+                title: "@GlobalResource.IsChecked",
+                type: "boolean",
+                filterable: false,
+                sortable: false,
+                hidden: true,
+                editable: false,
+                template: kendo.template($("#suggest-staff-checkbox-column-template").html())
+            }
+        ];
+
+        this.GetSimpleColumns = function () {
+            var idx = 0;
+            var result = [];
+            var view = getViewById(this.GridModel.Views, this.GridModel.CurrentViewId);
+            for (var i = 0; i < view.Columns.length; i++) {
+                var column = view.Columns[i];
+
+                if (column.FieldName != "Id") {
+                    var field = getFieldByName(this.GridModel.SchemaFields, column.FieldName);
+
+                    if (column.Type == "Simple") {
+                        var values = {};
+
+                        if (field.Type == "date") {
+
+                            var filterable = {};
+                            if (column.Filterable == true) {
+                                filterable["ui"] = function (element) {
+                                    element.kendoDatePicker({ format: "dd/MM/yyyy" });
+                                };
+                            } else {
+                                filterable = false;
+                            }
+
+                            result[idx] = {
+                                field: column.FieldName,
+                                width: column.Width,
+                                title: column.Title,
+                                hidden: column.Hidden,
+                                format: "{0:dd/MM/yyyy}",
+                                //template: "#= kendo.toString(kendo.parseDate(" + column.FieldName + ", 'dd/MM/yyyy'), 'dd/MM/yyyy') #",
+                                sortable: column.Sortable,
+                                filterable: filterable,
+                                attributes: { "style": "text-align: center;" }
+                            };
+                        } else {
+                            if (field.Type == "boolean") {
+                                result[idx] = {
+                                    field: column.FieldName,
+                                    width: column.Width,
+                                    title: column.Title,
+                                    hidden: column.Hidden,
+                                    sortable: column.Sortable,
+                                    filterable: column.Filterable,
+                                    attributes: { "style": "text-align: center;" },
+                                    template: kendo.template("#if(" + column.FieldName + " == true){#" +
+                                        "#= '<input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" />' #" +
+                                        "#}else{#" +
+                                        "#= '<input type=\"checkbox\" disabled=\"disabled\" />' #" +
+                                        "#}#"
+                                    )
+                                };
+                            } else if (field.Type == "number") {
+                                result[idx] = {
+                                    field: column.FieldName,
+                                    width: column.Width,
+                                    title: column.Title,
+                                    hidden: column.Hidden,
+                                    sortable: column.Sortable,
+                                    filterable: column.Filterable,
+                                    attributes: { "style": "text-align: center;" }
+                                };
+                                if (!column.ShowCommaSeparator) {
+                                    result[idx].format = "{0:n0}";
+                                    //result[idx].decimals = 0;
+                                }
+                            } else {
+                                result[idx] = {
+                                    field: column.FieldName,
+                                    width: column.Width,
+                                    title: column.Title,
+                                    hidden: column.Hidden,
+                                    sortable: column.Sortable,
+                                    filterable: column.Filterable,
+                                };
+
+                            }
+                        }
+                    } else if (column.Type == "TextArea") {
+                        result[idx] = {
+                            field: column.FieldName,
+                            width: column.Width,
+                            title: column.Title,
+                            hidden: column.Hidden,
+                            template: "<div style='display: block; overflow: auto; max-height: 60px;'>" +
+                                "#if(" + column.FieldName + " != null){#" +
+                                "#: " + column.FieldName + "# " +
+                                "#}#" +
+                                "</div>",
+                            sortable: column.Sortable,
+                            filterable: column.Filterable
+                        };
+                    } else if (column.Type == "DropDown") {
+                        var filterableDropDown = column.Filterable;
+                        if (filterableDropDown)
+                            filterableDropDown = { ui: getFilterForDropdown(column.ReadUrl, column.TypeFullName) };
+                        result[idx] = {
+                            field: column.FieldName,
+                            width: column.Width,
+                            title: column.Title,
+                            hidden: column.Hidden,
+                            values: {
+                                Id: column.FieldName,
+                                WindowTitle: column.Title,
+                                IndexName: column.IndexName,
+                                TypeFullName: column.TypeFullName,
+                                DataTextField: column.TextField,
+                                DataValueField: column.ValueField,
+                                ReadUrl: column.ReadUrl,
+                                CreateUrl: column.CreateUrl,
+                                ShowAddButton: column.ShowAddButton,
+                                ShowInfoButton: column.ShowInfoButton,
+                                Required: fieldIsRequired(field)
+                            },
+                            template: kendo.template("#if(" + column.FieldName + "." + column.TextField + " == null){#" +
+                                "#: '' #" +
+                                "#}else{#" +
+                                "#: " + column.FieldName + "." + column.TextField + " #" +
+                                "#}#"
+                            ),
+                            sortable: column.Sortable,
+                            filterable: filterableDropDown
+                        };
+                    } else if (column.Type == "AutoComplete") {
+                        var filterableComboBox = column.Filterable;
+                        if (filterableComboBox)
+                            filterableComboBox = { ui: getFilterForComboBox(column.ReadUrl, column.TypeFullName) };
+                        result[idx] = {
+                            field: column.FieldName,
+                            width: column.Width,
+                            title: column.Title,
+                            hidden: column.Hidden,
+                            values: {
+                                Id: column.FieldName,
+                                IndexName: column.IndexName,
+                                TypeFullName: column.TypeFullName,
+                                DataTextField: column.TextField,
+                                DataValueField: column.ValueField,
+                                ShowAddButton: column.ShowAddButton,
+                                ReadUrl: column.ReadUrl,
+                                CreateUrl: column.CreateUrl,
+                                Required: fieldIsRequired(field)
+                            },
+                            template: kendo.template("#if(" + column.FieldName + "." + column.TextField + " == null){#" +
+                                "#: '' #" +
+                                "#}else{#" +
+                                "#: " + column.FieldName + "." + column.TextField + " #" +
+                                "#}#"
+                            ),
+                            sortable: column.Sortable,
+                            filterable: filterableComboBox
+
+                        };
+                    }
+                    result[idx].footerTemplate = column.FooterTemplate;
+                    if (column.GroupAggregates.length > 0) {
+                        result[idx].aggregates = column.GroupAggregates;
+                    }
+                    idx++;
+                }
+            }
+            return result;
+        };
+
+        this.GetSimpleDataSource = function () {
+            var view = getViewById(this.GridModel.Views, this.GridModel.CurrentViewId);
+            var result = {
+                serverPaging: view.ServerPaging,
+                serverSorting: view.ServerSorting,
+                serverFiltering: view.ServerFiltering,
+                serverAggregates: view.ServerAggregates,
+                sort: getSortArray(view.SortFields),
+                type: "POST",
+                pageSize: 5,
+                requestEnd: function (e) { },
+                transport: {
+                    read: {
+                        url: window.applicationpath + view.ReadUrl,
+                        type: "POST",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: { requestInformation: window.requestInformation, viewModelTypeFullName: this.GridModel.ViewModelTypeFullName }
+                    },
+                    parameterMap: function (oData, operation) {
+                        if (operation == "read") {
+                            oData.serverPaging = view.ServerPaging;
+                        }
+                        return JSON.stringify(oData);
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "Id",
+                    },
+                    data: this.GridModel.DataFieldName,
+                    total: this.GridModel.TotalCountFieldName
+                }
+            };
+
+            var globalAggregate = getGlobalAggregate(view);
+            if (globalAggregate.length > 0) {
+                result.aggregate = globalAggregate;
+            }
+            return result;
+        };
+
+        this.PageableMessage = {
+            refresh: true,
+            pageSizes: [5, 10, 20],
+            messages: {
+                display: "@GlobalResource.Display",
+                empty: "@GlobalResource.Empty",
+                page: "@GlobalResource.Page",
+                of: "@GlobalResource.Of",
+                itemsPerPage: "@GlobalResource.ItemsPerPage",
+                first: "@GlobalResource.First",
+                previous: "@GlobalResource.Previous",
+                next: "@GlobalResource.Next",
+                last: "@GlobalResource.Last",
+                refresh: "@GlobalResource.Refresh"
+            }
+        };
+        this.FilterableMessage = {
+            messages: {
+                info: "@GlobalResource.Info",
+                filter: "@GlobalResource.Filter",
+                clear: "@GlobalResource.Clear",
+                isTrue: "@GlobalResource.IsTrue",
+                isFalse: "@GlobalResource.IsFalse",
+                and: "@GlobalResource.And",
+                or: "@GlobalResource.Or"
+            },
+            operators: {
+                string: {
+                    eq: "@GlobalResource.Equals",
+                    neq: "@GlobalResource.NotEquals",
+                    startswith: "@GlobalResource.StartsWith",
+                    contains: "@GlobalResource.Contains",
+                    endswith: "@GlobalResource.EndsWith"
+                },
+                number: {
+                    eq: "@GlobalResource.Equals",
+                    neq: "@GlobalResource.NotEquals",
+                    gte: "@GlobalResource.GreaterThanEqualTo",
+                    gt: "@GlobalResource.GreaterThan",
+                    lte: "@GlobalResource.LessThanEqualTo",
+                    lt: "@GlobalResource.LessThan"
+                },
+                date: {
+                    eq: "@GlobalResource.Equals",
+                    neq: "@GlobalResource.NotEquals",
+                    gte: "@GlobalResource.GreaterThanEqualTo",
+                    gt: "@GlobalResource.GreaterThan",
+                    lte: "@GlobalResource.LessThanEqualTo",
+                    lt: "@GlobalResource.LessThan"
+                },
+                enums: {
+                    eq: "@GlobalResource.Equals",
+                    neq: "@GlobalResource.NotEquals"
+                }
+            },
+            extra: false
+        };
+    }
+
+</script>
+
+
+<script id="suggest-staff-checkbox-column-template" type="text/x-kendo-template">
+    #var checkStatus="";#
+    #if(data.Id!=null){#
+    #if(data.IsChecked!=null&&IsChecked){#
+    #checkStatus='checked="checked"';#
+    #}#
+    <strong><input type="checkbox" onclick="onCheckboxChangeSuggestStaff('#=Id#')" #=checkStatus# name="check-add-suggest-staff-to-course-#=Id#" id="check-add-suggest-staff-to-course-#=Id#" data-id="#=Id#" /></strong>
+    #}#
+</script>

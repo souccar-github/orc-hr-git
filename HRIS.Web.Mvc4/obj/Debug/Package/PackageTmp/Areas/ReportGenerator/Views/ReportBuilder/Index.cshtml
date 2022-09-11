@@ -1,0 +1,51 @@
+﻿@*@Scripts.Render("~/bundles/underscore")
+@Scripts.Render("~/bundles/modernizr")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryui")
+@Scripts.Render("~/bundles/jqueryval")*@
+
+@Html.Action("Create1")
+@*<div id="displaybutton" class="k-button k-button-icontext">
+    Display Report
+</div>
+<script>
+   //$("#button").click(function () {
+   //     var window = $("#popupBasic");
+
+        @*$.ajax({
+            url: "@Url.Action("Create1", "ReportBuilder", new { area = "ReportGenerator" })",
+            type: "POST",
+            success: function (data) {
+                window.html(data);
+            }
+        });*@
+
+        // var existWindow = window.data("kendoWindow");
+        //if (existWindow == null) {
+        //    window.kendoWindow({
+        //        modal: true,
+        //        resizable: true,
+        //        width: 900,
+        //        height: 600,
+        //        title: "View Intormation",
+        //        open: function () {
+        //            window.data("kendoWindow").center();
+        //        }
+        //    });
+        //}
+        //else {
+        //    existWindow.open();
+        //}
+  // });
+
+    @*$("#displaybutton").click(function () {
+            var window = $("#displayReportWindow");
+
+            location.href = "ReportBuilder/DocumentViewerPartial";
+            alert("hahah");
+        });
+    //</script>*@
+
+
+
+

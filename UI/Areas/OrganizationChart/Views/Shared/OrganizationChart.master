@@ -1,0 +1,25 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
+    <%: Resources.Areas.OrgChart.Views.Shared.OrganizationChartMaster.OrganizationChartMaster.OrganizationChart %>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div>
+        <div id="MainData">
+            <div id="Ribbon">
+                <% Html.RenderAction("GetRibbonPartial", "OrganizationChart", new { area = "OrganizationChart" }); %>
+            </div>
+            <div id="Navigator">
+                <% Html.RenderPartial("Navigator"); %>
+            </div>
+            <div id="menucontainer">
+            </div>
+            <div id="ContentPlaceHolder">
+                <% Html.RenderPartial("GlobalError"); %>
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </div>
+    <%: Html.Telerik().StyleSheetRegistrar().DefaultGroup(group => group
+                                                                            .Add("telerik.sunset.min.css"))%>
+</asp:Content>

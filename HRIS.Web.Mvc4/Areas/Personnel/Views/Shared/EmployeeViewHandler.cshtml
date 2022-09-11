@@ -1,0 +1,80 @@
+﻿@using Castle.Core.Internal
+@using Souccar.Infrastructure.Core
+@using HRIS.Domain.Personnel.Helpers
+@using Project.Web.Mvc4.Helpers.DomainExtensions
+@{
+    var departmentTitle = ServiceFactory.LocalizationService.GetResource(PersonnelGoupesNames.GetResourceKey(PersonnelGoupesNames.Department));
+    if (departmentTitle.IsNullOrEmpty())
+    {
+        departmentTitle = "Department: ";
+    }
+    var jobDescriptionTitle = ServiceFactory.LocalizationService.GetResource(PersonnelGoupesNames.GetResourceKey(PersonnelGoupesNames.JobDescription));
+    if (jobDescriptionTitle.IsNullOrEmpty())
+    {
+        jobDescriptionTitle = "Job Description: ";
+    }
+    var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+
+}
+<script type="text/javascript">
+
+    function onViewEmployee(e) {
+        var handlerData = {
+            jobDescriptionTitle: "@jobDescriptionTitle",
+             departmentTitle: "@departmentTitle",
+             photoId: e.model.PhotoId,
+             fullName: e.model.FullName
+         };
+         var template = kendo.template($('#EmployeeViewPhotoTemplate').html());
+         e.container.find(".fieldset-PersonnelGoupesNames_PersonalInformation").first().before(template(handlerData));
+
+         $.ajax({
+             url: '@Url.Action("GetAdditionalInformation", "Employee", new {area = "Personnel"})',
+             data: { employeeId: e.model.Id },
+             success: function (data) {
+                 e.container.find(".job-description-name").html(data.JobDescription);
+                 e.container.find(".department-name").html(data.Department);
+             }
+         });
+         var gender = e.model.Gender.Id;
+         var disabilityExist = e.model.DisabilityExist;
+         var container = $(".fieldset-PersonnelGoupesNames_PersonalInformation");
+         employeeUpdateEditView(container, gender, disabilityExist)
+    }
+
+    
+
+    
+ </script>
+
+<script id="EmployeeViewPhotoTemplate" type="text/x-kendo-template">
+    #var _themingName = "";#
+    #var cookies = decodeURIComponent(document.cookie).split(';');#
+    #for (var i = 0 ; i < cookies.length; i++) {#
+    #var cookie = cookies[i].split('=');#
+    #if (cookie[0].includes("Theming"))#
+    #_themingName = cookie[1];#
+    #}#
+    #var imgName=window.applicationpath+'Content/images/theme-'+_themingName+'/placeholder.jpg';#
+    #if(photoId!=null&&photoId!=""){#
+    #imgName= window.applicationpath+'Content/EmployeesPhoto/'+photoId;#
+    #}#
+    <div class="emp-view-header">
+        <div class="img-div">
+            <img alt="" src="#=imgName#" />
+        </div>
+        <div class="personal-info-div">
+            <p class="full-name">#=fullName#</p>
+            <p>
+
+                <span class="job-description-title">#=jobDescriptionTitle#</span>
+                <span class="job-description-name"></span>
+            </p>
+            <p>
+
+                <span class="department-title">#=departmentTitle#</span>
+                <span class="department-name"></span>
+            </p>
+        </div>
+    </div>
+</script>

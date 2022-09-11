@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner"><AutoRefresh>0</AutoRefresh><DataSources><DataSource Name="BenefitDataSource"><DataSourceReference>SharedDataSource</DataSourceReference><rd:SecurityType>None</rd:SecurityType><rd:DataSourceID>7e2d82bc-6557-4de5-bed7-908eab64b08b</rd:DataSourceID></DataSource></DataSources><DataSets><DataSet Name="BaseDataSet"><Query><DataSourceName>BenefitDataSource</DataSourceName><QueryParameters><QueryParameter Name="@Employee"><Value>=Parameters!Personnel0Employee.Value</Value></QueryParameter></QueryParameters><CommandText>WITH EmployeeCardBenefit_CTE
+AS-- EmployeeCard CTE query.  
+(
+SELECT     
+dbo.Employee.Id AS Id, 
+dbo.Employee.FirstName +' '+ dbo.Employee.FatherName +' '+ dbo.Employee.LastName FullName,
+dbo.Employee.Code, 
+dbo.Node.Name AS NodeName,
+dbo.JobDescription.Name AS JobDescriptionName,
+dbo.EmployeeCard.Salary,
+dbo.EmployeeCard.SalaryDeservableType,
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.PrimaryEmployeeBenefit.Value, 
+dbo.PrimaryEmployeeBenefit.Formula, 
+dbo.PrimaryEmployeeBenefit.ExtraValue, 
+dbo.PrimaryEmployeeBenefit.ExtraValueFormula,
+'من البطاقة' AS HasEmpCardBenefit,
+1 AS Type
+FROM	
+dbo.Employee 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id 
+INNER JOIN dbo.PrimaryEmployeeBenefit ON dbo.PrimaryEmployeeBenefit.EmployeeCard_id = dbo.EmployeeCard.Id 
+INNER JOIN dbo.BenefitCard ON dbo.PrimaryEmployeeBenefit.BenefitCard_id = dbo.BenefitCard.Id
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id And dbo.AssigningEmployeeToPosition.IsPrimary='True' AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND Position.IsVertualDeleted=0
+INNER JOIN dbo.JobDescription ON dbo.JobDescription.Id = dbo.Position.JobDescription_id AND JobDescription.IsVertualDeleted=0 
+INNER JOIN dbo.Node ON dbo.JobDescription.Node_id=dbo.Node.Id AND dbo.Node.IsVertualDeleted=0 
+
+WHERE	
+
+PrimaryEmployeeBenefit.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+EmployeeCard.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0
+),-- Grade CTE query  
+GradeBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS Id, 
+dbo.Employee.FirstName +' '+ dbo.Employee.FatherName +' '+ dbo.Employee.LastName FullName,
+dbo.Employee.Code, 
+dbo.Node.Name AS NodeName,
+dbo.JobDescription.Name AS JobDescriptionName,
+dbo.EmployeeCard.Salary,
+dbo.EmployeeCard.SalaryDeservableType,
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.GradeBenefitDetail.Value, 
+dbo.GradeBenefitDetail.Formula,
+dbo.GradeBenefitDetail.ExtraValue, 
+dbo.GradeBenefitDetail.ExtraValueFormula,
+'من الفئة' AS HasEmpCardBenefit,
+2 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id 
+INNER JOIN dbo.GradeBenefitDetail ON dbo.GradeBenefitDetail.Grade_id = dbo.Grade.Id 
+INNER JOIN dbo.BenefitCard ON dbo.GradeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id And dbo.AssigningEmployeeToPosition.IsPrimary='True' AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND Position.IsVertualDeleted=0
+INNER JOIN dbo.Node ON dbo.JobDescription.Node_id=dbo.Node.Id AND dbo.Node.IsVertualDeleted=0 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id AND dbo.EmployeeCard.CardStatus = 1 AND EmployeeCard.IsVertualDeleted=0
+WHERE
+
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobTitle.IsVertualDeleted=0 AND 
+Grade.IsVertualDeleted=0 AND 
+GradeBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.Id = dbo.Employee.Id)
+),-- JobTitle CTE query  
+JobTitleBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS Id, 
+dbo.Employee.FirstName +' '+ dbo.Employee.FatherName +' '+ dbo.Employee.LastName FullName,
+dbo.Employee.Code, 
+dbo.Node.Name AS NodeName,
+dbo.JobDescription.Name AS JobDescriptionName,
+dbo.EmployeeCard.Salary,
+dbo.EmployeeCard.SalaryDeservableType,
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.JobTitleBenefitDetail.Value, 
+dbo.JobTitleBenefitDetail.Formula,
+dbo.JobTitleBenefitDetail.ExtraValue, 
+dbo.JobTitleBenefitDetail.ExtraValueFormula,
+'من المسمى الوظيفي' AS HasEmpCardBenefit,
+3 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.JobTitleBenefitDetail ON dbo.JobTitleBenefitDetail.JobTitle_id = dbo.JobTitle.Id 
+INNER JOIN dbo.BenefitCard ON dbo.JobTitleBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id And dbo.AssigningEmployeeToPosition.IsPrimary='True' AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND Position.IsVertualDeleted=0
+INNER JOIN dbo.Node ON dbo.JobDescription.Node_id=dbo.Node.Id AND dbo.Node.IsVertualDeleted=0 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id AND dbo.EmployeeCard.CardStatus = 1 AND EmployeeCard.IsVertualDeleted=0
+WHERE
+
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobTitle.IsVertualDeleted=0 AND 
+JobTitleBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	Id = dbo.Employee.Id)
+),-- JobDescription CTE query  
+JobDescriptionBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS Id, 
+dbo.Employee.FirstName +' '+ dbo.Employee.FatherName +' '+ dbo.Employee.LastName FullName,
+dbo.Employee.Code, 
+dbo.Node.Name AS NodeName,
+dbo.JobDescription.Name AS JobDescriptionName,
+dbo.EmployeeCard.Salary,
+dbo.EmployeeCard.SalaryDeservableType,
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.JobDescriptionBenefitDetail.Value, 
+dbo.JobDescriptionBenefitDetail.Formula,
+dbo.JobDescriptionBenefitDetail.ExtraValue, 
+dbo.JobDescriptionBenefitDetail.ExtraValueFormula,
+'من الوصف الوظيفي' AS HasEmpCardBenefit,
+4 AS Type
+FROM         
+dbo.Employee 
+INNER JOIN dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id 
+INNER JOIN dbo.JobDescriptionBenefitDetail ON dbo.JobDescriptionBenefitDetail.JobDescription_id = dbo.JobDescription.Id 
+INNER JOIN dbo.BenefitCard ON dbo.JobDescriptionBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id And dbo.AssigningEmployeeToPosition.IsPrimary='True' AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND Position.IsVertualDeleted=0
+INNER JOIN dbo.Node ON dbo.JobDescription.Node_id=dbo.Node.Id AND dbo.Node.IsVertualDeleted=0 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id AND dbo.EmployeeCard.CardStatus = 1 AND EmployeeCard.IsVertualDeleted=0
+WHERE
+
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+JobDescriptionBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	Id = dbo.Employee.Id)
+),-- Position CTE query  
+PositionBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS Id, 
+dbo.Employee.FirstName +' '+ dbo.Employee.FatherName +' '+ dbo.Employee.LastName FullName,
+dbo.Employee.Code, 
+dbo.Node.Name AS NodeName,
+dbo.JobDescription.Name AS JobDescriptionName,
+dbo.EmployeeCard.Salary,
+dbo.EmployeeCard.SalaryDeservableType,
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.PositionBenefitDetail.Value, 
+dbo.PositionBenefitDetail.Formula,
+dbo.PositionBenefitDetail.ExtraValue, 
+dbo.PositionBenefitDetail.ExtraValueFormula,
+'من الموقع الوظيفي' AS HasEmpCardBenefit,
+5 AS Type
+FROM            
+dbo.Employee 
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id 
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND 
+dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id INNER JOIN
+dbo.PositionBenefitDetail ON dbo.PositionBenefitDetail.Position_id = dbo.Position.Id INNER JOIN
+dbo.BenefitCard ON dbo.PositionBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+INNER JOIN dbo.JobDescription ON dbo.JobDescription.Id = dbo.Position.JobDescription_id AND JobDescription.IsVertualDeleted=0 
+INNER JOIN dbo.Node ON dbo.JobDescription.Node_id=dbo.Node.Id AND dbo.Node.IsVertualDeleted=0 
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id AND dbo.EmployeeCard.CardStatus = 1 AND EmployeeCard.IsVertualDeleted=0
+WHERE
+
+Employee.IsVertualDeleted=0 AND 
+AssigningEmployeeToPosition.IsVertualDeleted=0 AND 
+Position.IsVertualDeleted=0 AND 
+PositionBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	JobDescriptionBenefit_CTE
+								WHERE	Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	Id = dbo.Employee.Id)
+),-- Node CTE query  
+NodeBenefit_CTE
+AS  
+(
+SELECT     
+dbo.Employee.Id AS Id, 
+dbo.Employee.FirstName +' '+ dbo.Employee.FatherName +' '+ dbo.Employee.LastName FullName,
+dbo.Employee.Code, 
+dbo.Node.Name AS NodeName,
+dbo.JobDescription.Name AS JobDescriptionName,
+dbo.EmployeeCard.Salary,
+dbo.EmployeeCard.SalaryDeservableType,
+dbo.BenefitCard.Id AS BenefitCardID,
+dbo.BenefitCard.Name AS BenefitCardName, 
+dbo.NodeBenefitDetail.Value, 
+dbo.NodeBenefitDetail.Formula,
+dbo.NodeBenefitDetail.ExtraValue, 
+dbo.NodeBenefitDetail.ExtraValueFormula,
+'من العقدة' AS HasEmpCardBenefit,
+6 AS Type
+FROM         
+dbo.Employee INNER JOIN
+dbo.JobDescription ON dbo.Employee.Id = dbo.JobDescription.Id INNER JOIN
+dbo.Node ON dbo.Node.Id = dbo.JobDescription.Node_id INNER JOIN
+dbo.NodeBenefitDetail ON dbo.NodeBenefitDetail.Node_id = dbo.Node.Id INNER JOIN
+dbo.BenefitCard ON dbo.NodeBenefitDetail.BenefitCard_id = dbo.BenefitCard.Id
+INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id And dbo.AssigningEmployeeToPosition.IsPrimary='True' AND Employee.IsVertualDeleted=0 AND AssigningEmployeeToPosition.IsVertualDeleted=0
+INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND Position.IsVertualDeleted=0
+INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id AND dbo.EmployeeCard.CardStatus = 1 AND EmployeeCard.IsVertualDeleted=0
+WHERE
+
+JobDescription.IsVertualDeleted=0 AND 
+Employee.IsVertualDeleted=0 AND 
+NodeBenefitDetail.IsVertualDeleted=0 AND 
+BenefitCard.IsVertualDeleted=0 
+AND dbo.BenefitCard.Id NOT IN (	SELECT	BenefitCardID
+								FROM	PositionBenefit_CTE
+								WHERE	Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobDescriptionBenefit_CTE
+								WHERE	Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	EmployeeCardBenefit_CTE
+								WHERE	EmployeeCardBenefit_CTE.Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	GradeBenefit_CTE
+								WHERE	Id = dbo.Employee.Id
+								UNION
+								SELECT	BenefitCardID
+								FROM	JobTitleBenefit_CTE
+								WHERE	Id = dbo.Employee.Id)
+)
+select Id,FullName,Code,NodeName,JobDescriptionName,Salary,SalaryDeservableType,BenefitCardID,BenefitCardName,Value,Formula,ExtraValue,ExtraValueFormula,HasEmpCardBenefit,Type from 
+(
+select * from EmployeeCardBenefit_CTE
+union
+select * from GradeBenefit_CTE
+union
+select * from JobTitleBenefit_CTE
+union
+select * from JobDescriptionBenefit_CTE
+union
+select * from PositionBenefit_CTE
+union
+select * from NodeBenefit_CTE
+) as EB
+where EB.Id in(@Employee) ORDER BY [Type]</CommandText></Query><Fields><Field Name="Id"><DataField>Id</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="FullName"><DataField>FullName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="BenefitCardID"><DataField>BenefitCardID</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="Code"><DataField>Code</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="BenefitCardName"><DataField>BenefitCardName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="NodeName"><DataField>NodeName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="Value"><DataField>Value</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="JobDescriptionName"><DataField>JobDescriptionName</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="Formula"><DataField>Formula</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="Salary"><DataField>Salary</DataField><rd:TypeName>System.Single</rd:TypeName></Field><Field Name="ExtraValue"><DataField>ExtraValue</DataField><rd:TypeName>System.Double</rd:TypeName></Field><Field Name="SalaryDeservableType"><DataField>SalaryDeservableType</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="ExtraValueFormula"><DataField>ExtraValueFormula</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="HasEmpCardBenefit"><DataField>HasEmpCardBenefit</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="Type"><DataField>Type</DataField><rd:TypeName>System.Int32</rd:TypeName></Field></Fields></DataSet><DataSet Name="EmployeesDataSet"><Query><DataSourceName>BenefitDataSource</DataSourceName><CommandText>SELECT  TOP 100  Id,FirstName + ' ' + FatherName + ' ' + LastName AS FullName
+FROM            Employee AS E
+WHERE        (IsVertualDeleted = 0)
+ORDER BY FullName</CommandText></Query><Fields><Field Name="Id"><DataField>Id</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="FullName"><DataField>FullName</DataField><rd:TypeName>System.String</rd:TypeName></Field></Fields></DataSet></DataSets><ReportSections><ReportSection><Body><ReportItems><Tablix Name="Tablix2"><TablixBody><TablixColumns><TablixColumn><Width>2.20915in</Width></TablixColumn><TablixColumn><Width>2.17075in</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.39247in</Height><TablixCells><TablixCell><CellContents><Textbox Name="LabelReleaseDate"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Release Date</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>14pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Format(Globals!ExecutionTime,"yyyy/MM/dd")</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>14pt</FontSize><Format>d</Format></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox3</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember /></TablixMembers></TablixRowHierarchy><DataSetName>BaseDataSet</DataSetName><Top>0.23221in</Top><Left>4.72906in</Left><Height>0.39247in</Height><Width>4.3799in</Width><Style><Border><Style>Solid</Style></Border><TopBorder><Color>Black</Color><Style>Solid</Style><Width>1pt</Width></TopBorder><BottomBorder><Color>Black</Color><Style>Solid</Style><Width>1pt</Width></BottomBorder><LeftBorder><Color>Black</Color><Style>Solid</Style><Width>1pt</Width></LeftBorder><RightBorder><Color>Black</Color><Style>Solid</Style><Width>1pt</Width></RightBorder></Style></Tablix><Tablix Name="Tablix3"><TablixBody><TablixColumns><TablixColumn><Width>4.8483cm</Width></TablixColumn><TablixColumn><Width>6.30524cm</Width></TablixColumn><TablixColumn><Width>6.23911cm</Width></TablixColumn><TablixColumn><Width>6.90563cm</Width></TablixColumn><TablixColumn><Width>5.15393cm</Width></TablixColumn><TablixColumn><Width>5.48465cm</Width></TablixColumn></TablixColumns><TablixRows><TablixRow><Height>0.82021cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="LabelPersonnel0Employee0Code"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Code</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelPersonnel0Employee0FullName"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Full Name</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelJobDesc0JobDescription0Node"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Node</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelJobDesc0Position0JobDescription"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Job Description</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><rd:Selected>true</rd:Selected></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox29"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Salary</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox29</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelMeritType"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Merit Type</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow><TablixRow><Height>0.635cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Code3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Code.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="FullName3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!FullName.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="NodeName2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!NodeName.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>NodeName</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="JobDescriptionName2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!JobDescriptionName.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>JobDescriptionName</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Salary"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Salary.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Salary</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox32"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=SWITCH(Fields!SalaryDeservableType.Value = 0, "يستحق أجور وتعويضات",
+Fields!SalaryDeservableType.Value = 1, "يستحق تعويضات فقط",
+Fields!SalaryDeservableType.Value = 2, "غير محدد"
+)</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox32</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow><TablixRow><Height>0.68792cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="LabelPayrollSystem0NodeBenefitDetail0BenefitCard"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>BenefitCard</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelPayrollSystem0NodeBenefitDetail0Value"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelPayrollSystem0NodeBenefitDetail0Formula"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Formula</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelBenefitSource"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Benefit Source</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelPayrollSystem0NodeBenefitDetail0ExtraValue"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Extra Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="LabelPayrollSystem0NodeBenefitDetail0ExtraValueFormula"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Extra Value Formula</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Style><Border><Style>Solid</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow><TablixRow><Height>0.71906cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="BenefitCardName"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!BenefitCardName.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>BenefitCardName</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Value"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Value.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Value</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox45"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=SWITCH(Fields!Formula.Value = 0, "قيمة ثابتة",
+Fields!Formula.Value = 1, "نسبة من المقطوع",
+Fields!Formula.Value = 2, "نسبة من الراتب التأميني",
+Fields!Formula.Value = 3, "نسبة من الراتب الاحتياطي1",
+Fields!Formula.Value = 4, "نسبة من الراتب الاحتياطي2",
+Fields!Formula.Value = 5, "نسبة من الراتب الاحتياطي3",
+Fields!Formula.Value = 6, "نسبة من سقف الفئة",
+Fields!Formula.Value = 7, "أيام من المقطوع",
+Fields!Formula.Value = 8, "أيام من الراتب التأميني",
+Fields!Formula.Value = 9, "أيام من الراتب الاحتياطي1",
+Fields!Formula.Value = 10, "أيام من الراتب الاحتياطي2",
+Fields!Formula.Value = 11, "أيام من الراتب الاحتياطي3",
+Fields!Formula.Value = 12, "أيام من سقف الفئة",
+Fields!Formula.Value = 13, "ساعات من المقطوع",
+Fields!Formula.Value = 14, "ساعات من الراتب التأميني",
+Fields!Formula.Value = 15, "ساعات من الراتب الاحتياطي1",
+Fields!Formula.Value = 16, "ساعات من الراتب الاحتياطي2",
+Fields!Formula.Value = 17, "ساعات من الراتب الاحتياطي3",
+Fields!Formula.Value = 18, "ساعات من سقف الفئة",
+Fields!Formula.Value = 19, "لايوجد"
+)</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox45</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="HasEmpCardBenefit"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!HasEmpCardBenefit.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>HasEmpCardBenefit</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ExtraValue"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!ExtraValue.Value</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ExtraValue</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ExtraValueFormula"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=SWITCH(Fields!ExtraValueFormula.Value = 0, "غير محدد",
+Fields!ExtraValueFormula.Value = 1, "ضرب بقيمة النهائية",
+Fields!ExtraValueFormula.Value = 2, "نسبة من قيمة النهائية",
+Fields!ExtraValueFormula.Value = 3, "ضرب بقيمة الاولية",
+Fields!ExtraValueFormula.Value = 4, "نسبة من قيمة الاولية"
+
+)</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>ExtraValueFormula</rd:DefaultName><Style><Border><Style>Solid</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow><TablixRow><Height>0.13229cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Textbox89"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox89</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BottomBorder><Style>None</Style></BottomBorder><LeftBorder><Style>None</Style></LeftBorder><RightBorder><Style>None</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox90"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Sum(Fields!Value.Value)</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox90</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BottomBorder><Style>None</Style></BottomBorder><LeftBorder><Style>None</Style></LeftBorder><RightBorder><Style>None</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox91"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Sum(Fields!Formula.Value)</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox91</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BottomBorder><Style>None</Style></BottomBorder><LeftBorder><Style>None</Style></LeftBorder><RightBorder><Style>None</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox92"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value /><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox92</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BottomBorder><Style>None</Style></BottomBorder><LeftBorder><Style>None</Style></LeftBorder><RightBorder><Style>None</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox93"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value EvaluationMode="Constant" /><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox93</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BottomBorder><Style>None</Style></BottomBorder><LeftBorder><Style>None</Style></LeftBorder><RightBorder><Style>None</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Textbox35"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Sum(Fields!ExtraValueFormula.Value)</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>11pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><rd:DefaultName>Textbox35</rd:DefaultName><Style><Border><Style>Solid</Style></Border><BottomBorder><Style>None</Style></BottomBorder><LeftBorder><Style>None</Style></LeftBorder><RightBorder><Style>None</Style></RightBorder><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody><TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy><TablixRowHierarchy><TablixMembers><TablixMember><Group Name="Id"><GroupExpressions><GroupExpression>=Fields!Id.Value</GroupExpression></GroupExpressions></Group><SortExpressions><SortExpression><Value>=Fields!Id.Value</Value></SortExpression></SortExpressions><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup></TablixMember><TablixMember><Group Name="Details" /><TablixMembers><TablixMember /></TablixMembers></TablixMember><TablixMember><KeepWithGroup>Before</KeepWithGroup></TablixMember></TablixMembers></TablixMember></TablixMembers></TablixRowHierarchy><DataSetName>BaseDataSet</DataSetName><Top>2.37373cm</Top><Left>0.7276cm</Left><Height>2.99448cm</Height><Width>34.93686cm</Width><ZIndex>1</ZIndex><Style><Border><Style>None</Style></Border></Style></Tablix></ReportItems><Height>2.46026in</Height><Style /></Body><Width>14.32759in</Width><Page><PageHeader><Height>0.8125in</Height><PrintOnFirstPage>true</PrintOnFirstPage><PrintOnLastPage>true</PrintOnLastPage><ReportItems><Textbox Name="LabelEmployeesBenefits"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Employees Benefits</Value><Style><FontFamily>Tahoma</FontFamily><FontSize>20pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Left>0.72761cm</Left><Height>0.7697in</Height><Width>13.75467in</Width><Style><Border><Style>None</Style></Border><BackgroundColor>LightGrey</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></ReportItems><Style><Border><Style>None</Style></Border></Style></PageHeader><PageFooter><Height>1in</Height><PrintOnFirstPage>true</PrintOnFirstPage><PrintOnLastPage>true</PrintOnLastPage><ReportItems><Textbox Name="Textbox0012"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>/</Value><Style><FontSize>12pt</FontSize><FontFamily>Segoe UI</FontFamily></Style></TextRun><TextRun><Value>=Globals!TotalPages</Value><Style><FontSize>12pt</FontSize><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs><Top>0.81008cm</Top><Left>18.15552cm</Left><Height>0.91983cm</Height><Width>3.22688cm</Width><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox><Textbox Name="Textbox01"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Globals!PageNumber</Value><Style><FontSize>12pt</FontSize><FontFamily>Segoe UI</FontFamily></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs><Top>0.81008cm</Top><Left>15.00967cm</Left><Height>0.91983cm</Height><Width>3.11058cm</Width><ZIndex>1</ZIndex><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style></Textbox></ReportItems><Style><Border><Style>None</Style></Border></Style></PageFooter><PageWidth>15.4in</PageWidth><LeftMargin>0.5in</LeftMargin><RightMargin>0.5in</RightMargin><Style /></Page></ReportSection></ReportSections><ReportParameters><ReportParameter Name="Personnel0Employee"><DataType>Integer</DataType><Prompt>Employee</Prompt><ValidValues><DataSetReference><DataSetName>EmployeesDataSet</DataSetName><ValueField>Id</ValueField><LabelField>FullName</LabelField></DataSetReference></ValidValues><MultiValue>true</MultiValue></ReportParameter></ReportParameters><rd:ReportUnitType>Inch</rd:ReportUnitType><rd:ReportID>7cb79a64-6bbb-4db9-ba73-83766ef964b7</rd:ReportID></Report>

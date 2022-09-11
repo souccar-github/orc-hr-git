@@ -1,0 +1,12 @@
+﻿@using  Project.Web.Mvc4.Models
+@{
+    var moduleStep = (RequestInformation.Navigation.Step)TempData["Module"];
+    ViewBag.Title = moduleStep.Title;
+}
+
+<div id="dynamic_content">
+    <h2>@ViewBag.Title</h2>
+</div>
+
+@Html.Partial("ActionListTemplate")
+@Html.Partial("EditorTemplate")

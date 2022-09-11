@@ -1,0 +1,284 @@
+﻿@using HRIS.Domain.Training.Entities
+@using HRIS.Domain.Training.Enums
+@using HRIS.Domain.Training.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers.Resource
+
+
+@{
+    
+
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-ar" class="chart-params">
+        @* Training Plan *@
+        <div id="p-training-plan-ntdn" style="float: @pageDir; width: 48%;">
+            <div class="control control-p-training-plan-ntdn">
+                <div class="k-edit-label">
+                    <label for="planNtdn">@typeof(TrainingPlan).GetLocalized()</label>
+                </div>
+                <div data-container-for="planNtdn" class="k-edit-field">
+                    <input id="planNtdn" name="planNtdn" placeholder="@typeof(TrainingPlan).GetLocalized() ..."/>
+                    <input id="hf_planNtdn" type="hidden"/>
+                </div>
+
+            </div>
+        </div>
+        @* Status *@
+        <div id="p-status-ntdn" style="float:@pageDir;width:48%;">
+            <div class="control control-p-status-ntdn">
+                <div class="k-edit-label">
+                    <label for="statusNtdn">@typeof(CourseStatus).GetLocalized()</label>
+                </div>
+                <div data-container-for="statusNtdn" class="k-edit-field">
+                    <input id="statusNtdn" name="statusNtdn" placeholder="@typeof(CourseStatus).GetLocalized() ..." />
+                    <input id="hf_statusNtdn" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Course *@
+        <div id="p-course-ntdn" style="float:@pageDir;width:48%;">
+            <div class="control control-p-course-ntdn">
+                <div class="k-edit-label">
+                    <label for="courseNtdn">@typeof(Course).GetLocalized()</label>
+                </div>
+                <div data-container-for="courseNtdn" class="k-edit-field">
+                    <input id="courseNtdn" name="courseNtdn" placeholder="@typeof(Course).GetLocalized() ..." />
+                    <input id="hf_courseNtdn" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+
+    <div id="number-of-trainees-and-distributed-by-node-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    $plansNtdn = null;
+    $coursesNtdn = null;
+    $statusNtdn = null;
+
+    function getNumberOfTraineesDistributedByNode(plans, courses) {
+        
+        $plansNtdn = plans;
+        $coursesNtdn = courses;
+        $statusNtdn = getCourseStatus();
+
+        generateComboBox("#planNtdn", "planNtdn", $plansNtdn, onChangePlanNtdn);
+        generateComboBox("#statusNtdn", "statusNtdn", $statusNtdn, onChangeStatusNtdn);
+        generateComboBox("#courseNtdn", "courseNtdn", $coursesNtdn, onChangeCourseNtdn);
+
+        setTimeout(function () { showNumberOfTraineesDistributedByNodeChart(); }, 500);
+    }
+
+    function onChangePlanNtdn(e) {
+        onChange(e);
+        updateTrainingPlanNtdnComboBox(e);
+    }
+
+    function updateTrainingPlanNtdnComboBox(e) {
+        var eleCount = $plansNtdn.length;
+        $plansNtdn.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $plansNtdn.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $plansNtdn.push(items[i]);
+                }
+            }
+        }
+
+        //===Course
+        updateCourseNtdn();
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($coursesNtdn);
+        dataSource.data(data);
+
+        var courseNtdnDropDownList = $('#courseNtdn').data("kendoDropDownList");
+        courseNtdnDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        courseNtdnDropDownList.setDataSource(dataSource);
+
+        var courseTextNtdn = getComboBoxText($coursesNtdn, 'courseNtdn');
+        courseNtdnDropDownList.text(courseTextNtdn);
+
+        showNumberOfTraineesDistributedByNodeChart();
+    }
+
+    function onChangeStatusNtdn(e) {
+        onChange(e);
+        updateStatusNtdnComboBox(e);
+    }
+
+    function updateStatusNtdnComboBox(e) {
+        
+        var eleCount = $statusNtdn.length;
+        $statusNtdn.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $statusNtdn.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $statusNtdn.push(items[i]);
+                }
+            }
+        }
+
+        //===Course
+        updateCourseNtdn();
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($coursesNtdn);
+        dataSource.data(data);
+
+        var courseNtdnDropDownList = $('#courseNtdn').data("kendoDropDownList");
+        courseNtdnDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        courseNtdnDropDownList.setDataSource(dataSource);
+
+        var courseTextNtdn = getComboBoxText($coursesNtdn, 'courseNtdn');
+        courseNtdnDropDownList.text(courseTextNtdn);
+
+        showNumberOfTraineesDistributedByNodeChart();
+    }
+
+    function updateCourseNtdn() {
+
+        window.Souccar.ajax('@Url.Action("GetCoursesByPlanAndStatus", "Dashboard", new { area = "Training" })',
+            { plans: $plansNtdn, status: $statusNtdn },
+            successFunc,
+            erorrFunc);
+        function successFunc(data) {
+            
+            $coursesNtdn = data;
+            
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:updateCourseAr');
+        }
+    }
+
+    function onChangeCourseNtdn(e) {
+        onChange(e);
+        updateCourseNtdnComboBox(e);
+    }
+    function updateCourseNtdnComboBox(e) {
+        var eleCount = $coursesNtdn.length;
+        $coursesNtdn.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $coursesNtdn.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $coursesNtdn.push(items[i]);
+                }
+            }
+        }
+
+        showNumberOfTraineesDistributedByNodeChart();
+    }
+
+    function showNumberOfTraineesDistributedByNodeChart() {
+
+        window.Souccar.ajax('@Url.Action("NumberOfTraineesDistributedByNode", "Dashboard", new { area = "Training" })', { courseNames: $coursesNtdn }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success)
+                initNumberOfTraineesDistributedByNodeChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:showNumberOfTraineesDistributedByNodeChart');
+        }
+    }
+
+    function initNumberOfTraineesDistributedByNodeChart(data) {
+        var colors = [
+            getDefaultThemeColor(), '#434348', '#7CB5EC', '#F45B5B', '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce', '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'
+        ];
+        
+        Highcharts.chart('number-of-trainees-and-distributed-by-node-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTraineesInEachCourseDistributedByNode)'
+            },
+            xAxis: {
+                categories: data.CoursesNames
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTrainees)'
+            }
+        },
+            legend: {
+            enable: false
+            },
+        tooltip: {
+                outside: true,
+                useHTML: true,
+                borderRadius: 5,
+                formatter: function () {
+                    return (
+                        '<div class="chart-tooltip' +
+                            this.x +
+                            '"><span class="tval"><b>' +
+                            this.x +
+                            '</b> </span><span class="tlabel"><p>' + '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.NumberOfTrainees) ' + this.y + '</p></span></div>'
+                    );
+
+
+                }
+        },
+        plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+        },
+        colors: colors,
+        series: data.List
+    });
+    }
+</script>

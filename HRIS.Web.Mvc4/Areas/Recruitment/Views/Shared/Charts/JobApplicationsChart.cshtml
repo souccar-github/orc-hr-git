@@ -1,0 +1,389 @@
+﻿
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.JobDescription.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-jap" class="chart-params">
+        @* From Date *@
+        <div id="from-date-jap" style="float:@pageDir;width:48%;">
+            <div class="control control-from-date-jap">
+                <div class="k-edit-label">
+                    <label for="fromDateJap">@GlobalResource.FromDate</label>
+                </div>
+                <div data-container-for="fromDateJap" class="k-edit-field">
+                    <input id="fromDateJap" />
+                </div>
+
+            </div>
+        </div>
+        @* To Date *@
+        <div id="to-date-jap" style="float:@pageDir;width:48%;">
+            <div class="control control-to-date-jap">
+                <div class="k-edit-label">
+                    <label for="toDateJap">@GlobalResource.ToDate</label>
+                </div>
+                <div data-container-for="toDateJap" class="k-edit-field">
+                    <input id="toDateJap" />
+                </div>
+
+            </div>
+        </div>
+        @* Nodes Type *@
+        <div id="p-node-type-jap" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-type-jap">
+                <div class="k-edit-label">
+                    <label for="nodeTypeJap">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeJap" class="k-edit-field">
+                    <input id="nodeTypeJap" name="nodeTypeJap" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeJap" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Nodes *@
+        <div id="p-node-jap" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-jap">
+                <div class="k-edit-label">
+                    <label for="nodeJap">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeJap" class="k-edit-field">
+                    <input id="nodeJap" name="nodeJap" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeJap" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Job Description *@
+        <div id="p-job-desc-jap" style="float:@pageDir;width:48%;">
+            <div class="control control-p-job-desc-jap">
+                <div class="k-edit-label">
+                    <label for="jobDescJap">@typeof(JobDescription).GetLocalized()</label>
+                </div>
+                <div data-container-for="jobDescJap" class="k-edit-field">
+                    <input id="jobDescJap" name="jobDescJap" placeholder="@typeof(JobDescription).GetLocalized() ..." />
+                    <input id="hf_jobDescJap" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+    </div>
+
+    <div style="clear:both;"></div>
+    <div id="job-application-percentage-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesJap = null;
+    var $nodesJap = null;
+    var $jobDescJap = null;
+
+    function getJobApplicationsPercentage(nodesTypes, nodes,jobDescriptions) {
+        $nodesTypesJap = nodesTypes;
+        $nodesJap = nodes;
+        $jobDescJap = jobDescriptions;
+
+        var date = new Date();
+        date.setMonth(date.getMonth() - 1);
+
+        $('#fromDateJap').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth(), 1),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showJobApplicationsPercentageChart();
+            }
+        });
+
+        $('#toDateJap').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showJobApplicationsPercentageChart();
+            }
+        });
+
+        generateComboBox("#nodeTypeJap", "nodeTypeJap", $nodesTypesJap, onChangeNodeTypeJap);
+        generateComboBox("#nodeJap", "nodeJap", $nodesJap, onChangeNodeJap);
+        generateComboBox("#jobDescJap", "jobDescJap", $jobDescJap, onChangeJobDescJap);
+
+
+        setTimeout(function () { showJobApplicationsPercentageChart(); }, 500);
+    }
+
+    function onChangeNodeTypeJap(e) {
+        onChange(e);
+        updateNodeTypeComboBox(e);
+    }
+    function updateNodeTypeComboBox(e) {
+        var eleCount = $nodesTypesJap.length;
+        $nodesTypesJap.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesJap.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesJap.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesJap($nodesTypesJap);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesJap);
+        dataSource.data(data);
+
+        var nodeJapDropDownList = $('#nodeJap').data("kendoDropDownList");
+        nodeJapDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeJapDropDownList.setDataSource(dataSource);
+
+        //===Job Description
+        updateJobDescriptions($nodesJap);
+        var jobDescDataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescJap);
+        jobDescDataSource.data(data);
+
+        var jobDescJapDropDownList = $('#jobDescJap').data("kendoDropDownList");
+        jobDescJapDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescJapDropDownList.setDataSource(jobDescDataSource);
+
+        showJobApplicationsPercentageChart();
+    }
+    function updateNodesJap(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Recruitment" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesJap = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeJap(e) {
+        onChange(e);
+        updateNodeComboBox(e);
+    }
+    function updateNodeComboBox(e) {
+        var eleCount = $nodesJap.length;
+        $nodesJap.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesJap.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesJap.push(items[i]);
+                }
+            }
+        }
+
+        updateJobDescriptions($nodesJap);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescJap);
+        dataSource.data(data);
+
+        var jobDescJapDropDownList = $('#jobDescJap').data("kendoDropDownList");
+        jobDescJapDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescJapDropDownList.setDataSource(dataSource);
+
+        showJobApplicationsPercentageChart();
+    }
+    function updateJobDescriptions(nodes) {
+        window.Souccar.ajax('@Url.Action("GetJobDescriptions", "Dashboard", new { area = "Recruitment" })', { nodes: nodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $jobDescJap = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+    }
+    function onChangeJobDescJap(e) {
+        onChange(e);
+        updateJobDescComboBox(e);
+    }
+
+    function updateJobDescComboBox(e) {
+        var eleCount = $jobDescJap.length;
+        $jobDescJap.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $jobDescJap.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $jobDescJap.push(items[i]);
+                }
+            }
+        }
+
+        showJobApplicationsPercentageChart();
+    }
+    function showJobApplicationsPercentageChart() {
+
+        var fromKendoDatePicker = $('#fromDateJap').data('kendoDatePicker');
+        var fromDate = fromKendoDatePicker.value();
+
+        var toKendoDatePicker = $('#toDateJap').data('kendoDatePicker');
+        var toDate = toKendoDatePicker.value();
+
+        window.Souccar.ajax('@Url.Action("JobApplicationsPercentage", "Dashboard", new { area = "Recruitment" })', { jobDescriptions: $jobDescJap, fromDate: fromDate , toDate : toDate}, successFunc, erorrFunc);
+        function successFunc(data) {
+            if(data.Success)
+                initJobApplicationsPercentageChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+
+    }
+
+    function initJobApplicationsPercentageChart(data) {
+
+        Highcharts.chart('job-application-percentage-chart', {
+            chart: {
+                type: 'pyramid'
+            },
+            title: {
+                text: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.JobApplications)',
+                x: -50
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    dataLabels: {
+                        enabled: true,
+                        //distance: -50,
+                        format: '({point.y:,.0f})',
+                        softConnector: true
+                    },
+                    center: ['40%', '50%'],
+                    width: '80%',
+                    showInLegend: true
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                name: 'Count',
+                data: [
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Applications)', data.Total],
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Interviews)', data.TotalWithInterview],
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Hires)', data.TotalThatAccepted]
+                ]
+            }],
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        plotOptions: {
+                            series: {
+                                dataLabels: {
+                                    inside: true
+                                }
+                            }
+                        }
+                    }
+                }]
+            }
+        });
+        //For 3D Chart
+        @*Highcharts.chart('job-application-percentage-chart', {
+            chart: {
+                type: 'pyramid3d',
+                options3d: {
+                    enabled: true,
+                    alpha: 10,
+                    depth: 50,
+                    viewDistance: 50
+                }
+            },
+            title: {
+                text: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.JobApplications)'
+            },
+            plotOptions: {
+                series: {
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b> ({point.y:,.0f})',
+                        allowOverlap: true,
+                        x: 10,
+                        y: -5
+                    },
+                    width: '80%',
+                    //height: '80%',
+                    center: ['50%', '45%']
+                }
+            },
+            series: [{
+                name: 'Count',
+                data: [
+                    ['Applications', data.Total],
+                    ['Interviews', data.TotalWithInterview],
+                    ['Hires', data.TotalThatAccepted]
+                ]
+            }]
+        });*@
+
+    }
+</script>
+
+
+

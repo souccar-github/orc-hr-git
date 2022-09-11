@@ -1,0 +1,234 @@
+﻿@* 
+@using HRIS.Domain.PayrollSystem.Enums
+@using HRIS.Domain.PayrollSystem.RootEntities
+@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+@using Souccar.Infrastructure.Extenstions
+<script type="text/javascript">
+    function ExternalTravelLicence_EditHandler(e) {
+        $('[name="TotalFoodDays"]').data("kendoNumericTextBox").enable(true);
+        $('[name="TotalRestDays"]').data("kendoNumericTextBox").enable(true);
+        RestFoodDaysCheckbox_Change(e);
+        if (e.model.Id == 0) {
+            $('[name="WithBenefit"]').attr("checked", "checked");
+            e.model.WithBenefit = true;
+        }
+    }
+    function InternalTravelLicence_EditHandler(e) {
+        $('[name="TotalFoodDays"]').data("kendoNumericTextBox").enable(true);
+        $('[name="TotalRestDays"]').data("kendoNumericTextBox").enable(true);
+        $('[name="TransportationBenefitValue"]').data("kendoNumericTextBox").enable(true);
+        RestFoodDaysCheckbox_Change(e);
+        TransportationBenefitValueCheckbox_Change(e);
+    }
+
+    function TravelLicenceOption_EditHandler(e) {
+        $('[name="FoodExternalPercentage"]').data("kendoNumericTextBox").setOptions({ format: "#.######", decimals: 6 });
+        $('[name="RestExternalPercentage"]').data("kendoNumericTextBox").setOptions({ format: "#.######", decimals: 6 });
+        $('[name="FoodExternalPercentage"]').data("kendoNumericTextBox").value(e.model.FoodExternalPercentage);
+        $('[name="RestExternalPercentage"]').data("kendoNumericTextBox").value(e.model.RestExternalPercentage);
+
+        $('[name="KiloPrice"]').data("kendoNumericTextBox").min(0);
+        $('[name="KiloPrice"]').data("kendoNumericTextBox").value(e.model.KiloPrice);
+        
+    }
+    function RestFoodDaysCheckbox_Change(e) {
+        $('[name="WithFood"]').change(function () {
+            if (this.checked) {
+                $('[name="TotalFoodDays"]').data("kendoNumericTextBox").enable(true);
+            } else {
+                $('[name="TotalFoodDays"]').data("kendoNumericTextBox").enable(false);
+                $('[name="TotalFoodDays"]').data("kendoNumericTextBox").value(0);
+                //$('#' + window.gridModel.Name + '').data().kendoGrid.dataSource.data()[0].set('TotalFoodDays', "0");
+                e.model.TotalFoodDays = 0;
+            }
+        });
+        $('[name="WithFood"]').trigger("change");
+
+        $('[name="WithRest"]').change(function () {
+            if (this.checked) {
+                $('[name="TotalRestDays"]').data("kendoNumericTextBox").enable(true);
+            } else {
+                $('[name="TotalRestDays"]').data("kendoNumericTextBox").enable(false);
+                $('[name="TotalRestDays"]').data("kendoNumericTextBox").value(0);
+                //$('#' + window.gridModel.Name + '').data().kendoGrid.dataSource.data()[0].set('TotalRestDays', "0");
+                e.model.TotalRestDays = 0;
+            }
+        });
+        $('[name="WithRest"]').trigger("change");
+    }
+    function TransportationBenefitValueCheckbox_Change(e) {
+        $('[name="WithSpecificTransportationBenefitValue"]').change(function () {
+            if (this.checked) {
+                $('[name="TransportationBenefitValue"]').data("kendoNumericTextBox").enable(true);
+            } else {
+                $('[name="TransportationBenefitValue"]').data("kendoNumericTextBox").enable(false);
+                $('[name="TransportationBenefitValue"]').data("kendoNumericTextBox").value(0);
+                e.model.TransportationBenefitValue = 0;
+                //$('#' + window.gridModel.Name + '').data().kendoGrid.dataSource.data()[0].set('TransferenceBenefitValue', "0");
+            }
+        });
+        $('[name="WithSpecificTransportationBenefitValue"]').trigger("change");
+    }
+
+</script>
+    *@
+    @*// صرف اذن السفر الداخلي*@
+@*
+    <div id="InternalTravelLicencePaymentOrderWindow" style="display: none"></div>
+
+    <script type="text/javascript">
+        var globalInternalTravelLicenceId;
+        var InternalTravelLicencePaymentOrderWindowvar = $("#InternalTravelLicencePaymentOrderWindow");
+        function InternalTravelLicencePaymentOrder(internalTravelLicenceId) {
+            $.ajax({
+                url: '@Url.Action("GetInternalTravelLicenceInformation", "InternalTravelLicence")',
+                type: "POST",
+                data: JSON.stringify({ internalTravelLicenceId: internalTravelLicenceId }),
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success) {
+                        if (data.Result.Status == "@((int)TravelLicenceStatus.Paid)") {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule
+                            .GetFullKey(CustomMessageKeysPayrollSystemModule.TravelLicenceAllreadyPaid))", "k-icon w-b-error", commands);
+                        } else {
+                            globalInternalTravelLicenceId = internalTravelLicenceId;
+                            InternalTravelLicencePaymentOrderBind();
+                        }
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+
+
+
+        };
+
+        function SaveInternalTravelLicencePaymentOrderInformation(globalInternalTravelLicenceId) {
+            $.ajax({
+                url: '@Url.Action("InternalTravelLicencePaymentOrder", "InternalTravelLicence")',
+                type: "POST",
+                data: JSON.stringify({
+                    internalTravelLicenceId: globalInternalTravelLicenceId,
+                    paymentOrderNumber: $("#PaymentOrderNumber_InternalTravelLicencePaymentOrder").val(),
+                    paymentOrderDate: $("#PaymentOrderDate_InternalTravelLicencePaymentOrder").data("kendoDatePicker").value(),
+                    paymentOrderAvailabilityDate: $("#PaymentOrderAvailabilityDate_InternalTravelLicencePaymentOrder").data("kendoDatePicker").value()
+                }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        $("#" + gridModel.Name).data("kendoGrid").dataSource.fetch();
+                        $("#InternalTravelLicencePaymentOrderWindow").data("kendo-window").close();
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+        }
+
+
+    </script>
+
+
+
+    <div id="ExternalTravelLicencePaymentOrderWindow" style="display: none"></div>
+
+    <script type="text/javascript">
+
+        var globalExternalTravelLicenceId;
+        var ExternalTravelLicencePaymentOrderWindowvar = $("#ExternalTravelLicencePaymentOrderWindow");
+        function ExternalTravelLicencePaymentOrder(externalTravelLicenceId) {
+            $.ajax({
+                url: '@Url.Action("GetExternalTravelLicenceInformation", "ExternalTravelLicence")',
+                type: "POST",
+                data: JSON.stringify({ externalTravelLicenceId: externalTravelLicenceId }),
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success) {
+                        if (data.Result.Status == "@((int)TravelLicenceStatus.Paid)") {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule
+                            .GetFullKey(CustomMessageKeysPayrollSystemModule.TravelLicenceAllreadyPaid))", "k-icon w-b-error", commands);
+                        } else {
+                            globalExternalTravelLicenceId = externalTravelLicenceId;
+                            ExternalTravelLicencePaymentOrderBind();
+                        }
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+        };
+
+        function SaveExternalTravelLicencePaymentOrderInformation(globalExternalTravelLicenceId) {
+            $.ajax({
+                url: '@Url.Action("ExternalTravelLicencePaymentOrder", "ExternalTravelLicence")',
+                type: "POST",
+                data: JSON.stringify({
+                    externalTravelLicenceId: globalExternalTravelLicenceId,
+                    paymentOrderNumber: $("#PaymentOrderNumber_ExternalTravelLicencePaymentOrder").val(),
+                    paymentOrderDate: $("#PaymentOrderDate_ExternalTravelLicencePaymentOrder").data("kendoDatePicker").value(),
+                    paymentOrderAvailabilityDate: $("#PaymentOrderAvailabilityDate_ExternalTravelLicencePaymentOrder").data("kendoDatePicker").value()
+                }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        $("#" + gridModel.Name).data("kendoGrid").dataSource.fetch();
+                        $("#ExternalTravelLicencePaymentOrderWindow").data("kendo-window").close();
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+        }
+
+
+
+
+
+        //function AcceptExternalTravelLicence(externalTravelLicenceId) {
+        //    $.ajax({
+        //        url: 'ExternalTravelLicence/AcceptExternalTravelLicence',
+        //        type: "POST",
+        //        data: JSON.stringify({ externalTravelLicenceId: externalTravelLicenceId }),
+        //        contentType: 'application/json',
+        //        success: function (data) {
+        //            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+        //            if (data.Success) {
+        //                ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+        //            } else {
+        //                ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+        //            }
+        //        }
+        //    });
+        //}
+
+
+        //function AcceptInternalTravelLicence(internalTravelLicenceId) {
+        //    $.ajax({
+        //        url: 'InternalTravelLicence/AcceptInternalTravelLicence',
+        //        type: "POST",
+        //        data: JSON.stringify({ internalTravelLicenceId: internalTravelLicenceId }),
+        //        contentType: 'application/json',
+        //        success: function (data) {
+        //            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+        //            if (data.Success) {
+        //                ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+        //            } else {
+        //                ShowMessageBox("error", data.Msg, "k-icon w-b-error", commands);
+        //            }
+        //        }
+        //    });
+        //}
+
+
+    </script>*/ *@

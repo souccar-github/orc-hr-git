@@ -1,0 +1,24 @@
+﻿@{
+    
+    ViewBag.Title = "ChangeLang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ChangeLang</h2>
+<script>
+    $(document).ready(function () {
+        window.requestInformation = JSON.parse(@Html.Raw(Json.Encode(ViewBag.requestInformation)));
+        $.ajax({
+            url: window.applicationpath + "Grid/UpdateRequestInformation",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify(window.requestInformation),
+            success: function (data) {
+                window.requestInformation = data.requestInfo;
+                if (window.requestInformation.NavigationData.Status == "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Aggregate")
+                    changeLocation();
+            }
+        });
+        
+    });
+</script>

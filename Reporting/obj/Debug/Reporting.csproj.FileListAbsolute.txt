@@ -1,0 +1,55 @@
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.csprojResolveAssemblyReference.cache
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.DynamicReports.DynamicReport.resources
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.Infrastructure.BaseReport.resources
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.JobDesc.SubReport.resources
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.JobDesc.TestReporting.resources
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.csproj.GenerateResource.Cache
+D:\Projects\HRIS\2010\HR System-PS\UI\Binaries\Reporting.dll
+D:\Projects\HRIS\2010\HR System-PS\UI\Binaries\Reporting.pdb
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.JobDesc.JobDescTemplate.resources
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.dll
+D:\Projects\HRIS\2010\HR System-PS\Reporting\obj\Debug\Reporting.pdb
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\UI\Binaries\Reporting.dll
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\UI\Binaries\Reporting.pdb
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.csprojResolveAssemblyReference.cache
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.DynamicReports.DynamicReport.resources
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.Infrastructure.BaseReport.resources
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.JobDesc.SubReport.resources
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.JobDesc.JobDescTemplate.resources
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.JobDesc.TestReporting.resources
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.csproj.GenerateResource.Cache
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.dll
+C:\Users\amer.farhat\Desktop\compare\HR System-PS 15-9-2015\HR System-PS\Reporting\obj\Debug\Reporting.pdb
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.csprojResolveAssemblyReference.cache
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.DynamicReports.DynamicReport.resources
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.Infrastructure.BaseReport.resources
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.JobDesc.SubReport.resources
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.JobDesc.JobDescTemplate.resources
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.JobDesc.TestReporting.resources
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.csproj.GenerateResource.Cache
+C:\Projects\HR System\UI\Binaries\Reporting.dll
+C:\Projects\HR System\UI\Binaries\Reporting.pdb
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.dll
+C:\Projects\HR System\Reporting\obj\Debug\Reporting.pdb
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.DynamicReports.DynamicReport.resources
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.Infrastructure.BaseReport.resources
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.JobDesc.SubReport.resources
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.JobDesc.JobDescTemplate.resources
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.JobDesc.TestReporting.resources
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.csproj.GenerateResource.Cache
+D:\Projects\ORC-HR\HR System\UI\Binaries\Reporting.dll
+D:\Projects\ORC-HR\HR System\UI\Binaries\Reporting.pdb
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.dll
+D:\Projects\ORC-HR\HR System\Reporting\obj\Debug\Reporting.pdb
+D:\Projects\ORC-HR\HR System-git\UI\Binaries\Reporting.dll
+D:\Projects\ORC-HR\HR System-git\UI\Binaries\Reporting.pdb
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.DynamicReports.DynamicReport.resources
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.Infrastructure.BaseReport.resources
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.JobDesc.SubReport.resources
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.JobDesc.JobDescTemplate.resources
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.JobDesc.TestReporting.resources
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.csproj.GenerateResource.Cache
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.dll
+D:\Projects\ORC-HR\HR System-git\Reporting\obj\Debug\Reporting.pdb

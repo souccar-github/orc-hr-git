@@ -1,0 +1,371 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 26/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="advance-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="advance-employee-container"></div><br />
+<div class="advance-approval-container-title"><label>@GlobalResource.PendingAdvanceRequest</label></div>
+<div class="advance-approval-container"></div><br />
+<div class="advance-request-workflow-container"></div>
+<div id='reportwindow' hidden='hidden'></div>
+
+<script type="text/javascript">
+
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var notifyAdvanceId = window.localStorage.getItem('ServiceId');
+    var advanceId = window.localStorage.getItem('ServiceId');
+    var container = $('.advance-employee-container');
+    var approval_container = $('.advance-approval-container');
+    var workflowContainer = $(".advance-request-workflow-container");
+    var PendingType;
+    var OtherAdvance;
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+        debugger;
+        Souccar.ajax('@Url.Action("GetDataForAdvanceService", "Service", new { area = "EmployeeRelationServices" })', null,
+         getData, failedMessage);
+    }
+    function getData(data) {
+
+        showEmployee(data.SubEmployees);
+        showEmployeeApproval(data.EmployeeApproval);
+    }
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+    function ValidationMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.AdvanceAmountMustBeLessThanOrEqualDeservableAdvanceAmount)", "k-icon w-b-error", commands);
+    }
+    function ValidationMessage3() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.AdvanceAmountMustBeGreaterThanZero)", "k-icon w-b-error", commands);
+    }
+    function InfoMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Info", "@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ThisEmployeeHasApprovedNotTransferAdvancesThisMonth)", "k-icon w-b-info", commands);
+    }
+    function ValidationMessage2() {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.TheAdvanceDateMustBeBetweenFromDateAndToDateDefindingInAdvanceSetting)", "k-icon w-b-error", commands);
+        }
+        function showEmployee(data) {
+            debugger;
+            $(".advance-employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+            var template = kendo.template($("#employee-position-list-action-template").html());
+            container.html(template(data));
+
+            $('.action-btn').off('click').on('click', function () {
+                debugger;
+                approval_container.html('');
+                container.html("");
+                $(".advance-employee-container-title").html('');
+                $(".advance-approval-container-title").html('');
+
+                var positionId = Number($(this).attr('data-positionid'));
+                var employeeId = Number($(this).attr('data-employeeid'));
+                var fullName = $(this).attr('data-fullname');
+
+                var employeeAdvanceTemplateData = [
+                     { Name: "DeservableAdvanceAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DeservableAdvanceAmount)", Type: "Number", IsReadonly: true },
+
+                    { Name: "AdvanceAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdvanceAmount)", Type: "Number", IsRequired: true },
+                    { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea" },
+
+                ];
+
+                var employeeAdvanceDatabind = kendo.observable(
+                    {
+                        DeservableAdvanceAmount: 0,
+
+                        AdvanceAmount: 0,
+                        Note: ""
+                    });
+
+                createCustomEditForm(container, { Fields: employeeAdvanceTemplateData, Key: "employee-advance" }, employeeAdvanceDatabind);
+
+                var advanceFromDate;
+                var advanceToDate;
+                var advanceDependesOnFromDateToDate;
+
+                var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+                container.find(".control-Note").after(applyButton);
+                $.ajax({
+                    url: "Service/GetDeservableAdvanceAmount",
+                    type: "POST",
+                    data: JSON.stringify(
+                        {
+                            employeeCardId: 0,
+                            employeeId: employeeId
+
+                        }),
+                    contentType: 'application/json',
+                    success: function (data) {
+
+                        console.log(data.result.DeservableAdvanceAmount);
+                        $('[name="DeservableAdvanceAmount"]').data("kendoNumericTextBox").value(data.result.DeservableAdvanceAmount);
+                        advanceFromDate = data.result.AdvanceFromDate;
+                        advanceToDate = data.result.AdvanceToDate;
+                        advanceDependesOnFromDateToDate = data.result.AdvanceDependesOnFromDateToDate;
+
+                    }
+
+                });
+                container.find(".applyButton").off('click').on('click', function () {
+
+
+                    var advanceAmount = container.find("[name='AdvanceAmount']").val();
+                    var note = container.find("[name='Note']").val();
+                    var deservableAdvanceAmount = container.find("[name='DeservableAdvanceAmount']").val();
+                    var jsonParam = { employeeId: employeeId, positionId: positionId, employeeAdvanceItem: employeeAdvanceDatabind };
+
+                    employeeAdvanceDatabind.Note = note;
+                    employeeAdvanceDatabind.AdvanceAmount = advanceAmount;
+                    employeeAdvanceDatabind.DeservableAdvanceAmount = deservableAdvanceAmount;
+
+                    if (parseInt(advanceAmount) > parseInt(deservableAdvanceAmount)) {
+                        debugger;
+                        ValidationMessage();
+                        return;
+                    }
+                    //if (parseInt(advanceAmount) <=0) {
+                    //    debugger;
+                    //    ValidationMessage3();
+                    //    return;
+                    //}
+                    var oDate = new Date().getDate();
+                    if ((oDate < advanceFromDate || oDate > advanceToDate) && advanceDependesOnFromDateToDate == true) {
+                        debugger;
+                        ValidationMessage2();
+                        return;
+                    }
+
+
+                    Souccar.ajax('@Url.Action("SaveEmployeeAdvanceItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                        actionMessage(data);
+                    }, failedMessage);
+                    //getEmployeeActionViewModel();
+                });
+
+
+            });
+        }
+
+        function actionMessage(data) {
+            if (data.IsSuccess) {
+                succeedMessage();
+                getEmployeeActionViewModel();
+            } else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+            }
+        }
+
+    function showEmployeeApproval(data) {
+        debugger;
+            $(".advance-approval-container-title").html('@GlobalResource.PendingAdvanceRequest');
+            var template = kendo.template($("#employee-advance-approval-template").html());
+            approval_container.html(template(data));
+            window.EmployeesAdvanceInfo = data;
+        }
+
+        if (notifyWorkflowId != null) {
+            localStorage.clear();
+
+            approvalAction(notifyWorkflowId, notifyAdvanceId, PendingType, OtherAdvance);
+            notifyWorkflowId = null;
+        }
+
+        function viewReportAction(empId,advId, report) {
+            var reportWindow = $("#reportwindow"),
+                openReport = $("#openReport");
+
+
+            $.ajax({
+                url: '@Url.Action("GenerateReportForDialog", "Service", new { area = "EmployeeRelationServices" })',
+                data: { empId: empId, advId: advId, report: report },
+                success: function (data) {
+                    if (data.success = true) {
+
+                        $('#reportwindow').html('');
+                        $('#reportwindow').append(data.htmlString);
+
+                        reportWindow.data("kendoWindow").center().open();
+                        openReport.fadeOut();
+
+                        $("#reportwindow:input").attr("disabled", true);
+
+                    } else if (data.success = false) {
+                        console.log(data.errorMsg);
+                    }
+                }
+            });
+
+
+
+            function onClose() {
+                openReport.fadeIn();
+            }
+
+            reportWindow.kendoWindow({
+                width: "1000px",
+                height: "500px",
+                title: "@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.AttendanceDetails)",
+                visible: false,
+                actions: [
+                    "Close"
+                ],
+                close: onClose
+            }).data("kendoWindow");
+
+        }
+        function approvalAction(workflowId, advanceId, PendingType, OtherAdvance) {
+            debugger;
+            container.html('');
+            approval_container.html('');
+
+            $(".advance-employee-container-title").html('');
+            $(".advance-approval-container-title").html('');
+            createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+            var advanceAmount1;
+            function initWorkflow() {
+                if (parseInt(OtherAdvance) > 0) {
+                    InfoMessage();
+                }
+                if (PendingType != "2") {
+                    var employeeAdvanceTemplateData = [
+                        { Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+
+                        { Name: "DeservableAdvanceAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DeservableAdvanceAmount)", Type: "Number", IsReadonly: true },
+
+                        { Name: "AdvanceAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdvanceAmount)", Type: "Number", IsReadonly: true },
+                        { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea", IsReadonly: true }
+                    ];
+                }
+                else
+                {
+                    var employeeAdvanceTemplateData = [
+                                     { Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+
+                                     { Name: "DeservableAdvanceAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DeservableAdvanceAmount)", Type: "Number", IsReadonly: true },
+
+                                     { Name: "AdvanceAmount", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdvanceAmount)", Type: "Number" },
+                                     { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea", IsReadonly: true }
+                    ];
+
+                }
+                var employeeAdvanceViewDatabind = kendo.observable(
+                    {
+                        FullName: "",
+                        DeservableAdvanceAmount: "",
+
+                        AdvanceAmount: "",
+                        Note: ""
+                    });
+
+                for (var i = 0; i < window.EmployeesAdvanceInfo.length; i++) {
+                    if (window.EmployeesAdvanceInfo[i].WorkflowItemId == workflowId) {
+                        employeeAdvanceViewDatabind.FullName = window.EmployeesAdvanceInfo[i].FullName;
+                        employeeAdvanceViewDatabind.DeservableAdvanceAmount = window.EmployeesAdvanceInfo[i].DeservableAdvanceAmount;
+                        employeeAdvanceViewDatabind.AdvanceAmount = window.EmployeesAdvanceInfo[i].AdvanceAmount;
+                        employeeAdvanceViewDatabind.Note = window.EmployeesAdvanceInfo[i].Note;
+
+
+
+                    }
+                }
+
+                createCustomEditForm($("#workflow_data"), { Fields: employeeAdvanceTemplateData, Key: "employee-advance" }, employeeAdvanceViewDatabind);
+
+            }
+
+
+            function acceptWorkflow() {
+                debugger;
+
+                advanceAmount1 = $('input:text[name=AdvanceAmount]').val();
+                deservableAdvanceAmount1 = $('input:text[name=DeservableAdvanceAmount]').val();
+                if (parseInt(advanceAmount1) > parseInt(deservableAdvanceAmount1)) {
+                    debugger;
+                    ValidationMessage();
+                    return;
+                }
+
+
+                    var url = "@Url.Action("AcceptAdvanceRequest", "Service", new { area = "EmployeeRelationServices" })";
+                    saveWorkflow(url);
+
+            }
+            function rejectWorkflow() {
+                var url = "@Url.Action("RejectAdvanceRequest", "Service", new { area = "EmployeeRelationServices" })";
+                saveWorkflow(url);
+            }
+
+            function pendingWorkflow() {
+                var url = "@Url.Action("PendingAdvanceRequest", "Service", new { area = "EmployeeRelationServices" })";
+                saveWorkflow(url);
+            }
+
+            function saveWorkflow(saveUrl) {
+                debugger;
+                var jsonParam = { workflowId: workflowId, advanceId: advanceId, note: $("#NewStepDescription").val(), advanceAmount: parseInt(advanceAmount1) };
+                Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+                getEmployeeActionViewModel();
+                workflowContainer.html('');
+            }
+        }
+
+</script>
+
+<script id="employee-advance-approval-template" type="text/x-kendo-template">
+    <table style="width : 100%">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+               
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DeservableAdvanceAmount)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AdvanceAmount)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+               
+                <td>#=employee.DeservableAdvanceAmount#</td>
+                <td>#=employee.AdvanceAmount#</td>
+                <td>#=employee.Note#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.AdvanceId#', '#=employee.PendingType#', '#=employee.OtherAdvance#')">@GlobalResource.Approval</button></td>
+                <td><button class="k-button" onclick="viewReportAction('#=employee.EmployeeId#', '#=employee.AdvanceId#', 'PSAttendanceSystemReport6')">@AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.AttendanceDetails)</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>

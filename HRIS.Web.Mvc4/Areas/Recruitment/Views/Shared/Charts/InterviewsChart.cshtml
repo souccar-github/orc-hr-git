@@ -1,0 +1,370 @@
+﻿
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.JobDescription.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-isdsp" class="chart-params">
+        @* From Date *@
+        <div id="from-date-isdsp" style="float:@pageDir;width:48%;">
+            <div class="control control-from-date-isdsp">
+                <div class="k-edit-label">
+                    <label for="fromDateIsdsp">@GlobalResource.FromDate</label>
+                </div>
+                <div data-container-for="fromDateIsdsp" class="k-edit-field">
+                    <input id="fromDateIsdsp" />
+                </div>
+
+            </div>
+        </div>
+        @* To Date *@
+        <div id="to-date-isdsp" style="float:@pageDir;width:48%;">
+            <div class="control control-to-date-isdsp">
+                <div class="k-edit-label">
+                    <label for="toDateIsdsp">@GlobalResource.ToDate</label>
+                </div>
+                <div data-container-for="toDateIsdsp" class="k-edit-field">
+                    <input id="toDateIsdsp" />
+                </div>
+
+            </div>
+        </div>
+        @* Nodes Type *@
+        <div id="p-node-type-isdsp" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-type-isdsp">
+                <div class="k-edit-label">
+                    <label for="nodeTypeIsdsp">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeIsdsp" class="k-edit-field">
+                    <input id="nodeTypeIsdsp" name="nodeTypeIsdsp" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeIsdsp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Nodes *@
+        <div id="p-node-isdsp" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-isdsp">
+                <div class="k-edit-label">
+                    <label for="nodeIsdsp">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeIsdsp" class="k-edit-field">
+                    <input id="nodeIsdsp" name="nodeIsdsp" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeIsdsp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Job Description *@
+        <div id="p-job-desc-isdsp" style="float:@pageDir;width:48%;">
+            <div class="control control-p-job-desc-isdsp">
+                <div class="k-edit-label">
+                    <label for="jobDescIsdsp">@typeof(JobDescription).GetLocalized()</label>
+                </div>
+                <div data-container-for="jobDescIsdsp" class="k-edit-field">
+                    <input id="jobDescIsdsp" name="jobDescIsdsp" placeholder="@typeof(JobDescription).GetLocalized() ..." />
+                    <input id="hf_jobDescIsdsp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+    </div>
+
+    <div style="clear:both;"></div>
+    <div id="interviews-status-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesIsdsp = null;
+    var $nodesIsdsp = null;
+    var $jobDescIsdsp = null;
+
+    function getInterviewsStatusDuringSpecificPeriod(nodesTypes, nodes,jobDescriptions) {
+        $nodesTypesIsdsp = nodesTypes;
+        $nodesIsdsp = nodes;
+        $jobDescIsdsp = jobDescriptions;
+
+        var date = new Date();
+        var quarter = Math.floor((date.getMonth() / 3));
+        var firstDate = new Date(date.getFullYear(), quarter * 3, 1);
+        var endDate = new Date(firstDate.getFullYear(), firstDate.getMonth() + 3, 0);
+
+        $('#fromDateIsdsp').kendoDatePicker({
+            value: firstDate,
+            format: "dd/MM/yyyy",
+            change: function () {
+                showInterviewsStatusDuringSpecificPeriodChart();
+            }
+        });
+
+        $('#toDateIsdsp').kendoDatePicker({
+            value: endDate,
+            format: "dd/MM/yyyy",
+            change: function () {
+                showInterviewsStatusDuringSpecificPeriodChart();
+            }
+        });
+
+        generateComboBox("#nodeTypeIsdsp", "nodeTypeIsdsp", $nodesTypesIsdsp, onChangeNodeTypeIsdsp);
+        generateComboBox("#nodeIsdsp", "nodeIsdsp", $nodesIsdsp, onChangeNodeIsdsp);
+        generateComboBox("#jobDescIsdsp", "jobDescIsdsp", $jobDescIsdsp, onChangeJobDescIsdsp);
+
+
+        setTimeout(function () { showInterviewsStatusDuringSpecificPeriodChart(); }, 500);
+    }
+
+    function getBeginQuarter() {
+        debugger;
+        var date = new Date();
+        
+        if (date.getMonth() <= 3) {
+            date.setMonth(date.getMonth() - 1);
+            new Date(date.getFullYear(), 1, 1)
+        }
+        else if (date.getMonth() <= 6)
+            return 2;
+        else if (date.getMonth() <= 9)
+            return 3;
+        else
+            return 4;
+    }
+
+    function onChangeNodeTypeIsdsp(e) {
+        onChange(e);
+        updateNodeTypeIsdspComboBox(e);
+    }
+    function updateNodeTypeIsdspComboBox(e) {
+        var eleCount = $nodesTypesIsdsp.length;
+        $nodesTypesIsdsp.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesIsdsp.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesIsdsp.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesIsdsp($nodesTypesIsdsp);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesIsdsp);
+        dataSource.data(data);
+
+        var nodeIsdspDropDownList = $('#nodeIsdsp').data("kendoDropDownList");
+        nodeIsdspDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeIsdspDropDownList.setDataSource(dataSource);
+
+        //===Job Description
+        updateJobDescriptionsIsdsp($nodesIsdsp);
+        var jobDescDataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescIsdsp);
+        jobDescDataSource.data(data);
+
+        var jobDescIsdspDropDownList = $('#jobDescIsdsp').data("kendoDropDownList");
+        jobDescIsdspDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescIsdspDropDownList.setDataSource(jobDescDataSource);
+
+        showInterviewsStatusDuringSpecificPeriodChart();
+    }
+    function updateNodesIsdsp(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Recruitment" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesIsdsp = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeIsdsp(e) {
+        onChange(e);
+        updateNodeIsdspComboBox(e);
+    }
+    function updateNodeIsdspComboBox(e) {
+        var eleCount = $nodesIsdsp.length;
+        $nodesIsdsp.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesIsdsp.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesIsdsp.push(items[i]);
+                }
+            }
+        }
+
+        updateJobDescriptionsIsdsp($nodesIsdsp);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescIsdsp);
+        dataSource.data(data);
+
+        var jobDescIsdspDropDownList = $('#jobDescIsdsp').data("kendoDropDownList");
+        jobDescIsdspDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescIsdspDropDownList.setDataSource(dataSource);
+
+        showInterviewsStatusDuringSpecificPeriodChart();
+    }
+    function updateJobDescriptionsIsdsp(nodes) {
+        window.Souccar.ajax('@Url.Action("GetJobDescriptions", "Dashboard", new { area = "Recruitment" })', { nodes: nodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $jobDescIsdsp = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+    }
+    function onChangeJobDescIsdsp(e) {
+        onChange(e);
+        updateJobDescIsdspComboBox(e);
+    }
+
+    function updateJobDescIsdspComboBox(e) {
+        var eleCount = $jobDescIsdsp.length;
+        $jobDescIsdsp.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $jobDescIsdsp.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $jobDescIsdsp.push(items[i]);
+                }
+            }
+        }
+
+        showInterviewsStatusDuringSpecificPeriodChart();
+    }
+    function showInterviewsStatusDuringSpecificPeriodChart() {
+
+        var fromKendoDatePicker = $('#fromDateIsdsp').data('kendoDatePicker');
+        var fromDate = fromKendoDatePicker.value();
+
+        var toKendoDatePicker = $('#toDateIsdsp').data('kendoDatePicker');
+        var toDate = toKendoDatePicker.value();
+
+        window.Souccar.ajax('@Url.Action("InterviewsStatusDuringSpecificPeriod", "Dashboard", new { area = "Recruitment" })', { jobDescriptions: $jobDescIsdsp, fromDate: fromDate , toDate : toDate}, successFunc, erorrFunc);
+        function successFunc(data) {
+            if(data.Success)
+                initInterviewsStatusDuringSpecificPeriodChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+
+    }
+
+    function initInterviewsStatusDuringSpecificPeriodChart(data) {
+        console.log(data);
+        Highcharts.chart('interviews-status-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Interviews) '
+            },
+            xAxis: {
+                categories: data.Months
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: ''
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: ( // theme
+                            Highcharts.defaultOptions.title.style &&
+                            Highcharts.defaultOptions.title.style.color
+                        ) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                //enabled: false
+                headerFormat: '<b>{point.name}</b><br/>',
+                //pointFormat: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Total): {point.stackTotal}'
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Accepted)',
+                data: data.AcceptedInterviews
+            }, {
+                name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Rejected)',
+                    data: data.RejectedInterviews
+            }, {
+                    name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ForFuture)',
+                    data: data.ForFutureInterviews
+            }]
+        });
+    }
+</script>
+
+
+

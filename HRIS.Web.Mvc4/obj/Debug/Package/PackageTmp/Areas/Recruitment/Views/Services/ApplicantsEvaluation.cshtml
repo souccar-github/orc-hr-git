@@ -1,0 +1,75 @@
+﻿@using Project.Web.Mvc4.Helpers
+
+<div id="applicants-grid"></div>
+
+@Html.Partial("../Services/Interview/EvaluationWindow")
+@Html.Partial("~/Areas/PMS/Views/Shared/ApprisalTemplates/DevelopmentTemplate.cshtml")
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+
+    var gridContainer = $('#applicants-grid');
+    viewApplicantsGrid();
+
+    function viewApplicantsGrid() {
+        $.ajax({
+            url: '@Url.Action("GetApplicants", "Interview", new { area = "Recruitment" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                createGridForApplicants(data);
+            }
+        });
+    }
+
+    
+    if (notifyWorkflowId != null) {
+
+        var notifyInterviewId = JSON.parse(window.localStorage.data).DestinationData.InterviewId;
+
+        showEvaluationWindow(notifyInterviewId, notifyWorkflowId);
+
+        notifyWorkflowId = null;
+        
+        localStorage.clear();
+    }
+
+    function createGridForApplicants(data) {
+
+        gridContainer.html("");
+        workflowContainer.html("");
+        var template = kendo.template($("#applicant-grid-template").html());
+        gridContainer.html(template(data));
+    }
+
+
+</script>
+
+<script id="applicant-grid-template" type="text/x-kendo-template">
+    <table style="width:100%;">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < Applicants.length;i++){# 
+            # var applicant=Applicants[i]; #
+                <tr>
+                    <td>#= applicant.FullName #</td>
+                    <td>#= applicant.Position #</td>
+                    
+                    <td>
+                        <button class="k-button primary-action" onclick="showEvaluationWindow('#=applicant.InterviewId#', '#=applicant.WorkflowItemId#')">
+                            @GlobalResource.Appraisal
+                        </button>
+                    </td>
+                </tr>
+                #}#
+        </tbody>
+    </table>
+
+
+</script>

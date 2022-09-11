@@ -1,0 +1,413 @@
+﻿
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.JobDescription.RootEntities
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers.Resource
+@using HRIS.Domain.Recruitment.Entities.Evaluations
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.ProjectModels
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+
+<div class="chart chart-width-half">
+    <div id="chart-params-im" class="chart-params">
+        @* From Date *@
+        <div id="from-date-im" style="float:@pageDir;width:48%;">
+            <div class="control control-from-date-im">
+                <div class="k-edit-label">
+                    <label for="fromDateIm">@GlobalResource.FromDate</label>
+                </div>
+                <div data-container-for="fromDateIm" class="k-edit-field">
+                    <input id="fromDateIm" />
+                </div>
+
+            </div>
+        </div>
+        @* To Date *@
+        <div id="to-date-im" style="float:@pageDir;width:48%;">
+            <div class="control control-to-date-im">
+                <div class="k-edit-label">
+                    <label for="toDateIm">@GlobalResource.ToDate</label>
+                </div>
+                <div data-container-for="toDateIm" class="k-edit-field">
+                    <input id="toDateIm" />
+                </div>
+
+            </div>
+        </div>
+        @* Nodes Type *@
+        <div id="p-node-type-im" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-type-im">
+                <div class="k-edit-label">
+                    <label for="nodeTypeIm">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeIm" class="k-edit-field">
+                    <input id="nodeTypeIm" name="nodeTypeIm" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeIm" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Nodes *@
+        <div id="p-node-im" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-im">
+                <div class="k-edit-label">
+                    <label for="nodeIm">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeIm" class="k-edit-field">
+                    <input id="nodeIm" name="nodeIm" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeIm" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Job Descriptions *@
+        <div id="p-job-desc-im" style="float:@pageDir;width:48%;">
+            <div class="control control-p-job-desc-im">
+                <div class="k-edit-label">
+                    <label for="jobDescIm">@typeof(JobDescription).GetLocalized()</label>
+                </div>
+                <div data-container-for="jobDescIm" class="k-edit-field">
+                    <input id="jobDescIm" name="jobDescIm" placeholder="@typeof(JobDescription).GetLocalized() ..." />
+                    <input id="hf_jobDescIm" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Evaluators *@
+        <div id="p-evaluator-im" style="float:@pageDir;width:48%;">
+            <div class="control control-p-evaluator-im">
+                <div class="k-edit-label">
+                    <label for="evaluatorIm">@typeof(Evaluator).GetLocalized()</label>
+                </div>
+                <div data-container-for="evaluatorIm" class="k-edit-field">
+                    <input id="evaluatorIm" name="evaluatorIm" placeholder="@typeof(Evaluator).GetLocalized() ..." />
+                    <input id="hf_evaluatorIm" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+    </div>
+
+    <div style="clear:both;"></div>
+    <div id="interviews-marks-chart" class="container-chart" ></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesIm = null;
+    var $nodesIm = null;
+    var $jobDescIm = null;
+    var $evaluatorIm = null;
+
+    function getInterviewsMarks(nodesTypes, nodes,jobDescriptions) {
+        $nodesTypesIm = nodesTypes;
+        $nodesIm = nodes;
+        $jobDescIm = jobDescriptions;
+        getEvaluators();
+
+        var date = new Date();
+        date.setMonth(date.getMonth() - 1);
+
+        $('#fromDateIm').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth(), 1),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showInterviewsMarksChart();
+            }
+        });
+
+        $('#toDateIm').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showInterviewsMarksChart();
+            }
+        });
+
+        generateComboBox("#nodeTypeIm", "nodeTypeIm", $nodesTypesIm, onChangeNodeTypeIm);
+        generateComboBox("#nodeIm", "nodeIm", $nodesIm, onChangeNodeIm);
+        generateComboBox("#jobDescIm", "jobDescIm", $jobDescIm, onChangeJobDescIm);
+        generateComboBox("#evaluatorIm", "evaluatorIm", $evaluatorIm, onChangeEvaluatorIm);
+
+        setTimeout(function () { showInterviewsMarksChart(); }, 500);
+    }
+
+    function getEvaluators() {
+        window.Souccar.ajax('@Url.Action("GetEvaluators", "Dashboard", new { area = "Recruitment" })', { }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $evaluatorIm = data;
+        }
+        function erorrFunc() {
+            console.log("Error / func:getEvaluators");
+        }
+    }
+
+    function onChangeNodeTypeIm(e) {
+        onChange(e);
+        updateNodeTypeImComboBox(e);
+    }
+    function updateNodeTypeImComboBox(e) {
+        var eleCount = $nodesTypesIm.length;
+        $nodesTypesIm.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesIm.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesIm.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesIm($nodesTypesIm);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesIm);
+        dataSource.data(data);
+
+        var nodeImDropDownList = $('#nodeIm').data("kendoDropDownList");
+        nodeImDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeImDropDownList.setDataSource(dataSource);
+
+        //===Job Description
+        updateJobDescriptionsIm($nodesIm);
+        var jobDescDataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescIm);
+        jobDescDataSource.data(data);
+
+        var jobDescImDropDownList = $('#jobDescIm').data("kendoDropDownList");
+        jobDescImDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescImDropDownList.setDataSource(jobDescDataSource);
+
+        showInterviewsMarksChart();
+    }
+    function updateNodesIm(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Recruitment" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesIm = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeIm(e) {
+        onChange(e);
+        updateNodeImComboBox(e);
+    }
+    function updateNodeImComboBox(e) {
+        var eleCount = $nodesIm.length;
+        $nodesIm.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesIm.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesIm.push(items[i]);
+                }
+            }
+        }
+
+        updateJobDescriptionsIm($nodesIm);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($jobDescIm);
+        dataSource.data(data);
+
+        var jobDescImDropDownList = $('#jobDescIm').data("kendoDropDownList");
+        jobDescImDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        jobDescImDropDownList.setDataSource(dataSource);
+
+        showInterviewsMarksChart();
+    }
+    function updateJobDescriptionsIm(nodes) {
+        window.Souccar.ajax('@Url.Action("GetJobDescriptions", "Dashboard", new { area = "Recruitment" })', { nodes: nodes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $jobDescIm = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+    }
+    function onChangeJobDescIm(e) {
+        onChange(e);
+        updateJobDescImComboBox(e);
+    }
+
+    function updateJobDescImComboBox(e) {
+        var eleCount = $jobDescIm.length;
+        $jobDescIm.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $jobDescIm.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $jobDescIm.push(items[i]);
+                }
+            }
+        }
+
+        showInterviewsMarksChart();
+    }
+
+    function onChangeEvaluatorIm(e) {
+        onChange(e);
+        updateEvaluatorImComboBox(e);
+    }
+    function updateEvaluatorImComboBox(e) {
+        var eleCount = $evaluatorIm.length;
+        $evaluatorIm.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $evaluatorIm.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $evaluatorIm.push(items[i]);
+                }
+            }
+        }
+
+        showInterviewsMarksChart();
+    }
+
+    function showInterviewsMarksChart() {
+
+        var fromKendoDatePicker = $('#fromDateIm').data('kendoDatePicker');
+        var fromDate = fromKendoDatePicker.value();
+
+        var toKendoDatePicker = $('#toDateIm').data('kendoDatePicker');
+        var toDate = toKendoDatePicker.value();
+
+        window.Souccar.ajax('@Url.Action("InterviewMarks", "Dashboard", new { area = "Recruitment" })', { jobDescriptions: $jobDescIm, evaluators: $evaluatorIm, fromDate: fromDate, toDate: toDate }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if(data.Success)
+                initInterviewsMarksChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+
+    }
+
+    
+    function initInterviewsMarksChart(data) {
+        var title = '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Interviews)';
+        Highcharts.chart('interviews-marks-chart', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 0,
+                plotShadow: false
+            },
+            title: {
+                text: '<br>' + title + '<br>',
+                align: 'center',
+                verticalAlign: 'middle',
+                y: 60
+            },
+            
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                enabled: false
+            },
+            
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        enabled: true,
+                        distance: -50,
+                        format: '<b>{point.percentage:.1f}%</b>',
+                        style: {
+                            fontSize: '12px',
+                            fontFamily: 'arial',
+                            textShadow: false
+                        },
+                        useHTML: true
+                    },
+                    startAngle: -90,
+                    endAngle: 90,
+                    center: ['50%', '75%'],
+                    size: '110%',
+                    showInLegend: true
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                type: 'pie',
+                name: title,
+                colorByPoint: true,
+                innerSize: '50%',
+                data: [
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.BelowExpected)', data.BelowExpected],
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.NeedTraining)', data.NeedTraining],
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Expected)', data.Expected],
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.UpExpected)', data.UpExpected],
+                    ['@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Outstanding)', data.Outstanding]
+                ]
+            }]
+        });
+        
+    }
+</script>
+
+
+

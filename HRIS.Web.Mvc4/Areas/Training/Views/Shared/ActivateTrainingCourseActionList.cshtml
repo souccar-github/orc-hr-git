@@ -1,0 +1,218 @@
+﻿@using HRIS.Domain.Training.Entities
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Extenstions
+
+
+<script type="text/javascript">
+    function ActivateTrainingCourse(id) {
+        $.ajax({
+            url: '@Url.Action("CheckCourseStatus", "Home", new {area = "Training"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ courseId: id }),
+            success: function (data) {
+                if (!data.Success)
+                    showErrorMessage(data.Message);
+                else {
+                    if (data.CourseStatus == 0) {
+                        generateActivateTrainingCourseWindow(id);
+                    } else {
+                        showErrorMessage('@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TheCourseStatusMustBePlanned)');
+                    }
+                }
+            }
+        });
+
+    }
+
+    function generateActivateTrainingCourseWindow(id) {
+
+        var title = "@GlobalResource.CourseInformation";
+        var buttons = [
+            { Name: "CancelButton", CssClass: "cancel", Title: "@GlobalResource.Cancel" },
+            { Name: "UpdateButton", CssClass: "save", Title: "@GlobalResource.Save" }
+        ];
+        var containerId = "activate-course-container";
+        var popupDiv = $("<div id='activateCourseWindow'></div>");
+        var bodyHTML = "<div class='activate-course-body k-edit-form-container two-columns-popup controls-div'></div>";
+
+
+
+
+        var templateData = [
+            { Name: "CourseName", Title: "@typeof(Course).GetProperty("CourseName").GetTitle()", Type: "Text", IsReadonly: true },
+            { Name: "Specialize", Title: "@typeof(Course).GetProperty("Specialize").GetTitle()", Type: "Text", IsReadonly: true },
+            { Name: "CourseType", Title: "@typeof(Course).GetProperty("CourseType").GetTitle()", Type: "Text", IsReadonly: true },
+            { Name: "Priority", Title: "@typeof(Course).GetProperty("Priority").GetTitle()", Type: "Text", IsReadonly: true },
+            { Name: "CourseLevel", Title: "@typeof(Course).GetProperty("CourseLevel").GetTitle()", Type: "Text", IsReadonly: true },
+            { Name: "LanguageName", Title: "@typeof(Course).GetProperty("LanguageName").GetTitle()", Type: "Text", IsReadonly: true },
+
+            { Name: "CourseTitle", Title: "@typeof(Course).GetProperty("CourseTitle").GetTitle()", Type: "Text", IsRequired: true },
+            { Name: "Duration", Title: "@typeof(Course).GetProperty("Duration").GetTitle()", Type: "Number", IsRequired: true },
+            { Name: "NumberOfSession", Title: "@GlobalResource.NumberOfSession", Type: "Number", IsRequired: true },
+
+            { Name: "Sponsor", Title: "@typeof(Course).GetProperty("Sponsor").GetTitle()", Type: "Index", TypeName: "HRIS.Domain.Training.Indexes.CourseSponsor", Creatable: true, IsRequired: true },
+            { Name: "TrainingCenterName", Title: "@typeof(Course).GetProperty("TrainingCenterName").GetTitle()", Type: "Index", TypeName: "HRIS.Domain.Training.Indexes.TrainingCenterName", Creatable: true, IsRequired: true },
+            { Name: "TrainingPlace", Title: "@typeof(Course).GetProperty("TrainingPlace").GetTitle()", Type: "Index", TypeName: "HRIS.Domain.Training.Indexes.TrainingPlace", Creatable: true, IsRequired: true },
+            { Name: "Trainer", Title: "@typeof(Course).GetProperty("Trainer").GetTitle()", Type: "Index", TypeName: "HRIS.Domain.Training.Indexes.Trainer", Creatable: true, IsRequired: true },
+            { Name: "StartDate", Title: "@GlobalResource.StartDate", Type: "Date", Creatable: true, IsRequired: true },
+            { Name: "EndDate", Title: "@GlobalResource.EndDate", Type: "Date", Creatable: true, IsRequired: true },
+            { Name: "StartHour", Title: "@typeof(Course).GetProperty("StartHour").GetTitle()", Type: "Time" },
+            { Name: "Saturday", Title: "@typeof(Course).GetProperty("Saturday").GetTitle()", Type: "Boolean" },
+            { Name: "Sunday", Title: "@typeof(Course).GetProperty("Sunday").GetTitle()", Type: "Boolean" },
+            { Name: "Monday", Title: "@typeof(Course).GetProperty("Monday").GetTitle()", Type: "Boolean" },
+            { Name: "Tuesday", Title: "@typeof(Course).GetProperty("Tuesday").GetTitle()", Type: "Boolean" },
+            { Name: "Wednesday", Title: "@typeof(Course).GetProperty("Wednesday").GetTitle()", Type: "Boolean" },
+            { Name: "Thursday", Title: "@typeof(Course).GetProperty("Thursday").GetTitle()", Type: "Boolean" },
+            { Name: "Friday", Title: "@typeof(Course).GetProperty("Friday").GetTitle()", Type: "Boolean" },
+
+        ];
+
+
+        var viewModel = kendo.observable();
+        viewModel.CourseName = $("[Name='CourseName']").val();
+        viewModel.Specialize = $("[Name='Specialize']").val();
+        viewModel.CourseType = $("[Name='CourseType']").val();
+        viewModel.Priority = $("[Name='Priority']").val();
+        viewModel.LanguageName = $("[Name='LanguageName']").val();
+        viewModel.CourseLevel = $("[Name='CourseLevel']").val();
+        viewModel.CourseTitle = $("[Name='CourseTitle']").val();
+        viewModel.Duration = 0;
+        viewModel.NumberOfSession = 0;
+        viewModel.StartDate = new Date();
+        viewModel.EndDate = new Date();
+        viewModel.Saturday = false;
+        viewModel.Sunday = false;
+        viewModel.Monday = false;
+        viewModel.Tuesday = false;
+        viewModel.Wednesday = false;
+        viewModel.Thursday = false;
+        viewModel.Friday = false;
+        viewModel.StartHour = $("[Name='StartHour']").val();
+
+        createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, true);
+        createCustomEditForm(popupDiv.find(".activate-course-body"), { Fields: templateData, Key: "container_div" }, viewModel);
+        reOrderControls($(".customPopupView-body "));
+
+        $.ajax({
+            url: '@Url.Action("GetTrainingCourseInformation", "ActionList")',
+            type: "POST",
+            data: JSON.stringify({ id: id }),
+            contentType: 'application/json',
+            success: function (data) {
+
+                viewModel.CourseName = data.CourseName;
+                viewModel.Specialize = data.Specialize;
+                viewModel.CourseType = data.CourseType;
+                viewModel.Priority = data.Priority;
+                viewModel.LanguageName = data.LanguageName;
+                viewModel.CourseLevel = data.CourseLevel;
+
+                viewModel.CourseTitle = data.CourseTitle;
+                viewModel.Duration = data.Duration;
+                viewModel.NumberOfSession = data.NumberOfSession;
+                viewModel.StartDate = kendo.parseDate(data.StartDate, "MM/dd/yyyy");
+                viewModel.EndDate = kendo.parseDate(data.EndDate, "MM/dd/yyyy");
+                viewModel.Saturday = data.Saturday;
+                viewModel.Sunday = data.Sunday;
+                viewModel.Monday = data.Monday;
+                viewModel.Tuesday = data.Tuesday;
+                viewModel.Wednesday = data.Wednesday;
+                viewModel.Thursday = data.Thursday;
+                viewModel.Friday = data.Friday;
+                viewModel.StartHour = kendo.parseDate(data.StartHour, "{hh:mm tt}");
+                kendo.bind(popupDiv, viewModel);
+
+                $("[Name='Sponsor']").data("kendoDropDownList").value(data.Sponsor);
+                $("[Name='TrainingCenterName']").data("kendoDropDownList").value(data.TrainingCenterName);
+                $("[Name='TrainingPlace']").data("kendoDropDownList").value(data.TrainingPlace);
+                $("[Name='Trainer']").data("kendoDropDownList").value(data.Trainer);
+
+            }
+        });
+
+        
+        removeRequiredStar("CourseTitles");
+        removeRequiredStar("Sponsor");
+        removeRequiredStar("TrainingCenterName");
+        removeRequiredStar("TrainingPlace");
+        removeRequiredStar("Trainer");
+        removeRequiredStar("StartDate");
+        removeRequiredStar("EndDate");
+        removeRequiredStar("Duration");
+        removeRequiredStar("NumberOfSession");
+        
+        addRequiredStar("CourseTitles");
+        addRequiredStar("Sponsor");
+        addRequiredStar("TrainingCenterName");
+        addRequiredStar("TrainingPlace");
+        addRequiredStar("Trainer");
+        addRequiredStar("StartDate");
+        addRequiredStar("EndDate");
+        addRequiredStar("Duration");
+        addRequiredStar("NumberOfSession");
+
+        function saveCourseInformation() {
+            
+            viewModel.TrainingCenterName = Number($("[Name='TrainingCenterName']").data("kendoDropDownList").value());
+            viewModel.Sponsor = Number($("[Name='Sponsor']").data("kendoDropDownList").value());
+            viewModel.TrainingPlace = Number($("[Name='TrainingPlace']").data("kendoDropDownList").value());
+            viewModel.Trainer = Number($("[Name='Trainer']").data("kendoDropDownList").value());
+
+
+            $.ajax({
+                url: '@Url.Action("SaveTrainingCourseInformation", "ActionList")',
+                type: "POST",
+                data: JSON.stringify({ model: viewModel, id: id }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        popupDiv.data("kendoWindow").close();
+                        $("#" + gridModel.Name).data("kendoGrid").dataSource.fetch();
+                    } else {
+                        if (data.Errors != null) {
+                            if (data.Errors.Exception != null) {
+                                popupDiv.data("kendoWindow").close();
+                                showErrorMessage("Could not save element: " + data.Errors.Exception);
+                            } else {
+                                for (var prop in data.Errors) {
+                                    var messageText = data.Errors[prop];
+
+                                    //remove old validation message if exist
+                                    if ($('[name="' + prop + '"]').next()
+                                        .hasClass("k-widget k-tooltip k-tooltip-validation k-invalid-msg")) {
+                                        $('[name="' + prop + '"]').next().remove();
+                                    }
+
+                                    var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({
+                                        message: messageText
+                                    });
+                                    $('[name="' + prop + '"]').after(t);
+                                    var validationEle = $('[name="' + prop + '"]').next();
+                                    validationEle.css('display', 'block');
+                                }
+                            }
+                        } else {
+                            showErrorMessage(data.Msg);
+                        }
+                    }
+                }
+            });
+        }
+
+        function requiredMessage() {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+        }
+
+        $("#UpdateButton").off('click').on('click', function () {
+            saveCourseInformation();
+        });
+
+        $("#CancelButton").off('click').on('click', function () {
+            popupDiv.data("kendoWindow").close();
+        });
+
+    }
+</script>

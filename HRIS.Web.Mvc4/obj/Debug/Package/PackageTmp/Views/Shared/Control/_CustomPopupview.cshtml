@@ -1,0 +1,88 @@
+﻿<script>
+     @*var templateData = {
+             BodyHTML: "<div id='roles'></div>",
+             BodyHeight: 400,
+             ContainerId:"roles-div"
+             Buttons: [
+                 { Name: "role_update", CssClass: "update", Title: "Save" },
+                 { Name: "role_cancel", CssClass: "cancel", Title: "Cancel" }
+                     ]
+                 };
+     getCustomPopupViewHTML(templateData);
+     *@
+     function getCustomPopupViewHTML(data) {
+         var template = kendo.template($("#customPopupViewTemplate").html());
+         return template(data);
+     }
+
+
+
+     function createAndOpenWindow(content, title, width, height, defualt) {
+         
+         if (defualt) {
+             content.kendoWindow({
+                 modal: true,
+                 resizable: false,
+                 title: title,
+                 width: width,
+                 height: height,
+                 open: function () {
+                     content.data("kendoWindow").center();
+                 }, close: function () {
+                     content.data("kendoWindow").destroy();
+                 }
+             });
+         }
+         else {
+             content.kendoWindow({
+                 modal: true,
+                 resizable: false,
+                 title: title,
+                 width: width,
+                 height: height,
+                 open: function () {
+                     content.data("kendoWindow").center();
+                 }, close: function () {
+                 }
+             });
+         }
+         
+         
+         content.data("kendoWindow").open();
+         if (content.parent().find(".default-popup-view-icon").length == 0) {
+             content.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon default-popup-view-icon'></span>");
+         }
+     }
+
+     function createAndOpenCustomWindow(windowElement, bodyHTML, containerId, title, Buttons, isTwoColumns, defualt) {
+         if (defualt == null) {
+             defualt = true;
+         }
+         var width = 558;
+        if(isTwoColumns)
+            width=840;
+        var templateData = {
+             BodyHTML: bodyHTML,
+             BodyHeight: 500,
+             ContainerId:containerId,
+             Buttons: Buttons        };
+        var templateHtml= getCustomPopupViewHTML(templateData);
+        windowElement.html(templateHtml);
+        createAndOpenWindow(windowElement, title, width, 565, defualt);
+     }
+    //createAndOpenWindow($("#addUserToRoleWindow"), "Add User To Role", 600, 490);
+</script>
+
+<script type="text/x-kendo-template" id="customPopupViewTemplate">
+    <div class="customPopupView-container" id="#=data.ContainerId#">
+        <div class="customPopupView-body " style="height: #=data.BodyHeight#px; ">
+            #=data.BodyHTML#
+        </div>
+        <div class="k-edit-buttons k-state-default customPopupView-buttons not-default-button" >
+            # for (var i = 0; i <data.Buttons.length; i++) { #
+                <a id="#=data.Buttons[i].Name#" class="k-button k-button-icontext #=data.Buttons[i].CssClass#" href="\\#"><span class="k-icon k-#=data.Buttons[i].CssClass#"></span>#=data.Buttons[i].Title#</a>
+            # } #
+        </div>
+    </div>
+</script>
+

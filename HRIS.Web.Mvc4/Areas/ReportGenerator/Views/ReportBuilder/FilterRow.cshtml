@@ -1,0 +1,37 @@
+﻿@*<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<Souccar.ReportGenerator.Domain.QueryBuilder.QueryTree>" %>
+<table>
+    <tr>
+        <td>
+            <div class="editor-label-required">
+                <%: Html.Label("Field") %>
+            </div>
+            <div class="editor-field">
+                <%: Html.Telerik().ComboBox()
+                    .Name("cmbLeafs")
+                    .BindTo((SelectList)ViewData["QueryLeafProperties"])
+                    .ClientEvents(e => e.OnChange("LeafChanged"))%>
+            </div>
+        </td>
+        <td>
+            <div class="editor-label-required">
+                <%: Html.Label("Operator") %>
+            </div>
+            <div class="editor-field">
+                <%: Html.Telerik().ComboBox().Name("cmbOperator")%>
+            </div>
+        </td>
+        <td>
+            <div class="editor-label-required">
+                <%: Html.Label("Value") %>
+            </div>
+            <div class="editor-field">
+                <div id="divFilterValue">
+                    <%:Html.TextBox("txtFilterValue") %>
+                </div>
+            </div>
+        </td>
+        <td>
+            <input type="button" id="RemoveFilterRow" value="X" onclick="RemoveFilterRow(this)" />
+        </td>
+    </tr>
+</table>*@

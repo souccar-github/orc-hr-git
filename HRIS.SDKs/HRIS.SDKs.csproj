@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HRIS.SDKs</RootNamespace>
+    <AssemblyName>HRIS.SDKs</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>..\UI\Binaries\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\UI\Binaries\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\AttendanceSystem\BioMetricDevice\BioMetricRecordData.cs" />
+    <Compile Include="Domain\AttendanceSystem\BioMetricDevice\BioMetricRecordType.cs" />
+    <Compile Include="Domain\AttendanceSystem\BioMetricDevice\BioMetricService.cs" />
+    <Compile Include="Domain\AttendanceSystem\BioMetricDevice\IBioMetricDevice.cs" />
+    <Compile Include="Domain\AttendanceSystem\BioMetricDevice\SupportedDevices\BioStationV14.cs" />
+    <Compile Include="Domain\AttendanceSystem\BioMetricDevice\SupportedDevices\ZKTeco.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="zkemkeeper">
+      <Guid>{FE9DED34-E159-408E-8490-B720A5E632C7}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\AttendanceSystem\SDKs\BioStationV14\BS_SDK.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\BioStationV14\libusb0.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\commpro.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\comms.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\plcommpro.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\plcomms.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\plrscagent.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\plrscomm.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\pltcpcomm.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\rscagent.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\rscomm.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\tcpcomm.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\usbcomm.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\zkemkeeper.dll" />
+    <Content Include="Domain\AttendanceSystem\SDKs\ZKTeco\zkemsdk.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Domain\AttendanceSystem\SDKs\ZKTeco\Delete_SDK.bat" />
+    <None Include="Domain\AttendanceSystem\SDKs\ZKTeco\Register_SDK.bat" />
+    <None Include="Domain\AttendanceSystem\SDKs\ZKTeco\UpdateSDK.dat" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,849 @@
+﻿@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Factories
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Models
+@using Project.Web.Mvc4.Models.GridModel
+@using Project.Web.Mvc4.ProjectModels
+@using Souccar.Infrastructure.Core
+@using Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Services
+@using Souccar.Domain.Notification
+
+
+
+@{
+    if (TempData["ChangeLanguage"] != null && (bool)TempData["ChangeLanguage"])
+    {
+        BuildNavigation.UpdateNavigation();
+    }
+
+    var moduleName = "";
+    var moduleStep = (RequestInformation.Navigation.Step)TempData["Module"];
+    TempData["NavigationStep"] = TempData["Module"];
+    if (moduleStep != null && moduleStep.Name != "")
+    {
+        moduleName = moduleStep.Name;
+
+        <script>
+
+            window.requestInformation = {};
+
+        window.requestInformation.NavigationInfo = { Status: "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Module", Module: { Name: "@moduleStep.Name", Title: "@moduleStep.Title", ImageClass: "@moduleStep.ImageClass", SmallImageClass: "@moduleStep.SmallImageClass" } };
+
+        window.requestInformation.NavigationInfo.Previous = [];
+
+            $(document).ready(function () {
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+        });
+        </script>
+    }
+
+    var kdir = "";
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        kdir = "k-rtl";
+    }
+    var currertTab = BuildNavigation.GetTab(moduleName);
+    var currentModule = BuildNavigation.GetModule(moduleName);
+
+}
+
+
+
+@*<div id="tabs">
+
+    </div>*@
+
+
+
+
+<div id="nav"></div>
+
+<script>
+
+          $.ajax({
+         url: '@Url.Action("GetCurrentDesign", "Home", new { area = "" })',
+            type: "POST",
+            contentType: 'application/json',
+        async: false,
+
+        success: function (data) {
+
+
+            $("#nav").html(data);
+       }});
+</script>
+
+
+
+
+<div id="start_menu">
+    <ul>
+        <li class="jtop_menu">
+            <div class="icon_block black_gel">
+                <span class="start_icon">Quick Menu</span>
+            </div>
+            <ul class="black_gel">
+                <li><a href="#"><span class="list-icon graph_b">&nbsp;</span>Analytics<span class="mnu_tline">Tagline</span></a></li>
+                <li><a href="#"><span class="list-icon cog_4_b">&nbsp;</span>Settings<span class="mnu_tline">Tagline</span></a></li>
+                <li>
+                    <a href="#"><span class="list-icon users_b">&nbsp;</span>User<span class="mnu_tline">Tagline</span></a>
+                    <ul>
+                        <li><a href="#"><span class="list-icon user_2_b">&nbsp;</span>Add New User<span class="mnu_tline">Tagline</span></a></li>
+                        <li><a href="#"><span class="list-icon money_b">&nbsp;</span>Paid Users<span class="mnu_tline">Tagline</span></a></li>
+                        <li><a href="#"><span class="list-icon users_2_b">&nbsp;</span>All Users<span class="mnu_tline">Tagline</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+
+    <script type="text/javascript">
+    window.onload = function () {
+
+        if (window.localStorage["data"] != null) {
+            var data = JSON.parse(window.localStorage.getItem('data'));
+
+            if (data.DestinationEntityOperationType == "Nothing")
+                redirectToDestenationService(data.DestinationControllerName, data.DestinationActionName, data.DestinationEntityId, data.DestinationEntityTitle,
+                    data.DestinationModuleName, data.DestinationLowerModuleName, data.DestinationLocalizationModuleName, data.DestinationData);
+            else {
+                redirectToAggregate(data.DestinationEntityTypeFullName, data.DestinationEntityId, data.DestinationEntityTitle, "@Project.Web.Mvc4.Models.GridModel.GridViewModel.DefaultPageSize",
+                  data.DestinationModuleName, data.DestinationLowerModuleName, data.DestinationLocalizationModuleName);
+
+                delay(function () {
+                    openPopupWindow(data);
+                }, 4000);
+
+            }
+            localStorage.clear();
+        }
+    }
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
+    function openPopupWindow(data) {
+        var notifyType = data.Type.Name;
+
+         if (notifyType == "@NotificationType.Request.ToString()") {
+            if (data.DestinationEntityOperationType == "Create") {
+
+                $("#grid").data("kendoGrid").addRow();
+                $(".k-popup-edit-form.k-window-content.k-content").parent().show();
+
+
+            }
+            else if (data.DestinationEntityOperationType == "Update") {
+                updateRow(data.DestinationData["rowId"]);
+                $(".k-popup-edit-form.k-window-content.k-content").parent().show();
+
+            }
+            else if (data.DestinationEntityOperationType == "Delete") {
+                deleteRow(data.DestinationData["rowId"]);
+                $(".k-popup-edit-form.k-window-content.k-content").parent().show();
+
+
+            }
+
+
+        }
+         else {
+            $(".notification-item-" + data.Id).remove();
+            if (data.TotalCount != 0)
+                $(".number_of_notifications")[0].innerHTML = "(" + data.TotalCount + ") ▾";
+            else {
+                $(".number_of_notifications")[0].innerHTML = " ▾";
+                $(".notification_icon").removeClass("with_notification_icon");
+                $(".notification_icon").addClass("without_notification_icon");
+            }
+            var _date = data.Date.replace(/\/Date\((-?\d+)\)\//, '$1');
+            var _time = data.Date.replace(/\/Date\((-?\d+)\)\//, '$1');
+            data.StringDate = kendo.toString(new Date(parseInt(_date)), "dd/MM/yyyy");
+            data.StringTime = kendo.toString(new Date(parseInt(_time)), "hh:mm");
+            var template = kendo.template($("#messagePreviewTemplate").html());
+            $("#view_notification").html(template(data));
+            $("#view_notification").kendoWindow({
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.Resource.NotificationLocalizationHelper.GetResource(NotificationLocalizationHelper.Notification)",
+                width: 400,
+                height: 400,
+                open: function () {
+                    $("#view_notification").data("kendoWindow").center();
+
+                },
+                close: function (e) {
+
+                }
+            });
+
+            $("#view_notification").data("kendoWindow").open();
+        }
+    }
+        function redirectToDestenationService(controllerName, actionName, entityId, title, destinationModuleName, destinationLowerModuleName, destinationLocalizationModuleName, DestinationData) {
+            debugger;
+        localStorage.setItem('workflowId', DestinationData["WorkflowId"]);
+        localStorage.setItem('ServiceId', DestinationData["ServiceId"]);
+
+
+     window.requestInformation = {};
+        window.requestInformation.NavigationInfo = {
+            Status: "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Module",
+            Module: {
+                Name: destinationModuleName,
+                Title: destinationLocalizationModuleName,
+                ImageClass: "icon_module_" + destinationLowerModuleName,
+                SmallImageClass: "icon_module_small_" + destinationLowerModuleName
+            }
+        };
+        window.requestInformation.NavigationInfo.Previous = [];
+
+        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Service";
+        window.requestInformation.NavigationInfo.Previous = [];
+        window.requestInformation.NavigationInfo.Next = [];
+        window.requestInformation.NavigationInfo.Previous[0] = { Name: entityId, Title: title, TypeName: entityId };
+
+        $("#ribbonContainer").html("");
+        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+        $.ajax({
+            url: window.applicationpath + controllerName + "/" + actionName,
+            type: "POST",
+            contentType: 'application/json',
+            async: false,
+            data: JSON.stringify(window.requestInformation),
+            success: function (data) {
+                $("#dynamic_content").html("<div class='service-container service-" + entityId + "'></div>");
+                $(".service-container").html(data);
+            }
+        });
+
+    }
+    function updateRow(rowId) {
+        var dataItem = $("#grid").data("kendoGrid").dataSource.get(rowId);
+        var row = $("#grid").data("kendoGrid").tbody.find("tr[data-uid='" + dataItem.uid + "']");
+        $("#grid").data("kendoGrid").editRow(row);
+    }
+    function deleteRow(rowId) {
+        var dataItem = $("#grid").data("kendoGrid").dataSource.get(rowId);
+        var row = $("#grid").data("kendoGrid").tbody.find("tr[data-uid='" + dataItem.uid + "']");
+        $("#grid").data("kendoGrid").removeRow(row);
+    }
+    function redirectToAggregate(typeFullName, entityId, title, pageSize, destinationModuleName, destinationLowerModuleName, destinationLocalizationModuleName) {
+        window.requestInformation = {};
+        window.requestInformation.NavigationInfo = {
+            Status: "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Module",
+            Module: {
+                Name: destinationModuleName,
+                Title: destinationLocalizationModuleName,
+                ImageClass: "icon_module_" + destinationLowerModuleName,
+                SmallImageClass: "icon_module_small_" + destinationLowerModuleName
+            }
+        };
+        window.requestInformation.NavigationInfo.Previous = [];
+
+        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Aggregate";
+        window.requestInformation.NavigationInfo.Previous = [];
+        window.requestInformation.NavigationInfo.Next = [];
+
+        window.requestInformation.NavigationInfo.Previous[0] =
+            { Name: entityId, Title: title, TypeName: typeFullName, PageSize: pageSize, PageNumber: 1 };
+
+        $('.maestro-menu').css("display", "none");
+
+        $.ajax({
+            url: window.applicationpath + "Crud",
+            type: "POST",
+            contentType: 'application/json',
+            //async:false,
+            data: JSON.stringify(window.requestInformation),
+            success: function (data) {
+                window.requestInformation = data.requestInfo;
+                window.gridModel = data.gridModel;
+                $("#dynamic_content").html("<div id='grid'></div>");
+                generateGrid(data.gridModel);
+                $("#ribbonContainer").html("").append(getRibbonHtml(window.requestInformation));
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                registerGridKeydownEvent();
+                registerGridMouseEvent(data.gridModel.Name);
+            }
+        });
+    }
+    function createBreadcrumb() {
+        var result =
+            "<div id='breadcrumb'>" +
+                "<span class='title_icon'>" +
+                "<span class='" + window.requestInformation.NavigationInfo.Module.SmallImageClass + "'>" +
+                "</span>" +
+                "</span>" +
+                "<div>" +
+                "<div class='breadcrumb_area'>" +
+                "<a href='" + window.applicationpath + "Module/Welcome/" + window.requestInformation.NavigationInfo.Module.Name + "'>" +
+                window.requestInformation.NavigationInfo.Module.Title +
+                "</a>" +
+                "</div>"
+        ;
+        if (window.requestInformation.NavigationInfo.Previous.length != 0) {
+            result += "<div class='arrowbread'></div>";
+        }
+
+        result += "</div>";
+        if (window.requestInformation.NavigationInfo.Previous.length != 0) {
+            for (var i = 0; i < window.requestInformation.NavigationInfo.Previous.length; i++) {
+                result += "<div style='position: relative;'>" +
+                    "<div class='breadcrumb_links'>" +
+                    "<a href='#' onclick=\"breadcrumbClick('" + window.requestInformation.NavigationInfo.Previous[i].Name + "')\" >" +
+                    window.requestInformation.NavigationInfo.Previous[i].Title +
+                    "</a>" +
+                    "</div>";
+                if (window.requestInformation.NavigationInfo.Previous[i].StepInformation != null)
+                    result += "<div class='breadcrumb_links breadcrumb_details'>(" + window.requestInformation.NavigationInfo.Previous[i].StepInformation + ")</div>";
+
+//                if (window.requestInformation.NavigationInfo.Previous[i].StepInformation != null)
+//                    {result += "<div class='breadcrumb_links breadcrumb_detailsarrow'>|_</div>";
+//                    result += "<div class='breadcrumb_links breadcrumb_details2'>(" + window.requestInformation.NavigationInfo.Previous[i].StepInformation + ")</div>";
+//}
+
+
+                if (i < window.requestInformation.NavigationInfo.Previous.length - 1) {
+                    result += "<div class='arrowbread'></div>";
+                }
+
+
+                result += "</div>";
+            }
+        }
+        result += "</div>";
+        return result;
+    }
+    function onclickAggregate(aggregateTypeFullName, aggregateId, controllerName, actionName, aggregateTitle, pageSize) {
+        var moduleName = requestInformation.NavigationInfo.Module.Name;
+        $.ajax({
+            url: window.applicationpath + "Account/checkAggregateAuthentication",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ aggregateId: aggregateId, moduleName: moduleName }),
+            success: function (data) {
+                if (data.IsSuccessed) {
+                    window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Aggregate";
+                    window.requestInformation.NavigationInfo.Previous = [];
+                    window.requestInformation.NavigationInfo.Next = [];
+
+                    window.requestInformation.NavigationInfo.Previous[0] =
+                        { Name: aggregateId, Title: aggregateTitle, TypeName: aggregateTypeFullName, PageSize: pageSize, PageNumber: 1 };
+                    if (controllerName == "Crud" && actionName == "Index") {
+                        changeLocation();
+                    } else {
+                        $("#ribbonContainer").html("");
+                        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                        $.ajax({
+                            url: window.applicationpath + controllerName + "/" + actionName,
+                            type: "POST",
+                            contentType: 'application/json',
+                            data: JSON.stringify(window.requestInformation),
+                            success: function (data) {
+                                $("#dynamic_content").html("<div class='aggregate-container aggregate-" + aggregateId + "'></div>");
+                                $(".aggregate-container").html(data);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+           
+    }
+    //Author Yaseen Alrefaee
+        function onclickDashboard(dashbordId, title, controllerName, actionName) {
+            var moduleName = requestInformation.NavigationInfo.Module.Name;
+            $.ajax({
+                url: window.applicationpath + "Account/checkDashboardAuthentication",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ dashboardId: dashbordId, moduleName: moduleName }),
+                success: function (data) {
+                    if (data.IsSuccessed) {
+                        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Dashboard";
+                        window.requestInformation.NavigationInfo.Previous = [];
+                        window.requestInformation.NavigationInfo.Next = [];
+                        window.requestInformation.NavigationInfo.Previous[0] = { Name: dashbordId, Title: title };
+                        if (controllerName == "" && actionName == "") {
+                            changeLocation();
+                        } else {
+                            $("#ribbonContainer").html("");
+                            $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                            $.ajax({
+                                url: window.applicationpath + controllerName + "/" + actionName,
+                                type: "POST",
+                                contentType: 'application/json',
+                                data: JSON.stringify(window.requestInformation),
+                                success: function (data) {
+                                    $("#dynamic_content").html("<div class='dashbord-container dashbord-" + dashbordId + "'></div>");
+                                    $(".dashbord-container").html(data);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+    }
+
+        function onclickIndex(indexTitle, indexId) {
+            var strs = indexId.split('.');
+            var moduleName = requestInformation.NavigationInfo.Module.Name;
+            var index_id = strs[4];
+            $.ajax({
+                url: window.applicationpath + "Account/checkIndexAuthentication",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ indexId: index_id, moduleName: moduleName }),
+                success: function (data) {
+                    if (data.IsSuccessed) {
+                        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Index";
+                        window.requestInformation.NavigationInfo.Previous = [];
+                        window.requestInformation.NavigationInfo.Next = [];
+                        window.requestInformation.NavigationInfo.Previous[0] = { Name: indexId, Title: indexTitle, TypeName: indexId };
+                        changeLocation();
+                    }
+                }
+            });
+    }
+
+    //Author Yaseen Alrefaee
+        function onclickReport(reportId, title, controllerName, actionName) {
+            $.ajax({
+                url: window.applicationpath + "Account/checkReportAuthentication",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ reportId: reportId }),
+                success: function (data) {
+                    if (data.IsSuccessed) {
+                        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Report";
+                        window.requestInformation.NavigationInfo.Previous = [];
+                        window.requestInformation.NavigationInfo.Next = [];
+                        window.requestInformation.NavigationInfo.Previous[0] = { Name: reportId, Title: title, TypeName: reportId };
+                        if (controllerName == "" && actionName == "") {
+                            changeLocation();
+                        } else {
+                            $("#ribbonContainer").html("");
+                            $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                            var ajaxData = { requestInformation: window.requestInformation, reportId: reportId };
+                            $.ajax({
+                                url: window.applicationpath + controllerName + "/" + actionName,
+                                type: "POST",
+                                contentType: 'application/json',
+                                data: JSON.stringify(window.requestInformation),
+                                success: function (data) {
+                                    $("#dynamic_content").html("<div class='report-container report-" + reportId + "'></div>");
+                                    $(".report-container").html(data);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+    //Author Yaseen Alrefaee
+        function onclickConfigurations(configurationTypeFullName, configurationId, controllerName, actionName, configurationTitle, pageSize) {
+            var moduleName = requestInformation.NavigationInfo.Module.Name;
+            $.ajax({
+                url: window.applicationpath + "Account/checkConfigurationAuthentication",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ configurationId: configurationId, moduleName: moduleName }),
+                success: function (data) {
+                    if (data.IsSuccessed) {
+                        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Configuaration";
+                    window.requestInformation.NavigationInfo.Previous = [];
+                    window.requestInformation.NavigationInfo.Next = [];
+                    window.requestInformation.NavigationInfo.Previous[0] = {
+                        Name: configurationId, Title: configurationTitle,
+                        TypeName: configurationTypeFullName, PageSize: pageSize, PageNumber: 1
+                    };
+                    if (controllerName == "Crud" && actionName == "Index") {
+                        changeLocation();
+
+                    } else {
+                        $("#ribbonContainer").html("");
+                        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                        $.ajax({
+                            url: window.applicationpath + controllerName + "/" + actionName,
+                            type: "POST",
+                            contentType: 'application/json',
+                            data: JSON.stringify(window.requestInformation),
+                            success: function (data) {
+                                $("#dynamic_content").html("<div class='configuration-container configuration-" + configurationId + "'></div>");
+                                $(".configuration-container").html(data);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+    //Author Yaseen Alrefaee
+        function onclickService(serviceId, title, controllerName, actionName) {
+            var moduleName = requestInformation.NavigationInfo.Module.Name;
+            $.ajax({
+                url: window.applicationpath + "Account/checkServiceAuthentication",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ serviceId: serviceId, moduleName: moduleName }),
+                success: function (data) {
+                    if (data.IsSuccessed) {
+                        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Service";
+                        window.requestInformation.NavigationInfo.Previous = [];
+                        window.requestInformation.NavigationInfo.Next = [];
+                        window.requestInformation.NavigationInfo.Previous[0] = { Name: serviceId, Title: title, TypeName: serviceId };
+                        if (controllerName == "" && actionName == "") {
+                            changeLocation();
+                        } else {
+                            $("#ribbonContainer").html("");
+                            $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                            $.ajax({
+                                url: window.applicationpath + controllerName + "/" + actionName,
+                                type: "POST",
+                                contentType: 'application/json',
+                                data: JSON.stringify(window.requestInformation),
+                                success: function (data) {
+                                    $("#dynamic_content").html("<div class='service-container service-" + serviceId + "'></div>");
+                                    $(".service-container").html(data);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+    }
+
+    $('#primary_nav li a').tipsy({
+        title: 'title',
+        fade: 'out',
+        gravity: 'w',
+    });
+
+    $('.accordion_mnu').initMenu();
+
+    function changeLocation() {
+        $('.maestro-menu').css("display", "none");
+         $("#ribbonContainer").html("");
+        switch (window.requestInformation.NavigationInfo.Status) {
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Module":
+                window.location = window.applicationpath + "Module/Welcome/" + window.requestInformation.NavigationInfo.Module.Name;
+
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Aggregate":
+                $.ajax({
+                    url: window.applicationpath + "Crud",
+                    type: "POST",
+                    contentType: 'application/json',
+                    //async:false,
+                    data: JSON.stringify(window.requestInformation),
+                    success: function (data) {
+                        window.requestInformation = data.requestInfo;
+                        window.gridModel = data.gridModel;
+                        $("#dynamic_content").html("<div id='grid'></div>");
+                        debugger;
+                        generateGrid(data.gridModel);
+
+                        var view = getViewById(data.gridModel.Views, data.gridModel.CurrentViewId);
+                        if (view.IsDetailOutSideGrid)
+                        {
+                        $("#ribbonContainer").html("").append(getRibbonHtml(window.requestInformation));
+                        }
+                        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                        registerGridKeydownEvent();
+                        registerGridMouseEvent(data.gridModel.Name);
+                        if (view.GridHandler != "") {
+
+                            var handlerFanction = getFunctionDelegate(view.GridHandler);
+                            if (handlerFanction != null)
+                                handlerFanction();
+
+                        }
+                        //$("#container").css("overflow","hidden");
+                    }
+                });
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Configuaration":
+                $.ajax({
+
+                    url: window.applicationpath + "Crud",
+                    type: "POST",
+                    contentType: 'application/json',
+                    //async:false,
+                    data: JSON.stringify(window.requestInformation),
+                    success: function (data) {
+                        window.requestInformation = data.requestInfo;
+                        window.gridModel = data.gridModel;
+                        $("#dynamic_content").html("<div id='grid'></div>");
+                        generateGrid(data.gridModel);
+                         var view = getViewById(data.gridModel.Views, data.gridModel.CurrentViewId);
+                        if (view.IsDetailOutSideGrid)
+                        {
+                        $("#ribbonContainer").html("").append(getRibbonHtml(window.requestInformation));
+                        }
+                        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                        registerGridKeydownEvent();
+                        registerGridMouseEvent(data.gridModel.Name);
+                        if (view.GridHandler != "") {
+
+                            var handlerFanction = getFunctionDelegate(view.GridHandler);
+                            if (handlerFanction != null)
+                                handlerFanction();
+
+                        }
+                        //$("#container").css("overflow","hidden");
+                    }
+                });
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Index":
+                $("#dynamic_content").html("<div id='grid'></div>");
+                $.ajax({
+                    url: window.applicationpath + "Index/GetGridModel",
+                    type: "POST",
+                    data: { name: window.requestInformation.NavigationInfo.Previous[0].Name },
+                    success: function (data) {
+                        generateGridIndex(data);
+                        window.gridModel = data;
+                        registerGridKeydownEvent();
+                        $("#" + data.Name).find(".k-toolbar.k-grid-toolbar").append("<div id='indexesDropDownList'></div>");
+                        $("#indexesDropDownList").kendoDropDownList({
+                            dataTextField: "Text",
+                            dataValueField: "Value",
+                            value: window.requestInformation.NavigationInfo.Previous[0].Name,
+                            select: onSelectIndexesDropDownList,
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        dataType: "json",
+                                        data: { moduleName: window.requestInformation.NavigationInfo.Module.Name },
+                                        url: window.applicationpath + 'Index/IndexesNameForModule'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                $(".switch_bar").remove();
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Service":
+                $(".switch_bar").remove();
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                $("#dynamic_content").html("");
+                getFunctionDelegate(window.requestInformation.NavigationInfo.Previous[0].Name)();
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Report":
+                $(".switch_bar").remove();
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                $("#dynamic_content").html("");
+                getFunctionDelegate(window.requestInformation.NavigationInfo.Previous[0].Name)();
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Dashboard":
+                $(".switch_bar").remove();
+                $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                $("#dynamic_content").html("");
+                getFunctionDelegate(window.requestInformation.NavigationInfo.Previous[0].Name)();
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Notification":
+                $.ajax({
+                    url: window.applicationpath + "Notification/GetGridDataNotifications",
+                    type: "POST",
+                    contentType: 'application/json',
+                    //async:false,
+                    data: JSON.stringify(window.requestInformation),
+                    success: function (data) {
+                        if ($("#dynamic_content").length == 0) {
+                            $("#bodyPanel").empty();
+                            $("#bodyPanel").html("<div id='dynamic_content'></div>");
+                        }
+                        $("#dynamic_content").html("");
+                        $("#dynamic_content").html("<div id='grid' class='notifications_grid'></div><div id='message_div'></div>");
+                        $(".switch_bar").remove();
+                        $("#breadcrumbContainer").html("<div id='breadcrumbContainer'><div id='breadcrumb'><span class='title_icon'><span class='notification_icon'></span></span><div><div class='breadcrumb_area'><a href='#'>@Project.Web.Mvc4.Helpers.Resource.NotificationLocalizationHelper.GetResource(NotificationLocalizationHelper.Notification)</a></div></div></div></div>");
+                        var height = $(window).height() - 160;
+                        if (height < 380) {
+                            height = 380;
+                        }
+                        $("#message_div").height(height - 2);
+                        window.gridModel = data;
+                        //window.requestInformation = data.requestInfo;
+                        new Grid(data.GridModel).CreateSimpleGrid();
+                        var grid = $("#grid").data("kendoGrid");
+                        grid.bind("change", notification_grid_change);
+                        grid.bind("dataBound", notification_grid_dataBound);
+                        $("#viewSelector").remove();
+                        $("#additional_toolbar_commands_list").remove()
+                        $('#ribbonContainer').html("");
+                        initDeleteAll();
+                    }
+                });
+                break;
+            default:
+        }
+    }
+
+        function breadcrumbClick(name) {
+        switch (window.requestInformation.NavigationInfo.Status) {
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Aggregate":
+                var temp = [];
+                var rowId = 0;
+                for (var i = 0; i < window.requestInformation.NavigationInfo.Previous.length; i++) {
+                    if (window.requestInformation.NavigationInfo.Previous[i].Name == name) {
+                        rowId = window.requestInformation.NavigationInfo.Previous[i].RowId;
+                        window.requestInformation.NavigationInfo.Previous[i].FromBreadcrumb = true;
+                        window.requestInformation.NavigationInfo.Previous[i].StepInformation = null;
+
+                        temp[i] = window.requestInformation.NavigationInfo.Previous[i];
+                        break;
+                    }
+                    temp[i] = window.requestInformation.NavigationInfo.Previous[i];
+                }
+                window.requestInformation.NavigationInfo.Previous = temp;
+                if (temp.length == 1 && $("#grid").data("kendoGrid") == null) {
+                    $("#" + name).click();
+                } else {
+                    changeLocation();
+                    temp[temp.length - 1].RowId = rowId;
+
+                    var grid = $("#grid").data("kendoGrid");
+                }
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Configuaration":
+                var temp = [];
+                var rowId = 0;
+                for (var i = 0; i < window.requestInformation.NavigationInfo.Previous.length; i++) {
+                    if (window.requestInformation.NavigationInfo.Previous[i].Name == name) {
+                        rowId = window.requestInformation.NavigationInfo.Previous[i].RowId;
+                        window.requestInformation.NavigationInfo.Previous[i].FromBreadcrumb = true;
+                        window.requestInformation.NavigationInfo.Previous[i].StepInformation = null;
+
+                        temp[i] = window.requestInformation.NavigationInfo.Previous[i];
+                        break;
+                    }
+                    temp[i] = window.requestInformation.NavigationInfo.Previous[i];
+                }
+                window.requestInformation.NavigationInfo.Previous = temp;
+                if (temp.length == 1 && $("#grid").data("kendoGrid") == null) {
+                    $("#" + name).click();
+                } else {
+                    changeLocation();
+                    temp[temp.length - 1].RowId = rowId;
+                    var grid = $("#grid").data("kendoGrid");
+                }
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Service":
+                $("#" + name).click();
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Index":
+
+                var temp = [];
+                var rowId = 0;
+                for (var i = 0; i < window.requestInformation.NavigationInfo.Previous.length; i++) {
+                    if (window.requestInformation.NavigationInfo.Previous[i].Name == name) {
+                        rowId = window.requestInformation.NavigationInfo.Previous[i].RowId;
+                        window.requestInformation.NavigationInfo.Previous[i].FromBreadcrumb = true;
+                        window.requestInformation.NavigationInfo.Previous[i].StepInformation = null;
+
+                        temp[i] = window.requestInformation.NavigationInfo.Previous[i];
+                        break;
+                    }
+                    temp[i] = window.requestInformation.NavigationInfo.Previous[i];
+                }
+                window.requestInformation.NavigationInfo.Previous = temp;
+                if (temp.length == 1 && $("#grid").data("kendoGrid") == null) {
+                    $("#" + name).click();
+                } else {
+                    changeLocation();
+                    temp[temp.length - 1].RowId = rowId;
+
+                    var grid = $("#grid").data("kendoGrid");
+                }
+                break;
+            case "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Dashboard":
+                $("#" + name).click();
+                break;
+            default:
+                $("#" + name).click();
+        }
+
+    }
+
+    $(document).ready(function () {
+        var dir = "";
+        var speed = 0;
+        //if (getCurrentLocale() == "ar-SY") {
+        //    dir = "right";
+        //} else {
+        //    dir = "left";
+        //}
+
+        var htmldir = document.getElementById("html").getAttribute("dir");
+        if (htmldir == "rtl")
+            dir = "right";
+        else
+            dir = "left";
+        $(window).resize(function () {
+            if ($(window).width() <= 1024) {
+                $("body").addClass("small-screen");
+            }
+            else {
+                $("body").removeClass("small-screen");
+            }
+        });
+        $("#closeNav").click(function () {
+            if ($('#sidebar').is(':visible')) {
+                $("#closeNav").removeClass().addClass("closed_state");
+                $("#sidebar").hide(speed);
+                $("#container").css(dir, "105px");
+                $(".page_title").css(dir, "105px");
+
+
+                // refactored
+                $(".expandable-collapseable").css(dir, "122px");
+
+                // Workflow acreen  --- added by Tameem
+                $(".workflow fieldset").css(dir, "122px");
+
+
+
+                $(".page_title").css("border-" + dir, "none");
+                $("#left_bar").css("width", "105px");
+                $("#container").css("border-" + dir, "none");
+            } else {
+                $("#closeNav").removeClass().addClass("opened_state");
+                $("#container").css(dir, "327px");
+                $(".page_title").css(dir, "327px");
+
+
+                //refactored
+                $(".expandable-collapseable").css(dir, "350px");
+
+                // Workflow acreen  --- added by Tameem
+                $(".workflow fieldset").css(dir, "346px");
+
+
+                $("#left_bar").css("width", "327px");
+                $(".page_title").css("border-" + dir, "1px solid #dfefed");
+                $("#theme-default #container").css("border-" + dir, "1px solid #dfefed");
+                $("#sidebar").show(speed);
+            }
+        });
+        @{
+            if (currentModule == null)
+            {
+                <text>$("#closeNav").click();</text>
+            }
+        }
+    });
+
+    </script>
+
+

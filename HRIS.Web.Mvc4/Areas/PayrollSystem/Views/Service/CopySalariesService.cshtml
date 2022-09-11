@@ -1,0 +1,63 @@
+﻿@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+<div id="CopySalaryInfo"></div>
+<div id="gridCards"></div>
+<script>
+
+    var fromSalaryTitle = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FromSalaryTitle))';
+    var toSalaryTitle = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.ToSalaryTitle))';
+
+    var databind = kendo.observable();
+    var tempdata = [
+        { Name: "FromSalary", Title: fromSalaryTitle, Type: "Enum", TypeName: "HRIS.Domain.PayrollSystem.Enums.Salaries", IsRequired: true },
+        { Name: "ToSalary", Title: toSalaryTitle, Type: "Enum", TypeName: "HRIS.Domain.PayrollSystem.Enums.Salaries", IsRequired: true }
+    ];
+    createCustomEditForm($("#CopySalaryInfo"), { Fields: tempdata, Key: "" }, databind);
+
+    LoadPrimaryCards();
+
+    function ApplyCopySalaries() {
+        var fromSalary = $("[name=FromSalary]").data("kendoDropDownList").value();
+        var toSalary = $("[name=ToSalary]").data("kendoDropDownList").value();
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/CopySalariesService/ApplyCopySalaries',
+            type: "POST",
+            data: JSON.stringify(
+                {
+                    fromSalary: fromSalary,
+                    toSalary: toSalary,
+                    filter: $("#gridCards").data("kendoGrid").dataSource.filter()
+                }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    $("#gridCards").data("kendoGrid").dataSource.fetch();
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+    function LoadPrimaryCards() {
+        $("#gridCards").html();
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/CopySalariesService/GetPrimaryCardGridModel',
+            type: "POST",
+            contentType: 'application/json',
+            async: false,
+            success: function (data) {                
+                data.Name = "gridCards";
+                new Grid(data).CreateSimpleGrid();
+                $(".CopySalaries").off("click").on("click", function () {
+                    ApplyCopySalaries();
+                });
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,241 @@
+﻿<script type="text/javascript">
+    function getPhotoTitle() {
+        for (var i = 0; i < gridModel.Views[0].Columns.length; i++) {
+            var column = gridModel.Views[0].Columns[i];
+            if (column.FieldName == "PhotoId") {
+                return column.Title;
+            }
+        }
+        return "Photo";
+    }
+   
+    function onEditEmployee(e) {
+        var template = kendo.template($("#EmployeeEditPhotoTemplate").html());
+        var controls = e.container.find(".fieldset-PersonnelGoupesNames_PersonalInformation .control");
+        e.container.find(".fieldset-PersonnelGoupesNames_PersonalInformation").append(template({}));
+
+        e.container.find(".personal-information-controles").append(controls);
+
+        e.container.find(".header-controls").append(e.container.find(".control-FirstName"));
+        e.container.find(".header-controls").append(e.container.find(".control-LastName"));
+        e.container.find(".header-controls").append(e.container.find(".control-FatherName"));
+        e.container.find(".header-controls").append(e.container.find(".control-MotherName"));
+        e.container.find(".header-controls").append(e.container.find(".control-DateOfBirth"));
+        e.container.find(".header-controls").append(e.container.find(".control-PlaceOfBirth"));
+        e.container.find(".header-controls").append(e.container.find(".control-IdentificationNo"));
+
+
+        //e.container.find(".header-controls").append(e.container.find(".control-Gender"));
+        //e.container.find(".header-controls").append(e.container.find(".control-MaritalStatus"));
+        //e.container.find(".header-controls").append(e.container.find(".control-Code"));
+
+        reOrderControls(e.container.find(".personal-information-controles"));
+        reOrderControls(e.container.find(".fieldset-PersonnelGoupesNames_FamilyInformation"));
+        reOrderControls(e.container.find(".fieldset-PersonnelGoupesNames_ContactInformation"));
+        reOrderControls(e.container.find(".fieldset-PersonnelGoupesNames_General"));
+
+      
+        
+       
+        
+        var headerControls = e.container.find(".header-controls .control");
+        for (var i = 0; i < headerControls.length ; i++) {
+            $(headerControls[i]).removeClass("first-column");
+            $(headerControls[i]).removeClass("second-column");
+
+        }
+        @{
+            var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+            var temp = Url.Content("~/Content/images/theme-" + themingName + "/placeholder.jpg");
+        }
+        e.container.find(".clear-btn").off("click").on("click", function () {
+
+            $('.employee-photo img').attr('src', '@temp');
+            e.model.PhotoId = "";
+            e.model.dirty = true;
+        });
+        if (e.model.PhotoId == null || e.model.PhotoId == "") {
+            $('.employee-photo img').attr('src', '@temp');
+        } else {
+            $('.employee-photo img').attr('src', '@Url.Content("~")' + 'Content/EmployeesPhoto/' + e.model.PhotoId);
+        }
+        $("[name='files']").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("SaveUploadPersonalPhoto", "Employee",new {area="Personnel"})" + "?empId=" + e.model.Id,
+                removeUrl: "@Url.Action("RemoveUploadPersonalPhoto", "Employee",new {area="Personnel"})" + "?empId=" + e.model.Id
+            }, localization: {
+                select: "@Project.Web.Mvc4.Helpers.GlobalResource.Browse"
+            },
+            multiple: false,
+            complete: function (data) {
+                $.ajax({
+                    url: '@Url.Action("GetImgFileName", "Employee",new {area="Personnel"})',
+                    type: "POST",
+                    contentType: 'application/json',
+                    success: function (fileName) {
+                        $('.employee-photo img').attr('src', '@Url.Content("~")' + 'Content/EmployeesPhoto/' + fileName);
+                        e.model.PhotoId = fileName;
+                        e.model.dirty = true;
+                        e.container.find(".k-upload-status.k-upload-status-total").remove();
+                        e.container.find(".k-upload-files.k-reset").remove();
+
+                    }
+                });
+            },
+            template: "<div></div>"
+        });
+        e.container.find(".select-photo-div .k-dropzone").children().first().appendTo(e.container.find(".select-photo-div .k-dropzone").parent());
+        e.container.find(".select-photo-div .k-dropzone").remove();
+        e.container.find(".employee-photo [name='files']").after("<span class='k-icon k-i-folder-up'></span>");
+
+        e.container.find("[name='DisabilityExist']").off("click").on("click", disabilityExistClick);
+        //e.container.find("[name='Gender']").data('kendo-DropDownList').bind('change', controlClick);
+        e.container.find("[name='OtherNationalityExist']").off("click").on("click", otherNationalityExistControlClick);
+        
+        controlClick();
+        function controlClick() {
+            var container = $(".personal-information-controles");
+            var gender = $("[name='Gender']").val();
+            var disabilityExist = $("[name='DisabilityExist']").is(":checked");                      
+            employeeUpdateEditView(container, gender, disabilityExist);     
+        }
+
+        otherNationalityExistControlClick();
+        function otherNationalityExistControlClick() {
+            
+            var container = $(".personal-information-controles");
+            var otherNationalityExist = e.container.find("[name='OtherNationalityExist']").is(":checked");
+            otherNationalityExistClick(container, otherNationalityExist);
+        }
+
+        //CheckInputControlLanguage();
+        //function CheckInputControlLanguage() {
+
+
+        //    $('input[name=FirstName]').keypress(function (e) {
+        //        if (e.which >= 48 && e.which <= 57) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=LastName]').keypress(function (e) {
+        //        if (e.which >= 48 && e.which <= 57) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=FatherName]').keypress(function (e) {
+        //        if (e.which >= 48 && e.which <= 57) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=MotherName]').keypress(function (e) {
+        //        if (e.which >= 48 && e.which <= 57) {
+        //            e.preventDefault();
+        //        }
+        //    });
+
+
+        //    $('input[name=FirstNameL2]').keypress(function (e) {
+        //        if ((e.which < 0 || e.which > 255) || (e.which >= 48 && e.which <= 57)) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=LastNameL2]').keypress(function (e) {
+        //        if ((e.which < 0 || e.which > 255) || (e.which >= 48 && e.which <= 57)) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=FatherNameL2]').keypress(function (e) {
+        //        if ((e.which < 0 || e.which > 255) || (e.which >= 48 && e.which <= 57)) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=MotherNameL2]').keypress(function (e) {
+        //        if ((e.which < 0 || e.which > 255) || (e.which >= 48 && e.which <= 57)) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //    $('input[name=PlaceOfBirthL2]').keypress(function (e) {
+        //        if ((e.which < 0 || e.which > 255) || (e.which >= 48 && e.which <= 57)) {
+        //            e.preventDefault();
+        //        }
+        //    });
+        //}
+        
+        $(".control-MilitaryStatus").hide();
+    }
+    function employeeUpdateEditView(container, gender, disabilityExist) {
+        if (disabilityExist) {
+            container.find(".control.control-DisabilityType").show();
+        } else {
+            container.find(".control.control-DisabilityType").hide();
+        }
+
+        //if (gender == 0) {
+        //    container.find(".control.control-MilitaryStatus").hide();
+        //} else {
+        //    container.find(".control.control-MilitaryStatus").show();
+        //}
+        //if (gender == "") {
+        //    container.find(".control.control-MilitaryStatus").show();
+        //}
+
+        reOrderControls(container);
+    }
+
+    function disabilityExistClick() {
+        var container = $(".personal-information-controles");
+        var disabilityExist = $("[name='DisabilityExist']").is(":checked");
+        if (disabilityExist) {
+            container.find(".control.control-DisabilityType").show();
+            addRequiredStar('DisabilityType');
+        } else {
+            container.find(".control.control-DisabilityType").hide();
+            removeRequiredStar('DisabilityType');
+        }
+
+        reOrderControls(container);
+    }
+    
+    function otherNationalityExistClick(container, otherNationalityExist) {
+        
+        removeRequiredStar('OtherNationality');
+        if (otherNationalityExist) {
+            container.find(".control-OtherNationality").show();
+            addRequiredStar('OtherNationality');
+        } else {
+            container.find(".control-OtherNationality").hide();
+            removeRequiredStar('OtherNationality');
+            //container.find("[name='OtherNationality']").data('kendo-DropDownList').value(0);
+            //container.find("[name='OtherNationalityIssue']").data("kendoDatePicker").value(null);
+        }
+        
+        reOrderControls(container);
+    }
+</script>
+
+<script id="EmployeeEditPhotoTemplate" type="text/x-kendo-template">
+    <div class="edit-emp-header">
+        <div class="header-controls control first-column"></div>
+        <div class="control second-column">
+            <div class="k-edit-label">
+                <label for="LastName">#=getPhotoTitle()#</label>
+            </div>
+            <div class="employee-photo">
+                <div class="img-div">
+                    <img alt=""/>
+                </div>
+                <div class="emp-photo-controls">
+                    <div class="select-photo-div">
+                        <input name="files" type="file" accept="image/*"/>
+                    </div>
+                    <div class="clear-photo-div">
+                        <a href="\\#" class="k-button clear-btn"><span class="k-icon k-delete"></span><span>@Project.Web.Mvc4.Helpers.GlobalResource.Clear</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="personal-information-controles">
+    </div>
+    
+</script>

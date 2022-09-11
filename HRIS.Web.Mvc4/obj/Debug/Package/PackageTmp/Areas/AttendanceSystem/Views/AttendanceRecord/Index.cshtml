@@ -1,0 +1,369 @@
+﻿
+@using Project.Web.Mvc4.Helpers
+@using HRIS.Domain.Global.Constant
+@using Project.Web.Mvc4.Helpers.Resource
+<script type="text/javascript">
+    var $cycleStartDay = 1;
+    function attendanceRecordGridHandler() {
+        $.ajax({
+            url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/GetAttendanceCycleStartDay',
+            type: "Get",
+            contentType: 'application/json',
+            success: function (data) {
+                debugger;
+                $cycleStartDay = data.Day;
+            }
+        });
+    }
+    function attendanceRecordEditHandler(e) {
+        var year = 0;
+        var month = 0;
+        if (e.model.Id == 0) {
+            e.model.Year = new Date().getFullYear();
+            e.model.Month = new Date().getMonth() + 1;
+            e.model.FromDate = new Date(new Date().getFullYear(), new Date().getMonth(), $cycleStartDay);
+            e.model.ToDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, $cycleStartDay - 1);
+            $("[name='Year']").data("kendoNumericTextBox").value(new Date().getFullYear())
+            $("[name='Month']").data("kendoDropDownList").value(new Date().getMonth() + 1);
+            $("[name='FromDate']").data("kendoDatePicker").value(new Date(new Date().getFullYear(), new Date().getMonth(), $cycleStartDay));
+            $("[name='ToDate']").data("kendoDatePicker").value(new Date(new Date().getFullYear(), new Date().getMonth() + 1, $cycleStartDay - 1));
+        }
+        var yearInput = $("[name='Year']");
+        yearInput.bind("change", function () {
+            year = +this.value;
+            if (year > 2000) {
+                $("[name='FromDate']").data("kendoDatePicker").value(new Date(year, 
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getMonth(),
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate()));
+                $("[name='ToDate']").data("kendoDatePicker").value(new Date(year,
+                    new Date($("[name='ToDate']").data("kendoDatePicker").value()).getMonth() + 1,
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate() - 1));
+
+                e.model.FromDate = new Date(year,
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getMonth(),
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate());
+                e.model.ToDate = new Date(year,
+                    new Date($("[name='ToDate']").data("kendoDatePicker").value()).getMonth() + 1,
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate() - 1);
+            }
+        });
+        var monthDropdownList = $("[name='Month']").data("kendoDropDownList");
+        monthDropdownList.bind("change", function () {
+            month = this.selectedIndex - 2;
+            if (month >=  0) {
+                $("[name='FromDate']").data("kendoDatePicker").value(new Date(
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getFullYear(),
+                    month, new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate()));
+                $("[name='ToDate']").data("kendoDatePicker").value(new Date(
+                    new Date($("[name='ToDate']").data("kendoDatePicker").value()).getFullYear(), month + 1,
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate()
+                    - 1));
+
+                e.model.FromDate = new Date(
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getFullYear(),
+                    month, new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate());
+                e.model.ToDate = new Date(
+                    new Date($("[name='ToDate']").data("kendoDatePicker").value()).getFullYear(), month + 1,
+                    new Date($("[name='FromDate']").data("kendoDatePicker").value()).getDate()
+                    - 1);
+            }
+        });
+    }
+    function ChooseEmployees(attendanceRecordId) {
+        AttendanceRecordOperation(attendanceRecordId, "Choose");
+    }
+    function GenerateAttendanceRecord(attendanceRecordId) {
+      //  AttendanceRecordOperation(attendanceRecordId, "Generate");
+        AttendanceRecordOperation(attendanceRecordId, "Generate");
+    };
+    function ChooseFilterHtml(attendanceRecordId) {
+
+        var appendedFilterHtml = "<fieldset><legend>@GlobalResource.FilterBy</legend><div><input type='radio' name='AttendanceRecordFilter' value='FilterByEmployee' id='FilterByEmployee' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByEmployee', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByEmployee'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByEmployeeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByPrimaryCard' id='FilterByPrimaryCard' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByPrimaryCard', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByPrimaryCard'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByPrimaryCardTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByGrade' id='FilterByGrade' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByGrade', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByGrade'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByGradeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByJobTitle' id='FilterByJobTitle' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByJobTitle', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByJobTitle'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByJobTitleTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByJobDescription' id='FilterByJobDescription' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByJobDescription', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByJobDescription'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByJobDescriptionTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByPosition' id='FilterByPosition' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByPosition', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByPosition'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByPositionTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByNode' id='FilterByNode' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByNode', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByNode'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByNodeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByMajorType' id='FilterByMajorType' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByMajorType', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByMajorType'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByMajorTypeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='AttendanceRecordFilter' value='FilterByMajor' id='FilterByMajor' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByMajor', " + attendanceRecordId + ")" + '"' + "/>" +
+            "<label for='FilterByMajor'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByMajorTitle)</label></div></fieldset>";
+
+        return appendedFilterHtml;
+    }
+
+    function LoadSpecificFilter(filterBy, attendanceRecordId) {
+    
+        var actionName = "";
+
+        if (filterBy == "FilterByEmployee") {
+            actionName = "GetEmployeeGridModel";
+        } else if (filterBy == "FilterByPrimaryCard") {
+            actionName = "GetPrimaryCardGridModel";
+        } else if (filterBy == "FilterByGrade") {
+            actionName = "GetGradeGridModel";
+        } else if (filterBy == "FilterByJobTitle") {
+            actionName = "GetJobTitleGridModel";
+        } else if (filterBy == "FilterByJobDescription") {
+            actionName = "GetJobDescriptionGridModel";
+        } else if (filterBy == "FilterByPosition") {
+            actionName = "GetPositionGridModel";
+        } else if (filterBy == "FilterByNode") {
+            actionName = "GetNodeGridModel";
+        } else if (filterBy == "FilterByMajorType") {
+            actionName = "GetMajorTypeGridModel";
+        } else if (filterBy == "FilterByMajor") {
+            actionName = "GetMajorGridModel";
+        }
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/Filter/' + actionName,
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                data.Name = "gridCards";
+                new Grid(data).CreateSimpleGrid();
+                $(".GenerateButtonKey").off("click").on("click", function () {
+                    GenerateAttendanceRecordByFilteredData(attendanceRecordId, filterBy);
+                });
+            }
+        });
+    }
+    function GenerateAttendanceRecordByFilteredData(attendanceRecordId, filterBy) {
+        var actionName = "";
+
+        if (filterBy == "FilterByEmployee") {
+            actionName = "GenerateFilteredEmployees";
+        } else if (filterBy == "FilterByPrimaryCard") {
+            actionName = "GenerateFilteredPrimaryCards";
+        } else if (filterBy == "FilterByGrade") {
+            actionName = "GenerateFilteredGrades";
+        } else if (filterBy == "FilterByJobTitle") {
+            actionName = "GenerateFilteredJobTitles";
+        } else if (filterBy == "FilterByJobDescription") {
+            actionName = "GenerateFilteredJobDescriptions";
+        } else if (filterBy == "FilterByPosition") {
+            actionName = "GenerateFilteredPositions";
+        } else if (filterBy == "FilterByNode") {
+            actionName = "GenerateFilteredNodes";
+        } else if (filterBy == "FilterByMajorType") {
+            actionName = "GenerateFilteredMajorTypes";
+        } else if (filterBy == "FilterByMajor") {
+            actionName = "GenerateFilteredMajors";
+        }
+
+        $.ajax({
+            url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/' + actionName,
+            type: "POST",
+            data: JSON.stringify({
+                attendanceRecordId: attendanceRecordId,
+                filter: $("#gridCards").data("kendoGrid").dataSource.filter()
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+            }
+        });
+    }
+    function AttendanceRecordOperation(attendanceRecordId, operation) {
+
+        if (operation == "Choose") {
+            $("#ribbonContainer").html("");
+            $("#dynamic_content").html("<div id='FilterInfo'></div>" + "<div id='gridCards'></div>");
+            $("#FilterInfo").html(ChooseFilterHtml(attendanceRecordId));
+        } else {
+            $.ajax({
+                url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/AttendanceRecordOperation',
+                type: "POST",
+                data: JSON.stringify({ attendanceRecordId: attendanceRecordId, operation: operation }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        //alert(data.Msg);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    } else {
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+        }
+    }
+    function CalculateAttendanceRecord(attendanceRecordId) {
+
+        AttendanceRecordOperation(attendanceRecordId, "Calculate");
+
+    };
+
+    function LockAttendanceRecord(attendanceRecordId) {
+        AttendanceRecordOperation(attendanceRecordId, "Lock");
+    };
+    function CancelPenalty(modelId) {
+        window.Souccar.ajax('@Url.Action("CancelPenalty", "Service", new { area = "EmployeeRelationServices" })', { id: modelId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Status) {
+                window.Souccar.showInfoMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+                var grid = $("#" + gridModel.Name).data("kendoGrid");
+                grid.refresh();
+            } else {
+                window.Souccar.showErrorMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+            }
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+    }
+    function initializeDisciplinaryActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            actionListItems[i].ShowCommand = true;
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            if (dataItem.IsTransferToPayroll == true) {
+
+               
+                debugger;
+                if (actionListItems[i].HandlerName == "@CommandsNames.CancelPenalty") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+        }
+    }
+    function GenerateFilteredEmployeeAttendanceCards(attendanceRecordId) {
+        $.ajax({
+            url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/GenerateFilteredEmployeeAttendanceCards',
+            type: "POST",
+            data: JSON.stringify({ attendanceRecordId: attendanceRecordId, filter: $("#grid").data("kendoGrid").dataSource.filter() }),
+            contentType: 'application/json',
+            success: function (data) {
+                $('#Ribbon').show();
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                $.ajax({
+                    url: window.applicationpath + "Crud",
+                    type: "POST",
+                    contentType: 'application/json',
+                    //async:false,
+                    data: JSON.stringify(window.requestInformation),
+                    success: function (data) {
+                        window.requestInformation = data.requestInfo;
+                        window.gridModel = data.gridModel;
+                        $("#dynamic_content").html("<div id='grid'></div>");
+                        generateGrii(data.gridModel);
+                        $("#ribbonContainer").html("").append(getRibbonHtml(window.requestInformation));
+                        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                        registerGridKeydownEvent();
+                        registerGridMouseEvent(data.gridModel.Name);
+                    }
+                });
+            }
+        });
+    }
+    function simple_grid_dataBound(e) {
+        if (e.sender.dataSource.view().length == 0) {
+
+            var colspan = e.sender.thead.find("th").length;
+            //insert empty row with colspan equal to the table header th count
+            var emptyRow = "<tr><td colspan='" + colspan + "'></td></tr>";
+            e.sender.tbody.html(emptyRow);
+        }
+    }
+    //function AttendanceRecordOperation(attendanceRecordId, operation) {
+    //    if (operation == "Generate") {
+
+    //        var isSuccess = false;
+
+    //        $.ajax({
+    //            url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/CheckGeneralSettings',
+    //            type: "POST",
+    //            async:false,
+    //            contentType: 'application/json',
+    //            success: function (data) {
+    //                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+    //                if (!data.Success) {
+    //                    isSuccess = false;
+    //                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+    //                }
+    //                else
+    //                {
+    //                    isSuccess = true;
+    //                }
+    //            }
+    //        });
+
+    //        if (isSuccess)
+    //        {
+    //            $.ajax({
+    //                url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/GetEmployeeAttendanceCardGridModel',
+    //                type: "POST",
+    //                contentType: 'application/json',
+    //                success: function (data) {
+    //                    $('#Ribbon').hide();
+    //                    $("#dynamic_content").html("<div id='grid'></div>");
+    //                    window.gridModel = data;
+    //                    new Grid(data).CreateSimpleGrid();
+    //                    var grid = $("#grid").data("kendoGrid");
+    //                   // grid.bind("dataBound", simple_grid_dataBound);
+    //                    //grid.hideColumn(0);
+    //                    $(".EmployeeAttendanceCardGenerator").off("click").on("click", function () {
+
+    //                        GenerateFilteredEmployeeAttendanceCards(attendanceRecordId);
+    //                    });
+    //                }
+    //            });
+    //        }
+
+
+    //    } else {
+    //        $.ajax({
+    //            url: window.applicationpath + 'AttendanceSystem/AttendanceRecord/AttendanceRecordOperation',
+    //            type: "POST",
+    //            data: JSON.stringify({ attendanceRecordId: attendanceRecordId, operation: operation }),
+    //            contentType: 'application/json',
+    //            success: function (data) {
+    //                if (data.Success) {
+    //                    //alert(data.Msg);
+    //                    $("#grid").data("kendoGrid").dataSource.read();
+    //                } else {
+    //                    var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+    //                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+    //                }
+    //            }
+    //        });
+    //    }
+    //}
+
+</script>

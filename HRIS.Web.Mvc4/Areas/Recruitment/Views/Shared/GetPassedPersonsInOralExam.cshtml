@@ -1,0 +1,137 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+
+
+<div style="display: none" id="PassedPersonsInOralExamGridWindow">
+    <div id="PassedPersonsInOralExamGrid"></div>
+    <div class="k-edit-buttons k-state-default not-default-button">
+        <a class="k-button k-button-icontext k-grid-cancel" id="CancelPassedPersonsInOralExamGridButton" href="#"><span class="k-icon k-cancel"></span>@GlobalResource.Cancel</a>
+    </div>
+</div>
+
+<script>
+
+    var passedPersonsInOralExamGridWindow;
+
+    function GetPassedPersonsInOralExam(recruitmentInformationId) {
+
+        passedPersonsInOralExamGridWindow = $("#PassedPersonsInOralExamGridWindow");
+        passedPersonsInOralExamGridWindow.kendoWindow({
+            width: 900,
+            height: 500,
+            modal: true,
+            resizable: false,
+            title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.GetPassedPersonsInOralExam)",
+            open: function () {
+                passedPersonsInOralExamGridWindow.data("kendoWindow").center();
+            }
+        });
+        passedPersonsInOralExamGridWindow.data("kendoWindow").open();
+
+        $.ajax({
+            url: '@Url.Action("GetPassedPersonsInOralExam", "Home")',
+            type: "POST",
+            async: false,
+            data: JSON.stringify({
+                advertisementId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                recruitmentInformationId: recruitmentInformationId
+                //recruitmentInformationId: window.requestInformation.NavigationInfo.Previous[1].RowId
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+                CreatePassedPersonsInOralExamGrid();
+                InitializePassedPersonsInOralExamDataSource(data);
+            }
+        });
+
+    };
+
+    $("#CancelPassedPersonsInOralExamGridButton").click(function () {
+        ClosePassedPersonsInOralExamGridWindow();
+    });
+
+    function ClosePassedPersonsInOralExamGridWindow() {
+        //var window = $("#PassedPersonsInOralExamGridWindow");
+        passedPersonsInOralExamGridWindow.data("kendoWindow").close();
+    };
+
+    function CreatePassedPersonsInOralExamGrid() {
+        $("#PassedPersonsInOralExamGrid").kendoGrid({
+            height: 285,
+            dataSource: {
+
+                model: { id: "Id" },
+                pageSize: 10
+            },
+            selectable: "row",
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                messages: {
+                    display: "{2} items"
+                }
+            },
+            columns: [
+                {
+                    field: "FullName",
+                    width: 120,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.FullName)"
+                },
+                {
+                    field: "WrittenMark",
+                    width: 90,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.WrittenMark)"
+                },
+                {
+                    field: "OralMark",
+                    width: 70,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.OralMark)"
+                },
+                {
+                    field: "OldnessLaborOfficeMark",
+                    width: 150,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.OldnessLaborOfficeMark)"
+                },
+                {
+                    field: "MartyrSonMark",
+                    width: 100,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.MartyrSonMark)"
+                },
+                {
+                    field: "FinalMark",
+                    width: 70,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.FinalMark)"
+                },
+                {
+                    field: "IsPassed",
+                    width: 70,
+                    title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.IsPassed)",
+                    attributes: { "style": "text-align: center;" },
+                    template: kendo.template("#if( IsPassed  == true){#" +
+                        "#= '<input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" />' #" +
+                        "#}else{#" +
+                        "#= '<input type=\"checkbox\" disabled=\"disabled\" />' #" +
+                        "#}#"
+                    )
+                }
+            ],
+
+        });
+    };
+
+    function InitializePassedPersonsInOralExamDataSource(passedPersons) {
+
+        var passedPersonsGrid = $("#PassedPersonsInOralExamGrid").data("kendoGrid");
+        var passedPersonsGridDataSource = [];
+
+        for (var i = 0; i < passedPersons.length; i++) {
+            passedPersonsGridDataSource.push(passedPersons[i]);
+
+        }
+        passedPersonsGrid.setDataSource(new kendo.data.DataSource({ model: { id: "Id" }, data: passedPersonsGridDataSource }));
+
+    };
+
+</script>

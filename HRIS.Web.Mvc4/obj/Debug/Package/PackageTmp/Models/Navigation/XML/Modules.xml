@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!DOCTYPE Modules SYSTEM "Modules.dtd">
+
+<Modules>
+	<Module Id="Personnel" Controller="Personnel" Action="Index" RelativeUrl="/Personnel" IconUrl="m_projects" TinyIconUrl="zip_files_b">
+		<Languages>
+			<Language LocaleId="en-US" Title="Personnel" Description="Employees' personnel" />
+			<Language LocaleId="ar-SY" Title="الذاتية" Description="ذاتية الموظفين" />
+		</Languages>
+		<Dashboards>
+			<Dashboard Id="CollectiveInformation" Controller="Dashboard" Action="CollectiveInformation" RelativeUrl="/Personnel/Dashboard/CollectiveInformation">
+				<Languages>
+					<Language LocaleId="en-US" Title="Collective Info" Description="Collective information about employees" />
+					<Language LocaleId="ar-SY" Title="معلومات تجميعية" Description="معلومات تجميعية عن جميع الموظفين" />
+				</Languages>
+			</Dashboard>
+			<Dashboard Id="AttendanceInformation" Controller="Dashboard" Action="AttendanceInformation" RelativeUrl="/Personnel/Dashboard/AttendanceInformation">
+				<Languages>
+					<Language LocaleId="en-US" Title="Attendance Info" Description="Collective information about employees' attendance in the last month" />
+					<Language LocaleId="ar-SY" Title="معلومات الدوام" Description="معلومات تجميعية عن دوام جميع الموظفين خلال الشهر الأخير" />
+				</Languages>
+			</Dashboard>
+		</Dashboards>
+		<Aggregates>
+			<Aggregate Id="EmployeeInfo" Controller="Employee" Action="GetGridModel" RelativeUrl="/Personnel/Employee/GetGridModel">
+				<Languages>
+					<Language LocaleId="en-US" Title="Employees Information" Description="Contains all general information of employees" />
+					<Language LocaleId="ar-SY" Title="معلومات الموظفين" Description="يتضمن جميع المعلومات العامة المتعلقة بكل موظف" />
+				</Languages>
+				<Details>
+					<Detail Id="Contacts" Controller="Contacts" Action="GetGridModel" RelativeUrl="/Personnel/Contacts/GetGridModel" IconUrl="address_sl">
+						<Languages>
+							<Language LocaleId="en-US" Title="Contacts" Description="Contact information through which the employee could be reached" />
+							<Language LocaleId="ar-SY" Title="الاتصالات" Description="الطرق التي يمكن من خلالها الاتصال بالموظف" />
+						</Languages>
+					</Detail>
+					<Detail Id="Passports" Controller="Passports" Action="GetGridModel" RelativeUrl="/Personnel/Passports/GetGridModel" IconUrl="user_sl">
+						<Languages>
+							<Language LocaleId="en-US" Title="Passports" Description="Information about passports held by the employee" />
+							<Language LocaleId="ar-SY" Title="جوازات السفر" Description="معلومات جوازات السفر التي يملكها الموظف" />
+						</Languages>
+					</Detail>
+				</Details>
+			</Aggregate>
+		</Aggregates>
+		<Indexes>
+			<Index IndexId="BloodGroup" />
+			<Index IndexId="Gender" />
+		</Indexes>
+	</Module>
+	<Module Id="PerformanceAppraisal" Controller="PerformanceAppraisal" Action="Index" RelativeUrl="/PerformanceAppraisal" IconUrl="m_events" TinyIconUrl="month_calendar">
+		<Languages>
+			<Language LocaleId="en-US" Title="Performance Appraisal" Description="Employees' performance appraisal" />
+			<Language LocaleId="ar-SY" Title="تقييم الأداء" Description="تقييم أداء الموظفين" />
+		</Languages>
+		<Dashboards>
+			<Dashboard Id="AppraisalInformation" Controller="Dashboard" Action="AppraisalInformation" RelativeUrl="/PerformanceAppraisal/Dashboards/AppraisalInfo">
+				<Languages>
+					<Language LocaleId="en-US" Title="Appraisal Info" Description="Collective information about employees' last performance appraisal" />
+					<Language LocaleId="ar-SY" Title="معلومات التقييم" Description="معلومات تجميعية عن آخر تقييم لأداء الموظفين" />
+				</Languages>
+			</Dashboard>
+		</Dashboards>
+		<Aggregates>
+			<Aggregate Id="AppraisalTemplate" Controller="AppraisalTemplate" Action="Index" RelativeUrl="/PerformanceAppraisal/AppraisalTemplate">
+				<Languages>
+					<Language LocaleId="en-US" Title="Appraisal Template" Description="Template of the performance appraisal sheet" />
+					<Language LocaleId="ar-SY" Title="نموذج التقييم" Description="نموذج ورقة تقييم الأداء" />
+				</Languages>
+			</Aggregate>
+			<Aggregate Id="AppraisalSectionTemplate" Controller="AppraisalSectionTemplate" Action="Index" RelativeUrl="/PerformanceAppraisal/AppraisalSectionTemplate">
+				<Languages>
+					<Language LocaleId="en-US" Title="Section Template" Description="Template of the performance appraisal's custom section" />
+					<Language LocaleId="ar-SY" Title="نموذج فقرة تقييم" Description="نموذج لفقرة ضمن تقييم الأداء" />
+				</Languages>
+				<Details>
+					<Detail Id="AppraisalSectionItem" Controller="AppraisalSectionItem" Action="GetGridModel" RelativeUrl="/PerformanceAppraisal/GetGridModel" IconUrl="archives_sl">
+						<Languages>
+							<Language LocaleId="en-US" Title="Section Item" Description="Items in the section template of performance appraisal" />
+							<Language LocaleId="ar-SY" Title="عناصر فقرة" Description="عناصر نموذج فقرة ضمن تقييم الأداء" />
+						</Languages>
+						<Details>
+							<Detail Id="SectionItemKpi" Controller="SectionItemKpi" Action="GetGridModel" RelativeUrl="/PerformanceAppraisal/SectionItemKpi/GetGridModel" IconUrl="current_work_sl">
+								<Languages>
+									<Language LocaleId="en-US" Title="Item KPIs" Description="Key performance indicators for the section item" />
+									<Language LocaleId="ar-SY" Title="مؤشرات أداء عنصر" Description="مؤشرات الأداء المفتاحية لعنصر في فقرة" />
+								</Languages>
+							</Detail>
+						</Details>
+					</Detail>
+				</Details>
+			</Aggregate>
+		</Aggregates>
+		<Indexes>
+			<Index IndexId="AppraisalType" />
+		</Indexes>
+	</Module>
+	<Module Id="JobDescription" Controller="JobDescription" Action="Index" RelativeUrl="/JobDescription" IconUrl="p_book" TinyIconUrl="note_book">
+		<Languages>
+			<Language LocaleId="en-US" Title="Job Description" Description="Description of each job position in the organization" />
+			<Language LocaleId="ar-SY" Title="توصيف العمل" Description="توصيف جميع الأعمال ضمن المؤسسة" />
+		</Languages>
+	</Module>
+	<Module Id="OrganizationChart" Controller="OrganizationChart" Action="Index" RelativeUrl="/OrganizationChart" IconUrl="m_dashboard" TinyIconUrl="computer_imac">
+		<Languages>
+			<Language LocaleId="en-US" Title="Organization Chart" Description="Organizational chart and the hierarchy of employees" />
+			<Language LocaleId="ar-SY" Title="المخطط المؤسساتي" Description="مخطط المؤسسة وهرمية الموظفين" />
+		</Languages>
+		<Dashboards>
+			<Dashboard Id="Home" Controller="Dashboard" Action="Home" RelativeUrl="/OrganizationChart">
+				<Languages>
+					<Language LocaleId="en-US" Title="Home Page" Description="Home page of the oraganization chart" />
+					<Language LocaleId="ar-SY" Title="الصفحة الرئيسية" Description="الصفحة الرئيسية لمخطط المؤسسة" />
+				</Languages>
+			</Dashboard>
+		</Dashboards>
+		<Aggregates>
+			<Aggregate Id="Node" Controller="Node" Action="Index" RelativeUrl="/OrganizationChart/Node">
+				<Languages>
+					<Language LocaleId="en-US" Title="Node" Description="Node in the employees' hierarchy tree" />
+					<Language LocaleId="ar-SY" Title="عقدة" Description="عقدة في الهيكل الشجري للموظفين" />
+				</Languages>
+				<Details>
+					<Detail Id="NodeTypeOrder" Controller="NodeTypeOrder" Action="GetAll" RelativeUrl="/OrganizationChart/NodeTypeOrder/GetAll" IconUrl="category_sl">
+						<Languages>
+							<Language LocaleId="en-US" Title="Node Type & Order" Description="The type and order of a node in the hierarchy tree" />
+							<Language LocaleId="ar-SY" Title="نوع العقدة وترتيبها" Description="نوع وترتيب عقدة في الهيكل الشجري" />
+						</Languages>
+					</Detail>
+				</Details>
+			</Aggregate>
+			<Aggregate Id="Position" Controller="Position" Action="Index" RelativeUrl="/OrganizationChart/Position">
+				<Languages>
+					<Language LocaleId="en-US" Title="Job Position" Description="A job position in a node of the tree heirarchy" />
+					<Language LocaleId="ar-SY" Title="موقع وظيفي" Description="موقع وظيفي في عقدة في الهيكل الشجري" />
+				</Languages>
+			</Aggregate>
+		</Aggregates>
+		<Indexes>
+			<Index IndexId="JobGroup" />
+		</Indexes>
+		<Services>
+			<Service Id="Reassign" RelativeUrl="/OrganizationChart/Services/Reassign.aspx">
+				<Languages>
+					<Language LocaleId="en-US" Title="Reassign Job" Description="Reassign a job position to a new node" />
+					<Language LocaleId="ar-SY" Title="إعادة إسناد عمل" Description="إعادة إسناد موقع وظيفي لعقدة جديدة" />
+				</Languages>
+			</Service>
+			<Service Id="Reorder" RelativeUrl="/OrganizationChart/Services/Reorder.aspx">
+				<Languages>
+					<Language LocaleId="en-US" Title="Reorder Nodes" Description="Reorder nodes in the hierarchy tree" />
+					<Language LocaleId="ar-SY" Title="إعادة ترتيب عقدة" Description="إعادة ترتيب عقدة في الهيكل الشجري" />
+				</Languages>
+			</Service>
+		</Services>
+	</Module>
+</Modules>

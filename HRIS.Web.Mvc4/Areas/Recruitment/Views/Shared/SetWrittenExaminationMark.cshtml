@@ -1,0 +1,94 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+
+<div id="SetWrittenExaminationMarkDiv" data-role="draggable" style="display: none">
+
+   
+    <div class="k-edit-buttons k-state-default not-default-button">
+        <a class="k-button k-button-icontext k-grid-update" id="UpdateButton" href="#"><span class="k-icon k-update"></span>Update</a>
+        <a class="k-button k-button-icontext k-grid-cancel" id="CancelButton" href="#"><span class="k-icon k-cancel"></span>Cancel</a>
+    </div>
+
+</div>
+
+<script>
+    
+    function SetWrittenExaminationMark() {
+        debugger;
+        var setWrittenExaminationMarkWindow = $("#SetWrittenExaminationMarkDiv");
+        
+        setWrittenExaminationMarkWindow.kendoWindow({
+            height: 150,
+            modal: true,
+            resizable: false,
+            title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.SetWrittenExaminationMark)",
+            open: function () {
+                setWrittenExaminationMarkWindow.data("kendoWindow").center();
+            }
+        });
+        var template = kendo.template($("#fileTemplate").html());
+        setWrittenExaminationMarkWindow.append(template);
+        
+        setWrittenExaminationMarkWindow.data("kendoWindow").open();
+       
+
+
+        $("[name='files']").kendoUpload({
+            async: {
+                saveUrl: "Home/SaveExcelFile",
+                autoUpload: true
+            },
+            multiple: false
+        });
+
+        $("#UpdateButton").off('click').on('click', function () {
+
+            $.ajax({
+                url: '@Url.Action("SaveApplicantsWrittenDeservedMarks", "Home")',
+                type: "POST",
+                async: false,
+                data: JSON.stringify({
+                    advertisementId: window.requestInformation.NavigationInfo.Previous[0].RowId,
+                    recruitmentInformationId: window.requestInformation.NavigationInfo.Previous[1].RowId
+                }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        var grid = $("#" + gridModel.Name).data("kendoGrid");
+                        grid.refresh();
+                    } else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+
+            CloseSetWrittenExaminationMarkWindow();
+
+        });
+
+        $("#CancelButton").click(function () {
+            CloseSetWrittenExaminationMarkWindow();
+        });
+
+    }
+
+    function CloseSetWrittenExaminationMarkWindow() {
+        var setWrittenExaminationMarkWindow1 = $("#SetWrittenExaminationMarkDiv");
+        setWrittenExaminationMarkWindow1.data("kendoWindow").close();
+    }
+    
+
+
+
+
+
+</script>
+<script id="fileTemplate" type="text/x-kendo-template">
+    <div class="k-edit-form-container upload-window">
+        <label for="FileUpload1">Select a File to Upload (or drag and drop files to the below rectangle)</label>
+        <input type="file"  id="FileUpload1" name="files" />
+        @*<input type="file" id="FileUpload1" name="FileUpload1" />*@
+    </div>
+</script>

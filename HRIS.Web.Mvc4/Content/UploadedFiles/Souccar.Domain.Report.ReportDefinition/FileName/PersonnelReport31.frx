@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/08/2015 14:34:31" ReportInfo.Modified="04/19/2016 15:25:04" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {         
+      if(CheckBox1.Checked==false)
+      { 
+        ComboBox1.Enabled=false;
+        ComboBox1.AutoFill=false;
+        ComboBox1.AutoFilter=false;
+      }
+      else 
+      { 
+        ComboBox1.Enabled=true;         
+        ComboBox1.AutoFill=true;
+        ComboBox1.AutoFilter=true;
+      }       
+    }
+
+    private void CheckBox2_Click(object sender, EventArgs e)
+    {
+      if(CheckBox2.Checked==false)
+      { 
+        ComboBox2.Enabled=false;
+        ComboBox2.AutoFill=false;
+        ComboBox2.AutoFilter=false;
+      }
+      else 
+      {  
+        ComboBox2.Enabled=true;         
+        ComboBox2.AutoFill=true;
+        ComboBox2.AutoFilter=true;
+      }       
+    }
+
+    private void CheckBox3_Click(object sender, EventArgs e)
+    {
+      if(CheckBox3.Checked==false)
+      { 
+        ComboBox3.Enabled=false;
+        ComboBox3.AutoFill=false;
+        ComboBox3.AutoFilter=false;
+      }
+      else 
+      {  
+        ComboBox3.Enabled=true;         
+        ComboBox3.AutoFill=true;
+        ComboBox3.AutoFilter=true;
+      }       
+    }
+
+    private void CheckBox4_Click(object sender, EventArgs e)
+    {
+      if(CheckBox4.Checked==false)
+      { 
+        ComboBox4.Enabled=false;
+        ComboBox4.AutoFill=false;
+        ComboBox4.AutoFilter=false;
+      }
+      else 
+      {  
+        ComboBox4.Enabled=true;         
+        ComboBox4.AutoFill=true;
+        ComboBox4.AutoFilter=true;
+      }       
+    }
+
+    private void CheckBox5_Click(object sender, EventArgs e)
+    {
+      if(CheckBox5.Checked==false)
+      { 
+        ComboBox5.Enabled=false;
+        ComboBox5.AutoFill=false;
+        ComboBox5.AutoFilter=false;
+      }
+      else 
+      {  
+        ComboBox5.Enabled=true;         
+        ComboBox5.AutoFill=true;
+        ComboBox5.AutoFilter=true;
+      }       
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      ComboBox1.SelectedIndex=-1;
+      ComboBox2.SelectedIndex=-1;
+      ComboBox3.SelectedIndex=-1;
+      ComboBox4.SelectedIndex=-1;
+      ComboBox5.SelectedIndex=-1;
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW+SlWQYiJrY1tE4GntExzJvisKJgEDn89+JCmID8gF+f/58ALrFNBjmAe7T6TqLkNeJxz2981zpKJIYzSZIQcGpcYhJw3x9fioNx4pZUlsEdIOHOoAU2rINONwo+srmEGw==">
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT     dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, dbo.Employee.FirstName, dbo.Employee.LastName, &#13;&#10;                      dbo.Employee.Code, dbo.Employee.FatherName, dbo.EmployeeCard.CardStatus, dbo.JobDescription.Name, dbo.LanguageName.Name AS LanguageName, &#13;&#10;                      dbo.LevelType.Name AS Speaking, LevelType_1.Name AS Reading, LevelType_2.Name AS Writing, LevelType_3.Name AS Listening, dbo.LanguageName.Id AS LanguageId, &#13;&#10;                      dbo.LevelType.Id AS SpeakingId, LevelType_1.Id AS ReadingId, LevelType_2.Id AS WritingId, LevelType_3.Id AS ListeningId, dbo.Employee.Id&#13;&#10;FROM         dbo.Employee INNER JOIN&#13;&#10;                      dbo.Language ON dbo.Employee.Id = dbo.Language.Employee_id INNER JOIN&#13;&#10;                      dbo.LanguageName ON dbo.Language.LanguageName_id = dbo.LanguageName.Id INNER JOIN&#13;&#10;                      dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id INNER JOIN&#13;&#10;                      dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id INNER JOIN&#13;&#10;                      dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND &#13;&#10;                      dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id INNER JOIN&#13;&#10;                      dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id INNER JOIN&#13;&#10;                      dbo.LevelType ON dbo.Language.Speaking_id = dbo.LevelType.Id INNER JOIN&#13;&#10;                      dbo.LevelType AS LevelType_1 ON dbo.Language.Reading_id = LevelType_1.Id INNER JOIN&#13;&#10;                      dbo.LevelType AS LevelType_2 ON dbo.Language.Writing_id = LevelType_2.Id INNER JOIN&#13;&#10;                      dbo.LevelType AS LevelType_3 ON dbo.Language.Listening_id = LevelType_3.Id&#13;&#10;WHERE     (dbo.EmployeeCard.CardStatus = 1 AND&#13;&#10;			Employee.IsVertualDeleted = 0 AND&#13;&#10;			Language.IsVertualDeleted = 0 AND&#13;&#10;			LanguageName.IsVertualDeleted = 0 AND&#13;&#10;			EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;			AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;			Position.IsVertualDeleted = 0 AND&#13;&#10;			JobDescription.IsVertualDeleted = 0 AND&#13;&#10;			LevelType.IsVertualDeleted = 0 AND&#13;&#10;			LevelType_1.IsVertualDeleted = 0 AND&#13;&#10;			LevelType_2.IsVertualDeleted = 0 AND&#13;&#10;			LevelType_3.IsVertualDeleted = 0)">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="CardStatus" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="LanguageName" DataType="System.String"/>
+        <Column Name="Speaking" DataType="System.String"/>
+        <Column Name="Reading" DataType="System.String"/>
+        <Column Name="Writing" DataType="System.String"/>
+        <Column Name="Listening" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="LanguageId" DataType="System.Int32"/>
+        <Column Name="SpeakingId" DataType="System.Int32"/>
+        <Column Name="ReadingId" DataType="System.Int32"/>
+        <Column Name="WritingId" DataType="System.Int32"/>
+        <Column Name="ListeningId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Employee" DataType="System.Int32" Enabled="true" TableName="Employee" SelectCommand="SELECT E.Id, E.IsVertualDeleted, E.FirstName, E.LastName, E.FatherName, E.MotherName, E.FirstNameL2, E.LastNameL2, E.FatherNameL2, E.MotherNameL2, E.PlaceOfBirthL2, E.Gender, E.MaritalStatus, E.DateOfBirth, E.CivilRecordPlaceAndNumber, E.PersonalRecordSource, E.NationalityIssue, E.OtherNationalityIssue, E.BloodType, E.Religion, E.MilitaryStatus, E.Status, E.Address, E.Phone, E.Mobile, E.Email, E.POBox, E.WebSite, E.Twitter, E.Facebook, E.IdentificationNo, E.Code, E.IsRetired, E.PhotoId, E.EmploymentStatus, E.SalaryStatus, E.DisabilityExist, E.PlaceOfBirth_id, E.CountryOfBirth_id, E.Nationality_id, E.OtherNationality_id, E.DisabilityType_id, E.RecruitmentInformation_id, E.OtherNationalityExist&#13;&#10;FROM &quot;Employee&quot; E&#13;&#10;WHERE E.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="MotherName" DataType="System.String"/>
+        <Column Name="FirstNameL2" DataType="System.String"/>
+        <Column Name="LastNameL2" DataType="System.String"/>
+        <Column Name="FatherNameL2" DataType="System.String"/>
+        <Column Name="MotherNameL2" DataType="System.String"/>
+        <Column Name="PlaceOfBirthL2" DataType="System.String"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="CivilRecordPlaceAndNumber" DataType="System.String"/>
+        <Column Name="PersonalRecordSource" DataType="System.String"/>
+        <Column Name="NationalityIssue" DataType="System.DateTime"/>
+        <Column Name="OtherNationalityIssue" DataType="System.DateTime"/>
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="Religion" DataType="System.Int32"/>
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="Status" DataType="System.Int32"/>
+        <Column Name="Address" DataType="System.String"/>
+        <Column Name="Phone" DataType="System.String"/>
+        <Column Name="Mobile" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="POBox" DataType="System.String"/>
+        <Column Name="WebSite" DataType="System.String"/>
+        <Column Name="Twitter" DataType="System.String"/>
+        <Column Name="Facebook" DataType="System.String"/>
+        <Column Name="IdentificationNo" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsRetired" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PhotoId" DataType="System.String"/>
+        <Column Name="EmploymentStatus" DataType="System.Int32"/>
+        <Column Name="SalaryStatus" DataType="System.Int32"/>
+        <Column Name="DisabilityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="CountryOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="OtherNationality_id" DataType="System.Int32"/>
+        <Column Name="DisabilityType_id" DataType="System.Int32"/>
+        <Column Name="RecruitmentInformation_id" DataType="System.Int32"/>
+        <Column Name="OtherNationalityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="SpeakingTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Id,Name Speaking FROM LevelType WHERE IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Speaking" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table2" Alias="ReadingTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Id,Name Reading FROM LevelType WHERE IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Reading" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table3" Alias="WritingTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Id,Name Writing FROM LevelType WHERE IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Writing" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table4" Alias="ListeningTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Id,Name Listening FROM LevelType WHERE IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Listening" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table5" Alias="LanguageNameTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Id,Name  FROM LanguageName WHERE IsVertualDeleted = 0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Employee_Table" ParentDataSource="Employee" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Id" Enabled="true"/>
+    <Relation Name="Table4_Table" ParentDataSource="Table4" ChildDataSource="Table" ParentColumns="Id" ChildColumns="ListeningId" Enabled="true"/>
+    <Relation Name="Table2_Table" ParentDataSource="Table2" ChildDataSource="Table" ParentColumns="Id" ChildColumns="ReadingId" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="Id" ChildColumns="SpeakingId" Enabled="true"/>
+    <Relation Name="Table3_Table" ParentDataSource="Table3" ChildDataSource="Table" ParentColumns="Id" ChildColumns="WritingId" Enabled="true"/>
+    <Relation Name="Table5_Table" ParentDataSource="Table5" ChildDataSource="Table" ParentColumns="Id" ChildColumns="LanguageId" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="179.55">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير الموظفين حسب بيانات اللغة" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d"/>
+      <TextObject Name="Text16" Top="75.6" Width="567" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[ComboBox1.Text]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text15" Left="567" Top="75.6" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اللغة المختارة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text18" Top="94.5" Width="567" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[ComboBox2.Text]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text19" Left="567" Top="94.5" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى القراءة المختار" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text20" Top="113.4" Width="567" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[ComboBox3.Text]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text21" Left="567" Top="113.4" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى الكتابة المختار" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text22" Top="132.3" Width="567" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[ComboBox4.Text]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text23" Left="567" Top="132.3" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى المحادثة المختار" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text25" Left="567" Top="151.2" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى الاستماع المختار" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text24" Top="151.2" Width="567" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[ComboBox5.Text]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="183.55" Width="718.2" Height="38.8" DataSource="Employee">
+      <TextObject Name="Text8" Top="19.9" Width="292.95" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.Name]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="567" Top="19.9" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="292.95" Top="19.9" Width="274.05" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.FullName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Width="292.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="292.95" Width="274.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الثلاثي" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="567" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرمز" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="249.8" Width="718.2" Height="19.55" DataSource="Table">
+        <TextObject Name="Text12" Left="425.25" Top="0.65" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.Reading]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text32" Left="292.95" Top="0.65" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.Writing]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text10" Left="567" Top="0.65" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.LanguageName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text31" Left="699.3" Top="0.65" Width="18.9" Height="18.9" Border.Lines="All" Border.Color="Silver" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text33" Top="0.65" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.Listening]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text34" Left="151.2" Top="0.65" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Table.Speaking]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="226.35" Width="718.2" Height="19.45">
+          <TextObject Name="Text35" Left="151.2" Top="0.55" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى المحادثة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text13" Left="425.25" Top="0.1" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى القراءة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text11" Left="567" Top="0.1" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اللغة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text36" Left="292.95" Top="0.1" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى الكتابة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text37" Top="0.55" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مستوى الاستماع" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Left="699.3" Top="0.1" Width="18.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter2" Top="273.35" Width="718.2" Height="18.9">
+        <TextObject Name="Text17" Left="567" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد العناصر ضمن التقرير" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text14" Width="567" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Total]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="296.25" Width="718.2" Height="37.8"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="322" Height="290" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="90" Top="183" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="248" Top="40" Width="57" Height="13" TabIndex="2" Text="اختيار اللغة"/>
+    <LabelControl Name="Label2" Left="228" Top="72" Width="76" Height="13" TabIndex="3" Text="مستوى القراءة"/>
+    <LabelControl Name="Label3" Left="228" Top="100" Width="75" Height="13" TabIndex="4" Text="مستوى الكتابة"/>
+    <LabelControl Name="Label4" Left="216" Top="128" Width="87" Height="13" TabIndex="5" Text="مستوى المحادثة "/>
+    <LabelControl Name="Label5" Left="212" Top="156" Width="92" Height="13" TabIndex="6" Text="مستوى الاستماع "/>
+    <ComboBoxControl Name="ComboBox1" Left="44" Top="36" Enabled="false" RightToLeft="Yes" TabIndex="7" DataColumn="Table.LanguageNameTable.Name" DropDownStyle="DropDownList" ItemHeight="13"/>
+    <ComboBoxControl Name="ComboBox2" Left="44" Top="68" Enabled="false" RightToLeft="Yes" TabIndex="7" DataColumn="Table.ReadingTable.Reading" DropDownStyle="DropDownList" ItemHeight="13"/>
+    <ComboBoxControl Name="ComboBox3" Left="44" Top="96" Enabled="false" RightToLeft="Yes" TabIndex="7" DataColumn="Table.WritingTable.Writing" DropDownStyle="DropDownList" ItemHeight="13"/>
+    <ComboBoxControl Name="ComboBox4" Left="44" Top="124" Enabled="false" RightToLeft="Yes" TabIndex="7" DataColumn="Table.SpeakingTable.Speaking" DropDownStyle="DropDownList" ItemHeight="13"/>
+    <ComboBoxControl Name="ComboBox5" Left="44" Top="152" Enabled="false" RightToLeft="Yes" TabIndex="7" DataColumn="Table.ListeningTable.Listening" DropDownStyle="DropDownList" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="180" Top="40" Width="15" Height="14" TabIndex="8" ClickEvent="CheckBox1_Click"/>
+    <CheckBoxControl Name="CheckBox2" Left="180" Top="72" Width="15" Height="14" TabIndex="8" ClickEvent="CheckBox2_Click"/>
+    <CheckBoxControl Name="CheckBox3" Left="180" Top="100" Width="15" Height="14" TabIndex="8" ClickEvent="CheckBox3_Click"/>
+    <CheckBoxControl Name="CheckBox4" Left="180" Top="128" Width="15" Height="14" TabIndex="8" ClickEvent="CheckBox4_Click"/>
+    <CheckBoxControl Name="CheckBox5" Left="180" Top="156" Width="15" Height="14" TabIndex="8" ClickEvent="CheckBox5_Click"/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,284 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using Souccar.Domain.Workflow.Enums
+@using  Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Core.Extensions
+@using Souccar.Domain.Extensions
+<div class="objective-approval-container">
+    <div class="objective-Tracking-employees-grid"></div>
+    <div class="objective-Tracking-container"></div>
+</div>
+
+
+<script type="text/javascript">
+    showTrackingObjectiveGrid();
+    function showTrackingObjectiveGrid() {
+        $.ajax({
+            url: '@Url.Action("GetObjectiveForTracking", "AppraisalService", new { area = "Objectives" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                generateGridObjectivesForTracking(data);
+                console.log('success');
+                window.ObjectivesForTracking = data;
+            }
+        });
+    }
+
+    function generateGridObjectivesForTracking(data) {
+        var gridContainer = $(".objective-Tracking-employees-grid");
+        var template = kendo.template($("#objective-Tracking-grid-template").html());
+        gridContainer.html(template(data));
+    }
+
+    function trackingObjectiveAction(objectiveId) {
+        var gridContainer = $(".objective-Tracking-employees-grid");
+        var trackingContainer = $(".objective-Tracking-container");
+        gridContainer.html('');
+        trackingContainer.html('');
+
+        var template = kendo.template($("#objective-Tracking-template").html());
+        var data = Souccar.getItemByPropName(window.ObjectivesForTracking.Objectives, 'ObjectiveId', objectiveId);
+        console.log(data);
+        trackingContainer.html(template(data));
+
+        function saveTraking(saveUrl) {
+            $.ajax({
+                url: "@Url.Action("AcceptApproval", "ApprovalService", new { area = "Objectives" })",
+                type: "POST",
+                data: JSON.stringify({ workflowId: workflowId, note: $("#NewStepDescription").val() }),
+                contentType: 'application/json',
+                success: function (e) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-info" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                    $(".objective-approval-workflow").html("");
+                    showObjectiveGrid();
+                }
+            });
+        }
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function trackingActionPlanAction(actionPlanId, objectiveId) {
+        console.log(objectiveId);
+        var obj = Souccar.getItemByPropName(window.ObjectivesForTracking.Objectives, 'ObjectiveId', objectiveId);
+        var actionPlan = Souccar.getItemByPropName(obj.ActionPlans, 'ActionPlanId', actionPlanId);
+
+        var title = "@GlobalResource.Tracking";
+        var buttons = [
+                 { Name: "action_plan_update", CssClass: "update primary-action", Title: "@GlobalResource.Save" },
+                 { Name: "action_plan_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "action-plan-container";
+        var bodyHTML = "<div id='edit-action-plan-body' class='fix-custom-popup'></div>";
+        var div = $('<div></div>');
+        createAndOpenCustomWindow(div, bodyHTML, containerId, title, buttons, false);
+
+        var  actionPlanBind = Souccar.clone(actionPlan, kendo.observable());
+
+        window.ActionPlanStatus = [];
+        Souccar.ajax(window.applicationpath + "Objectives/AppraisalService/GetLestOfActionPlanStatus", null, function (data) { window.ActionPlanStatus = data.Data; }, failedMessage);
+
+        var tempdata = [
+            { Name: "ActualStartDate", Title: "@GlobalResource.ActuallyStartDate", Type: "Date", IsRequired: true },
+            { Name: "ActualEndDate", Title: "@GlobalResource.ActuallyEndDate", Type: "Date" },
+            { Name: "PercentageOfCompletion", Title: "@GlobalResource.PercentageOfCompletion", Type: "Number" ,IsRequired: true },
+            @*{ Name: "Status", Title: "@GlobalResource.Status", Type: "Enum", TypeName: "HRIS.Domain.Objectives.Enums.ActionPlanStatus", IsRequired: true },*@
+            { Name: "Status", Title: "@GlobalResource.Status", Type: "Dropdown", DataSource: "ActionPlanStatus", Creatable: false, IsRequired: true },
+        ];
+        createCustomEditForm($("#edit-action-plan-body"), { Fields: tempdata, Key: "action_plan" }, actionPlanBind);
+
+
+        $("#action_plan_cancel").off('click').on('click', function () {
+            div.data("kendo-window").close();
+        });
+        $("#action_plan_update").off('click').on('click', function () {
+
+            var actualStartDate = $("[name='ActualStartDate']").data("kendoDatePicker").value();
+            var actualEndDate = $("[name='ActualEndDate']").data("kendoDatePicker").value();
+            var percentageOfCompletion = $("[name='PercentageOfCompletion']").val();
+
+            if (actualStartDate == null || percentageOfCompletion == 0 ) {
+                requiredMessage();
+                return;
+            }
+            if (actualStartDate >= actualEndDate && actualEndDate != null) {
+                invalidDateMessage();
+                return;
+            }
+
+            actionPlanBind.ActualStartDate = $("#ActualStartDate_action_plan").data('kendoDatePicker').value();
+            actionPlanBind.ActualEndDate = $("#ActualEndDate_action_plan").data('kendoDatePicker').value();
+            console.log(actionPlanBind.ActualStartDate);
+            console.log(actionPlanBind.ActualEndDate);
+            $.ajax({
+                url: "@Url.Action("SaveTraking", "AppraisalService", new { area = "Objectives" })",
+                type: "POST",
+                async: false,
+                data: JSON.stringify(actionPlanBind),
+                contentType: 'application/json',
+                success: function (e) {
+                    if (e.Success) {
+                        Souccar.clone(actionPlanBind, actionPlan);
+                        actionPlan.StatusText = $("#Status_action_plan").data("kendoDropDownList").text();
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-info" }];
+                        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                        trackingObjectiveAction(actionPlan.ObjectiveId);
+                        div.data("kendo-window").close();
+                        onclickService("TrackingObjectiveService", "@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.TrackingService)", "Objectives/Home", "TrackingService");
+                    } else {
+                        for (var i = 0; i < e.Errors.length; i++) {
+                            var messageText = e.Errors[i].Message;
+                            var prop = e.Errors[i].Property;
+                            var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                            if (!$('[name="' + prop + '"]').next().hasClass("k-widget k-tooltip k-tooltip-validation k-invalid-msg")) {
+                                $('[name="' + prop + '"]').after(t);
+                            } else {
+                                $('[name="' + prop + '"]').next().html("<span class='k-icon k-warning'></span>" + messageText);
+                            }
+                        }
+                    }
+                }
+            });
+
+
+        });
+    }
+    function onclickService(serviceId, title, controllerName, actionName) {
+        var moduleName = requestInformation.NavigationInfo.Module.Name;
+        $.ajax({
+            url: window.applicationpath + "Account/checkServiceAuthentication",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ serviceId: serviceId, moduleName: moduleName }),
+            success: function (data) {
+                if (data.IsSuccessed) {
+                    window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Service";
+                    window.requestInformation.NavigationInfo.Previous = [];
+                    window.requestInformation.NavigationInfo.Next = [];
+                    window.requestInformation.NavigationInfo.Previous[0] = { Name: serviceId, Title: title, TypeName: serviceId };
+                    if (controllerName == "" && actionName == "") {
+                        changeLocation();
+                    } else {
+                        $("#ribbonContainer").html("");
+                        $("#breadcrumbContainer").html("").append(createBreadcrumb());
+                        $.ajax({
+                            url: window.applicationpath + controllerName + "/" + actionName,
+                            type: "POST",
+                            contentType: 'application/json',
+                            data: JSON.stringify(window.requestInformation),
+                            success: function (data) {
+                                $("#dynamic_content").html("<div class='service-container service-" + serviceId + "'></div>");
+                                $(".service-container").html(data);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function invalidDateMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.MsgActualStartDateMustBeLessThanActualEndDate", "k-icon w-b-error", commands);
+    }
+
+    function showObjectiveInfo(id) {
+        openViewWindow("HRIS.Domain.Objectives.RootEntities.Objective", "@GlobalResource.ObjectiveInformation", id);
+    }
+</script>
+
+
+<script id="objective-Tracking-grid-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.ObjectiveName)</th>
+                <th>@ObjectiveLocalizationHelper.GetResource(ObjectiveLocalizationHelper.ObjectiveCode)</th>
+                <th>@GlobalResource.Owner</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i<data.Objectives.length;i++){# #var obj=data.Objectives[i];#
+                <tr>
+                    <td>#=obj.ObjectiveName#</td>
+                    <td>#=obj.ObjectiveCode#</td>
+                    <td>#=obj.EmployeeFullName#</td>
+
+                    <td><button class="k-button primary-action" onclick="trackingObjectiveAction('#=obj.ObjectiveId#')">@GlobalResource.Tracking</button></td>
+                </tr>
+                #}#
+        </tbody>
+    </table>
+
+
+</script>
+<script id="objective-Tracking-template" type="text/x-kendo-template">
+    <fieldset class="">
+        <legend>@GlobalResource.Information</legend>
+        <div>
+            <span class="workflow-key">@GlobalResource.ObjectiveInformation</span>
+            <span class="control-FullName">
+                #=ObjectiveName#
+            </span>
+            <a href="\#" onclick="showObjectiveInfo('#=ObjectiveId#')">
+                <span class="k-icon k-i-employee-info phase-employee-info-but"></span>
+            </a>
+        </div>
+        <span>
+            @GlobalResource.ActionPlan
+        </span>
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2">@GlobalResource.Owner</th>
+                    <th rowspan="2">@GlobalResource.Description</th>
+                    <th rowspan="2">@GlobalResource.ExpectedResult</th>
+                    <th colspan="2">@GlobalResource.Planning</th>
+                    <th colspan="2">@GlobalResource.Actually</th>
+                    <th rowspan="2">@GlobalResource.Status</th>
+                    <th rowspan="2">@GlobalResource.PercentageOfCompletion</th>
+                    <th rowspan="2"></th>
+                </tr>
+                <tr>
+                    <th>@GlobalResource.StartDate</th>
+                    <th>@GlobalResource.EndDate</th>
+                    <th>@GlobalResource.StartDate</th>
+                    <th>@GlobalResource.EndDate</th>
+                </tr>
+            </thead>
+            <tbody>
+                #console.log(ActionPlans.length);#
+                #console.log(ActionPlans);#
+                #for(var i=0;i< data.ActionPlans.length;i++){#
+                #var actionPlan=data.ActionPlans[i];#
+                        
+
+    <tr>
+        <td>#=actionPlan.Owner#</td>
+        <td>#=actionPlan.Description#</td>
+        <td>#=actionPlan.ExpectedResult#</td>
+        <td>#=ToStringForDate(actionPlan.PlannedStartDate)#</td>
+        <td>#=ToStringForDate(actionPlan.PlannedEndDate)#</td>
+        <td>#if(actionPlan.ActualStartDate!=null) {# #=ToStringForDate(actionPlan.ActualStartDate)# #}else{""}#</td>
+        <td>#if(actionPlan.ActualEndDate!=null) {# #=ToStringForDate(actionPlan.ActualEndDate)# #}else{""}#</td>
+        <td>#=actionPlan.StatusText#</td>
+        <td>#=actionPlan.PercentageOfCompletion#</td>
+        <td><button class="k-button primary-action" onclick="trackingActionPlanAction('#=actionPlan.ActionPlanId#','#=actionPlan.ObjectiveId#')">@GlobalResource.Edit</button></td>
+    </tr>
+    #}#
+</tbody>
+        </table>
+    </fieldset>
+</script>
+
+
+

@@ -1,0 +1,412 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+<div class="k-content">
+    <div class="merge_2_nodes">
+        @*  <table style="width: 100%;">
+        <tr>
+            <td style="width: 50%;">
+                <button class="k-button" id="expandAllLeftNodes">Expand</button>
+                <button class="k-button" id="collapseAllLeftNodes">Collapse</button>
+                <br/><br/>
+                Please select first node..
+                <br/><br/>
+                <div id="treeview-left"></div>
+            </td>
+            <td style="width: 50%;">
+                <button class="k-button" id="expandAllRightNodes">Expand</button>
+                <button class="k-button" id="collapseAllRightNodes">Collapse</button>    
+                <br/><br/>
+                Please select second node..
+                <br/><br/>
+                <div id="treeview-right"></div>
+            </td>
+        </tr>
+    </table>*@
+        <fieldset class="expandable-collapseable">
+            <legend>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MergeNodesCaption) </legend>
+
+            <div class="first_tree_region">
+                <!-- first tree region -->
+                <div class="top_btns">
+                    <span class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.FirstNodeCaption)</span>
+                    <div class="expand_collapse">
+                        <a href="#" id="expandAllLeftNodes"><span class="expand_icon"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ExpandCaption)</a> /
+                        <a href="#" id="collapseAllLeftNodes"><span class="collapse_icon"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.CollapseCaption)</a>
+                    </div>
+                </div>
+
+
+
+
+                <div id="treeview-left" class="tree"></div>
+                <!-- first tree -->
+            </div>
+            <!-- end of first tree region-->
+
+
+
+
+
+
+            <div class="second_tree_region">
+                <!-- second tree region -->
+                <div class="top_btns">
+                    <span class="tree_label">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.SecondNodeCaption)</span>
+                    <div class="expand_collapse">
+                        <a href="#" id="expandAllRightNodes"><span class="expand_icon"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ExpandCaption)</a> /
+                        <a href="#" id="collapseAllRightNodes"><span class="collapse_icon"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.CollapseCaption)</a>
+                    </div>
+                </div>
+                <!-- end of holder -->
+
+
+
+                <div id="treeview-right" class="tree"></div>
+                <!-- second tree -->
+            </div>
+            <!-- end of second tree region -->
+
+            <div class="merge_btn k-edit-buttons k-state-default not-default-button">
+                <a class="k-button k-button-icontext" onclick="mergeTwoNodes()">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MergeCaption)</a>
+            </div>
+        </fieldset>
+
+
+    </div>
+    <!-- end of merge_2_nodes div -->
+
+
+
+</div>
+
+<div id="MergeTwoNodesWindow" style="display: none">
+    <div class="k-edit-form-container">
+        <div>
+            <div class="merge_2_nodes_label">
+                <label>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ParentOfTheNewNodeCaption)</label>
+            </div>
+            <div id="treeview" class="tree"></div>
+            <div class="controls_container">
+                <div class="k-edit-label">
+                    <label for="Name">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeNameCaption)</label>
+                </div>
+                <div data-container-for="Name" class="k-edit-field">
+                    <input id="Name" name="Name" type="text" class="k-input k-textbox" data-bind="value:Name">
+                </div>
+                <div class="k-edit-label">
+                    <label for="Code">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeCodeCaption)</label>
+                </div>
+                <div data-container-for="Code" class="k-edit-field">
+                    <input id="Code" name="Code" type="text" class="k-input k-textbox" data-bind="value:Code">
+                </div>
+
+                <div class="k-edit-label">
+                    <label for="Type">@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeTypeCaption)</label>
+                </div>
+                <div data-container-for="Type" class="k-edit-field">
+                    <input id="Type" name="Type"
+                           data-role="dropdownlist" data-text-field="Name" data-source="dataSource" data-value-primitive="true" data-value-field="Id" data-bind="value:Type" />
+                </div>
+            </div><!-- end of controls_container -->
+        </div>
+    </div>
+    <div class="k-edit-buttons k-state-default not-default-button">
+        <a class="k-button k-button-icontext k-grid-update" id="MergerTwoNodesButton" href="#"><span class="k-icon k-update"></span>@GlobalResource.Save</a>
+        <a class="k-button k-button-icontext k-grid-cancel" id="CancelMergerTwoNodesButton" href="#"><span class="k-icon k-cancel"></span>@GlobalResource.Cancel</a>
+    </div>
+</div>
+
+<script>
+
+    var dataSource = {
+        transport: {
+            read: {
+                url: "@Url.Action("ReadToList", "Reference", new { typeName = "HRIS.Domain.OrganizationChart.Configurations.NodeType", area = "" })"
+            }
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+
+
+    var viewModel = kendo.observable();
+    kendo.init($("#MergeTwoNodesWindow"));
+
+    $("#treeview").kendoTreeView({
+        dragAndDrop: false,
+        dataSource: getTreeViewDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: true,
+        change: function (e) {
+            var treeview = $("#treeview").data("kendoTreeView");
+            var selectedNode = treeview.select();
+            var uid = selectedNode.data("uid");
+            viewModel.Parent = treeview.dataSource.getByUid(uid).Id;
+        }
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+
+    $("#treeview-left").kendoTreeView({
+        dragAndDrop: false,
+        dataSource: getTreeViewDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: true
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview-left").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+
+    $("#treeview-right").kendoTreeView({
+        dragAndDrop: false,
+        dataSource: getTreeViewDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: true
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview-right").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+
+
+    function getTreeViewDataSource() {
+        var result = {};
+        result.transport = {
+            read: {
+                url: '@Url.Action("GetTreeNodes", "Node")',
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                //children: "Items",
+                hasChildren: "HasChildren"
+            }
+        };
+        return result;
+    }
+
+
+    function rebuildTrees() {
+        var tree = $("#treeview-left").data("kendoTreeView");
+        tree.dataSource.read();
+        tree = $("#treeview-right").data("kendoTreeView");
+        tree.dataSource.read();
+    }
+
+    function mergeTwoNodes() {
+
+        var leftTreeview = $("#treeview-left").data("kendoTreeView");
+        var leftSelectedNode = leftTreeview.select();
+        if (leftSelectedNode.length == 0) {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectFirstNode)", "k-icon w-b-error", commands);
+            return;
+        }
+        var leftUid = leftSelectedNode.data("uid");
+        var firstNodeId = leftTreeview.dataSource.getByUid(leftUid).Id;
+        //alert(leftNodeId);
+
+        var rightTreeview = $("#treeview-right").data("kendoTreeView");
+        var rightSelectedNode = rightTreeview.select();
+        if (rightSelectedNode.length == 0) {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectSecondNode)", "k-icon w-b-error", commands);
+            return;
+        }
+        var rightUid = rightSelectedNode.data("uid");
+        var secondNodeId = rightTreeview.dataSource.getByUid(rightUid).Id;
+        //alert(rightNodeId);
+
+        if (firstNodeId != secondNodeId) {
+
+            var rightTreeviewParent = rightTreeview.parent(rightTreeview.select());
+            var leftTreeviewParent = leftTreeview.parent(leftTreeview.select());
+            if (rightTreeviewParent.length == 0 || leftTreeviewParent.length == 0)
+            {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgYouCannotMergeParentNode)", "k-icon w-b-error", commands);
+                return;
+            }
+
+            viewModel.Parent = "";
+            var mergeTwoNodesWindow = $("#MergeTwoNodesWindow");
+            kendo.bind($("#MergeTwoNodesWindow"), viewModel);
+
+            mergeTwoNodesWindow.kendoWindow({
+                height: 450,
+                modal: true,
+                resizable: false,
+                title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MergeNodesCaption)",
+                open: function () {
+                    mergeTwoNodesWindow.data("kendoWindow").center();
+                }
+            });
+
+            mergeTwoNodesWindow.data("kendoWindow").open();
+
+            $("#MergerTwoNodesButton").off('click').on('click', function () {
+
+              
+
+                if (viewModel.Parent != "") {
+
+                    var treeview = $("#treeview").data("kendoTreeView");
+                    var selectedNode = treeview.select();
+                    if (selectedNode.length == 0) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectParent)", "k-icon w-b-error", commands);
+                        return;
+                    } else
+                    {
+                        var uid = selectedNode.data("uid");
+                        var nodeId = treeview.dataSource.getByUid(uid).Id;
+
+                        if(nodeId == firstNodeId)
+                        {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgYouCanNotSelectParentAsFirstNode)", "k-icon w-b-error", commands);
+                            return;
+                        }
+
+                        if (nodeId == secondNodeId) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgYouCanNotSelectParentAsSecondNode)", "k-icon w-b-error", commands);
+                            return;
+                        }
+                    }
+                    
+
+
+                    viewModel.Name = $("#Name").val();
+                    $("#Name").val("");
+                    viewModel.Code = $("#Code").val();
+                    $("#Code").val("");
+                    viewModel.Type = parseInt($("#Type").val());
+
+
+                    //التأكد من ان العقدة الاب المختارة ترتيبها اقل من ترتيب نوع العقدة المختارة
+                    var nodeuid = selectedNode.data("uid");
+                    var newParentNodeID = treeview.dataSource.getByUid(nodeuid).Id;
+                    //console.log(newParentNodeID);
+
+                    var newNodeTypeID = viewModel.Type = parseInt($("#Type").val());
+                    //console.log(newNodeTypeID);
+
+                    $.ajax({
+                        url: '@Url.Action("checkParentTypeNode", "Node")',
+                        type: "POST",
+                        data: JSON.stringify({
+                            newParentNodeID: newParentNodeID,
+                            newNodeTypeID: newNodeTypeID
+                        }),
+
+                        contentType: 'application/json',
+                        success: function (data) {
+
+                            if (data.Success)
+                            {
+                                //save
+                                $.ajax({
+                                    url: '@Url.Action("MergeTwoNodes", "Node")',
+                                    type: "POST",
+                                    data: JSON.stringify({
+                                        model: viewModel,
+                                        firstNodeId: firstNodeId,
+                                        secondNodeId: secondNodeId
+                                    }),
+
+                                    contentType: 'application/json',
+                                    success: function (data) {
+                                        if (data.Success) {
+                                            CloseMergeTwoNodesWindow();
+                                            //alert(data.Msg);
+                                            rebuildTrees();
+                                        } else {
+                                            if (data.Errors != null) {
+                                                if (data.Errors.Exception != null) {
+                                                    CloseMergeTwoNodesWindow();
+                                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                                    ShowMessageBox("@GlobalResource.Error", data.Errors.Exception, "k-icon w-b-error", commands);
+                                                } else {
+                                                    for (var prop in data.Errors) {
+                                                        var messageText = data.Errors[prop];
+                                                        var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                                                        if (!$('[name="' + prop + '"]').next().hasClass("k-widget k-tooltip k-tooltip-validation k-invalid-msg")) {
+                                                            $('[name="' + prop + '"]').after(t);
+
+                                                        } else {
+                                                            $('[name="' + prop + '"]').next().html("<span class='k-icon k-warning'></span>" + messageText);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                });
+                                //
+                            }
+                            else {
+                                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                                return;
+                            }
+                        }
+                    });
+                    //
+
+
+
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectParent)", "k-icon w-b-error", commands);
+                    return;
+                }
+            });
+
+            $("#CancelMergerTwoNodesButton").click(function () {
+                CloseMergeTwoNodesWindow();
+            });
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectTwoDifferentNodes)", "k-icon w-b-error", commands);
+        }
+
+    }
+
+    function CloseMergeTwoNodesWindow() {
+        var mergeTwoNodesWindow = $("#MergeTwoNodesWindow");
+        mergeTwoNodesWindow.data("kendoWindow").close();
+    }
+
+    $("#expandAllLeftNodes").click(function () {
+        var treeview = $("#treeview-left").data("kendoTreeView");
+        treeview.expand(".k-item");
+    });
+
+    $("#collapseAllLeftNodes").click(function () {
+        var treeview = $("#treeview-left").data("kendoTreeView");
+        treeview.collapse(".k-item");
+    });
+
+    $("#expandAllRightNodes").click(function () {
+        var treeview = $("#treeview-right").data("kendoTreeView");
+        treeview.expand(".k-item");
+
+    });
+
+    $("#collapseAllRightNodes").click(function () {
+        var treeview = $("#treeview-right").data("kendoTreeView");
+        treeview.collapse(".k-item");
+    });
+
+</script>
+
+
+

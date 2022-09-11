@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE Modules [
+	<!ELEMENT Modules (Module*)>
+	<!ATTLIST Module
+		Id			ID		#REQUIRED
+		Controller	CDATA	#REQUIRED
+		Action		CDATA	#IMPLIED
+		RelativeUrl	CDATA	#REQUIRED
+		IconUrl		CDATA	#REQUIRED
+		TinyIconUrl	CDATA	#REQUIRED
+	>
+	<!ELEMENT Module (Languages, Dashboards, Aggregates, Indexes?, Services?)>
+	<!ELEMENT Languages (Language+)>
+	<!ATTLIST Language
+		LocaleId	IDREF	#REQUIRED
+		Title		CDATA	#REQUIRED
+		Description	CDATA	#IMPLIED
+	>
+	<!ELEMENT Dashboards (Dashboard+)>
+	<!ATTLIST Dashboard
+		Id			ID		#REQUIRED
+    Controller	CDATA	#REQUIRED
+		Action		CDATA	#IMPLIED
+		RelativeUrl	CDATA	#REQUIRED
+	>
+	<!ELEMENT Dashboard (Languages)>
+	<!ELEMENT Aggregates (Aggregate+)>
+	<!ATTLIST Aggregate
+		Id			ID		#REQUIRED
+		Controller	CDATA	#REQUIRED
+		Action		CDATA	#IMPLIED
+		RelativeUrl	CDATA	#REQUIRED
+	>
+	<!ELEMENT Aggregate (Languages, Details?)>
+	<!ELEMENT Details (Detail+)>
+	<!ATTLIST Detail
+		Id			ID		#REQUIRED
+		Controller	CDATA	#REQUIRED
+		Action		CDATA	#IMPLIED
+		RelativeUrl	CDATA	#REQUIRED
+		IconUrl		CDATA	#REQUIRED
+	>
+	<!ELEMENT Detail (Languages, Details?)>
+	<!ELEMENT Indexes (Index+)>
+	<!ATTLIST Index
+		IndexId	IDREF	#REQUIRED
+	>
+	<!ELEMENT Services (Service+)>
+	<!ATTLIST Service
+		Id			ID		#REQUIRED
+		RelativeUrl	CDATA	#REQUIRED
+	>
+	<!ELEMENT Service (Languages)>
+]>

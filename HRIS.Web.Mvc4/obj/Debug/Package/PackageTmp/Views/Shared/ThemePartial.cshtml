@@ -1,0 +1,18 @@
+﻿
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Factories
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Models
+@using Project.Web.Mvc4.Models.GridModel
+@using Project.Web.Mvc4.ProjectModels
+@using Souccar.Infrastructure.Core
+@using Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Services
+@using Souccar.Domain.Notification
+@{
+    var styleName = BuildNavigation.GetStyleName();
+    var themingName =Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+    var temp =Url.Content("~/Content/template/"+ styleName + "/theme-" + themingName + ".css");
+}
+<link href="@temp" rel="stylesheet" />
+@*<link href="~/Content/template/maestro-style/theme-formal.css" rel="stylesheet" />*@

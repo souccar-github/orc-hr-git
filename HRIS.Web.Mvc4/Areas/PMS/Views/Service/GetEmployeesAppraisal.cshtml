@@ -1,0 +1,473 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@Html.Partial("ApprisalTemplates/EmployeeAppraisalTemplate")
+@Html.Partial("ApprisalTemplates/DevelopmentTemplate")
+
+<div class="appraisal-employees-grid"></div>
+<div class="appraisal-workflow-container"></div>
+<div class="development-workflow-Window"></div>
+
+<script>
+
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var phaseId = window.localStorage.getItem('ServiceId');
+    viewAppraisalsGrid();
+    function viewAppraisalsGrid() {
+        $.ajax({
+            url: '@Url.Action("GetEmployeeForAppraisal", "Appraisal", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                createGridEmployeesForAppraisal(data);
+            }
+        });
+    }
+    var gridContainer = $(".appraisal-employees-grid");
+    var workflowContainer = $(".appraisal-workflow-container");
+    function createGridEmployeesForAppraisal(data) {
+        debugger;
+        var selectedEmployee = {};
+        var appraisalViewModel = {};
+        var approvalViewModel = {};
+        var template = kendo.template($("#appraisal-grid-template").html());
+        gridContainer.html(template(data));
+
+    }
+    if (notifyWorkflowId != null) {
+
+        $.ajax({
+            url: '@Url.Action("GetRow", "Appraisal", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ workflowId: notifyWorkflowId, PhaseWorkflowId: phaseId }),
+            success: function (data) {
+                appraisalAction(data.PendingTypeName, data.Id, data.PositionId, data.PhaseWorkflowId, data.WorkflowId);
+            }
+        });
+        notifyWorkflowId = null;
+        localStorage.clear();
+    }
+
+    function appraisalAction(PendingTypeName, empId, positionId, phaseWorkflowId, workflowId) {
+
+        gridContainer.html("");
+
+        if (PendingTypeName == "@WorkflowPendingType.NewStep.ToString()"
+            || PendingTypeName == "@WorkflowPendingType.PendingStep.ToString()") {
+
+            $.ajax({
+                url: '@Url.Action("GetAppraisalViewModel", "Appraisal", new { area = "PMS"})',
+                type: "POST",
+                data: JSON.stringify({ positionId: positionId, phaseWorkflowId: phaseWorkflowId }),
+                contentType: 'application/json',
+                success: function (e) {
+                    appraisalViewModel = e;
+                    createWorkflow(workflowContainer, workflowId, initAppraisal, acceptAppraisal, rejectAppraisal, penddingAppraisal);
+                }
+            });
+        } else {
+            $.ajax({
+                url: '@Url.Action("GetApprovalViewModel", "Appraisal", new { area = "PMS" })',
+                type: "POST",
+                data: JSON.stringify({ empId: empId, positionId: positionId, phaseWorkflowId: phaseWorkflowId }),
+                contentType: 'application/json',
+                success: function (e) {
+                    approvalViewModel = e;
+                    createWorkflow(workflowContainer, workflowId, initApproval, acceptApproval, rejectApproval, pendingApproval);
+                }
+            });
+        }
+
+
+        function acceptAppraisal() {
+            
+            updateAppraisalWeightAndRate(appraisalViewModel, $(".appraisal-workflow-container"));
+
+            var checkResult = checkAppraisalViewModelWeight(appraisalViewModel);
+            var checkRate = checkAppraisalViewModelRate(appraisalViewModel);
+
+            if (checkResult == null) {
+
+                if (checkRate == null) {
+                   openDevelopmentWindow(appraisalViewModel, workflowId, phaseWorkflowId);
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Error", checkRate, "k-icon w-b-error", commands);
+                }
+
+            }
+            else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                ShowMessageBox("@GlobalResource.Error", checkResult, "k-icon w-b-error", commands);
+            }
+        }
+
+        function penddingAppraisal() {
+            var acceptUrl = "@Url.Action("PeningAppraisal", "Appraisal", new { area = "PMS" })";
+            savePendingAppraisal(acceptUrl);
+        }
+
+        function rejectAppraisal() {
+            var rejectUrl = "@Url.Action("RejectAppraisal", "Appraisal", new { area = "PMS" })";
+            saveAcceptAppraisal(rejectUrl);
+        }
+        function saveAcceptAppraisal(saveUrl) {
+            $.ajax({
+                url: saveUrl,
+                type: "POST",
+                data: JSON.stringify({ appraisalViewModel: appraisalViewModel, phaseWorkflowId: phaseWorkflowId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                        ShowMessageBox("@GlobalResource.Success", data.Msg, "k-icon w-b-info", commands);
+                    }
+                    else {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                        ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                    workflowContainer.html("");
+                    viewAppraisalsGrid();
+                }
+            });
+        }
+        function savePendingAppraisal(saveUrl) {
+            updateAppraisalWeightAndRate(appraisalViewModel, workflowContainer);
+
+            //var checkRate = checkAppraisalViewModelRate(appraisalViewModel);
+
+
+
+                //if (checkRate == null) {
+
+                appraisalViewModel.Note = $("#NewStepDescription").val();
+                appraisalViewModel.WorkflowId = workflowId;
+                $.ajax({
+                    url: saveUrl,
+                    type: "POST",
+                    data: JSON.stringify({ appraisalViewModel: appraisalViewModel, phaseWorkflowId: phaseWorkflowId }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        var appraisalValue = data.AppraisalValue;
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+
+                        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.PendingAppraisal", "k-icon w-b-info", commands);
+                        workflowContainer.html("");
+                        viewAppraisalsGrid();
+                    }
+                });
+
+                @*} else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                ShowMessageBox("@GlobalResource.Error", checkRate, "k-icon w-b-error",
+
+commands);
+            }*@
+
+
+
+    }
+        function saveAppraisal(saveUrl) {
+            updateAppraisalWeightAndRate(appraisalViewModel, workflowContainer);
+            var checkResult = checkAppraisalViewModelWeight(appraisalViewModel);
+            //var checkRate = checkAppraisalViewModelRate(appraisalViewModel);
+
+            if (checkResult == null) {
+
+                //if (checkRate == null) {
+
+                appraisalViewModel.Note = $("#NewStepDescription").val();
+                appraisalViewModel.WorkflowId = workflowId;
+                $.ajax({
+                    url: saveUrl,
+                    type: "POST",
+                    data: JSON.stringify({ appraisalViewModel: appraisalViewModel, phaseWorkflowId: phaseWorkflowId }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        var appraisalValue = data.AppraisalValue;
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.AppraisalResult" + " : " + appraisalValue, "k-icon w-b-info", commands);
+                        workflowContainer.html("");
+                        viewAppraisalsGrid();
+                    }
+                });
+
+                @*} else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Error", checkRate, "k-icon w-b-error",
+
+commands);
+                }*@
+
+            }
+            else {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                ShowMessageBox("@GlobalResource.Error", checkResult, "k-icon w-b-error",
+
+commands);
+            }
+        }
+
+        function initAppraisal() {
+            generateAppraisalView(appraisalViewModel, $("#workflow_data"));
+        }
+
+        //approval
+        function acceptApproval() {
+            var acceptUrl = "@Url.Action("AcceptApproval", "Appraisal", new { area = "PMS" })";
+            saveApproval(acceptUrl);
+        }
+
+        function pendingApproval() {
+            var acceptUrl = "@Url.Action("PeningApproval", "Appraisal", new { area = "PMS" })";
+            saveApproval(acceptUrl);
+        }
+
+        function rejectApproval() {
+            var rejecttUrl = "@Url.Action("RejectApproval", "Appraisal", new { area = "PMS" })";
+            saveApproval(rejecttUrl);
+        }
+
+        function saveApproval(url) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ workflowId: workflowId, phaseWorkflowId: phaseWorkflowId, note: $("#NewStepDescription").val() }),
+                contentType: 'application/json',
+                success: function (e) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage",
+
+"k-icon w-b-info", commands);
+                    workflowContainer.html("");
+                    viewAppraisalsGrid();
+                }
+            });
+        }
+
+        function initApproval() {
+            generateApprovalView(approvalViewModel, $("#workflow_data"));
+        }
+        //end approval
+    }
+
+    //واجهة استعراض التقييم
+    function openDevelopmentWindow(appraisalViewModel, workflowId, phaseWorkflowId) {
+       
+        var developmentViewModel = {};
+
+        var title = "@GlobalResource.DevelopmentWindow";
+        var buttons = [
+            { Name: "confirm_save_appraisal", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel_appraisal", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "development-info-container";
+        var bodyHTML = "<div class='development-info-container-body fieldsets-div'></div>";
+        createAndOpenCustomWindow($(".development-workflow-Window"), bodyHTML, containerId, title, buttons, true,false);
+
+        $.ajax({
+            url: '@Url.Action("GetDevelopmentInformation", "Appraisal", new { area = "PMS" })',
+            type: "POST",
+            data: JSON.stringify({ appraisalViewModel: appraisalViewModel }),
+            contentType: 'application/json',
+            success: function (e) {
+                developmentViewModel = e;
+                var template = kendo.template($("#DevelopmentSection-workflow-template").html());
+                $(".development-info-container-body").html(template({ model: e }));
+                kendo.init($(".development-workflow-Window"));
+            }
+        });
+
+        $("#confirm_save_appraisal").off('click').on('click', function () {
+
+            var checkedItems = [];
+            var trs = $(".development-workflow-Window .WeakPoints-body tr");
+            for (var i = 0; i < trs.length ; i++) {
+                if ($($(".development-workflow-Window .WeakPoints-body tr")[i]).find(".check-traning-need").prop("checked")) {
+                    var name = $(trs[i]).find(".item-Name").text();
+                    var description = $(trs[i]).find(".item-Description").text();
+                    checkedItems.push({ Id: i, name: name, description: description });
+                }
+            }
+            //SaveAppraisalViewModel(appraisalViewModel, $("#NewStepDescription").val(),selectedEmployee.PhaseWorkflowId, selectedEmployee.WorkflowId, "Accept", checkedItems);
+            appraisalViewModel.Note = $("#NewStepDescription").val();
+            appraisalViewModel.WorkflowId = workflowId;
+            $.ajax({
+                url: '@Url.Action("AcceptAppraisal", "Appraisal", new { area = "PMS" })',
+                type: "POST",
+                data: JSON.stringify({ appraisalViewModel: appraisalViewModel, phaseWorkflowId: phaseWorkflowId, checkedItems: checkedItems }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var appraisalValue = data.AppraisalValue;
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.AppraisalResult" +" : " + appraisalValue, "k-icon w-b-info", commands);
+                    workflowContainer.html("");
+                    viewAppraisalsGrid();
+                }
+            });
+            $(".development-workflow-Window").data("kendo-window").close();
+        });
+
+        $("#cancel_appraisal").off('click').on('click', function () {
+            $(".development-workflow-Window").data("kendo-window").close();
+        });
+    }
+
+    function checkAppraisalViewModelRate(appraisalViewModel) {
+
+         var result;
+        if (!appraisalViewModel.IsHiddenCompetanceSection) {
+             result = checkAppraisalSectionDescriptionIsRequired(appraisalViewModel.CompetenceSection.AppraisalItems, appraisalViewModel);
+         if (result>-1) {
+             return "@GlobalResource.CompetencySectionDescriptionIsRequired" +", "+ appraisalViewModel.CompetenceSection.AppraisalItems[result].Name;
+            }
+        }
+        if (!appraisalViewModel.IsHiddenObjectiveSection) {
+             result = checkAppraisalSectionDescriptionIsRequired(appraisalViewModel.ObjectiveSection.AppraisalItems, appraisalViewModel);
+             if (result > -1) {
+                 return "@GlobalResource.ObjectiveSectionDescriptionIsRequired" + ", " + appraisalViewModel.ObjectiveSection.AppraisalItems[result].Name;
+            }
+        }
+        if (!appraisalViewModel.IsHiddenJobDescriptionSection) {
+
+            for (var i = 0; i < appraisalViewModel.JobDescriptionSection.Roles.length; i++) {
+                result = checkAppraisalSectionDescriptionIsRequired(appraisalViewModel.JobDescriptionSection.Roles[i].AppraisalItems, appraisalViewModel);
+                if (result > -1) {
+                    return "@GlobalResource.JobDescriptionSectionDescriptionIsRequired" + ", " + appraisalViewModel.JobDescriptionSection.Roles[i].AppraisalItems[result].Name;
+                }
+            }
+        }
+        for (var j = 0; j < appraisalViewModel.CustomSections.length; j++) {
+            result = checkAppraisalSectionDescriptionIsRequired(appraisalViewModel.CustomSections[j].AppraisalItems, appraisalViewModel);
+            if (result > -1) {
+                return "@GlobalResource.CustomSectionDescriptionIsRequired" + ", " + appraisalViewModel.CustomSections[j].AppraisalItems[result].Name;
+            }
+        }
+        return null;
+    }
+     
+    function checkAppraisalSectionDescriptionIsRequired(appraisalItems, appraisalViewModel) {
+        var isRequired = -1;
+        if (appraisalItems.length == 0)
+            return isRequired;
+        for (var i = 0; i < appraisalItems.length; i++) {
+            if (
+                (appraisalItems[i].Rate < appraisalViewModel.WeaknessLimit || appraisalItems[i].Rate > appraisalViewModel.StrongLimit) &&
+                (appraisalItems[i].Note == "" || appraisalItems[i].Note == null)
+                ) {
+                isRequired = i;
+            }
+        }
+        return isRequired;
+    }
+
+    @*    function SaveAppraisalViewModel(appraisalViewModel, note, phaseWorkflowId, workflowId,
+
+stepStatus, checkedItems) {
+
+        $.ajax({
+            url: '@Url.Action("SaveAppraisal", "Appraisal", new { area = "PMS" })',
+            type: "POST",
+            data: JSON.stringify({ appraisalViewModel: appraisalViewModel, note: note,
+
+phaseWorkflowId: phaseWorkflowId, workflowId: workflowId, stepStatus: stepStatus, checkedItems:
+
+checkedItems }),
+            contentType: 'application/json',
+            success: function (data) {
+                //$(".appraisal-workflow-container").hide();
+                //$(".appraisal-employees-grid").show();
+            }
+        });
+
+    }*@
+
+</script>
+
+
+@* createWorkflow($(".appraisal-workflow-container"), 1, toto);
+    function toto(parameters) {
+        $.ajax({
+            url: '@Url.Action("test","Appraisal",new {area=""})',
+            type: "POST",
+            contentType: 'application/json',
+            success: function (e) {
+                generateAppraisalView(e, $("#workflow_data"));
+            }
+        });
+    }*@
+
+<script id="appraisal-grid-template" type="text/x-kendo-template">
+    <table style="margin: 2% 34%;">
+        <tbody>
+            <tr>
+                <td class="td--appraisal">@GlobalResource.Total</td>
+                <td class="td--appraisal">
+                    #=data.length#
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            <tr>
+
+
+                <th>@GlobalResource.TripleName</th>
+                <th>@GlobalResource.Node</th>
+                <th>@GlobalResource.JobTitle</th>
+                <th>@GlobalResource.JobDescription</th>
+                <th>@GlobalResource.EmployeeStatus</th>
+                <th>@GlobalResource.Date</th>
+                <th>@GlobalResource.Type</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i
+            <data.length;i++){# #var emp=data[i]; #
+                                #console.log(emp.triplename);#
+
+                <tr>
+                    <td>#=emp.TripleName#</td>
+                    <td>#=emp.Node#</td>
+                    <td>#=emp.JobTitle#</td>
+                    <td>#=emp.JobDescription#</td>
+                    <td>#=emp.EmployeeStatus#</td>
+                    <td>#=emp.Date#</td>
+                    <td>#=emp.Type#</td>
+
+
+
+
+                    <td>
+                        <button class="k-button primary-action" onclick="appraisalAction
+
+('#=emp.PendingTypeName#', '#=emp.Id#', '#=emp.PositionId#', '#=emp.PhaseWorkflowId#',
+
+'#=emp.WorkflowId#')">
+                            @GlobalResource.Appraisal
+                        </button>
+                    </td>
+                </tr>
+                #}#
+        </tbody>
+    </table>
+
+
+</script>
+<style type="text/css">
+    .td--appraisal {
+        width: 150px;
+        height: 60px;
+        line-height: 1.1rem;
+        font-size: 12px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .btn--appraisal {
+        height: 50px !important;
+        width: 95px !important;
+    }
+</style>

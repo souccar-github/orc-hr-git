@@ -1,0 +1,271 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@*-------------------------إضافة إستمارة التقييم (Create)-----------------------------*@
+@using  Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+<script>
+
+    function AppraisalTemplateEditHandler(e) {
+        
+        $.ajax({
+            url: '@Url.Action("GetCustomSection", "Template", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sections) {
+                e.model.dirty = true;
+                e.model.CustomInformation = sections;
+                initAppraisalTemplateWindow(e, sections);
+            }
+        });
+    }
+
+    function InterviewTemplateEditHandler(e) {
+        $.ajax({
+            url: '@Url.Action("GetCustomSection", "Template", new { area = "PMS" })',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ id: e.model.Id }),
+            success: function (sections) {
+                e.model.dirty = true;
+                e.model.CustomInformation = sections;
+                initInterviewTemplateWindow(e, sections);
+            }
+        });
+    }
+
+    function initInterviewTemplateWindow(e, sections) {
+        
+        $(".fieldset-PMSGoupesNames_AppraisalTemplateFixedSection").remove();
+
+        var customSectionsTemplate = kendo.template($("#interview-template-custom-sections-template").html());
+        $(".fieldset-PMSGoupesNames_AppraisalTemplateInformation").after(customSectionsTemplate({ CustomSection: sections }));
+
+        e.container.find(".custom-section-weight").kendoNumericTextBox({ max: 100, min: 0 });
+        e.container.find('.custom-section-include').off("change").on("change", function () {
+            var index = $(this).attr("data-index");
+            sections[index].IsIncluded = this.checked;
+            e.container.find('[name="custom-section-' + sections[index].Id + '-weight"]').data("kendoNumericTextBox").enable(this.checked);
+        });
+
+        for (var i = 0; i < sections.length; i++) {
+            var selector = '[name="custom-section-' + sections[i].Id + '-weight"]';
+            var control = e.container.find(selector).data("kendoNumericTextBox");
+            control.bind("change", function () {
+                var index = $(this.element).attr("data-index");
+                sections[index].Weight = this.value();
+            });
+            control.enable(sections[i].IsIncluded);
+        }
+    }
+
+    function initAppraisalTemplateWindow(e, sections) {
+       
+        //e.container.find(".fieldset-AppraisalTemplateFixedSection").append('<div class="section-container first-column control"></div>');
+        //var fixedSectionsTemplate = kendo.template($("#appraisal-template-Fixed-sections-template").html());
+        //$(".section-container").html(fixedSectionsTemplate({}));
+
+        //var customSectionsTemplate = kendo.template($("#appraisal-template-custom-sections-template").html());
+        //$(".fieldset-AppraisalTemplateFixedSection").after(customSectionsTemplate({ CustomSection: sections }));
+
+        e.container.find(".fieldset-PMSGoupesNames_AppraisalTemplateFixedSection").append('<div class="sections-container first-column control"></div>');
+        var sectionsTemplate = kendo.template($("#appraisal-template-template").html());
+        e.container.find(".sections-container").html(sectionsTemplate({ CustomSection: sections }));
+        
+        e.container.find(".objective-name").html($('[for="Objective"]').html());
+        e.container.find(".jd-name").html($('[for="JobDescription"]').html());
+        e.container.find(".competence-name").html($('[for="Competency"]').html());
+
+        var objectivCkb = $('[name="Objective"]');
+        var objectivWeight = e.container.find('[name="ObjectiveWeight"]').data("kendoNumericTextBox");
+        e.container.find(".objective-ckb").html(objectivCkb);
+        if (objectivWeight!=null)
+        objectivWeight.enable(objectivCkb.is(':checked'));
+        objectivCkb.change(function () {
+            objectivWeight.enable(this.checked);
+        });
+
+        var jdCkb = $('[name="JobDescription"]');
+        var jdWeight = e.container.find('[name="JobDescriptionWeight"]').data("kendoNumericTextBox");
+        e.container.find(".jd-ckb").html(jdCkb);
+        if (jdWeight!=null)
+        jdWeight.enable(jdCkb.is(':checked'));
+        jdCkb.change(function () {
+            jdWeight.enable(this.checked);
+        });
+
+        var competenceCkb = $('[name="Competency"]');
+        var competenceWeight = e.container.find('[name="CompetencyWeight"]').data("kendoNumericTextBox");
+        e.container.find(".competence-ckb").html(competenceCkb);
+        if (competenceWeight!=null)
+        competenceWeight.enable(competenceCkb.is(':checked'));
+        competenceCkb.change(function () {
+            competenceWeight.enable(this.checked);
+        });
+
+        e.container.find(".objective-weight").html($('[data-container-for="ObjectiveWeight"]'));
+        e.container.find(".jd-weight").html($('[data-container-for="JobDescriptionWeight"]'));
+        e.container.find(".competence-weight").html($('[data-container-for="CompetencyWeight"]'));
+        e.container.find(".fieldset-PMSGoupesNames_AppraisalTemplateFixedSection .control").not(".sections-container").remove();
+        e.container.find(".custom-section-weight").kendoNumericTextBox({ max: 100, min: 0 });
+        e.container.find('.custom-section-include').off("change").on("change", function () {
+            var index = $(this).attr("data-index");
+            sections[index].IsIncluded = this.checked;
+            e.container.find('[name="custom-section-' + sections[index].Name + '-weight"]').data("kendoNumericTextBox").enable(this.checked);
+        });
+        for (var i = 0; i < sections.length; i++) {
+            var control = e.container.find('[name="custom-section-' + sections[i].Name + '-weight"]').data("kendoNumericTextBox");
+            control.bind("change", function () {
+                var index = $(this.element).attr("data-index");
+                sections[index].Weight = this.value();
+            });
+            control.enable(sections[i].IsIncluded);
+        }
+
+    }
+
+</script>
+
+<script id="appraisal-template-Fixed-sections-template" type="text/x-kendo-template">
+<table>
+    <thead>
+        <tr>
+            <th>@GlobalResource.Name</th><th></th><th>@GlobalResource.Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="jd-name"></td>
+            <td class="jd-ckb"></td>
+            <td class="jd-weight"></td>
+        </tr>
+        <tr>
+            <td class="objective-name"></td>
+            <td class="objective-ckb"></td>
+            <td class="objective-weight"></td>
+        </tr>
+        <tr>
+            <td class="competence-name"></td>
+            <td class="competence-ckb"></td>
+            <td class="competence-weight"></td>
+        </tr>
+    </tbody>
+</table>
+</script>
+
+<script id="appraisal-template-custom-sections-template" type="text/x-kendo-template">
+<fieldset class="fieldset-AppraisalTemplateCustomSection"><legend>Custom Sections</legend>
+    <table>
+     <thead>
+        <tr>
+            <th>@GlobalResource.Name</th><th></th><th>@GlobalResource.Weight</th>
+        </tr>
+     </thead>
+     <tbody>
+        #for (var i = 0; i < CustomSection.length; i++) {#
+             #var checkStatus="";#
+             #if(CustomSection[i].IsIncluded){#
+                #checkStatus='checked="checked"';#
+             #}#
+             <tr>
+                <td>#=CustomSection[i].Name#</td>
+                <td><input type="checkbox" #=checkStatus# class="custom-section-include" name="custom-section-#=CustomSection[i].Name.trim()#" data-index="#=i#"/></td>
+                <td>
+                    <div class="k-edit-field">
+                        <input class="custom-section-weight" data-index="#=i#" type="text" name="custom-section-#=CustomSection[i].Name.trim()#-weight" value="#=CustomSection[i].Weight#" />
+                   </div>     
+                </td>
+            </tr>
+        #}#
+    </tbody>
+  </table>
+</fieldset>
+</script>
+<script id="appraisal-template-template" type="text/x-kendo-template">
+   <table>
+    <thead>
+        <tr>
+            <th>@GlobalResource.Type</th><th>@GlobalResource.Name</th><th></th><th>@GlobalResource.Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan="3">@GlobalResource.Fixed</td>
+            <td class="jd-name"></td>
+            <td class="jd-ckb"></td>
+            <td class="jd-weight"></td>
+        </tr>
+        <tr>
+            <td class="objective-name"></td>
+            <td class="objective-ckb"></td>
+            <td class="objective-weight"></td>
+        </tr>
+        <tr>
+            <td class="competence-name"></td>
+            <td class="competence-ckb"></td>
+            <td class="competence-weight"></td>
+        </tr>
+        <tr>
+        #if(CustomSection.length>0){#
+        <td rowspan=#=CustomSection.length#>@GlobalResource.Custom</td>
+        #}#
+        #for (var i = 0; i < CustomSection.length; i++) {#
+             #var checkStatus="";#
+             #if(CustomSection[i].IsIncluded){#
+                #checkStatus='checked="checked"';#
+             #}#
+
+                <td>#=CustomSection[i].Name#</td>
+                <td><input type="checkbox" #=checkStatus# class="custom-section-include" name="custom-section-#=CustomSection[i].Name#" data-index="#=i#"/></td>
+                <td>
+                    <div class="k-edit-field">
+                        <input class="custom-section-weight" data-index="#=i#" type="text" name="custom-section-#=CustomSection[i].Name#-weight" value="#=CustomSection[i].Weight#" />
+                   </div>     
+                </td>
+            </tr>
+        #}#
+    </tbody>
+  </table>
+</script>
+<script id="interview-template-custom-sections-template" type="text/x-kendo-template">
+    <fieldset class="fieldset-AppraisalTemplateCustomSection">
+        <legend>@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.AppraisalCustomSections)</legend>
+
+        <div class="sections-container first-column control">
+            <table>
+                <thead>
+                    <tr>
+                        <th>@GlobalResource.Name</th>
+                        <th></th>
+                        <th>@GlobalResource.Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #for (var i = 0; i < CustomSection.length; i++) {#
+                    #var checkStatus="";#
+                    #if(CustomSection[i].IsIncluded){#
+                    #checkStatus='checked="checked"';#
+                    #}#
+                    <tr>
+                        <td>#=CustomSection[i].Name#</td>
+                        <td><input type="checkbox" #=checkStatus# class="custom-section-include" name="custom-section-#=CustomSection[i].Id#" data-index="#=i#" /></td>
+                        <td>
+                            <div class="k-edit-field">
+                                <input class="custom-section-weight" data-index="#=i#" type="text" name="custom-section-#=CustomSection[i].Id#-weight" value="#=CustomSection[i].Weight#" />
+                            </div>
+                        </td>
+                    </tr>
+                    #}#
+                </tbody>
+            </table>
+        </div>
+
+    </fieldset>
+    
+
+</script>
+<script type="text/javascript">
+    function AppraisalPhaseWorkflowViewHandler(e) {
+        $("#view_edit").remove();
+    }
+</script>

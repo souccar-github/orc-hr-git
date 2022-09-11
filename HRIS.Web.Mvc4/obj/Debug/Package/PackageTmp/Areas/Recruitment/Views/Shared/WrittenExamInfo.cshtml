@@ -1,0 +1,95 @@
+﻿@*@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function WrittenExamInfo(advertisementId) {
+
+        var title = "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.WrittenExamInformation)";
+        var databind = kendo.observable();
+        databind.AdvertisementId = advertisementId;
+
+        $.ajax({
+            url: '@Url.Action("CheckIsCancelledRecruitment", "Home")',
+            type: "POST",
+            data: JSON.stringify({ id: advertisementId }),
+            contentType: 'application/json',
+            async: false,
+            success: function (result) {
+
+                if (result.Success) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                }
+                else {
+
+                    var tempdata = [
+                        { Name: "WrittenAcceptedPersonsDecisionNumber", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.AcceptedPersonsDecisionNumber)", Type: "Text" },
+                        { Name: "WrittenAcceptedPersonsDecisionDate", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.AcceptedPersonsDecisionDate)", Type: "Date" },
+                        { Name: "WrittenExaminationPlace", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ExaminationPlace)", Type: "Index", TypeName: "HRIS.Domain.Recruitment.Indexes.Place", Creatable: true },
+                        { Name: "WrittenExaminationDate", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ExaminationDate)", Type: "Date" }
+                    ];
+
+                    $.ajax({
+                        url: '@Url.Action("GetWrittenExamInformation", "Home")',
+                        type: "POST",
+                        data: JSON.stringify({ id: advertisementId }),
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (data) {
+
+                            databind.WrittenAcceptedPersonsDecisionNumber = data.WrittenAcceptedPersonsDecisionNumber;
+                            databind.WrittenAcceptedPersonsDecisionDate = kendo.parseDate(data.WrittenAcceptedPersonsDecisionDate, "MM/dd/yyyy");
+                            databind.WrittenExaminationPlace = data.WrittenExaminationPlace;
+                            databind.WrittenExaminationDate = kendo.parseDate(data.WrittenExaminationDate, "MM/dd/yyyy");
+
+                        }
+                    });
+
+                    var buttons = [
+                        { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                        { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                    ];
+                    var containerId = "WrittenExamInfoContainer";
+                    var bodyHTML = "<div class='WrittenExamInfo fix-custom-popup'></div>";
+                    var isTwoColumns = false;
+
+                    createAndOpenCustomWindow($('<div class="WrittenExamInfoDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+                    $("#cancel").off('click').on('click', function () {
+                        $(".WrittenExamInfoDiv").data("kendo-window").close();
+                    });
+
+                    $("#update").off('click').on('click', function () {
+                        if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                            $.ajax({
+                                url: '@Url.Action("SaveWrittenExamInformation", "Home")',
+                                type: "POST",
+                                data: JSON.stringify({
+                                    model: databind
+                                }),
+
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    if (data.Success) {
+                                        var grid = $("#" + gridModel.Name).data("kendoGrid");
+                                        grid.refresh();
+                                        $(".WrittenExamInfoDiv").data("kendo-window").close();
+                                    } else {
+                                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    createCustomEditForm($(".WrittenExamInfo"), { Fields: tempdata, Key: "WrittenExamInfoKey" }, databind);
+
+                }
+            }
+        });
+
+    }
+ </script>*@
+

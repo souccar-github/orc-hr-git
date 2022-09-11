@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/27/2016 10:00:08" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvfU82z/MlpyPnP1DbHYmAiQ==">
+      <TableDataSource Name="Table1" Alias="PositionDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT&#13;&#10;Position.Id, &#13;&#10;Code AS PositionCode, &#13;&#10;JobDescription_id,&#13;&#10;(SELECT Name FROM dbo.JobDescription WHERE Id=JobDescription_id AND JobDescription.IsVertualDeleted=0) AS JobDescriptionName,&#13;&#10;(SELECT dbo.JobTitle.Name FROM dbo.JobTitle INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;WHERE dbo.JobDescription.Id=JobDescription_id AND JobTitle.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0) AS JobTitleName,&#13;&#10;(SELECT dbo.Node.Name FROM dbo.JobDescription INNER JOIN dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id &#13;&#10;WHERE dbo.JobDescription.Id=JobDescription_id AND Node.IsVertualDeleted=0 AND JobDescription.IsVertualDeleted=0) AS NodeName&#13;&#10;FROM            &#13;&#10;dbo.Position &#13;&#10;WHERE AssigningEmployeeToPosition_id IS NULL AND Position.Id NOT IN (SELECT Position_id FROM dbo.Assignment WHERE Position_id IS NOT NULL AND Assignment.IsVertualDeleted=0) AND Position.IsVertualDeleted=0&#13;&#10;ORDER BY JobDescription_id">
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="JobDescription_id" DataType="System.Int32"/>
+        <Column Name="JobDescriptionName" DataType="System.String"/>
+        <Column Name="JobTitleName" DataType="System.String"/>
+        <Column Name="NodeName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="66.15">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير المواقع الوظيفية الجديدة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="70" Width="718.2" Height="18.9">
+      <TextObject Name="Text30" Left="528.2" Width="190" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الوصف الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="339.2" Width="189.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العقدة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text53" Left="179.55" Width="161.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المسمى الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text55" Width="180.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="كود الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="92.74" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text3" Left="179.55" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[PositionDataSourse.JobTitleName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[PositionDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Left="340.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[PositionDataSourse.NodeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[PositionDataSourse.JobDescriptionName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="115.49" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="529.2" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="529.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="138.23" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

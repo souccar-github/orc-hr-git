@@ -1,0 +1,20 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<script type="text/javascript">
+
+    function Node_ActionListHandler(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+            }
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+            }
+        }
+    }
+    
+    function NodeViewHandler(e) {
+        e.container.find("#view_edit").remove();
+    }
+    
+</script>

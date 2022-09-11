@@ -1,0 +1,241 @@
+﻿@using Project.Web.Mvc4.Helpers;
+@using HRIS.Validation.MessageKeys;
+@using Souccar.Infrastructure.Core;
+@using System.Web.SessionState;
+<script>
+    var isNew = false;
+    var workshopId = 0;
+    var hasErrors = false;
+    var shouldRemove = false;
+    var isNewParticular = false;
+    function WorkshopRecurrenceEditHandler(e) {
+        $('[name="IsHoliday"]').change(function () {
+            if (this.checked) {
+                $('[name="Workshop"]').data("kendoDropDownList").enable(false);
+                $('[name="Workshop"]').data("kendoDropDownList").value("");
+                $('[name="Workshop"]').data("kendoDropDownList").text("");
+            } else {
+                $('[name="Workshop"]').data("kendoDropDownList").enable(true);
+            }
+        });
+    }
+
+    function WorkshopEventHandler(e) {
+        if (e.model.Id == 0)
+            isNew = true;
+        else
+            workshopId = e.model.Id;
+    }
+    function OvertimeSliceEditHandler(e) {
+        if (e.model.Id == 0) {
+
+            if ($('[name="NormalPercentage"]').data("kendoNumericTextBox") != null) {
+                $("[name='NormalPercentage']").data("kendoNumericTextBox").value(100);
+                e.model.NormalPercentage = 100;
+            }
+        }
+
+    }
+
+    function AttendanceAdjustmentAfterRequestEnd() {
+        $(".k-grid-add").remove();
+    }
+
+    function AttendanceAdjustmentInitializeActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@Project.Web.Mvc4.Helpers.GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+        }
+    }
+    function AttendanceAdjustmentInitializeView() {
+        $("#view_edit").remove();
+    }
+
+    function RemoveEditButtonViewHandler() {
+        $('#view_edit').remove();
+    }
+
+
+
+
+
+
+    function particularOvertimeShiftseditWindowClose(e) {
+        if (hasErrors) {
+            if (isNewParticular) {
+                var grid = $(".grid-detail-ParticularOvertimeShifts table.k-selectable tbody");
+                if (grid != undefined) {
+                    var tr = grid.children('tr:first');
+                    if (tr != undefined) {
+                        var gridData = $(".grid-detail-ParticularOvertimeShifts").data("kendoGrid");
+                        var dataItem = gridData.dataItem(tr);
+                        for (var i = 0 ; i < gridData.dataSource._data.length; i++) {
+                            if (gridData.dataSource._data[i].Id == dataItem.Id) {
+                                gridData.dataSource._data[i].Id = 0;
+                                gridData.dataSource._data[i].id = 0;
+                                gridData.dataSource._data[i].IsVirtualNew = true;
+                                gridData.dataSource._data[i].dirty = false;
+                            }
+                        }
+                    }
+                }
+            }
+            e.preventDefault();
+            hasErrors = false;
+        }
+    }
+    function cancelParticularOvertimeShifts(e) {
+        if (shouldRemove) {
+            grid = $(".grid-detail-ParticularOvertimeShifts table.k-selectable tbody");
+            if (grid != undefined) {
+                var tr = grid.children('tr:first');
+                if (tr != undefined) {
+                    gridData = $(".grid-detail-ParticularOvertimeShifts").data("kendoGrid");
+                    dataItem = gridData.dataItem(tr);
+                    gridData.dataSource.remove(dataItem);
+                }
+            }
+            shouldRemove = false;
+        }
+    }
+    function checkLocaly(startTime, endTime) {
+        if (startTime >= endTime)
+            return true;
+    }
+    function hasEntranceLocaly(particularOvertimeShifts, id, startTime, endTime) {
+        debugger;
+        for (var shift = 0; shift < particularOvertimeShifts.length; shift++) {
+            debugger;
+            if (particularOvertimeShifts[shift].Id != 0 && particularOvertimeShifts[shift].Id != id) {
+                var __startTime = kendo.toString(new Date(kendo.parseDate(particularOvertimeShifts[shift].StartTime, "hh:mm tt")), "hh:mm tt");
+                var _startTime = new Date(kendo.parseDate(__startTime, "hh:mm tt"));
+                var __endTime = kendo.toString(new Date(kendo.parseDate(particularOvertimeShifts[shift].EndTime, "hh:mm tt")), "hh:mm tt");
+                var _endTime = new Date(kendo.parseDate(__endTime, "hh:mm tt"));
+                if ((startTime >= _startTime && endTime <= _endTime) || (startTime >= _startTime && startTime <= _endTime)
+                    || (endTime >= _startTime && endTime <= _endTime) || (startTime < _startTime && endTime > _endTime)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    function hasNotEntrance(normalShifts, startTime, endTime) {
+        debugger;
+        var isAble = false;
+        for (var shift = 0; shift < normalShifts.length; shift++) {
+            var _entryTime = kendo.toString(new Date(kendo.parseDate(normalShifts[shift].EntryTime, "hh:mm tt")), "hh:mm tt");
+            var entryTime = new Date(kendo.parseDate(_entryTime, "hh:mm tt"));
+            var _exitTime = kendo.toString(new Date(kendo.parseDate(normalShifts[shift].ExitTime, "hh:mm tt")), "hh:mm tt");
+            var exitTime = new Date(kendo.parseDate(_exitTime, "hh:mm tt"));
+            var _shiftRangeStartTime = kendo.toString(new Date(kendo.parseDate(normalShifts[shift].ShiftRangeStartTime, "hh:mm tt")), "hh:mm tt");
+            var shiftRangeStartTime = new Date(kendo.parseDate(_shiftRangeStartTime, "hh:mm tt"));
+            var _shiftRangeEndTime = kendo.toString(new Date(kendo.parseDate(normalShifts[shift].ShiftRangeEndTime, "hh:mm tt")), "hh:mm tt");
+            var shiftRangeEndTime = new Date(kendo.parseDate(_shiftRangeEndTime, "hh:mm tt"));
+            if (startTime >= shiftRangeStartTime && endTime <= entryTime)
+                isAble = true;
+            if (startTime >= exitTime && endTime <= shiftRangeEndTime)
+                isAble = true;
+        }
+        return !isAble;
+    }
+    function ParticularOvertimeShiftEventHandler(e) {
+        if (e.model.Id == 0)
+            isNewParticular = true;
+        $('.control-StartTime').parent().parent().parent().find('.k-grid-update').addClass("new-class");
+        $(".k-button.k-bare.k-button-icon.k-window-action").last().addClass("close-particular-overtime-shift");
+        $(".grid-detail-ParticularOvertimeShifts").data("kendoGrid").bind("cancel", cancelParticularOvertimeShifts);
+        var editWindow = $(".grid-detail-ParticularOvertimeShifts").data("kendoGrid").editable.element.data("kendoWindow");
+        editWindow.unbind("close");
+        editWindow.bind("close", particularOvertimeShiftseditWindowClose);
+        var NormalShifts = $(".grid-detail-NormalShifts").data("kendoGrid");
+        var ParticularOvertimeShifts = $(".grid-detail-ParticularOvertimeShifts").data("kendoGrid");
+        var NormalShiftsData = [];
+        var ParticularOvertimeShiftsData = [];
+
+
+        $(".close-particular-overtime-shift").off('click').on('click', function () {
+            $(".k-button.k-bare.k-button-icon.k-window-action").removeClass("close-particular-overtime-shift");
+            grid = $(".grid-detail-ParticularOvertimeShifts table.k-selectable tbody");
+            if (grid != undefined) {
+                var tr = grid.children('tr:first');
+                if (tr != undefined) {
+                    gridData = $(".grid-detail-ParticularOvertimeShifts").data("kendoGrid");
+                    dataItem = gridData.dataItem(tr);
+                    gridData.dataSource.remove(dataItem);
+                }
+            }
+        });
+
+        $("a.new-class").off('click').on('click', function () {
+            debugger;
+            var _startTime = kendo.toString(new Date(kendo.parseDate(e.model.StartTime, "hh:mm tt")), "hh:mm tt");
+            var startTime = new Date(kendo.parseDate(_startTime, "hh:mm tt"));
+            var _endTime = kendo.toString(new Date(kendo.parseDate(e.model.EndTime, "hh:mm tt")), "hh:mm tt");
+            var endTime = new Date(kendo.parseDate(_endTime, "hh:mm tt"));
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+
+            ParticularOvertimeShiftsData = ParticularOvertimeShifts.dataSource._data;
+            $("a.k-grid-update").removeClass("new-class");
+            hasErrors = false;
+            if (isNew) {
+                if (NormalShifts != undefined) {
+                    NormalShiftsData = NormalShifts.dataSource._data;
+                    if (hasEntranceLocaly(ParticularOvertimeShiftsData,e.model.Id, startTime, endTime)) {
+                        hasErrors = true;
+                        ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.ParticularOvertimeShiftConflictWithOtherParticularOvertimeShiftsInThisWorkshop))", "k-icon w-b-error", commands);
+                    }
+                    else if (hasNotEntrance(NormalShiftsData, startTime, endTime)) {
+                        hasErrors = true;
+                        ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.ParticularOvertimeShiftMustBelongToTheRangeFromTheMinimumEntryTimeToEntryTimeOrTheRangeFromExitTimeToTheMaximumExitTime))", "k-icon w-b-error", commands);
+                    }
+                }
+                else {
+                    hasErrors = true;
+                    ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.YouMustAddOneNormalShiftAtLeast))", "k-icon w-b-error", commands);
+                }
+            }
+            else {
+                if (hasEntranceLocaly(ParticularOvertimeShiftsData,e.model.Id, startTime, endTime)) {
+                    hasErrors = true;
+                    ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.ParticularOvertimeShiftConflictWithOtherParticularOvertimeShiftsInThisWorkshop))", "k-icon w-b-error", commands);
+
+                }
+                else if (NormalShifts != undefined) {
+                    NormalShiftsData = NormalShifts.dataSource._data;
+                    if (hasNotEntrance(NormalShiftsData, startTime, endTime)) {
+                        hasErrors = true;
+                        ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.ParticularOvertimeShiftMustBelongToTheRangeFromTheMinimumEntryTimeToEntryTimeOrTheRangeFromExitTimeToTheMaximumExitTime))", "k-icon w-b-error", commands);
+                    }
+                }
+                else
+                    $.ajax({
+                        url: '@Url.Action("CheckParticularOvertimeShiftForEditAction", "Workshop", new { area = "AttendanceSystem" })',
+                        type: "POST",
+                        contentType: 'application/json',
+                        data: JSON.stringify({ WorkshopID: workshopId, Model: e.model }),
+                        success:
+                            function (Success) {
+                                if (!Success.IsParticularOvertimeShiftInNormalShifts) {
+                                    hasErrors = true;
+                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                    ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.ParticularOvertimeShiftMustBelongToTheRangeFromTheMinimumEntryTimeToEntryTimeOrTheRangeFromExitTimeToTheMaximumExitTime))", "k-icon w-b-error", commands);
+                                }
+                            },
+                        error: function () {
+                            alert("Error");
+                        }
+
+                    });
+            }
+
+            if (e.model.Id == 0 && hasErrors)
+                shouldRemove = true;
+
+        });
+    }
+
+</script>

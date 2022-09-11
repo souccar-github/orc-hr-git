@@ -1,0 +1,435 @@
+﻿@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Core
+@using  Project.Web.Mvc4.Helpers
+@using HRIS.Domain.PayrollSystem.Enums
+
+
+
+
+<script type="text/javascript">
+
+    function hidePopup(e, msg) {
+        e.container.hide();
+
+        $('.default-window-edit-two-column').css('display', 'none');
+        $('.default-window-edit-one-column').css('display', 'none');
+        var commands = [{ Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-cancel" }];
+
+        var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+            width: "300px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: "@Project.Web.Mvc4.Helpers.GlobalResource.Information"
+        });
+
+        var objWindow = kendoWindow.data("kendoWindow");
+        objWindow.open();
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+        objWindow.content(kendo.template($("#customMessageBoxTemplate").html())
+            ({ Message: msg, IconClass: "k-icon w-b-question", Commands: commands })).center().open();
+
+        $(".message-box-div").parent().find(".k-window-action").css("visibility", "hidden");
+        window.parent.$(".k-popup-edit-form").data("kendoWindow").close();
+
+        $('.k-window-actions').click(function () {
+            objWindow.close();
+            $(".k-grid-cancel").click();
+        });
+
+        $('.k-window-action').click(function () {
+            objWindow.close();
+            $(".k-grid-cancel").click();
+        });
+
+        kendoWindow.find(gedCommandsClassNames(commands)).click(function () {
+                objWindow.close();
+                $(".k-grid-cancel").click();
+        }).end();
+
+    }
+    ////Function to Remove Delete For Locked And Approved Month
+    function RemoveDeleteForLockedMonth(actionListItems, dataItem) {
+        debugger;
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            actionListItems[i].ShowCommand = true;
+        }
+
+        if (dataItem.MonthStatus.Id == "@((int)MonthStatus.Locked)" || dataItem.MonthStatus.Id == "@((int)MonthStatus.Approved)") {
+            for (var i = 0; i < actionListItems.length; i++) {
+                if (actionListItems[i].Name == "@GlobalResource.Delete" || actionListItems[i].Name == "@GlobalResource.Edit") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+
+        }
+
+    }
+    function Month_EditHandler(e) {
+        if (e.model.Id != 0) {
+            if (e.model.MonthStatus.Name == "@MonthStatus.Locked")
+            {
+                hidePopup(e, "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.YouCantEditLockedMonthes))");
+            }
+            else
+            {
+                $('[name="ImportPrimaryBenefits"]').attr("disabled", "disabled");
+                $('[name="ImportBenefitDistribution"]').attr("disabled", "disabled");
+                $('[name="ImportDeductionDistribution"]').attr("disabled", "disabled");
+                $('[name="ImportFromEmployeeRelation"]').attr("disabled", "disabled");
+                $('[name="ImportFromAttendance"]').attr("disabled", "disabled");
+                $('[name="Year"]').attr("disabled", "disabled");
+                $("[name='FromTime']").prop('disabled', true);
+                $("[name='ToTime']").prop('disabled', true);
+
+
+                $("[name='MonthType']").data("kendoDropDownList").enable(false);
+                $("[name='MonthName']").data("kendoDropDownList").enable(false);
+            }
+
+
+        }
+    }
+
+    function GenerateMonth(monthId) {
+        MonthOperation(monthId, "Generate");
+    };
+
+    function CalculateMonth(monthId) {
+        MonthOperation(monthId, "Calculate");
+    };
+
+    function RejectMonth(monthId) {
+        MonthOperation(monthId, "Reject");
+    };
+
+    function ApproveMonth(monthId) {
+        MonthOperation(monthId, "Approve");
+    };
+
+    function LockMonth(monthId) {
+        MonthOperation(monthId, "Lock");
+    };
+
+    function GenerateFilterHtml(monthId) {
+
+        var appendedFilterHtml = "<fieldset><legend>@GlobalResource.FilterBy</legend><div><input type='radio' name='MonthFilter' value='FilterByEmployee' id='FilterByEmployee' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByEmployee', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByEmployee'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByEmployeeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByPrimaryCard' id='FilterByPrimaryCard' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByPrimaryCard', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByPrimaryCard'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByPrimaryCardTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByGrade' id='FilterByGrade' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByGrade', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByGrade'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByGradeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByJobTitle' id='FilterByJobTitle' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByJobTitle', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByJobTitle'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByJobTitleTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByJobDescription' id='FilterByJobDescription' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByJobDescription', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByJobDescription'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByJobDescriptionTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByPosition' id='FilterByPosition' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByPosition', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByPosition'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByPositionTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByNode' id='FilterByNode' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByNode', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByNode'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByNodeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByMajorType' id='FilterByMajorType' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByMajorType', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByMajorType'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByMajorTypeTitle)</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByMajor' id='FilterByMajor' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByMajor', " + monthId + ")" + '"' + "/>" +
+            "<label for='FilterByMajor'>@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.FilterByMajorTitle)</label></div></fieldset>";
+
+        return appendedFilterHtml;
+    }
+
+    function LoadSpecificFilter(filterBy, monthId) {
+        var actionName = "";
+
+        if (filterBy == "FilterByEmployee") {
+            actionName = "GetEmployeeGridModel";
+        } else if (filterBy == "FilterByPrimaryCard") {
+            actionName = "GetPrimaryCardGridModel";
+        } else if (filterBy == "FilterByGrade") {
+            actionName = "GetGradeGridModel";
+        } else if (filterBy == "FilterByJobTitle") {
+            actionName = "GetJobTitleGridModel";
+        } else if (filterBy == "FilterByJobDescription") {
+            actionName = "GetJobDescriptionGridModel";
+        } else if (filterBy == "FilterByPosition") {
+            actionName = "GetPositionGridModel";
+        } else if (filterBy == "FilterByNode") {
+            actionName = "GetNodeGridModel";
+        } else if (filterBy == "FilterByMajorType") {
+            actionName = "GetMajorTypeGridModel";
+        } else if (filterBy == "FilterByMajor") {
+            actionName = "GetMajorGridModel";
+        }
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/Filter/' + actionName,
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                data.Name = "gridCards";
+                new Grid(data).CreateSimpleGrid();
+                $(".GenerateButtonKey").off("click").on("click", function () {
+                    GenerateMonthByFilteredData(monthId, filterBy);
+                });
+            }
+        });
+    }
+
+    function GenerateMonthByFilteredData(monthId, filterBy) {
+        var actionName = "";
+
+        if (filterBy == "FilterByEmployee") {
+            actionName = "GenerateFilteredEmployees";
+        } else if (filterBy == "FilterByPrimaryCard") {
+            actionName = "GenerateFilteredPrimaryCards";
+        } else if (filterBy == "FilterByGrade") {
+            actionName = "GenerateFilteredGrades";
+        } else if (filterBy == "FilterByJobTitle") {
+            actionName = "GenerateFilteredJobTitles";
+        } else if (filterBy == "FilterByJobDescription") {
+            actionName = "GenerateFilteredJobDescriptions";
+        } else if (filterBy == "FilterByPosition") {
+            actionName = "GenerateFilteredPositions";
+        } else if (filterBy == "FilterByNode") {
+            actionName = "GenerateFilteredNodes";
+        } else if (filterBy == "FilterByMajorType") {
+            actionName = "GenerateFilteredMajorTypes";
+        } else if (filterBy == "FilterByMajor") {
+            actionName = "GenerateFilteredMajors";
+        }
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/Month/' + actionName,
+            type: "POST",
+            data: JSON.stringify({
+                monthId: monthId,
+                filter: $("#gridCards").data("kendoGrid").dataSource.filter()
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+            }
+        });
+    }
+
+    function MonthOperation(monthId, operation) {
+
+        if (operation == "Generate") {
+            $("#ribbonContainer").html("");
+            $("#dynamic_content").html("<div id='FilterInfo'></div>" + "<div id='gridCards'></div>");
+            $("#FilterInfo").html(GenerateFilterHtml(monthId));
+        } else {
+            $.ajax({
+                url: window.applicationpath + 'PayrollSystem/Month/MonthOperation',
+                type: "POST",
+                data: JSON.stringify({ monthId: monthId, operation: operation }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    } else {
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                }
+            });
+        }
+    }
+
+
+
+    function refreshGrid(e) {
+        $("#grid").data("kendoGrid").dataSource.fetch();
+    }
+
+
+
+    function MonthlyCard_LoanPayment_EditHandler(e) {
+        debugger;
+
+        var MonthlyCardID = e.model.Id != 0 ? e.model.MonthlyCard.Id : window.requestInformation.NavigationInfo.Previous[1].RowId;
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/Month/CheckMonthlyCard',
+            type: "POST",
+            data: JSON.stringify({ monthCardId: MonthlyCardID }),
+            contentType: 'application/json',
+            success: function (data) {
+                debugger;
+                if (data.monthStatus == "@MonthStatus.Locked") {
+
+                    hidePopup(e, "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.YouCantEditRecordBelongToLockedMonth))");
+                } else {
+                    addRequiredStar('EmployeeLoan');
+                }
+            }
+        });
+    }
+
+    function MonthlyCard_MonthlyEmployeeDeduction_EditHandler(e) {
+        var MonthlyCardID = e.model.Id != 0 ? e.model.MonthlyCard.Id : window.requestInformation.NavigationInfo.Previous[1].RowId;
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/Month/CheckMonthlyCard',
+            type: "POST",
+            data: JSON.stringify({ monthCardId: MonthlyCardID }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.monthStatus == "@MonthStatus.Locked") {
+                    hidePopup(e, "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.YouCantEditRecordBelongToLockedMonth))");
+                }
+            }
+        });
+
+        isFirstEditLoad = true;
+        $("#dropDownListDeductionCard").data("kendoDropDownList").bind("change", function () {
+            onDeductionCardChanged(e);
+        });
+        $("#dropDownListDeductionCard").data("kendoDropDownList").dataSource.one("change", function () {
+            onDeductionCardChanged(e);
+        });
+    }
+
+    function MonthlyCard_MonthlyEmployeeBenefit_EditHandler(e) {
+
+
+        var MonthlyCardID = e.model.Id != 0 ? e.model.MonthlyCard.Id : window.requestInformation.NavigationInfo.Previous[1].RowId;
+
+            $.ajax({
+                url: window.applicationpath + 'PayrollSystem/Month/CheckMonthlyCard',
+                type: "POST",
+                data: JSON.stringify({ monthCardId: MonthlyCardID }),
+                contentType: 'application/json',
+                success: function (data) {
+                    debugger;
+                    if (data.monthStatus == "@MonthStatus.Locked") {
+
+                        hidePopup(e, "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.YouCantEditRecordBelongToLockedMonth))");
+                    }
+                }
+            });
+
+
+        isFirstEditLoad = true;
+        $("#dropDownListBenefitCard").data("kendoDropDownList").bind("change", function () {
+            onBenefitCardChanged(e);
+        });
+        $("#dropDownListBenefitCard").data("kendoDropDownList").dataSource.one("change", function () {
+            onBenefitCardChanged(e);
+        });
+    }
+
+    function MonthlyCard_EditHandler(e) {
+        if (e.model.Id != 0) {
+            $.ajax({
+                url: window.applicationpath + 'PayrollSystem/Month/CheckMonthlyCard',
+                type: "POST",
+                data: JSON.stringify({  monthCardId : e.model.Id }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.monthStatus == "@MonthStatus.Locked") {
+
+                        hidePopup(e, "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.YouCantEditRecordBelongToLockedMonth))");
+                    }
+                }
+            });
+
+        }
+    }
+
+        var isFirstEditLoad = true;
+
+        function onBenefitCardChanged(e) {
+
+            if (e.model.Id > 0) {
+                if (isFirstEditLoad == true) {
+                    isFirstEditLoad = false;
+                    return;
+                }
+            }
+            var benefitCardId = $("#dropDownListBenefitCard").data("kendoDropDownList").value();
+            if (benefitCardId > 0) {
+
+                $.ajax({
+                    url: 'BenefitCard/GetBenefitCardInformation',
+                    type: "POST",
+                    data: JSON.stringify({ id: benefitCardId }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if ($("[name=Value]").data("kendoNumericTextBox")!=null){
+                            $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                            e.model.Value = data.result.Value;
+                        }
+                        if ($("[name=ExtraValue]").data("kendoNumericTextBox")!=null){
+                            $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                            e.model.ExtraValue = data.result.ExtraValue;
+                        }
+                        if ($("[name=CeilValue]").data("kendoNumericTextBox")!=null){
+                            $("[name=CeilValue]").data("kendoNumericTextBox").value(data.result.CeilValue);
+                            e.model.CeilValue = data.result.CeilValue;
+                        }
+                        if ($("#dropDownListFormula").data("kendoDropDownList")!=null){
+                            $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                            e.model.Formula = data.result.Formula;
+                        }
+                        if($("#dropDownListExtraValueFormula").data("kendoDropDownList")!=null){
+                            $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                            e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+                        }
+                        if ($("#dropDownListCeilFormula").data("kendoDropDownList")!=null){
+                            $("#dropDownListCeilFormula").data("kendoDropDownList").value(data.result.CeilFormula);
+                            e.model.CeilFormula = data.result.CeilFormula;
+                        }
+                    }
+                });
+            }
+        }
+
+        function onDeductionCardChanged(e) {
+            if (e.model.Id > 0) {
+                if (isFirstEditLoad == true) {
+                    isFirstEditLoad = false;
+                    return;
+                }
+            }
+            var deductionCardId = $("#dropDownListDeductionCard").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: 'DeductionCard/GetDeductionCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: deductionCardId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                    e.model.Value = data.result.Value;
+                    $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                    e.model.ExtraValue = data.result.ExtraValue;
+
+                    $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                    e.model.Formula = data.result.Formula;
+                    $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                    e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+                }
+            });
+        }
+
+
+</script>

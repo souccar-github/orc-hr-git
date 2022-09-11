@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{53DB57E4-FAD3-46AC-8273-9F89A3516A19}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Souccar.ReportGenerator.Domain</RootNamespace>
+    <AssemblyName>Souccar.ReportGenerator.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\UI\Binaries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Resources, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Resources.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classification\IReportTemplateRepository.cs" />
+    <Compile Include="Classification\ReportTemplate.cs" />
+    <Compile Include="Classification\ReportTemplateContent.cs" />
+    <Compile Include="Helper\ReportGeneratorGroupsNames.cs" />
+    <Compile Include="QueryBuilder\AggregateFilterDescriptor.cs" />
+    <Compile Include="QueryBuilder\AggregateFunction.cs" />
+    <Compile Include="QueryBuilder\AggregateOperations.cs" />
+    <Compile Include="QueryBuilder\IQueryTreeParser.cs" />
+    <Compile Include="QueryBuilder\IQueryTreeService.cs" />
+    <Compile Include="QueryBuilder\FilterDescriptor.cs" />
+    <Compile Include="QueryBuilder\FilterOperator.cs" />
+    <Compile Include="QueryBuilder\GroupDescriptor.cs" />
+    <Compile Include="QueryBuilder\IReportRepository.cs" />
+    <Compile Include="QueryBuilder\ListSortDirection.cs" />
+    <Compile Include="QueryBuilder\QueryLeafPosition.cs" />
+    <Compile Include="QueryBuilder\ReportType.cs" />
+    <Compile Include="QueryBuilder\SortDescriptor.cs" />
+    <Compile Include="QueryBuilder\QueryLeaf.cs" />
+    <Compile Include="QueryBuilder\QueryTree.cs" />
+    <Compile Include="QueryBuilder\QueryTreeFactory.cs" />
+    <Compile Include="QueryBuilder\Report.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReportGenerator.DomainClassDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HRIS.Domain\HRIS.Domain.csproj">
+      <Project>{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}</Project>
+      <Name>HRIS.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Souccar.Reflector\Souccar.Reflector.csproj">
+      <Project>{d518faa9-2fa7-47a5-a22f-d650f14484de}</Project>
+      <Name>Souccar.Reflector</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

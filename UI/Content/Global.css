@@ -1,0 +1,132 @@
+
+
+
+
+/* ** * * * * * * * * * * * * * * * *  *** * * * * ** * * * * * * * * * ** * * * * * * * *** * ** */
+
+/*One column*/
+.tOneColumn
+{
+    clear: both;
+    width: 918px;
+    margin: 0 0 34px 0;
+}
+/*Two columns*/
+.tTwoColumnsLeft, .tTwoColumnsRight
+{
+    margin: 0 0 34px 0;
+}
+.tTwoColumnsLeft
+{
+    float: left;
+    width: 600px;
+    margin-right: 34px;
+}
+.tTwoColumnsRight
+{
+    float: right;
+    width: 284px;
+}
+
+/*Two equal columns*/
+.tTwoEqualColumnsLeft, .tTwoEqualColumnsRight
+{
+    margin: 0 0 34px 0;
+}
+.tTwoEqualColumnsLeft
+{
+    float: left;
+    width: 442px;
+    margin-right: 34px;
+}
+.tTwoEqualColumnsRight
+{
+    float: right;
+    width: 442px;
+}
+/*Two columns 3:1 */
+.tTwoColumnsLeftv2, .tTwoColumnsRightv2
+{
+    margin: 0 0 34px 0;
+}
+.tTwoColumnsLeftv2
+{
+    float: left;
+    width: 600px;
+    margin-right: 34px;
+}
+.tTwoColumnsRightv2
+{
+    float: right;
+    width: 284px;
+}
+/* Two columns reversed 1:2 */
+.tTwoColumnsLeftReversed, .tTwoColumnsRightReversed
+{
+    margin: 0 0 34px 0;
+}
+.tTwoColumnsLeftReversed
+{
+    clear:both;
+    float: left;
+    width: 284px;
+    margin-right: 34px;
+}
+.tTwoColumnsRightReversed
+{
+    float: right;
+    width: 600px;
+}
+
+/* Two columns reversed 1:3 */
+.tTwoColumnsLeftReversedv2, .tTwoColumnsRightReversedv2
+{
+    margin: 0 0 34px 0;
+}
+.tTwoColumnsLeftReversedv2
+{
+    clear:both;
+    float: left;
+    width: 204px;
+    margin-right: 34px;
+}
+.tTwoColumnsRightReversedv2
+{
+    float: right;
+    width: 680px;
+}
+/*Two columns in Left Column V2 */
+.tTwoColumnsLeftInLeftV2, .tTwoColumnsRightInLeftV2
+{
+	margin: 0 0 34px 0;
+}
+
+.tTwoColumnsLeftInLeftV2
+{
+	float: left;
+	width: 323px;
+	margin-right: 34px;
+}
+
+.tTwoColumnsRightInLeftV2
+{
+	float: right;
+	width: 323px;
+}
+/*Three equal columns*/
+.tThreeColumnsLeftCenter, .tThreeColumnsRight
+{
+    margin: 0 0 34px 0;
+    width: 283px;
+    overflow: hidden;
+}
+.tThreeColumnsLeftCenter
+{
+    float: left;
+    margin-right: 34px;
+}
+.tThreeColumnsRight
+{
+    width: 284px;
+    float: right;
+}

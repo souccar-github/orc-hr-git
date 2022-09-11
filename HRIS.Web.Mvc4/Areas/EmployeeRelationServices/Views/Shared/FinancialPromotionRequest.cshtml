@@ -1,0 +1,376 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Helpers.DomainExtensions
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 26/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="financial-promotion-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="financial-promotion-employee-container"></div><br />
+<div class="financial-promotion-approval-container-title"><label>@GlobalResource.PendingFinancialPromotionRequest</label></div>
+<div class="financial-promotion-approval-container"></div><br />
+<div class="financial-promotion-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var financialPromotionId = window.localStorage.getItem('ServiceId');
+    var container = $('.financial-promotion-employee-container');
+    var approval_container = $('.financial-promotion-approval-container');
+    var workflowContainer = $(".financial-promotion-request-workflow-container");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForFinancialPromotionService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        $(".financial-promotion-employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        container.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+            approval_container.html('');
+            container.html("");
+            $(".financial-promotion-employee-container-title").html('');
+            $(".financial-promotion-approval-container-title").html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            var fullName = $(this).attr('data-fullname');
+            var leaveReasonCreatablePermission1 = ('@UserExtensions.CheckIfCurrentUserIsAuthorized("HRIS.Domain.EmployeeRelationServices.Indexes.FinancialPromotionReason", 0)').toLowerCase() == 'true' ? true : false;
+
+            var employeeFinancialPromotionTemplateData = [
+                 { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                { Name: "IsPercentage", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsPercentage)", Type: "Boolean" },
+                { Name: "FixedValue", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FixedValue)", Type: "Number", IsRequired: true },
+                { Name: "Percentage", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Percentage)", Type: "Number", IsRequired: true },
+                { Name: "Salary", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Salary)", Type: "Enum", TypeName: "HRIS.Domain.EmployeeRelationServices.Enums.SalaryType", IsRequired: true },
+                { Name: "FinancialPromotionReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FinancialPromotionReason)", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.FinancialPromotionReason", Creatable: leaveReasonCreatablePermission1 },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea" }
+            ];
+
+            var employeeFinancialPromotionDatabind = kendo.observable(
+                {
+                    FullName: fullName,
+                    IsPercentage: null,
+                    FixedValue: 0,
+                    Percentage: 0,
+                    Salary: -1,
+                    FinancialPromotionReason: 0,
+                    Comment: ""
+                });
+
+            createCustomEditForm(container, { Fields: employeeFinancialPromotionTemplateData, Key: "employee-financial-promotion" }, employeeFinancialPromotionDatabind);
+
+            //e.container.find("[name='Percentage']").kendoNumericTextBox({ value: 0, max: 100, min: 0 });
+
+
+            var isPercentageCkb = container.find('[name="IsPercentage"]');
+            var fixed = container.find("[name='FixedValue']");
+            var perc = container.find("[name='Percentage']");
+            container.find(".control-Percentage").hide();
+            perc.bind("change", function (e) {
+
+                if (perc.data("kendoNumericTextBox").value() < 0)
+                    perc.data("kendoNumericTextBox").value(0);
+            });
+            fixed.bind("change", function (e) {
+                if (fixed.data("kendoNumericTextBox").value() < 0)
+                    fixed.data("kendoNumericTextBox").value(0);
+            });
+            isPercentageCkb.change(function () {
+                if (this.checked == true) {
+                    container.find(".control-FixedValue").hide();
+                    container.find(".control-Percentage").show();
+                    container.find("[name='FixedValue']").data("kendoNumericTextBox").value(0);
+                } else {
+                    container.find(".control-FixedValue").show();
+                    container.find(".control-Percentage").hide();
+                    container.find("[name='Percentage']").data("kendoNumericTextBox").value(0);
+                }
+            });
+            reOrderControls(container);
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            container.find(".control-Comment").after(applyButton);
+
+            container.find(".applyButton").off('click').on('click', function () {
+
+
+                debugger;
+                var FinancialPromotionReasonId = Number(container.find("#FinancialPromotionReason_employee-financial-promotion").data("kendoDropDownList").value());
+                var isPercentage = Boolean(container.find("[name='IsPercentage']").is(':checked'));
+                var fixedValue = container.find("[name='FixedValue']").val();
+                var percentage = container.find("[name='Percentage']").val();
+                //var reason = container.find("[name='FinancialPromotionReason']").val();
+                var comment = container.find("[name='Comment']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeFinancialPromotionItem: employeeFinancialPromotionDatabind };
+
+                employeeFinancialPromotionDatabind.FinancialPromotionReasonId = FinancialPromotionReasonId;
+                employeeFinancialPromotionDatabind.Comment = comment;
+                employeeFinancialPromotionDatabind.FullName = fullName;
+                employeeFinancialPromotionDatabind.IsPercentage = isPercentage;
+                employeeFinancialPromotionDatabind.FixedValue = fixedValue;
+                employeeFinancialPromotionDatabind.Percentage = percentage;
+
+                $("[name='FinancialPromotionReason']").focusout(function () {
+
+                    if ($("[name='FinancialPromotionReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "FinancialPromotionReason");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FinancialPromotionReason').remove();
+                    }
+
+                });
+
+                $("[name='FinancialPromotionReason']").keyup(function () {
+                    if ($("[name='FinancialPromotionReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "FinancialPromotionReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FinancialPromotionReason').remove();
+                    }
+
+                });
+                @*if (reason == "") {
+                    if ($("[name='FinancialPromotionReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "FinancialPromotionReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FinancialPromotionReason').remove();
+                    }
+                }*@
+                $("[name='FixedValue']").focusout(function () {
+
+                    if ($("[name='FixedValue']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "FixedValue");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FixedValue').remove();
+                    }
+
+                });
+
+                $("[name='FixedValue']").keyup(function () {
+                    if ($("[name='FixedValue']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "FixedValue");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FixedValue').remove();
+                    }
+
+                });
+                $("[name='Percentage']").focusout(function () {
+
+                    if ($("[name='Percentage']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "Percentage");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-Percentage').remove();
+                    }
+
+                });
+
+                $("[name='Percentage']").keyup(function () {
+                    if ($("[name='Percentage']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "Percentage");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-Percentage').remove();
+                    }
+
+                });
+                if (fixedValue == 0 && isPercentage == 0) {
+
+
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "FixedValue");
+                }
+                else if (percentage == 0 && isPercentage == 1) {
+
+
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "Percentage");
+                }
+                else {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-FixedValue').remove();
+                }
+
+                if ((fixedValue == 0 && percentage == 0)) {
+                    //  requiredMessage();
+                    return;
+                }
+                Souccar.ajax('@Url.Action("SaveEmployeeFinancialPromotionItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+                //getEmployeeActionViewModel();
+            });
+
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+    function showEmployeeApproval(data) {
+        $(".financial-promotion-approval-container-title").html('@GlobalResource.PendingFinancialPromotionRequest');
+        var template = kendo.template($("#employee-financial-promotion-approval-template").html());
+        approval_container.html(template(data));
+        window.EmployeesFinancialPromotionInfo = data;
+    }
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, financialPromotionId);
+        notifyWorkflowId = null;
+    }
+
+    function approvalAction(workflowId, financialPromotionId) {
+        container.html('');
+        approval_container.html('');
+
+        $(".financial-promotion-employee-container-title").html('');
+        $(".financial-promotion-approval-container-title").html('');
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+            var leaveReasonCreatablePermission2 = ('@UserExtensions.CheckIfCurrentUserIsAuthorized("HRIS.Domain.EmployeeRelationServices.Indexes.FinancialPromotionReason", 0)').toLowerCase() == 'true' ? true : false;
+
+            var employeeFinancialPromotionTemplateData = [
+                { Name: "FullName", Title: "@GlobalResource.FullName", Type: "Text", IsReadonly: true },
+                { Name: "IsPercentage", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsPercentage)", Type: "Boolean", IsReadonly: true },
+                { Name: "FixedValue", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FixedValue)", Type: "Number", IsReadonly: true },
+                { Name: "Percentage", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Percentage)", Type: "Number", IsReadonly: true },
+                { Name: "FinancialPromotionReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FinancialPromotionReason)", Type: "Text", IsReadonly: true },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea", IsReadonly: true }
+            ];
+
+            var employeeFinancialPromotionViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    IsPercentage: null,
+                    FixedValue: 0,
+                    Percentage: 0,
+                    FinancialPromotionReason: "",
+                    Comment: ""
+                });
+
+            for (var i = 0; i < window.EmployeesFinancialPromotionInfo.length; i++) {
+                if (window.EmployeesFinancialPromotionInfo[i].WorkflowItemId == workflowId) {
+                    employeeFinancialPromotionViewDatabind.FullName = window.EmployeesFinancialPromotionInfo[i].FullName;
+                    employeeFinancialPromotionViewDatabind.IsPercentage = window.EmployeesFinancialPromotionInfo[i].IsPercentage;
+                    employeeFinancialPromotionViewDatabind.FixedValue = window.EmployeesFinancialPromotionInfo[i].FixedValue;
+                    employeeFinancialPromotionViewDatabind.Percentage = window.EmployeesFinancialPromotionInfo[i].Percentage;
+                    employeeFinancialPromotionViewDatabind.FinancialPromotionReason = window.EmployeesFinancialPromotionInfo[i].FinancialPromotionReason;
+                    employeeFinancialPromotionViewDatabind.Comment = window.EmployeesFinancialPromotionInfo[i].Comment;
+                    console.log(window.EmployeesFinancialPromotionInfo[i].WorkflowItemId + '_' + workflowId);
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeFinancialPromotionTemplateData, Key: "employee-financial-promotion" }, employeeFinancialPromotionViewDatabind);
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptFinancialPromotionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectFinancialPromotionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingFinancialPromotionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId, financialPromotionId: financialPromotionId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-financial-promotion-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsPercentage)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FixedValue)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Percentage)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FinancialPromotionReason)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i = 0; i < data.length; i++) {#
+            #var employee=data[i];#
+            #var checkStatus="";#
+            #if(employee.IsPercentage){#
+            #checkStatus='checked="checked"';#
+            #}#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td><input type="checkbox" disabled #=checkStatus# data-index="#=i#" /></td>
+                <td>#=employee.FixedValue#</td>
+                <td>#=employee.Percentage#</td>
+                <td>#=employee.FinancialPromotionReason#</td>
+                <td>#=employee.Comment#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.FinancialPromotionId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

@@ -1,0 +1,129 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="chart chart-width-half">
+    <div class="chart-params">
+        
+    </div>
+    <div id="blood-group-percentage-chart" class="container-chart"></div>
+
+    <div id="blood-group-percentage-table"></div>
+</div>
+
+<script type="text/javascript">
+
+    function generateBloodGroupPercentageSection() {
+
+        getBloodGroupPercentageChartData();
+    }
+
+    function getBloodGroupPercentageChartData() {
+
+        window.Souccar.ajax('@Url.Action("GetBloodGroupPercentageData", "Dashboard", new { area = "Personnel" })', {  }, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateBloodGroupPercentageChart(data);
+                generateBloodGroupPercentageTable(data);
+            }, 500);
+            
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getBloodGroupPercentageChartData');
+        }
+
+    }
+
+    function generateBloodGroupPercentageChart(data) {
+
+        //var colors = Highcharts.getOptions().colors;
+        //colors.unshift(getDefaultThemeColor());
+
+        Highcharts.chart('blood-group-percentage-chart', {
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            title: {
+                text: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.BloodGroupPercentage)'
+            },
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '<div style="color:{point.color};><b>{point.y:.2f} %</b></div> ',
+            },
+            plotOptions: {
+                pie: {
+                    size: 220,
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 35,
+                    dataLabels: {
+                        
+                        enabled: true,
+                        format: $dir == 'ltr' ? '<span>{point.name}: {point.percentage:.1f} <span> %' : '% <span>{point.name}: {point.percentage:.1f} <span>',
+                        useHTML: "hasBidiBug"
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                type: 'pie',
+                name: 'BloodGroupPercentage',
+                point: {
+                    events: {
+                        click: function (event) {
+                            //alert(this.y);
+                        }
+                    }
+                },
+                data: [
+                    { name: 'Nothing', y: data.Nothing },
+                    { name: 'A+', y: data.A_Plus },
+                    { name: 'A-', y: data.A_Negative },
+                    { name: 'AB+', y: data.AB_Plus },
+                    { name: 'AB-', y: data.AB_Negative },
+                    { name: 'B+', y: data.B_Plus },
+                    { name: 'B-', y: data.B_Negative },
+                    { name: 'O+', y: data.O_Plus },
+                    { name: 'O-', y: data.O_Negative }
+                ]
+            }]
+        });
+    }
+
+    function generateBloodGroupPercentageTable(data) {
+
+        var table = '<table id="bloodGroupPercentageTable" dir="' + $dir + '" class="tbl dashboardTable" border="0" cellpadding="0" cellspacing="1">';
+        table += '<tr>';
+        table += '<th class="redCell">A+</th>';
+        table += '<th class="redCell">A-</th>';
+        table += '<th class="redCell">AB+</th>';
+        table += '<th class="redCell">AB-</th>';
+        table += '<th class="redCell">B+</th>';
+        table += '<th class="redCell">B-</th>';
+        table += '<th class="redCell">O+</th>';
+        table += '<th class="redCell">O-</th>';
+        table += '<th class="redCell">Nothing</th>';
+        table += '</tr>';
+
+        table += '<tr>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.A_PlusCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.A_NegativeCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.AB_PlusCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.AB_NegativeCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.B_PlusCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.B_NegativeCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.O_PlusCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.O_NegativeCount + ' </td>';
+        table += '<td style="background-color:#ffffff;width:11%;"> ' + data.NothingCount + ' </td>';
+        table += '</tr>';
+
+        table += '</table>';
+
+        $('#blood-group-percentage-table').html("");
+        $('#blood-group-percentage-table').html(table);
+    }
+
+</script>

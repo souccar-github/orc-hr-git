@@ -1,0 +1,78 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<div class="chart chart-width-full">
+    <div id="leaves-by-month-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+    function getLeavesByMonthChart() {
+
+        window.Souccar.ajax('@Url.Action("GetLeavesByMonth", "Dashboard", new { area = "EmployeeRelationServices" })', {}, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Success) {
+                generateLeavesByMonthChart(data);
+            }
+        }
+        function erorrFunc() {
+            console.log("Error / func:getLeaveSettings");
+        }
+    }
+
+    function generateLeavesByMonthChart(data) {
+        Highcharts.chart('leaves-by-month-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeLeavesPerMonth)'
+            },
+            xAxis: {
+                categories: [
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr',
+                    'May',
+                    'Jun',
+                    'Jul',
+                    'Aug',
+                    'Sep',
+                    'Oct',
+                    'Nov',
+                    'Dec'
+                ],
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: ''
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:14px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                name: '@GlobalResource.WaitingApproved',
+                data: data.WaitingApprovedLeaves
+
+            }, {
+                name: '@GlobalResource.Approved',
+                data: data.ApprovedLeaves
+
+            }]
+        });
+    }
+</script>

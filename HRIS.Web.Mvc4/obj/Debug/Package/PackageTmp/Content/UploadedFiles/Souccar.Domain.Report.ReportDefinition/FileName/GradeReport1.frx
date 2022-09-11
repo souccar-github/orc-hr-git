@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/27/2016 11:10:16" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {
+      if (CheckBox1.Checked)
+      {        
+        GradeComboBox.SelectedIndex=-1;
+        GradeComboBox.AutoFilter=false;
+        GradeComboBox.AutoFill=false;
+        GradeComboBox.Enabled=false;
+      }else
+      {
+        GradeComboBox.AutoFilter=true;
+        GradeComboBox.AutoFill=true;
+        GradeComboBox.Enabled=true;	         
+      }  
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvlIG5zLCJ3Wuev+ZVnFPWfA==">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;dbo.Position.Id AS PositionId,&#13;&#10;(SELECT &#13;&#10;dbo.OrganizationalLevel.Name&#13;&#10;FROM&#13;&#10;dbo.Grade INNER JOIN dbo.OrganizationalLevel ON dbo.Grade.OrganizationalLevel_id = dbo.OrganizationalLevel.Id &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = dbo.Position.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND &#13;&#10;Grade.IsVertualDeleted=0 AND &#13;&#10;OrganizationalLevel.IsVertualDeleted=0 AND &#13;&#10;JobTitle.IsVertualDeleted=0 AND &#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0) AS OrganizationalLevelName,&#13;&#10;(SELECT&#13;&#10;dbo.Grade.Name&#13;&#10;FROM            &#13;&#10;dbo.Grade &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = P.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND &#13;&#10;Grade.IsVertualDeleted=0 AND &#13;&#10;JobTitle.IsVertualDeleted=0 AND &#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0) AS GradeName,&#13;&#10;(SELECT&#13;&#10;dbo.Grade.Id&#13;&#10;FROM            &#13;&#10;dbo.Grade &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = P.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND &#13;&#10;Grade.IsVertualDeleted=0 AND &#13;&#10;JobTitle.IsVertualDeleted=0 AND &#13;&#10;JobDescription.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0) AS GradeId&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;WHERE	dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;			dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;			Employee.IsVertualDeleted=0 AND &#13;&#10;			AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;			Position.IsVertualDeleted=0 AND &#13;&#10;			EmployeeCard.IsVertualDeleted=0&#13;&#10;ORDER BY dbo.Employee.Id DESC">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="PositionId" DataType="System.Int32"/>
+        <Column Name="OrganizationalLevelName" DataType="System.String"/>
+        <Column Name="GradeName" DataType="System.String"/>
+        <Column Name="GradeId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Grade" DataType="System.Int32" Enabled="true" TableName="Grade" SelectCommand="SELECT G.Id, G.IsVertualDeleted, G.Category, G.Name, G.Grade_Order, G.PayGroup, G.MinSalary, G.MaxSalary, G.OrganizationalLevel_id, G.GradeByEducation_id, G.CurrencyType_id, G.LeaveTemplateMaster_id, G.AttendanceForm_id, G.LatenessForm_id, G.OvertimeForm_id, G.AbsenceForm_id, G.HealthInsuranceTypes_id&#13;&#10;FROM &quot;Grade&quot; G&#13;&#10;WHERE G.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Category" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Grade_Order" DataType="System.Int32"/>
+        <Column Name="PayGroup" DataType="System.String"/>
+        <Column Name="MinSalary" DataType="System.Single"/>
+        <Column Name="MaxSalary" DataType="System.Single"/>
+        <Column Name="OrganizationalLevel_id" DataType="System.Int32"/>
+        <Column Name="GradeByEducation_id" DataType="System.Int32"/>
+        <Column Name="CurrencyType_id" DataType="System.Int32"/>
+        <Column Name="LeaveTemplateMaster_id" DataType="System.Int32"/>
+        <Column Name="AttendanceForm_id" DataType="System.Int32"/>
+        <Column Name="LatenessForm_id" DataType="System.Int32"/>
+        <Column Name="OvertimeForm_id" DataType="System.Int32"/>
+        <Column Name="AbsenceForm_id" DataType="System.Int32"/>
+        <Column Name="HealthInsuranceTypes_id" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="Grade_Table1" ParentDataSource="Grade" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="GradeId" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير الموظفين حسب الفئات" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Top="56.7" Width="718.2" Height="37.8" Text="[GradeComboBox.Text]:الفئة المختارة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="98.35" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="386.45" Width="181.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="567" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="255.15" Width="131.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text17" Left="141.75" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الفئة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text19" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المستوى التنظيمي للفئة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="121.09" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text4" Left="386.45" Width="180.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="255.15" Width="131.3" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="567" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text16" Left="141.75" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.GradeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text18" Width="141.75" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.OrganizationalLevelName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="143.84" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="425.25" Width="292.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Left="311.85" Width="113.4" Height="18.9" Border.Lines="Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text39" Width="311.85" Height="18.9" Border.Lines="Left, Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="166.58" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="174">
+    <ButtonControl Name="btnOk" Left="118" Top="87" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="196" Top="36" Width="29" Height="13" TabIndex="2" Text="الفئة"/>
+    <ComboBoxControl Name="GradeComboBox" Left="20" Top="32" Width="175" TabIndex="3" ClickEvent="" DataColumn="EmployeesDataSourse.Grade.Name" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="180" Top="64" Width="46" Height="17" TabIndex="4" Text="الكل" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

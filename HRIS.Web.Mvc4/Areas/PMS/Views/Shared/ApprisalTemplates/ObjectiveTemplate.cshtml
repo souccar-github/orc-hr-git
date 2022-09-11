@@ -1,0 +1,79 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script id="objectiveSection-workflow-template" type="text/x-kendo-template">
+ #var showKpisTemplate = kendo.template($("\\#show-kpis-template").html());#
+<div>
+    <fieldset class="objective-info">
+        <legend>@GlobalResource.ObjectiveInformation</legend>
+
+        <div class="appraisal-meta-info">
+            <div>
+                <span>@GlobalResource.Weight</span>
+                <span class="val">#=SectionWeight#</span>
+            </div>
+        </div>
+
+        <div class="appraisal-meta-desc">
+            <span>@GlobalResource.Description:</span>
+            #if(Description==null||Description=="null"){#
+
+            #Description="";#
+            #}#
+            <textarea readonly>#=Description#</textarea>
+        </div>
+    </fieldset>
+
+    <div class="objective">
+        <table>
+            <colgroup>
+                <col><col><col class="column-weight"><col class="column-kpis"><col class="column-weight"><col class="column-rate"><col class="column-notes">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+         
+                    <th class="" >@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Description)</th>
+                    <th id="evaluation-mark" class="" >@PMSLocalizationHelper.GetResource(PMSLocalizationHelper.EvaluationMark)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.KPI)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                    <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                </tr>
+            </thead>
+            <tbody>
+                #for (var i = 0; i < AppraisalItems.length; i++) {#
+                        #var item=AppraisalItems[i];#
+                        <tr class="objective-#=i#">
+                            <td><p>#=item.Name#</p></td>
+                            <td><p> #if(item.Description==null||item.Description=="null"){#
+                                #item.Description="";#
+                                #}#</p></td>
+                            <td id="evaluation-mark-#=item.Id#"><p>#=item.EvaluationMark#</p></td>
+                            <td class="item-commands relative-table-cell">
+                                <button data-item-index="#=i#" class="show-incentive-item k-button">
+                                    <span class="k-icon k-i-note" style="vertical-align: sub;"></span>
+                                </button>
+                                <div class="kpis-info">
+                                    <div class="tooltip-wrapper">
+                                        #=showKpisTemplate({Kpis:item.Kpis})#
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="center-column"><input value="#=item.Weight#" data-role="numerictextbox" name="appraisal-objective-weight-#=item.Id#" class="appraisal-objective-weight" type="text" /></td>
+                            <td class="center-column"><input value="#=item.Rate#"  name="appraisal-objective-rate-#=item.Id#" class="appraisal-objective-rate  appraisal-rate" type="text" /></td>
+                            <td class="center-column">
+                                #if(item.Description==null||item.Description=="null"){#
+                                #item.Description="";#
+                                #}#
+                                <textarea name="appraisal-objective-note#=item.Id#" class="appraisal-note appraisal-objective-note k-textbox"></textarea>
+                            </td>
+                        </tr>
+                #}#
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</script>

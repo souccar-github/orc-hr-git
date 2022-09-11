@@ -1,0 +1,10 @@
+D:\Projects\ORC-HR\HR System\ui\binaries\HRIS.Domain.dll
+D:\Projects\ORC-HR\HR System\ui\binaries\HRIS.Domain.pdb
+D:\Projects\ORC-HR\HR System\HRIS.Domain\obj\Debug\HRIS.Domain.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System\HRIS.Domain\obj\Debug\HRIS.Domain.dll
+D:\Projects\ORC-HR\HR System\HRIS.Domain\obj\Debug\HRIS.Domain.pdb
+D:\Projects\ORC-HR\HR System-git\ui\binaries\HRIS.Domain.dll
+D:\Projects\ORC-HR\HR System-git\ui\binaries\HRIS.Domain.pdb
+D:\Projects\ORC-HR\HR System-git\HRIS.Domain\obj\Debug\HRIS.Domain.csprojResolveAssemblyReference.cache
+D:\Projects\ORC-HR\HR System-git\HRIS.Domain\obj\Debug\HRIS.Domain.dll
+D:\Projects\ORC-HR\HR System-git\HRIS.Domain\obj\Debug\HRIS.Domain.pdb

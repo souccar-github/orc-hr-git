@@ -1,0 +1,160 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+
+<div class="chart chart-width-half">
+    <div class="chart-params">
+        @* Parent Nodes *@
+        <div id="p-node-ssp" style="width:48%;">
+            <div class="control control-p-node-ssp">
+                <div class="k-edit-label">
+                    <label for="pNodeSsp">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ParentNodes)</label>
+                </div>
+                <div data-container-for="pNodeSsp" class="k-edit-field">
+                    <input id="pNodeSsp" name="pNodeSsp" placeholder="@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.SelectParentNodes) ..." />
+                    <input id="hf_pNodeSsp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+        @* Child Nodes *@
+        <div id="c-node-ssp" style="width:48%;">
+            <div class="control control-c-node-ssp">
+                <div class="k-edit-label">
+                    <label for="cNodeSsp">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.ChildNodes)</label>
+                </div>
+                <div data-container-for="cNodeSsp" class="k-edit-field">
+                    <input id="cNodeSsp" name="cNodeSsp" placeholder="@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.SelectChildNodes) ..." />
+                    <input id="hf_cNodeSsp" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* ------ *@
+
+    </div>
+    <div id="social-Status-percentage-chart" class="container-chart"></div>
+
+    <div id="social-Status-percentage-table"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $pNodeSsp = null;
+    var $cNodeSsp = null;
+
+    function generateSocialStatusPercentageSection() {
+
+        $pNodeSsp = $parentNode;
+        $cNodeSsp = $childNode;
+
+        generateComboBox("#pNodeSsp", "pNodeSsp", $pNodeSsp);
+        generateComboBox("#cNodeSsp", "cNodeSsp", $cNodeSsp);
+
+        $('#c-node-ssp').css('float', $pageDir);
+        $('#p-node-ssp').css('float', $pageDir);
+
+        getSocialStatusPercentageChartData();
+    }
+
+    function getSocialStatusPercentageChartData() {
+
+        window.Souccar.ajax('@Url.Action("GetSocialStatusPercentageData", "Dashboard", new { area = "Personnel" })', { childrenNodes: $cNodeSsp, parentsNodes: $pNodeSsp }, successFunc, erorrFunc);
+        function successFunc(data) {
+            setTimeout(function () {
+                generateSocialStatusPercentageChart(data);
+                generateSocialStatusPercentageTable(data);
+            }, 500);
+            
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:getSocialStatusPercentageChartData');
+        }
+
+    }
+
+    function generateSocialStatusPercentageChart(data) {
+
+        //var colors = Highcharts.getOptions().colors;
+        console.log(getDefaultThemeColor());
+        Highcharts.chart('social-Status-percentage-chart', {
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            title: {
+                text: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.SocialStatusPercentage)'
+            },
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '<div style="color:{point.color};><b>{point.y:.2f} %</b></div> ',
+            },
+            plotOptions: {
+                pie: {
+                    size: 220,
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 35,
+                    dataLabels: {
+
+                        enabled: true,
+                        format: $dir == 'ltr' ? '<span>{point.name}: {point.percentage:.1f} <span> %' : '% <span>{point.name}: {point.percentage:.1f} <span>',
+                        useHTML: "hasBidiBug"
+                    }
+                }
+            },
+            colors: getDashboardColors(),
+            series: [{
+                type: 'pie',
+                name: 'SocialStatusPercentage',
+                point: {
+                    events: {
+                        click: function (event) {
+                            //alert(this.y);
+                        }
+                    }
+                },
+                data: [
+
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Single)', y: data.SinglesPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Married)', y: data.MarriedsPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Divorced)', y: data.DivorcedsPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Widow)', y: data.WidowsPercentage },
+                    { name: '@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Engaged)', y: data.EngagedsPercentage },
+
+                ]
+            }]
+        });
+    }
+
+    function generateSocialStatusPercentageTable(data) {
+        var table = '<table id="socialStatusPercentageTable" dir="' + $dir + '" class="tbl dashboardTable" border="0" cellpadding="0" cellspacing="1" >';
+        table += '<tr>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Single) </th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Married)</th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Divorced)</th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Widow)</th>';
+        table += '<th class="redCell">@PersonnelLocalizationHelper.GetResource(PersonnelLocalizationHelper.Engaged)</th>';
+        table += '</tr>';
+
+        table += '<tr>';
+        table += '<td style="background-color:#ffffff;width:20%;"> ' + data.NumberOfSingles + ' </td>';
+        table += '<td style="background-color:#ffffff;width:20%;"> ' + data.NumberOfMarrieds + ' </td>';
+        table += '<td style="background-color:#ffffff;width:20%;"> ' + data.NumberOfDivorceds + ' </td>';
+        table += '<td style="background-color:#ffffff;width:20%;"> ' + data.NumberOfWidows + ' </td>';
+        table += '<td style="background-color:#ffffff;width:20%;"> ' + data.NumberOfEngageds + ' </td>';
+        table += '</tr>';
+
+        table += '</table>';
+
+        $('#social-Status-percentage-table').html("");
+        $('#social-Status-percentage-table').html(table);
+    }
+
+</script>

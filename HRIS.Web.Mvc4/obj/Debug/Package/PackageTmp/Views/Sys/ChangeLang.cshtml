@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "ChangeLang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ChangeLang</h2>
+<script>
+    $(document).ready(function () {
+        window.requestInformation =JSON.parse(@Html.Raw(Json.Encode(ViewBag.requestInformation)));
+        changeLocation();
+    });
+</script>

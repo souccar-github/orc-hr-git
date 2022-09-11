@@ -1,0 +1,53 @@
+﻿@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Helpers
+@{
+    Layout = null;
+    var dir = "";
+    var kdir = "";
+    var localdir = "";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        dir = "rtl";
+        kdir = "k-rtl";
+        localdir = "local-rtl";
+    } else
+    {
+        dir = "ltr";
+        localdir = "local-ltr";
+    }
+    var temp = Url.Content("~/favicons/favicon-"+@ThemingHelper.DefaultTheme.ToString().ToLower()+".png");
+    var link = Url.Content("~/Content/template/maestro-style 1/login/login-" + @ThemingHelper.DefaultTheme.ToString().ToLower() + ".css");
+}
+
+<!DOCTYPE HTML>
+
+<html lang="en" xml:lang="en" dir="@dir" id="html">
+<head>
+  
+    <title>@AccountLocalizationHelper.GetResource(AccountLocalizationHelper.Login) </title>
+    <link rel="icon" type="image/png" href="@temp" />
+    <link href="@link" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <script src="~/scripts/jquery-1.9.1.js"></script>
+    <script src="~/scripts/maestro-scripts/login.js"></script>
+
+    @* @Styles.Render("~/Content/mainTheme")
+        <link type="text/css" rel="stylesheet" href="~/Content/template/bootstrap.css"/>
+        <link type="text/css" rel="stylesheet" href="~/Content/template/layout.css"/>
+        <link type="text/css" rel="stylesheet" href="~/Content/template/styles.css"/>
+
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/kendo")
+        @Scripts.Render("~/bundles/mainTheme")
+        <script src="~/Scripts/mainTheme/jquery.tipsy.js"></script>*@
+   </head>
+
+
+   <body id="theme-default" class="login @kdir @localdir">
+       @Html.Partial("LoginPartial")
+   </body>
+</html>
+

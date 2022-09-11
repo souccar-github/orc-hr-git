@@ -1,0 +1,278 @@
+﻿
+@using HRIS.Domain.OrganizationChart.RootEntities
+@using HRIS.Domain.OrganizationChart.Configurations
+@using HRIS.Domain.JobDescription.RootEntities
+@using Project.Web.Mvc4
+@using Project.Web.Mvc4.Extensions
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+
+@{
+    var dir = "ltr";
+    var pageDir = "left";
+
+    if (CurrentLocale.Language == Locale.Rtl)
+    {
+        pageDir = "right";
+        dir = "rtl";
+    }
+}
+
+<div class="chart chart-width-half">
+    <div id="chart-params-ie" class="chart-params">
+        @* From Date *@
+        <div id="from-date-ie" style="float:@pageDir;width:48%;">
+            <div class="control control-from-date-ie">
+                <div class="k-edit-label">
+                    <label for="fromDateIe">@GlobalResource.FromDate</label>
+                </div>
+                <div data-container-for="fromDateIe" class="k-edit-field">
+                    <input id="fromDateIe" />
+                </div>
+
+            </div>
+        </div>
+        @* To Date *@
+        <div id="to-date-ie" style="float:@pageDir;width:48%;">
+            <div class="control control-to-date-ie">
+                <div class="k-edit-label">
+                    <label for="toDateIe">@GlobalResource.ToDate</label>
+                </div>
+                <div data-container-for="toDateIe" class="k-edit-field">
+                    <input id="toDateIe" />
+                </div>
+
+            </div>
+        </div>
+        @* Nodes Type *@
+        <div id="p-node-type-ie" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-type-ie">
+                <div class="k-edit-label">
+                    <label for="nodeTypeIe">@typeof(NodeType).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeTypeIe" class="k-edit-field">
+                    <input id="nodeTypeIe" name="nodeTypeIe" placeholder="@typeof(NodeType).GetLocalized() ..." />
+                    <input id="hf_nodeTypeIe" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+        @* Nodes *@
+        <div id="p-node-ie" style="float:@pageDir;width:48%;">
+            <div class="control control-p-node-ie">
+                <div class="k-edit-label">
+                    <label for="nodeIe">@typeof(Node).GetLocalized()</label>
+                </div>
+                <div data-container-for="nodeIe" class="k-edit-field">
+                    <input id="nodeIe" name="nodeIe" placeholder="@typeof(Node).GetLocalized() ..." />
+                    <input id="hf_nodeIe" type="hidden" />
+                </div>
+
+            </div>
+
+        </div>
+       
+        @* ------ *@
+    </div>
+    <div style="clear:both;"></div>
+
+    <div id="interviews-evaluators-chart" class="container-chart"></div>
+</div>
+
+<script type="text/javascript">
+
+    var $nodesTypesIe = null;
+    var $nodesIe = null;
+
+    function getInterviewsEvaluators(nodesTypes, nodes) {
+        $nodesTypesIe = nodesTypes;
+        $nodesIe = nodes;
+
+        var date = new Date();
+        date.setMonth(date.getMonth() - 1);
+
+        $('#fromDateIe').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth(), 1),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showInterviewsEvaluatorsChart();
+            }
+        });
+
+        $('#toDateIe').kendoDatePicker({
+            value: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            format: "dd/MM/yyyy",
+            change: function () {
+                showInterviewsEvaluatorsChart();
+            }
+        });
+
+        generateComboBox("#nodeTypeIe", "nodeTypeIe", $nodesTypesIe, onChangeNodeTypeIe);
+        generateComboBox("#nodeIe", "nodeIe", $nodesIe, onChangeNodeIe);
+        
+        setTimeout(function () { showInterviewsEvaluatorsChart(); }, 500);
+    }
+
+    function onChangeNodeTypeIe(e) {
+        onChange(e);
+        updateNodeTypeIeComboBox(e);
+    }
+    function updateNodeTypeIeComboBox(e) {
+        var eleCount = $nodesTypesIe.length;
+        $nodesTypesIe.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesTypesIe.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesTypesIe.push(items[i]);
+                }
+            }
+        }
+
+        //===Node
+        updateNodesIe($nodesTypesIe);
+        var dataSource = new kendo.data.DataSource();
+        var data = getComboDataSource($nodesIe);
+        dataSource.data(data);
+
+        var nodeIeDropDownList = $('#nodeIe').data("kendoDropDownList");
+        nodeIeDropDownList.setOptions({ dataTextField: "Name", dataValueField: "Id" });
+        nodeIeDropDownList.setDataSource(dataSource);
+
+        showInterviewsEvaluatorsChart();
+    }
+    function updateNodesIe(nodesTypes) {
+        window.Souccar.ajax('@Url.Action("GetNodes", "Dashboard", new { area = "Recruitment" })', { types: nodesTypes }, successFunc, erorrFunc);
+        function successFunc(data) {
+            $nodesIe = data;
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update nodes');
+        }
+    }
+
+    function onChangeNodeIe(e) {
+        onChange(e);
+        updateNodeIeComboBox(e);
+    }
+    function updateNodeIeComboBox(e) {
+        var eleCount = $nodesIe.length;
+        $nodesIe.splice(0, eleCount);
+
+        var eleName = "chk_" + e.sender.element.context.name + "_";
+        var items = e.sender.dataSource.data();
+
+        var selectAllSelector = '#' + eleName + 0;
+        if ($(selectAllSelector).is(':checked')) {
+            for (var i = 1; i < items.length; i++) {
+                $nodesIe.push(items[i]);
+            }
+        } else {
+            for (var i = 1; i < items.length; i++) {
+                var selector = '#' + eleName + items[i].Id;
+                if ($(selector).is(':checked')) {
+                    $nodesIe.push(items[i]);
+                }
+            }
+        }
+
+        showInterviewsEvaluatorsChart();
+    }
+    
+    function showInterviewsEvaluatorsChart() {
+
+        var fromKendoDatePicker = $('#fromDateIe').data('kendoDatePicker');
+        var fromDate = fromKendoDatePicker.value();
+
+        var toKendoDatePicker = $('#toDateIe').data('kendoDatePicker');
+        var toDate = toKendoDatePicker.value();
+
+        window.Souccar.ajax('@Url.Action("InterviewsEvaluators", "Dashboard", new { area = "Recruitment" })', { nodes: $nodesIe, fromDate: fromDate, toDate: toDate }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if(data.Success)
+                initInterviewsEvaluatorsChart(data);
+        }
+        function erorrFunc() {
+            console.log('ERROR - func:update job description');
+        }
+
+    }
+
+    function initInterviewsEvaluatorsChart(data) {
+        console.log(data);
+        Highcharts.chart('interviews-evaluators-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Interviews) '
+            },
+            xAxis: {
+                categories: data.Evaluators
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: ''
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: ( // theme
+                            Highcharts.defaultOptions.title.style &&
+                            Highcharts.defaultOptions.title.style.color
+                        ) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                headerFormat: '<b>{point.name}</b><br/>',
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            colors:getDashboardColors(),
+            series: [{
+                name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Accepted)',
+                data: data.AcceptedInterviews
+            }, {
+                name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Rejected)',
+                    data: data.RejectedInterviews
+            }, {
+                    name: '@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ForFuture)',
+                    data: data.ForFutureInterviews
+            }]
+        });
+    }
+</script>
+
+
+

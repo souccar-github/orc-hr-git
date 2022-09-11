@@ -1,0 +1,135 @@
+﻿<script type="text/javascript">
+
+    function GradeBenefitDetail_EditHandler(e) {
+        BenefitItem_Changed(e);
+    }
+
+    function JobDescriptionBenefitDetail_EditHandler(e) {
+        BenefitItem_Changed(e);
+    }
+
+
+    function JobTitleBenefitDetail_EditHandler(e) {
+        BenefitItem_Changed(e);
+    }
+
+    function NodeBenefitDetail_EditHandler(e) {
+        debugger;
+        BenefitItem_Changed(e);
+    }
+
+    function PositionBenefit_EditHandler(e) {
+        debugger;
+        BenefitItem_Changed(e);
+    }
+
+    function BenefitItem_Changed(e) {
+        debugger;
+        if ($("#dropDownListBenefitCard").data("kendoDropDownList") != null) {
+            $("#dropDownListBenefitCard").data("kendoDropDownList").bind("change", onBenefitCardSelect);
+            $("#dropDownListBenefitCard").data("kendoDropDownList").dataSource.one("change", onBenefitCardSelect);
+        }
+        function onBenefitCardSelect() {
+            var benefitCardId = $("#dropDownListBenefitCard").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: window.applicationpath + 'BenefitCard/GetBenefitCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: benefitCardId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if ($("[name=Value]").data("kendoNumericTextBox") != null) {
+                        $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                        e.model.Value = data.result.Value;
+                    }
+                    if ($("[name=ExtraValue]").data("kendoNumericTextBox") != null) {
+                        $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                        e.model.ExtraValue = data.result.ExtraValue;
+                    }
+                    if ($("[name=CeilValue]").data("kendoNumericTextBox") != null) {
+                        $("[name=CeilValue]").data("kendoNumericTextBox").value(data.result.CeilValue);
+                        e.model.CeilValue = data.result.CeilValue;
+                    }
+                    if ($("#dropDownListFormula").data("kendoDropDownList") != null) {
+                        $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                        e.model.Formula = data.result.Formula;
+                    }
+                    if ($("#dropDownListExtraValueFormula").data("kendoDropDownList") != null) {
+                        $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                        e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+                    }
+                    if ($("#dropDownListCeilFormula").data("kendoDropDownList") != null) {
+                        $("#dropDownListCeilFormula").data("kendoDropDownList").value(data.result.CeilFormula);
+                        e.model.CeilFormula = data.result.CeilFormula;
+                    }
+
+                }
+            });
+        }
+    }
+
+    function GradeDeductionDetail_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function JobDescriptionDeductionDetail_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function JobTitleDeductionDetail_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function NodeDeductionDetail_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function PositionDeductionDetail_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function JobDescriptonDeduction_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function PositionDeduction_EditHandler(e) {
+        DeductionItem_Changed(e);
+    }
+
+    function DeductionItem_Changed(e) {
+        if ($("#dropDownListDeductionCard").data("kendoDropDownList") != null) {
+            $("#dropDownListDeductionCard").data("kendoDropDownList").bind("change", onDeductionCardSelect);
+            $("#dropDownListDeductionCard").data("kendoDropDownList").dataSource.one("change", onDeductionCardSelect);
+        }
+        function onDeductionCardSelect() {
+            var deductionCardId = $("#dropDownListDeductionCard").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: window.applicationpath + 'DeductionCard/GetDeductionCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: deductionCardId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if ($("[name=Value]").data("kendoNumericTextBox") != null) {
+                        $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                        e.model.Value = data.result.Value;
+                    }
+                    if ($("[name=ExtraValue]").data("kendoNumericTextBox") != null) {
+                        $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                        e.model.ExtraValue = data.result.ExtraValue;
+                    }
+                    if ($("#dropDownListFormula").data("kendoDropDownList") != null) {
+                        $("#dropDownListFormula").data("kendoDropDownList").value(data.result.Formula);
+                        e.model.Formula = data.result.Formula;
+                    }
+                    if ($("#dropDownListExtraValueFormula").data("kendoDropDownList") != null) {
+                        $("#dropDownListExtraValueFormula").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                        e.model.ExtraValueFormula = data.result.ExtraValueFormula;
+
+                    }
+                }
+            });
+        }
+    }
+
+</script>

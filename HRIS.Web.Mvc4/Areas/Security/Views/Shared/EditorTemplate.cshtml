@@ -1,0 +1,89 @@
+﻿@using Project.Web.Mvc4.Areas.Security.Helpers
+<script>
+    function UserAfterRequestEnd() {
+        $(".k-grid-add").remove();
+    }
+
+    function initializeActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            @*if (actionListItems[i].Name == "@Project.Web.Mvc4.Helpers.GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }*@
+
+            if (actionListItems[i].Name == "@Project.Web.Mvc4.Helpers.GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+
+        let updateAL = actionListItems.find(e => e.HandlerName=="update");
+        let deleteAL = actionListItems.find(e => e.HandlerName=="destroy");
+        if (dataItem.Username === "@UserHelper.DefaultUser") {
+            if (updateAL!=undefined) updateAL.ShowCommand = false;
+            if (deleteAL != undefined) deleteAL.ShowCommand = false;
+        } else {
+            if (updateAL != undefined) updateAL.ShowCommand = true;
+            if (deleteAL != undefined) deleteAL.ShowCommand = true;
+        }
+    }
+    function initializeView() {
+        $("#view_edit").remove();
+    }
+
+    function UserEditHandler(e) {
+        $.ajax({
+            url: '@Url.Action("ReadThemeEnumDatasource", "Home", new { area = "Security" })',
+            type: "GET",
+            contentType: 'application/json',
+            success: function (data) {
+                var themesData = new kendo.data.DataSource(
+                    {
+                        data: data.Data
+                    }
+                );
+                $('[name="ThemingType"]').data("kendoDropDownList").setDataSource(themesData);
+                $('[name="ThemingType"]').data("kendoDropDownList").dataSource.read();
+            }
+        });
+        $('[name="Username"]').attr("disabled", "disabled");
+        $('[name="FullName"]').attr("disabled", "disabled");
+        $('[name="IsEnabled"]').attr("disabled", "disabled");
+        if (!e.model.isNew()) {
+            if ($('[name="Username"]').val() === "@UserHelper.DefaultUser") {
+                $('[name="Username"]').attr("disabled", "disabled");
+                $('[name="IsEnabled"]').attr("disabled", "disabled");
+            }
+        } else {
+
+
+
+            var defaultTheme = @((int)@Project.Web.Mvc4.Helpers.ThemingHelper.DefaultTheme);
+
+            setTimeout(function () {
+                $('[name="ThemingType"]').data("kendoDropDownList").select(function(dataItem) {
+                    return dataItem.Id === defaultTheme;
+                });
+            }, 1000);
+        }
+    }
+
+    function RoleEditHandler(e) {
+        if (!e.model.isNew()) {
+            if ($('[name="Name"]').val() === "@UserHelper.DefaultUser") {
+                $('[name="Name"]').attr("disabled", "disabled");
+            }
+        }
+    }
+
+    function RoleinitializeActionList(actionListItems, dataItem) {
+        if (dataItem.Name === "@UserHelper.DefaultUser") {
+            if (actionListItems[1] != undefined) actionListItems[1].ShowCommand = false;
+        } else {
+            if (actionListItems[1] != undefined) actionListItems[1].ShowCommand = true;
+        }
+    }
+</script>

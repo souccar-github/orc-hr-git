@@ -1,0 +1,923 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Helpers.DomainExtensions
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 5/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="leave-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="leave-employee-container"></div><br />
+<div class="leave-employee-container-info"></div>
+<br />
+<div class="leave-employee-container-attachments">
+    <div id="grid"></div>
+</div>
+<br />
+<div class="leave-approval-container-title"><label>@GlobalResource.PendingLeaveRequest</label></div>
+<div class="leave-approval-container"></div><br />
+<div class="leave-request-workflow-container"></div>
+<script id="leave-workflow-template" type="text/x-kendo-template">
+    <div class="appraisal-form">
+        <ul>
+            <li class="k-state-active">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Primary)</li>
+            <li>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Attachments)</li>
+        </ul>
+        <div class="appraisal-tab-div tab-leave-primary-section"></div>
+        <div class="appraisal-tab-div tab-leave-attachments-section">
+            <div id="grid"></div>
+        </div>
+    </div>
+</script>
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var leaveId = window.localStorage.getItem('ServiceId');
+    var employeeContainer = $('.leave-employee-container');
+    var employeeLeaveInfoContainer = $('.leave-employee-container-info');
+    var employeeLeaveattachmentsContainer = $('.leave-employee-container-attachments');
+    var approvalContainer = $('.leave-approval-container');
+    var workflowContainer = $(".leave-request-workflow-container");
+    var employeeTitleContainer = $(".leave-employee-container-title");
+    var leaveApprovalTitleContainer = $(".leave-approval-container-title");
+    employeeLeaveattachmentsContainer.hide();
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        $.ajax({
+            url: '@Url.Action("CheckEmployeeBalanceOfLeaveSettings", "Service", new { area = "EmployeeRelationServices" })',
+            type: "POST",
+            async: true,
+            contentType: "application/json",
+            success: function (data) {
+
+            },
+            error: function (err) {
+
+            }
+
+        });
+
+
+
+        Souccar.ajax('@Url.Action("GetDataForPSLeaveService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            console.log(data.EmployeeApproval);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+    function viewAttachmentsGrid(leaveId) {
+        employeeContainer.html('');
+        approvalContainer.html('');
+        employeeTitleContainer.html('');
+        leaveApprovalTitleContainer.html('');
+        employeeLeaveInfoContainer.html('');
+        employeeLeaveattachmentsContainer.show();
+        var applyButton = $('<div class="top-commands"><button class="k-button primary-command doneButton"><span class="command-icon save"></span>@GlobalResource.Done</button></div>');
+        employeeLeaveattachmentsContainer.append(applyButton);
+        initAttachments(emp_Id, leaveId);
+        employeeLeaveattachmentsContainer.find(".doneButton").off('click').on('click', function () {
+            succeedMessage();
+            employeeLeaveattachmentsContainer.hide();
+
+            getEmployeeActionViewModel();
+        });
+    }
+    function initAttachments(emp_id, employeeleaveId) {
+        $.ajax({
+            url: '@Url.Action("getLeaveUploadFiles", "Service", new{area= "EmployeeRelationServices" })',
+            type: 'POST',
+            data: JSON.stringify(
+            {
+                emp_id: emp_id,
+                employeeleaveId: employeeleaveId
+            }),
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (!data.IsExcption) {
+                    window.gridModel = data.GridModel;
+                    data.Name = "grid";
+                    generateGrid(data.GridModel);
+                    var grid = $("#grid").data("kendoGrid");
+                    requestInformation.NavigationInfo.Previous[requestInformation.NavigationInfo.Previous.length - 1].IsMasterContainsThisDetail = true;
+                }
+            }
+        });
+
+    }
+    var emp_Id = 0;
+    function showEmployee(data) {
+        @*employeeTitleContainer.html('<label>@GlobalResource.Employee</label>');*@
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        employeeContainer.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            employeeContainer.html('');
+            approvalContainer.html('');
+            employeeTitleContainer.html('');
+            leaveApprovalTitleContainer.html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            emp_Id = employeeId;
+            //Get Leave Setting From Employee Card Or From Grade
+            window.LestOfLeaveSetting = [];
+
+            Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/GetLestOfLeaveSetting", { id: employeeId }, function (data) { window.LestOfLeaveSetting = data.Data; }, failedMessage);
+
+            var leaveReasonCreatablePermission = ('@UserExtensions.CheckIfCurrentUserIsAuthorized("HRIS.Domain.EmployeeRelationServices.Indexes.LeaveReason",0)').toLowerCase() == 'true' ? true : false;
+
+            var employeeLeaveTemplateData = [
+                { Name: "LeaveSetting", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveSetting)", Type: "Dropdown", filter: "contains", DataSource: "LestOfLeaveSetting", Creatable: false, IsRequired: true },
+                { Name: "RequestDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)", Type: "Date", IsRequired: true },
+                { Name: "StartDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartDate)", Type: "Date", IsRequired: true },
+                { Name: "EndDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EndDate)", Type: "Date", IsRequired: true },
+                { Name: "IsHourlyLeave", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsHourlyLeave)", Type: "Boolean" },
+                { Name: "FromTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FromTime)", Type: "Time", IsRequired: true },
+                { Name: "ToTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ToTime)", Type: "Time", IsRequired: true },
+                { Name: "SpentDays", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SpentDays)", Type: "Number", IsReadonly: true },
+                { Name: "LeaveReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveReason)", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.LeaveReason", Creatable: leaveReasonCreatablePermission, IsRequired: true },
+                { Name: "Description", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description)", Type: "Textarea" }
+            ];
+
+
+            var employeeLeaveDatabind = kendo.observable(
+                {
+                    LeaveSetting: 0,
+                    RequestDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    StartDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    EndDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    IsHourlyLeave: false,
+                    FromTime: null,
+                    ToTime: null,
+                    SpentDays: 0,
+                    LeaveReason: 0,
+                    Description: ""
+                });
+
+            createCustomEditForm(employeeLeaveInfoContainer, { Fields: employeeLeaveTemplateData, Key: "employee-leave" }, employeeLeaveDatabind);
+
+            $("[name='LeaveSetting']").kendoDropDownList({
+                filter: "contains",
+                autoBind: true,
+                minLength: 1,
+                dataTextField: "Name",
+                dataValueField: "Id",
+            });
+            var dropdownlist = $("[name='LeaveSetting']").data("kendoDropDownList");
+            dropdownlist.setDataSource(LestOfLeaveSetting);
+
+            removeRequiredStar('FromTime');
+            removeRequiredStar('ToTime');
+            addRequiredStar('FromTime');
+            addRequiredStar('ToTime');
+
+            var applyButton = $('<div class="top-commands"><button style="margin:10px;" class="k-button primary-command applyButton"><span class="command-icon save"></span>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SaveWithAttachment)</button></div>');
+
+            var applywithoutattachmentButton = $('<button style="margin:10px;" class="k-button primary-command applywithoutattachmentButton"><span class="command-icon save"></span>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SaveWithOutAttachment)</button>');
+            //container.find(".control-Comment").after(applyButton);
+            employeeLeaveInfoContainer.find("[name='Description']").after(applyButton);
+            employeeLeaveInfoContainer.find($(".applyButton")).after(applywithoutattachmentButton);
+
+            employeeLeaveInfoContainer.append('<div class="balance-information-readonly"><fieldset class="fieldset-BalanceInformation"><legend>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.BalanceInformation)</legend></fieldset></div>');
+            addLabelInControl($(".fieldset-BalanceInformation"), "Balance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Balance)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MonthlyBalance", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MonthlyBalance)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "Granted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Granted)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MonthlyGranted", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MonthlyGranted)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "Remain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Remain)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MonthlyRemain", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MonthlyRemain)", 0, "Text");
+            addLabelInControl($(".fieldset-BalanceInformation"), "MaximumNumber", "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MaximumNumber)", 0, "Text");
+            reOrderControls($(".fieldset-BalanceInformation"));
+
+            var leaveSettingDropownlist = $("[name='LeaveSetting']").data("kendoDropDownList");
+            leaveSettingDropownlist.bind("change", function () {
+                var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                if (leaveSettingDropownlist.value() > 0) {
+                    getBalanceInformationForLeaveRequest(employeeLeaveInfoContainer, leaveSettingDropownlist.value(), startDate);
+                }
+            });
+            //leaveSettingDropownlist.bind("select", function () {
+            //    getBalanceInformationForLeaveRequest(container, leaveSettingDropownlist.value());
+            //});
+
+            //$(".control-IsHourlyLeave").hide();
+            $(".control-FromTime").hide();
+            $(".control-ToTime").hide();
+            $(".control-MonthlyBalance").hide();
+            $(".control-MonthlyGranted").hide();
+            $(".control-MonthlyRemain").hide();
+            $(".control-MaximumNumber").hide();
+            reOrderControls(employeeLeaveInfoContainer);
+
+            $("[name='IsHourlyLeave']").click(function () {
+                activateControlsByHourlyLeaveCheck(this.checked);
+                $("[name='EndDate']").data("kendoDatePicker").value().setDate(($("[name='StartDate']").data("kendoDatePicker").value()).getDate());
+                if ($("[name='FromTime']").val() > $("[name='ToTime']").val()) {
+                    if ($("[name='StartDate']").val() == $("[name='EndDate']").val()) {
+                        $("[name='EndDate']").data("kendoDatePicker").value().setDate(($("[name='StartDate']").data("kendoDatePicker").value()).getDate() + 1);
+                        $("[name='EndDate']").data("kendoDatePicker").value($("[name='EndDate']").data("kendoDatePicker").value());
+                        employeeLeaveDatabind.EndDate = ($("[name='EndDate']").data("kendoDatePicker").value());
+                        var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 1);
+                        $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                        employeeLeaveDatabind.EndDate = e.container.find("[name='EndDate']").data("kendoDatePicker").value();
+                    }
+                } else {
+                    $("[name='EndDate']").val($("[name='StartDate']").val());
+                    employeeLeaveDatabind.EndDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                    var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 0);
+                    $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                    employeeLeaveDatabind.EndDate = e.container.find("[name='EndDate']").data("kendoDatePicker").value();
+
+                }
+                //e.model.EndDate = $("[name='StartDate']").data("kendoDatePicker").value();
+            });
+            //$("[name='StartDate']").data("kendoDatePicker").bind("change", onDateOfStartChange);
+            //function onDateOfStartChange() {
+            //    $("[name='EndDate']").data("kendoDatePicker").value($("[name='StartDate']").data("kendoDatePicker").value());
+            //    e.model.EndDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+            //}
+
+            function activateControlsByHourlyLeaveCheck() {
+                if ($("[name='IsHourlyLeave']").is(':checked')) {
+                    $(".control-FromTime").show();
+                    $(".control-ToTime").show();
+                    $("[name='EndDate']").data("kendoDatePicker").enable(false);
+                    if (!employeeLeaveDatabind.FromTime && !employeeLeaveDatabind.ToTime) {
+                        employeeLeaveDatabind.FromTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+                        employeeLeaveDatabind.ToTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+                    }
+                    $("[name='FromTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeLeaveDatabind.FromTime));
+                    $("[name='ToTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeLeaveDatabind.ToTime));
+                }
+                else {
+                    $(".control-FromTime").hide();
+                    $(".control-ToTime").hide();
+                    $("[name='EndDate']").data("kendoDatePicker").enable(true);
+
+                    //$(".control-StartDate").show();
+                    //$(".control-EndDate").show();
+                }
+                reOrderControls(employeeLeaveInfoContainer);
+            }
+
+            function getBalanceInformationForLeaveRequest(employeeLeaveInfoContainer, leaveSettingId, startDate) {
+
+                $.ajax({
+                    url: '@Url.Action("GetInformationForLeaveRequestWithWorkFlow", "LeaveRequest", new { area = "EmployeeRelationServices" })',
+                    type: "POST",
+                    data: JSON.stringify({
+                        employeeId: employeeId,//window.requestInformation.NavigationInfo.Previous[0].RowId,
+                        leaveSettingId: leaveSettingId,
+                        startDate: startDate
+                    }),
+                    async: false,
+                    contentType: 'application/json',
+                    success: function (data) {
+                        var balance = data.Balance;
+                        var granted = data.Granted;
+                        var remain = data.Remain;
+                        var monthlyBalance = data.MonthlyBalance;
+                        var monthlyGranted = data.MonthlyGranted;
+                        var monthlyRemain = data.MonthlyRemain;
+                        var hasMonthlyBalance = data.HasMonthlyBalance;
+                        var isDivisibleToHours = data.IsDivisibleToHours;
+                        var isIndivisible = data.IsIndivisible;
+                        var MaximumNumber = data.MaximumNumber;
+                        var HasMaximumNumber = data.HasMaximumNumber;
+                        $('[name="Balance"]').val(balance);
+                        $('[name="Granted"]').val(granted);
+                        $('[name="Remain"]').val(remain);
+                        $('[name="MonthlyBalance"]').val(monthlyBalance);
+                        $('[name="MonthlyGranted"]').val(monthlyGranted);
+                        $('[name="MonthlyRemain"]').val(monthlyRemain);
+                        $('[name="MaximumNumber"]').val(MaximumNumber);
+                        if (isDivisibleToHours) {
+                            $(".control-IsHourlyLeave").show();
+                        } else {
+                            $(".control-IsHourlyLeave").hide();
+                        }
+                        if (isIndivisible) {
+                            $(".control-EndDate").hide();
+                        } else {
+                            $(".control-EndDate").show();
+                        }
+                        if (HasMaximumNumber) {
+                            if (granted < balance)
+                                granted = 0;
+                            else
+                                granted = granted / MaximumNumber;
+                            balance = balance / MaximumNumber;
+                            remain = balance - granted;
+                            $('[name="Balance"]').val(balance);
+                            $('[name="Granted"]').val(granted);
+                            $('[name="Remain"]').val(remain);
+                            $(".control-MaximumNumber").show();
+                        }
+                        else {
+                            $(".control-MaximumNumber").hide();
+                        }
+                        if (hasMonthlyBalance) {
+                            $(".control-MonthlyBalance").show();
+                            $(".control-MonthlyGranted").show();
+                            $(".control-MonthlyRemain").show();
+                        } else {
+                            $(".control-MonthlyBalance").hide();
+                            $(".control-MonthlyGranted").hide();
+                            $(".control-MonthlyRemain").hide();
+                        }
+                        reOrderControls(employeeLeaveInfoContainer);
+                        reOrderControls($(".fieldset-BalanceInformation"));
+                    }
+                });
+
+            }
+
+            var LeaveSetting = $('[name="LeaveSetting"]');
+            var StartDate = $('[name="StartDate"]');
+            var EndDate = $('[name="EndDate"]');
+            var FromTime = $('[name="FromTime"]');
+            var ToTime = $('[name="ToTime"]');
+            var ISHourly = $('[name="IsHourlyLeave"]');
+            LeaveSetting.bind("change", getSpentDays);
+
+            StartDate.data("kendoDatePicker").bind("change", getSpentDays);
+            EndDate.data("kendoDatePicker").bind("change", getSpentDays);
+            FromTime.bind("change", getSpentDays);
+            ToTime.bind("change", getSpentDays);
+            ISHourly.bind("change", getSpentDays);
+            $("[name='IsHourlyLeave']").click(function () {
+                if ($("[name='FromTime']").val() > $("[name='ToTime']").val() ) {
+                    if ($("[name='StartDate']").val() == $("[name='EndDate']").val()) {
+                        $("[name='EndDate']").data("kendoDatePicker").value().setDate(($("[name='StartDate']").data("kendoDatePicker").value()).getDate() + 1);
+                        $("[name='EndDate']").data("kendoDatePicker").value($("[name='EndDate']").data("kendoDatePicker").value());
+                        var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 1);
+                        $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                        employeeLeaveDatabind.EndDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                        getSpentDays();
+                    }
+                } else {
+                    $("[name='EndDate']").val($("[name='StartDate']").val());
+                    var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 0);
+                    $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                    employeeLeaveDatabind.EndDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                    getSpentDays();
+                }                //e.model.EndDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                activateControlsByHourlyLeaveCheck(this.checked);
+            });
+            function getSpentDays() {
+
+                debugger;
+                if ($("[name='IsHourlyLeave']").is(':checked') == true) {
+                    if ($("[name='FromTime']").val() > $("[name='ToTime']").val()) {
+                        if ($("[name='StartDate']").val() == $("[name='EndDate']").val()) {
+                            $("[name='EndDate']").data("kendoDatePicker").value().setDate(($("[name='StartDate']").data("kendoDatePicker").value()).getDate() + 1);
+                            $("[name='EndDate']").data("kendoDatePicker").value($("[name='EndDate']").data("kendoDatePicker").value());
+                            var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 1);
+                            $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                            employeeLeaveDatabind.EndDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                        }
+                    } else {
+                        $("[name='EndDate']").val($("[name='StartDate']").val());
+                        var tempdate = kendo.date.addDays(kendo.parseDate($("[name='StartDate']").val(), "dd/MM/yyyy"), 0);
+                        $("[name='EndDate']").data("kendoDatePicker").value(kendo.parseDate(tempdate, "MM/dd/yyyy"));
+                        employeeLeaveDatabind.EndDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                    }
+                    //e.model.EndDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+                }
+                var leaveSettingId = Number($('[name="LeaveSetting"]').data("kendoDropDownList").value());
+                var requestDate = $("[name='RequestDate']").data("kendoDatePicker").value();
+                var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                var endDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                var fromTime = $("[name='FromTime']").val();
+                var toTime = $("[name='ToTime']").val();
+                var isHourlyLeave = $("[name='IsHourlyLeave']").is(':checked');
+
+                employeeLeaveDatabind.set("LeaveSettingId", leaveSettingId);
+                employeeLeaveDatabind.set("StartDate", startDate);
+                employeeLeaveDatabind.set("EndDate", endDate);
+                employeeLeaveDatabind.set("FromTime", fromTime);
+                employeeLeaveDatabind.set("ToTime", toTime);
+                employeeLeaveDatabind.set("IsHourlyLeave", isHourlyLeave);
+
+                $.ajax({
+                    url: '@Url.Action("GetSpentDays", "LeaveRequest", new { area = "EmployeeRelationServices" })',
+                    type: "POST",
+                    data: JSON.stringify({
+                        employeeId: employeeId,
+                        leaveItem: employeeLeaveDatabind
+                    }),
+                    async: false,
+                    contentType: 'application/json',
+                    success: function (data) {
+                        var spentDays = data.SpentDays;
+                        employeeLeaveDatabind.set("SpentDays", spentDays);
+
+                    }
+                });
+                if (leaveSettingDropownlist.value() != 0) {
+                    getBalanceInformationForLeaveRequest(employeeLeaveInfoContainer, leaveSettingDropownlist.value(), startDate);
+                }
+
+
+            }
+            employeeLeaveInfoContainer.find(".applywithoutattachmentButton").off('click').on('click', function () {
+                debugger;
+                var leaveSettingId = Number(employeeLeaveInfoContainer.find("#LeaveSetting_employee-leave").data("kendoDropDownList").value());
+                var leaveReasonId = Number(employeeLeaveInfoContainer.find("#LeaveReason_employee-leave").data("kendoDropDownList").value());
+                var requestDate = $("[name='RequestDate']").data("kendoDatePicker").value();
+                var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                var endDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                var today = new Date();
+                var _fromTime = $("[name='FromTime']").val();
+                var fromTime = _fromTime != 'Invalid Date' ? new Date(today.getFullYear(), today.getMonth(), today.getDate(), +_fromTime.split(':')[0], +_fromTime.split(':')[1], 0) : today;
+                var _toTime = $("[name='ToTime']").val();
+                var toTime = _toTime != 'Invalid Date' ? new Date(today.getFullYear(), today.getMonth(), today.getDate(), +_toTime.split(':')[0], +_toTime.split(':')[1], 0) : today;
+                var isHourlyLeave = $("[name='IsHourlyLeave']").is(':checked');
+                var spentDays = employeeLeaveInfoContainer.find("[name='SpentDays']").val();
+                var description = employeeLeaveInfoContainer.find("[name='Description']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeLeaveItem: employeeLeaveDatabind };
+
+
+                employeeLeaveDatabind.LeaveSettingId = leaveSettingId;
+                employeeLeaveDatabind.LeaveReasonId = leaveReasonId;
+                employeeLeaveDatabind.RequestDate = requestDate;
+                employeeLeaveDatabind.StartDate = startDate;
+                employeeLeaveDatabind.EndDate = endDate;
+                employeeLeaveDatabind.FromTime = fromTime;
+                employeeLeaveDatabind.ToTime = toTime;
+                employeeLeaveDatabind.Description = description;
+                employeeLeaveDatabind.IsHourlyLeave = isHourlyLeave;
+                employeeLeaveDatabind.SpentDays = spentDays;
+                employeeLeaveDatabind.IsSummerDate = false;
+                if (fromTime != null && fromTime.toString().includes('Summer')) {
+                    employeeLeaveDatabind.IsSummerDate = true;
+                }
+                var leaveSettingValue = leaveSettingDropownlist.value();
+                if (leaveSettingValue == "0" || leaveSettingValue == "-1") {
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "LeaveSetting");
+                }
+                leaveSettingDropownlist.bind("change", function () {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-LeaveSetting').remove();
+                });
+                var leaveReasonDropownlist = $("[name='LeaveReason']").data("kendoDropDownList");
+                var leaveReasonValue = leaveReasonDropownlist.value();
+                if (leaveReasonValue == "0" || leaveReasonValue == "-1") {
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "LeaveReason");
+                }
+                leaveReasonDropownlist.bind("change", function () {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-LeaveReason').remove();
+                });
+                $("[name='RequestDate']").focusout(function () {
+                    if ($("[name='RequestDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestDate");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestDate').remove();
+                    }
+
+                });
+
+                $("[name='RequestDate']").keyup(function () {
+                    if ($("[name='RequestDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestDate");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestDate').remove();
+                    }
+
+                });
+                $("[name='StartDate']").focusout(function () {
+                    if ($("[name='StartDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "StartDate");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-StartDate').remove();
+                    }
+
+                });
+
+                $("[name='StartDate']").keyup(function () {
+                    if ($("[name='StartDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "StartDate");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-StartDate').remove();
+                    }
+
+                });
+                $("[name='EndDate']").focusout(function () {
+                    if ($("[name='EndDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "EndDate");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-EndDate').remove();
+                    }
+
+                });
+
+                $("[name='EndDate']").keyup(function () {
+                    if ($("[name='EndDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "EndDate");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-EndDate').remove();
+                    }
+
+                });
+
+
+                if (leaveSettingId == null || leaveSettingId == "" || leaveSettingId == 0 ||
+                    leaveReasonId == null || leaveReasonId == "" || leaveReasonId == 0 ||
+                    startDate == null || requestDate == null || endDate == null) {
+                    //requiredMessage();
+                    return;
+                }
+                if ($("[name='IsHourlyLeave']").is(':checked') == true && (fromTime == null || toTime == null)) {
+                    requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePSLeaveItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage2(data);
+                }, failedMessage);
+            });
+
+            function actionMessage2(data) {
+                if (data.IsSuccess) {
+                    employeeContainer.html('');
+                    approvalContainer.html('');
+                    employeeTitleContainer.html('');
+                    leaveApprovalTitleContainer.html('');
+                    employeeLeaveInfoContainer.html('');
+                    employeeLeaveattachmentsContainer.hide();
+                    succeedMessage();
+                    getEmployeeActionViewModel();
+                } else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+                }
+            }
+            employeeLeaveInfoContainer.find(".applyButton").off('click').on('click', function () {
+                debugger;
+                var leaveSettingId = Number(employeeLeaveInfoContainer.find("#LeaveSetting_employee-leave").data("kendoDropDownList").value());
+                var leaveReasonId = Number(employeeLeaveInfoContainer.find("#LeaveReason_employee-leave").data("kendoDropDownList").value());
+                var requestDate = $("[name='RequestDate']").data("kendoDatePicker").value();
+                var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                var endDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                var today = new Date();
+                var _fromTime = $("[name='FromTime']").val();
+                var fromTime = _fromTime != 'Invalid Date' ? new Date(today.getFullYear(), today.getMonth(), today.getDate(), +_fromTime.split(':')[0], +_fromTime.split(':')[1], 0) : today;
+                var _toTime = $("[name='ToTime']").val();
+                var toTime = _toTime != 'Invalid Date' ? new Date(today.getFullYear(), today.getMonth(), today.getDate(), +_toTime.split(':')[0], +_toTime.split(':')[1], 0) : today;
+                var isHourlyLeave = $("[name='IsHourlyLeave']").is(':checked');
+                var spentDays = employeeLeaveInfoContainer.find("[name='SpentDays']").val();
+                var description = employeeLeaveInfoContainer.find("[name='Description']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeLeaveItem: employeeLeaveDatabind };
+
+                employeeLeaveDatabind.LeaveSettingId = leaveSettingId;
+                employeeLeaveDatabind.LeaveReasonId = leaveReasonId;
+                employeeLeaveDatabind.RequestDate = requestDate;
+                employeeLeaveDatabind.StartDate = startDate;
+                employeeLeaveDatabind.EndDate = endDate;
+                employeeLeaveDatabind.FromTime = fromTime;
+                employeeLeaveDatabind.ToTime = toTime;
+                employeeLeaveDatabind.Description = description;
+                employeeLeaveDatabind.IsHourlyLeave = isHourlyLeave;
+                employeeLeaveDatabind.SpentDays = spentDays;
+                employeeLeaveDatabind.IsSummerDate = false;
+                if (fromTime != null && fromTime.toString().includes('Summer')) {
+                    employeeLeaveDatabind.IsSummerDate = true;
+                }
+                var leaveSettingValue = leaveSettingDropownlist.value();
+                if (leaveSettingValue == "0" || leaveSettingValue == "-1") {
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "LeaveSetting");
+                }
+                leaveSettingDropownlist.bind("change", function () {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-LeaveSetting').remove();
+                });
+                var leaveReasonDropownlist = $("[name='LeaveReason']").data("kendoDropDownList");
+                var leaveReasonValue = leaveReasonDropownlist.value();
+                if (leaveReasonValue == "0" || leaveReasonValue == "-1") {
+                    addCustomValidationMessage("@GlobalResource.RequiredMessage", "LeaveReason");
+                }
+                leaveReasonDropownlist.bind("change", function () {
+                    $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-LeaveReason').remove();
+                });
+                $("[name='RequestDate']").focusout(function () {
+                    if ($("[name='RequestDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestDate");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestDate').remove();
+                    }
+
+                });
+
+                $("[name='RequestDate']").keyup(function () {
+                    if ($("[name='RequestDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "RequestDate");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-RequestDate').remove();
+                    }
+
+                });
+                $("[name='StartDate']").focusout(function () {
+                    if ($("[name='StartDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "StartDate");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-StartDate').remove();
+                    }
+
+                });
+
+                $("[name='StartDate']").keyup(function () {
+                    if ($("[name='StartDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "StartDate");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-StartDate').remove();
+                    }
+
+                });
+                $("[name='EndDate']").focusout(function () {
+                    if ($("[name='EndDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "EndDate");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-EndDate').remove();
+                    }
+
+                });
+
+                $("[name='EndDate']").keyup(function () {
+                    if ($("[name='EndDate']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "EndDate");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-EndDate').remove();
+                    }
+
+                });
+
+
+                if (leaveSettingId == null || leaveSettingId == "" || leaveSettingId == 0 ||
+                    leaveReasonId == null || leaveReasonId == "" || leaveReasonId == 0 ||
+                    startDate == null || requestDate == null || endDate == null) {
+                    //requiredMessage();
+                    return;
+                }
+                if ($("[name='IsHourlyLeave']").is(':checked') == true && (fromTime == null || toTime == null)) {
+                    requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePSLeaveItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+            });
+
+
+            var leaveSettingButton = $('<button id="leaveSettingId" class="k-button applyLeaveSettingButton"><span class="k-icon k-i-note" style="vertical-align: sub;"></span></button>');
+            $("[data-container-for=LeaveSetting]").append(leaveSettingButton);
+            $(".applyLeaveSettingButton").off('click').on('click', function () {
+                openReferenceWindow('LeaveSetting', 'HRIS.Domain.EmployeeRelationServices.Configurations.LeaveSetting', '@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveSetting)');
+            });
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            viewAttachmentsGrid(data.Data);
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        //alert(JSON.stringify(data));
+        @*$(".leave-approval-container-title").html('@GlobalResource.PendingLeaveRequest');*@
+        var template = kendo.template($("#employee-leave-approval-template").html());
+        approvalContainer.html(template(data));
+        window.EmployeesLeaveInfo = data;
+    }
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, leaveId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, leaveId) {
+
+        employeeContainer.html('');
+        approvalContainer.html('');
+        employeeTitleContainer.html('');
+        leaveApprovalTitleContainer.html('');
+        employeeLeaveattachmentsContainer.html('');
+
+        createWorkflow(workflowContainer, workflowId, initLeave, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initLeave() {
+            var template = kendo.template($("#leave-workflow-template").html());
+            $("#workflow_data").html(template);
+            $("#workflow_data").find(".appraisal-form").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+            initWorkflow();
+            var emp_id = localStorage.getItem("employeeId");
+            var employeeleaveId = localStorage.getItem("employeeleaveId");
+            initAttachments(emp_id, employeeleaveId);
+
+        }
+
+        function initWorkflow() {
+            var employeeLeaveTemplateData = [
+                { Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "LeaveSetting", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveSetting)", Type: "Text", IsReadonly: true },
+                { Name: "RequestDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)", Type: "Date", IsReadonly: true },
+                { Name: "StartDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartDate)", Type: "Date", IsReadonly: true },
+                { Name: "EndDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EndDate)", Type: "Date", IsReadonly: true },
+                { Name: "IsHourlyLeave", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsHourlyLeave)", Type: "Boolean", IsReadonly: true },
+                { Name: "FromTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FromTime)", Type: "Time", IsReadonly: true },
+                { Name: "ToTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ToTime)", Type: "Time", IsReadonly: true },
+                { Name: "SpentDays", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SpentDays)", Type: "Number", IsReadonly: true },
+                { Name: "LeaveReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveReason)", Type: "Text", IsReadonly: true },
+                { Name: "Description", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description)", Type: "Textarea", IsReadonly: true }
+            ];
+            var employeeLeaveViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    LeaveSetting: "",
+                    RequestDate: null,
+                    StartDate: null,
+                    EndDate: null,
+                    IsHourlyLeave: false,
+                    FromTime: null,
+                    ToTime: null,
+                    SpentDays: 0,
+                    LeaveReason: "",
+                    Description: ""
+                });
+
+            for (var i = 0; i < window.EmployeesLeaveInfo.length; i++) {
+                if (window.EmployeesLeaveInfo[i].WorkflowItemId == workflowId) {
+                    employeeLeaveViewDatabind.FullName = window.EmployeesLeaveInfo[i].FullName;
+                    employeeLeaveViewDatabind.LeaveSetting = window.EmployeesLeaveInfo[i].LeaveSettingName;
+                    employeeLeaveViewDatabind.RequestDate = window.EmployeesLeaveInfo[i].RequestDate;
+                    employeeLeaveViewDatabind.StartDate = window.EmployeesLeaveInfo[i].StartDate;
+                    employeeLeaveViewDatabind.EndDate = window.EmployeesLeaveInfo[i].EndDate;
+                    employeeLeaveViewDatabind.IsHourlyLeave = window.EmployeesLeaveInfo[i].IsHourlyLeave;
+                    employeeLeaveViewDatabind.FromTime = window.EmployeesLeaveInfo[i].FromTime;
+                    employeeLeaveViewDatabind.ToTime = window.EmployeesLeaveInfo[i].ToTime;
+                    employeeLeaveViewDatabind.SpentDays = window.EmployeesLeaveInfo[i].SpentDays;
+                    employeeLeaveViewDatabind.LeaveReason = window.EmployeesLeaveInfo[i].LeaveReason;
+                    employeeLeaveViewDatabind.Description = window.EmployeesLeaveInfo[i].Description;
+                    console.log(window.EmployeesLeaveInfo[i].WorkflowItemId + '_' + workflowId);
+
+                    localStorage.removeItem("employeeId");
+                    localStorage.removeItem("employeeleaveId");
+                    localStorage.setItem("employeeId", window.EmployeesLeaveInfo[i].EmployeeId);
+                    localStorage.setItem("employeeleaveId", window.EmployeesLeaveInfo[i].LeaveId);
+                }
+            }
+            createCustomEditForm($(".tab-leave-primary-section"), { Fields: employeeLeaveTemplateData, Key: "employee-leave" }, employeeLeaveViewDatabind);
+
+            $("[name='FromTime']").prop('disabled', true);
+            $("[name='FromTime']").parent().find('span').remove();
+            $("[name='ToTime']").prop('disabled', true);
+            $("[name='ToTime']").parent().find('span').remove();
+
+            if ($("[name='IsHourlyLeave']").is(':checked')) {
+                $("[name='ToTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeLeaveViewDatabind.ToTime));
+                $("[name='FromTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeLeaveViewDatabind.FromTime));
+                $(".control-FromTime").show();
+                $(".control-ToTime").show();
+
+            }
+            else {
+                $(".control-FromTime").hide();
+                $(".control-ToTime").hide();
+            }
+        }
+
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptPSLeaveRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectPSLeaveRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingPSLeaveRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId, leaveId: leaveId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-leave-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveSetting)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EndDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsHourlyLeave)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FromTime)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ToTime)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SpentDays)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveReason)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            #var checkStatus="";#
+            #if(employee.IsHourlyLeave){#
+            #checkStatus='checked="checked"';#
+            #}#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=employee.LeaveSettingName#</td>
+                <td>#=window.Souccar.toStringForDate(employee.RequestDate)#</td>
+                <td>#=window.Souccar.toStringForDate(employee.StartDate)#</td>
+                <td>#=window.Souccar.toStringForDate(employee.EndDate)#</td>
+                <td><input type="checkbox" disabled #=checkStatus# data-index="#=i#" /></td>
+                <td>#if(employee.IsHourlyLeave) {# #=window.Souccar.toStringForTime(employee.FromTime)# #}else{""}#</td>
+                <td>#if(employee.IsHourlyLeave) {# #=window.Souccar.toStringForTime(employee.ToTime)# #}else{""}#</td>
+
+                
+                @*<td>#=window.Souccar.toStringForTime(employee.ToTime)#</td>*@
+                <td>#=employee.SpentDays#</td>
+                <td>#=employee.LeaveReason#</td>
+                @*<td>#=ToStringForDate(employee.RequestDate)#</td>*@
+                <td>#=employee.Description#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.LeaveId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

@@ -1,0 +1,349 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<div class="mission-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="mission-employee-container"></div><br />
+<div class="mission-employee-container-info"></div><br />
+<div class="mission-approval-container-title"><label>@GlobalResource.PendingMissionRequest</label></div>
+<div class="mission-approval-container"></div><br />
+<div class="mission-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var missionId = window.localStorage.getItem('ServiceId');
+    var employeeContainer = $('.mission-employee-container');
+    var employeeMissionInfoContainer = $('.mission-employee-container-info');
+    var approvalContainer = $('.mission-approval-container');
+    var workflowContainer = $(".mission-request-workflow-container");
+    var employeeTitleContainer = $(".mission-employee-container-title");
+    var missionApprovalTitleContainer = $(".mission-approval-container-title");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForPSMissionService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            console.log(data.EmployeeApproval);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        employeeContainer.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            employeeContainer.html('');
+            approvalContainer.html('');
+            employeeTitleContainer.html('');
+            missionApprovalTitleContainer.html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+
+            var employeeMissionTemplateData = [
+                { Name: "RequestDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)", Type: "Date", IsRequired: true },
+                { Name: "StartDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartDate)", Type: "Date", IsRequired: true },
+                { Name: "EndDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EndDate)", Type: "Date", IsRequired: true },
+                { Name: "IsHourlyMission", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsHourlyMission)", Type: "Boolean" },
+                { Name: "FromTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FromTime)", Type: "Time", IsRequired: true },
+                { Name: "ToTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ToTime)", Type: "Time", IsRequired: true },
+                { Name: "Type", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Type)", Type: "Enum", TypeName: "HRIS.Domain.AttendanceSystem.Enums.TravelMissionType", IsRequired: true },
+                { Name: "Description", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description)", Type: "Textarea" }
+            ];
+
+            var employeeMissionDatabind = kendo.observable(
+                {
+                    RequestDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    StartDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    EndDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    IsHourlyMission: false,
+                    FromTime: null,
+                    ToTime: null,
+                    Type: 0,
+                    Description: ""
+                });
+
+            createCustomEditForm(employeeMissionInfoContainer, { Fields: employeeMissionTemplateData, Key: "employee-mission" }, employeeMissionDatabind);
+
+            removeRequiredStar('FromTime');
+            removeRequiredStar('ToTime');
+            addRequiredStar('FromTime');
+            addRequiredStar('ToTime');
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            employeeMissionInfoContainer.find("[name='Description']").after(applyButton);
+            $(".control-FromTime").hide();
+            $(".control-ToTime").hide();
+            $(".control-MonthlyBalance").hide();
+            $(".control-MonthlyGranted").hide();
+            $(".control-MonthlyRemain").hide();
+            $(".control-MaximumNumber").hide();
+            reOrderControls(employeeMissionInfoContainer);
+
+            $("[name='IsHourlyMission']").click(function () {
+                activateControlsByHourlyMissionCheck(this.checked);
+                $("[name='EndDate']").data("kendoDatePicker").value($("[name='StartDate']").data("kendoDatePicker").value());
+                employeeMissionDatabind.EndDate = $("[name='StartDate']").data("kendoDatePicker").value();
+
+            });
+            function activateControlsByHourlyMissionCheck() {
+                var type = $("[name='Type']").val();
+                if ($("[name='IsHourlyMission']").is(':checked')) {
+                    $(".control-FromTime").show();
+                    $(".control-ToTime").show();
+
+                    $("[name='EndDate']").data("kendoDatePicker").enable(false);
+                    $(".control-Type").hide();
+                    employeeMissionDatabind.Type = 0;
+                    if (!employeeMissionDatabind.FromTime && !employeeMissionDatabind.ToTime) {
+                        employeeMissionDatabind.FromTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+                        employeeMissionDatabind.ToTime = new Date(2000, 01, 01, new Date().getHours(), new Date().getMinutes());
+                    }
+                    $("[name='FromTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeMissionDatabind.FromTime));
+                    $("[name='ToTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeMissionDatabind.ToTime));
+
+
+                }
+                else {
+                    employeeMissionDatabind.Type = type;
+                    $(".control-Type").show();
+                    $(".control-FromTime").hide();
+                    $(".control-ToTime").hide();
+                    $("[name='EndDate']").data("kendoDatePicker").enable(true);
+                }
+                reOrderControls(employeeMissionInfoContainer);
+            }
+
+            var StartDate = $('[name="StartDate"]');
+            var EndDate = $('[name="EndDate"]');
+            var FromTime = $('[name="FromTime"]');
+            var ToTime = $('[name="ToTime"]');
+            var ISHourly = $('[name="IsHourlyMission"]');
+            $("[name='IsHourlyMission']").click(function () {
+                $("[name='EndDate']").data("kendoDatePicker").value(e.container.find("[name='StartDate']").data("kendoDatePicker").value());
+                e.model.EndDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+                activateControlsByHourlyMissionCheck(this.checked);
+            });
+
+            employeeMissionInfoContainer.find(".applyButton").off('click').on('click', function () {
+
+                var type = $("[name='Type']").val();
+                var requestDate = $("[name='RequestDate']").data("kendoDatePicker").value();
+                var startDate = $("[name='StartDate']").data("kendoDatePicker").value();
+                var endDate = $("[name='EndDate']").data("kendoDatePicker").value();
+                var fromTime = $("[name='FromTime']").val();
+                var toTime = $("[name='ToTime']").val();
+                var type = $("[name='Type']").val();
+                var IsHourlyMission = $("[name='IsHourlyMission']").is(':checked');
+                var description = employeeMissionInfoContainer.find("[name='Description']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeMissionItem: employeeMissionDatabind };
+
+                employeeMissionDatabind.RequestDate = requestDate;
+                employeeMissionDatabind.StartDate = startDate;
+                employeeMissionDatabind.EndDate = endDate;
+                employeeMissionDatabind.FromTime = fromTime;
+                employeeMissionDatabind.ToTime = toTime;
+                employeeMissionDatabind.Description = description;
+                employeeMissionDatabind.IsHourlyMission = IsHourlyMission;
+
+                if (startDate == null || requestDate == null || endDate == null ) {
+
+                    return;
+                }
+                if ($("[name='IsHourlyMission']").is(':checked') == true && (fromTime == null || toTime == null)) {
+                    requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePSMissionItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+            });
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            employeeMissionInfoContainer.html('');
+            employeeMissionInfoContainer.html('');
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        var template = kendo.template($("#employee-mission-approval-template").html());
+        approvalContainer.html(template(data));
+        window.EmployeesMissionInfo = data;
+    }
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, missionId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, missionId) {
+
+        employeeContainer.html('');
+        approvalContainer.html('');
+        employeeTitleContainer.html('');
+        missionApprovalTitleContainer.html('');
+
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+
+            var employeeMissionTemplateData = [
+                {Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "RequestDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)", Type: "Date", IsReadonly: true },
+                { Name: "StartDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartDate)", Type: "Date", IsReadonly: true },
+                { Name: "EndDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EndDate)", Type: "Date", IsReadonly: true },
+                { Name: "IsHourlyMission", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsHourlyMission)", Type: "Boolean", IsReadonly: true },
+                { Name: "FromTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FromTime)", Type: "Time", IsReadonly: true },
+                { Name: "ToTime", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ToTime)", Type: "Time", IsReadonly: true },
+                { Name: "Type", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Type)", Type: "Enum", TypeName: "HRIS.Domain.AttendanceSystem.Enums.TravelMissionType", IsRequired: true },
+                { Name: "Description", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description)", Type: "Textarea", IsReadonly: true }
+            ];
+            var employeeMissionViewDatabind = kendo.observable(
+                {
+                    FullName:"",
+                    RequestDate: null,
+                    StartDate: null,
+                    EndDate: null,
+                    IsHourlyMission: false,
+                    FromTime: null,
+                    ToTime: null,
+                    Type: -1,
+                    Description: ""
+                });
+
+            for (var i = 0; i < window.EmployeesMissionInfo.length; i++) {
+                if (window.EmployeesMissionInfo[i].WorkflowItemId == workflowId) {
+                    employeeMissionViewDatabind.FullName = window.EmployeesMissionInfo[i].FullName;
+                    employeeMissionViewDatabind.RequestDate = window.EmployeesMissionInfo[i].RequestDate;
+                    employeeMissionViewDatabind.StartDate = window.EmployeesMissionInfo[i].StartDate;
+                    employeeMissionViewDatabind.EndDate = window.EmployeesMissionInfo[i].EndDate;
+                    employeeMissionViewDatabind.IsHourlyMission = window.EmployeesMissionInfo[i].IsHourlyMission;
+                    employeeMissionViewDatabind.FromTime = window.EmployeesMissionInfo[i].FromTime;
+                    employeeMissionViewDatabind.ToTime = window.EmployeesMissionInfo[i].ToTime;
+                    employeeMissionViewDatabind.Description = window.EmployeesMissionInfo[i].Description;
+                    console.log(window.EmployeesMissionInfo[i].WorkflowItemId + '_' + workflowId);
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeMissionTemplateData, Key: "employee-mission" }, employeeMissionViewDatabind);
+
+            $("[name='FromTime']").prop('disabled', true);
+            $("[name='FromTime']").parent().find('span').remove();
+            $("[name='ToTime']").prop('disabled', true);
+            $("[name='ToTime']").parent().find('span').remove();
+
+            if ($("[name='IsHourlyMission']").is(':checked')) {
+                $("[name='ToTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeMissionViewDatabind.ToTime));
+                $("[name='FromTime']").val(getTimeAsStandardToShowInClockTimePicker(employeeMissionViewDatabind.FromTime));
+                $(".control-FromTime").show();
+                $(".control-ToTime").show();
+
+            }
+            else {
+                $(".control-FromTime").hide();
+                $(".control-ToTime").hide();
+            }
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptPSMissionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectPSMissionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingPSMissionRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId, missionId: missionId, isHourly: $("[name='IsHourlyMission']").is(':checked') == true, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-mission-approval-template" type="text/x-kendo-template">
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.StartDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EndDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.IsHourlyMission)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.FromTime)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ToTime)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            #var checkStatus="";#
+            #if(employee.IsHourlyMission){#
+            #checkStatus='checked="checked"';#
+            #}#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.PositionName#</td>
+                <td>#=window.Souccar.toStringForDate(employee.RequestDate)#</td>
+                <td>#=window.Souccar.toStringForDate(employee.StartDate)#</td>
+                <td>#=window.Souccar.toStringForDate(employee.EndDate)#</td>
+                <td><input type="checkbox" disabled #=checkStatus# data-index="#=i#" /></td>
+                <td>#if(employee.IsHourlyMission) {# #=window.Souccar.toStringForTime(employee.FromTime)# #}else{""}#</td>
+                <td>#if(employee.IsHourlyMission) {# #=window.Souccar.toStringForTime(employee.ToTime)# #}else{""}#</td>
+                <td>#=employee.Description#</td>
+                <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.MissionId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

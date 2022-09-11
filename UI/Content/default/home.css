@@ -1,0 +1,109 @@
+/* CSS Document */
+.hris{
+	width:235px;
+	height:80px;
+	background:url(imgs/icons.png) 10px 10px no-repeat;	
+}
+.right hr{
+	width:235px;
+	margin-bottom:25px;
+	text-align:left;
+}
+.icon{
+	display: block;
+	width:39px;
+	height:36px;
+	float:left;
+}
+.title{
+	width:100%;
+	line-height:36px;
+	font-size:16px;
+	margin-left:10px;
+}
+#personnel,#chart,#description,#objective,#pm,#pa,#td,#rs,#pat,#ss{
+	width:235px; 
+	height:36px;
+	margin-bottom:5px; 
+	position:relative; 
+	z-index:100;
+	
+}
+#personnel:hover,
+#chart:hover,
+#description:hover,
+#objective:hover,
+#pm:hover,
+#pa:hover,
+#td:hover,
+#rs:hover,
+#pat:hover,
+#ss:hover{
+	color:#fff;
+	background-color:#99d2e6;
+	text-shadow: 0px 1px 2px #000;	
+}
+#personnel .icon{
+	background: url(imgs/icons.png) -8px -101px no-repeat;	
+}
+#chart .icon{
+	background:url(imgs/icons.png) -57px -101px no-repeat;	
+}
+#description .icon{
+	background:url(imgs/icons.png) -105px -101px no-repeat;	
+}
+#objective .icon{
+	background:url(imgs/icons.png) -153px -101px no-repeat;	
+}
+#pm .icon{
+	background:url(imgs/icons.png) -200px -101px no-repeat;	
+}
+#pa .icon{
+	background:url(imgs/icons.png) -247px -101px no-repeat;	
+}
+#td .icon{
+	background:url(imgs/icons.png) -297px -101px no-repeat;	
+}
+#rs .icon{
+	background:url(imgs/icons.png) -345px -101px no-repeat;	
+}
+#pat .icon{
+	background:url(imgs/icons.png) -394px -101px no-repeat;	
+}
+#ss .icon{
+	background:url(imgs/icons.png) -447px -101px no-repeat;	
+}
+.toolTip {
+	position: relative;
+	cursor:pointer;
+}
+.toolTipWrapper { 
+	width: 590px;
+	position: absolute;
+	top:-21px;
+	display: none;
+	color: #003828;
+	font-size: 11px;
+	z-index:1;
+	text-shadow: 0px 0px 0px #fff;	
+
+}
+.toolTipMid {
+	float:right;
+	width:307px;
+	height:97px;
+	padding:10px 10px 10px 40px;
+	background:url(imgs/icons.png) -236px -169px no-repeat;
+}
+.titleImg{
+	width:100px; 
+	height:87px;
+	background:#fff; 
+	float:left; 
+	margin-right:15px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	box-shadow: 0 0 5px #007c78;
+	padding:5px;
+}

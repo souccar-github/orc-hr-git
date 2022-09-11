@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="10/10/2016 14:21:55" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      NationalityComboBox.SelectedIndex=-1;
+    }
+
+    private void AllNationalityCheckBox_Click(object sender, EventArgs e)
+    {          
+      if (AllNationalityCheckBox.Checked)
+      {               
+        NationalityComboBox.Enabled=false;
+        NationalityComboBox.SelectedIndex=-1;		 
+        NationalityComboBox.AutoFilter=false;
+        NationalityComboBox.AutoFill=false;
+      }else
+      {
+        NationalityComboBox.AutoFilter=true;
+        NationalityComboBox.AutoFill=true;
+        NationalityComboBox.Enabled=true;
+      }  
+      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlq+rW0RkboK+/8CKGGYUID3ctBV8q9SvKYxl3iiE7vBnh7Tgou0+4WFf3NfmPSvHVFxAMKcRXoJPrg5QpSySEBCc9GQPrPHyVW9EblVRI++Gfb9v+XscaDZuNsZwVcoxQncMDqnrfkQvxP1Ji4KXyOUzYR7AoIKxtLSDUfQ6liDpU=">
+      <TableDataSource Name="Table1" Alias="EmployeesNationalityDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;dbo.Employee.Nationality_id,&#13;&#10;dbo.Employee.NationalityIssue,&#13;&#10;dbo.Nationality.Name&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;INNER JOIN dbo.Nationality ON dbo.Employee.Nationality_id = dbo.Nationality.Id&#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True'AND&#13;&#10;Employee.IsVertualDeleted = 0 AND&#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;Position.IsVertualDeleted = 0 AND&#13;&#10;EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;Nationality.IsVertualDeleted = 0&#13;&#10;ORDER BY dbo.Nationality.Name&#13;&#10;">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="NationalityIssue" DataType="System.DateTime"/>
+        <Column Name="Name" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Nationality" DataType="System.Int32" Enabled="true" TableName="Nationality" SelectCommand="SELECT N.Id, N.IsVertualDeleted, N.Name, N.ValueOrder&#13;&#10;FROM &quot;Nationality&quot; N&#13;&#10;WHERE N.IsVertualDeleted=0&#13;&#10;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table1" ParentDataSource="Nationality" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين حسب الجنسية الاساسية" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Top="56.7" Width="718.2" Height="37.8" Text="الجنسية الأساسية: [NationalityComboBox.Text]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 10pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="98.35" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="404.35" Width="181.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="585.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="207.9" Width="195.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الجنسية الأساسية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text36" Width="207.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ اصدار الجنسية الاساسية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="121.09" Width="718.2" Height="37.8" DataSource="Table1">
+      <TextObject Name="Text4" Left="406.35" Width="179.55" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeesNationalityDataSourse.FirstName] [EmployeesNationalityDataSourse.FatherName] [EmployeesNationalityDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="585.9" Width="132.3" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeesNationalityDataSourse.Code]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="207.9" Width="198.45" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[EmployeesNationalityDataSourse.Name]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Width="207.9" Height="37.8" Border.Lines="All" Border.Color="LightGray" CanGrow="true" GrowToBottom="true" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EmployeesNationalityDataSourse.NationalityIssue])) == &quot;01/01/0001&quot;,&quot;&quot;,[EmployeesNationalityDataSourse.NationalityIssue] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="162.74" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="585.9" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="585.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="185.48" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="174" AcceptButton="btnOk" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="106" Top="87" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="184" Top="40" Width="94" Height="13" RightToLeft="Yes" TabIndex="2" Text="الجنسية الأساسية"/>
+    <ComboBoxControl Name="NationalityComboBox" Left="32" Top="36" Width="149" RightToLeft="Yes" TabIndex="3" DataColumn="EmployeesNationalityDataSourse.Nationality.Name" DropDownStyle="DropDownList" DropDownWidth="149" ItemHeight="13"/>
+    <CheckBoxControl Name="AllNationalityCheckBox" Left="168" Top="64" Width="98" Height="17" TabIndex="4" Text="جميع الجنسيات" ClickEvent="AllNationalityCheckBox_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

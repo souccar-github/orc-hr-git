@@ -1,0 +1,512 @@
+﻿@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 19/05/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<script type="text/javascript">
+
+    function LeaveSettingEditHandler(e) {
+
+        e.container.find(".control-MonthlyBalance").show();
+        e.container.find(".control-MaximumNumber").show();
+        e.container.find(".control-MaximumHoursPerDay").show();
+        e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+
+        var hasMonthlyBalance = e.model.HasMonthlyBalance;
+        var hasMaximumNumber = e.model.HasMaximumNumber;
+        var isDivisibleToHours = e.model.IsDivisibleToHours;
+        var isIndivisible = e.model.IsIndivisible;
+        
+        if (hasMonthlyBalance) {
+            e.container.find(".control-MonthlyBalance").show();
+            removeRequiredStar('MonthlyBalance');
+            addRequiredStar('MonthlyBalance');
+
+        } else {
+            removeRequiredStar('MonthlyBalance');
+            e.container.find(".control-MonthlyBalance").hide();
+            if (e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox")!=null)
+            e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox").value(0);
+        }
+
+        if (hasMaximumNumber) {
+            removeRequiredStar('MaximumNumber');
+            addRequiredStar('MaximumNumber');
+            e.container.find(".control-MaximumNumber").show();
+            e.container.find(".control-RoundPercentage").hide();
+
+            e.container.find("[name='IsIndivisible']").prop("checked", true);
+            e.container.find('[name="IsIndivisible"]').prop("disabled", true);
+            
+            e.container.find("[name='IsDivisibleToHours']").prop("checked", false);
+            e.container.find('[name="IsDivisibleToHours"]').prop("disabled", true);
+            if (e.container.find("[name='RoundPercentage']").data("kendoNumericTextBox")!=null)
+            e.container.find("[name='RoundPercentage']").data("kendoNumericTextBox").value(0);
+
+        } else {
+
+            removeRequiredStar('MaximumNumber');
+            e.container.find(".control-MaximumNumber").hide();
+            e.container.find(".control-RoundPercentage").show();
+
+            //e.container.find("[name='IsIndivisible']").prop("checked", false);
+            //e.container.find('[name="IsIndivisible"]').prop("disabled", false);
+            
+            //e.container.find('[name="IsDivisibleToHours"]').prop("checked", false);
+            //e.container.find('[name="IsDivisibleToHours"]').prop("disabled", false);
+            if (e.container.find("[name='MaximumNumber']").data("kendoNumericTextBox")!=null)
+            e.container.find("[name='MaximumNumber']").data("kendoNumericTextBox").value(0);
+
+        }
+
+        if (isDivisibleToHours) {
+            
+            e.container.find('[name="IsDivisibleToHours"]').prop("checked", true);
+            
+            removeRequiredStar('MaximumHoursPerDay');
+            removeRequiredStar('HoursEquivalentToOneLeaveDay');
+            addRequiredStar('MaximumHoursPerDay');
+            addRequiredStar('HoursEquivalentToOneLeaveDay');
+            
+            e.container.find(".control-MaximumHoursPerDay").show();
+            e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+            
+        } else {
+            
+            e.container.find('[name="IsDivisibleToHours"]').prop("checked", false);
+            
+            removeRequiredStar('MaximumHoursPerDay');
+            removeRequiredStar('HoursEquivalentToOneLeaveDay');
+            
+            e.container.find(".control-MaximumHoursPerDay").hide();
+            e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+            if (e.container.find("[name='MaximumHoursPerDay']").data("kendoNumericTextBox")!=null)
+                e.container.find("[name='MaximumHoursPerDay']").data("kendoNumericTextBox").value(0);
+            if (e.container.find("[name='HoursEquivalentToOneLeaveDay']").data("kendoNumericTextBox")!=null)
+            e.container.find("[name='HoursEquivalentToOneLeaveDay']").data("kendoNumericTextBox").value(0);
+        }
+  
+        //----------------
+        var hasMonthlyBalanceCkb = e.container.find('[name="HasMonthlyBalance"]');
+        var hasMaximumNumberCkb = e.container.find('[name="HasMaximumNumber"]');
+        var isDivisibleToHoursCkb = e.container.find('[name="IsDivisibleToHours"]');
+        hasMonthlyBalanceCkb.bind("change", monthlyBalanceStatusChange);
+        hasMaximumNumberCkb.bind("change", maximumNumberStatusChange);
+        isDivisibleToHoursCkb.bind("change", divisibleToHoursStatusChange);
+        
+        function monthlyBalanceStatusChange() {
+            
+            var hasMonthlyBalance = $('[name="HasMonthlyBalance"]').is(':checked');
+            
+            if (hasMonthlyBalance) {
+                
+                removeRequiredStar('MonthlyBalance');
+                addRequiredStar('MonthlyBalance');
+                e.container.find(".control-MonthlyBalance").show();
+                e.model.HasMonthlyBalance = true;
+
+            } else {
+                
+                removeRequiredStar('MonthlyBalance');
+                e.container.find(".control-MonthlyBalance").hide();
+                if (e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox")!=null)
+                e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox").value(0);
+                e.model.MonthlyBalance = 0;
+                e.model.HasMonthlyBalance = false;
+                
+            }
+            reOrderControls(e.container);
+        }        
+        function maximumNumberStatusChange() {
+
+            var hasMaximumNumber = $('[name="HasMaximumNumber"]').is(':checked');
+
+            if (hasMaximumNumber) {
+
+                e.model.RoundPercentage = 0;
+                e.model.IsIndivisible = true;
+                e.model.MaximumHoursPerDay = 0;
+                e.model.HoursEquivalentToOneLeaveDay = 0;
+                e.model.IsDivisibleToHours = false;
+                e.model.HasMaximumNumber = true;
+
+                removeRequiredStar('MaximumNumber');
+                addRequiredStar('MaximumNumber');
+
+                e.container.find(".control-MaximumNumber").show();
+                
+                e.container.find(".control-RoundPercentage").hide();
+                e.container.find(".control-MaximumHoursPerDay").hide();
+                e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+                
+                e.container.find("[name='IsIndivisible']").prop("checked", true);
+                e.container.find('[name="IsIndivisible"]').prop("disabled", true);
+
+                e.container.find("[name='IsDivisibleToHours']").prop("checked", false);
+                e.container.find('[name="IsDivisibleToHours"]').prop("disabled", true);
+                if (e.container.find("[name='RoundPercentage']").data("kendoNumericTextBox")!=null)
+                e.container.find("[name='RoundPercentage']").data("kendoNumericTextBox").value(0);
+
+            } else {
+
+                e.model.MaximumNumber = 0;
+                e.model.IsIndivisible = false;
+                e.model.HasMaximumNumber = false;
+
+                removeRequiredStar('MaximumNumber');
+
+                e.container.find(".control-RoundPercentage").show();
+                e.container.find(".control-MaximumHoursPerDay").hide();
+                e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+
+                e.container.find(".control-MaximumNumber").hide();
+                
+                e.container.find("[name='IsIndivisible']").prop("checked", false);
+                e.container.find('[name="IsIndivisible"]').prop("disabled", false);
+
+                e.container.find('[name="IsDivisibleToHours"]').prop("checked", false);
+                e.container.find('[name="IsDivisibleToHours"]').prop("disabled", false);
+
+                e.container.find('[name="HasMaximumNumber"]').prop("checked", false);
+                if (e.container.find("[name='MaximumNumber']").data("kendoNumericTextBox")!=null)
+                e.container.find("[name='MaximumNumber']").data("kendoNumericTextBox").value(0);
+
+            }
+            reOrderControls(e.container);
+        }
+        function divisibleToHoursStatusChange() {
+
+            var isDivisibleToHours = $('[name="IsDivisibleToHours"]').is(':checked');
+
+            if (isDivisibleToHours) {
+
+                e.model.IsDivisibleToHours = true;
+
+                e.container.find("[name='IsDivisibleToHours']").prop("checked", true);
+                
+                removeRequiredStar('MaximumHoursPerDay');
+                removeRequiredStar('HoursEquivalentToOneLeaveDay');
+                addRequiredStar('MaximumHoursPerDay');
+                addRequiredStar('HoursEquivalentToOneLeaveDay');
+
+                e.container.find(".control-MaximumHoursPerDay").show();
+                e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+
+            } else {
+
+                e.model.MaximumHoursPerDay = 0;
+                e.model.HoursEquivalentToOneLeaveDay = 0;
+                e.model.IsDivisibleToHours = false;
+
+                e.container.find("[name='IsDivisibleToHours']").prop("checked", false);
+                
+                removeRequiredStar('MaximumHoursPerDay');
+                removeRequiredStar('HoursEquivalentToOneLeaveDay');
+
+                e.container.find(".control-MaximumHoursPerDay").hide();
+                e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+                if (e.container.find("[name='MaximumHoursPerDay']").data("kendoNumericTextBox")!=null)
+                    e.container.find("[name='MaximumHoursPerDay']").data("kendoNumericTextBox").value(0);
+                if (e.container.find("[name='HoursEquivalentToOneLeaveDay']").data("kendoNumericTextBox")!=null)
+                e.container.find("[name='HoursEquivalentToOneLeaveDay']").data("kendoNumericTextBox").value(0);
+            }
+            reOrderControls(e.container);
+        }
+
+        //----------------
+        reOrderControls(e.container);
+    }
+    
+    function LeaveSettingViewHandler(e) {
+        
+        var hasMonthlyBalance = e.model.HasMonthlyBalance;
+        var hasMaximumNumber = e.model.HasMaximumNumber;
+        var isDivisibleToHours = e.model.IsDivisibleToHours;
+
+        if (hasMonthlyBalance) {
+            
+            e.container.find(".control-MonthlyBalance").show();
+
+        } else {
+
+            e.container.find(".control-MonthlyBalance").hide();
+            
+        }
+
+        if (hasMaximumNumber) {
+
+            e.container.find(".control-MaximumNumber").show();
+            e.container.find(".control-RoundPercentage").hide();
+
+        } else {
+
+            e.container.find(".control-MaximumNumber").hide();
+            e.container.find(".control-RoundPercentage").show();
+
+        }
+
+        if (isDivisibleToHours) {
+
+            e.container.find(".control-MaximumHoursPerDay").show();
+            e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+
+        } else {
+
+            e.container.find(".control-MaximumHoursPerDay").hide();
+            e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+
+        }
+
+    }
+    
+    //function LeaveSettingEditHandler(e) {
+    //    LeaveSettingHandlerStatus(e);
+    //    reOrderControls(e.container);
+    //}
+
+    //function LeaveSettingViewHandler(e) {
+        
+    //    LeaveSettingHandlerStatus(e);
+    //    reOrderControls(e.container);
+    //}
+
+    //function LeaveSettingHandlerStatus(e) {
+    //    e.container.find(".control-MonthlyBalance").show();
+    //    e.container.find(".control-MaximumNumber").show();
+    //    e.container.find(".control-MaximumHoursPerDay").show();
+    //    e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+        
+    //    var hasMonthlyBalance = e.container.find('[name="HasMonthlyBalance"]'); //Boolean(e.model.HasMonthlyBalance);
+    //    hasMonthlyBalance.each(function () {
+    //        if (this.checked == true) {
+    //            e.container.find(".control-MonthlyBalance").show();
+    //            addRequiredStar('MonthlyBalance');
+              
+    //        } else {
+    //            removeRequiredStar('MonthlyBalance');
+    //            e.container.find(".control-MonthlyBalance").hide();
+    //            e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].MonthlyBalance = $("[name='MonthlyBalance']").val();
+    //        }
+    //    });
+    //    hasMonthlyBalance.change(function () {
+    //        if (this.checked == true) {
+    //            e.container.find(".control-MonthlyBalance").show();
+    //            addRequiredStar('MonthlyBalance');
+    //        } else {
+    //            removeRequiredStar('MonthlyBalance');
+    //            e.container.find(".control-MonthlyBalance").hide();
+    //            e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].MonthlyBalance = $("[name='MonthlyBalance']").val();
+    //        }
+    //        reOrderControls($(".controls-div"));
+    //    });
+        
+    //    var hasMaximumNumber = e.container.find('[name="HasMaximumNumber"]'); //Boolean(e.model.HasMaximumNumber);
+    //    hasMaximumNumber.change(function () {
+    //        if (this.checked == true) {
+    //            addRequiredStar('MaximumNumber');
+    //            //removeRequiredStar('RoundPercentage');
+    //            e.container.find(".control-MaximumNumber").show();
+    //            e.container.find(".control-RoundPercentage").hide();
+                
+    //            e.container.find("[name='IsIndivisible']").prop("checked", true);
+    //            e.container.find("[name='IsDivisibleToHours']").prop("checked", false);
+
+    //            e.container.find('[name="IsIndivisible"]').prop("disabled", true);
+    //            e.container.find('[name="IsDivisibleToHours"]').prop("disabled", true);
+                
+    //            e.container.find("[name='RoundPercentage']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].RoundPercentage = $("[name='RoundPercentage']").val();
+    //        } else {
+    //            //addRequiredStar('RoundPercentage');
+    //            removeRequiredStar('MaximumNumber');
+    //            e.container.find(".control-MaximumNumber").hide();
+    //            e.container.find(".control-RoundPercentage").show();
+                
+    //            e.container.find("[name='IsIndivisible']").prop("checked", false);
+    //            //e.container.find("[name='IsDivisibleToHours']").prop("checked", true);
+
+    //            e.container.find('[name="IsIndivisible"]').prop("disabled", false);
+    //            e.container.find('[name="IsDivisibleToHours"]').prop("disabled", false);
+
+    //            e.container.find("[name='MaximumNumber']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].MaximumNumber = $("[name='MaximumNumber']").val();
+    //        }
+    //        reOrderControls($(".controls-div"));
+    //    });
+    //    hasMaximumNumber.each(function () {
+    //        if (this.checked == true) {
+    //            addRequiredStar('MaximumNumber');
+    //            //removeRequiredStar('RoundPercentage');
+    //            e.container.find(".control-MaximumNumber").show();
+    //            e.container.find(".control-RoundPercentage").hide();
+
+    //            e.container.find("[name='IsIndivisible']").prop("checked", true);
+    //            e.container.find("[name='IsDivisibleToHours']").prop("checked", false);
+
+    //            e.container.find('[name="IsIndivisible"]').prop("disabled", true);
+    //            e.container.find('[name="IsDivisibleToHours"]').prop("disabled", true);
+
+    //            e.container.find("[name='RoundPercentage']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].RoundPercentage = $("[name='RoundPercentage']").val();
+    //        } else {
+    //            //addRequiredStar('RoundPercentage');
+    //            removeRequiredStar('MaximumNumber');
+    //            e.container.find(".control-MaximumNumber").hide();
+    //            e.container.find(".control-RoundPercentage").show();
+
+    //            e.container.find("[name='IsIndivisible']").prop("checked", false);
+    //            //e.container.find("[name='IsDivisibleToHours']").prop("checked", true);
+
+    //            e.container.find('[name="IsIndivisible"]').prop("disabled", false);
+    //            e.container.find('[name="IsDivisibleToHours"]').prop("disabled", false);
+
+    //            e.container.find("[name='MaximumNumber']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].MaximumNumber = $("[name='MaximumNumber']").val();
+    //        }
+    //    });
+
+    //    var isDivisibleToHours = e.container.find('[name="IsDivisibleToHours"]'); //Boolean(e.model.IsDivisibleToHours);
+    //    isDivisibleToHours.change(function () {
+    //        if (this.checked == true) {
+    //            addRequiredStar('MaximumHoursPerDay');
+    //            addRequiredStar('HoursEquivalentToOneLeaveDay');
+    //            e.container.find(".control-MaximumHoursPerDay").show();
+    //            e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+    //        } else {
+    //            removeRequiredStar('MaximumHoursPerDay');
+    //            removeRequiredStar('HoursEquivalentToOneLeaveDay');
+    //            e.container.find(".control-MaximumHoursPerDay").hide();
+    //            e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+
+    //            e.container.find("[name='MaximumHoursPerDay']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].MaximumHoursPerDay = $("[name='MaximumHoursPerDay']").val();
+
+    //            e.container.find("[name='HoursEquivalentToOneLeaveDay']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].HoursEquivalentToOneLeaveDay = $("[name='HoursEquivalentToOneLeaveDay']").val();
+    //        }
+    //        reOrderControls($(".controls-div"));
+    //    });
+    //    isDivisibleToHours.each(function () {
+    //        if (this.checked == true) {
+    //            addRequiredStar('MaximumHoursPerDay');
+    //            addRequiredStar('HoursEquivalentToOneLeaveDay');
+    //            e.container.find(".control-MaximumHoursPerDay").show();
+    //            e.container.find(".control-HoursEquivalentToOneLeaveDay").show();
+    //        } else {
+    //            removeRequiredStar('MaximumHoursPerDay');
+    //            removeRequiredStar('HoursEquivalentToOneLeaveDay');
+    //            e.container.find(".control-MaximumHoursPerDay").hide();
+    //            e.container.find(".control-HoursEquivalentToOneLeaveDay").hide();
+
+    //            e.container.find("[name='MaximumHoursPerDay']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].MaximumHoursPerDay = $("[name='MaximumHoursPerDay']").val();
+
+    //            e.container.find("[name='HoursEquivalentToOneLeaveDay']").data("kendoNumericTextBox").value(0);
+    //            $("#grid").data("kendoGrid")._data[0].HoursEquivalentToOneLeaveDay = $("[name='HoursEquivalentToOneLeaveDay']").val();
+    //        }
+            
+    //    });
+    //}
+
+
+</script>
+
+<script type="text/javascript">
+
+    function BalanceSlicesEditHandler(e) {
+        
+        var hasMonthlyBalance = e.model.HasMonthlyBalance;
+        if (hasMonthlyBalance) {
+            e.container.find(".control-MonthlyBalance").show();
+            removeRequiredStar('MonthlyBalance');
+            addRequiredStar('MonthlyBalance');
+
+        } else {
+            removeRequiredStar('MonthlyBalance');
+            e.container.find(".control-MonthlyBalance").hide();
+        }
+        
+        var hasMonthlyBalanceCkb = e.container.find('[name="HasMonthlyBalance"]');
+        hasMonthlyBalanceCkb.bind("change", monthlyBalanceStatusChange);
+
+        function monthlyBalanceStatusChange() {
+
+            var hasMonthlyBalance = $('[name="HasMonthlyBalance"]').is(':checked');
+
+            if (hasMonthlyBalance) {
+
+                removeRequiredStar('MonthlyBalance');
+                addRequiredStar('MonthlyBalance');
+                e.container.find(".control-MonthlyBalance").show();
+                e.model.HasMonthlyBalance = true;
+
+            } else {
+
+                removeRequiredStar('MonthlyBalance');
+                e.container.find(".control-MonthlyBalance").hide();
+                if (e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox")!=null)
+                e.container.find("[name='MonthlyBalance']").data("kendoNumericTextBox").value(0);
+                e.model.MonthlyBalance = 0;
+                e.model.HasMonthlyBalance = false;
+
+            }
+            reOrderControls(e.container);
+        }
+        reOrderControls(e.container);
+    }
+    
+    function BalanceSlicesViewHandler(e) {
+        
+        var hasMonthlyBalance = e.model.HasMonthlyBalance;
+        if (hasMonthlyBalance) {
+
+            e.container.find(".control-MonthlyBalance").show();
+
+        } else {
+
+            e.container.find(".control-MonthlyBalance").hide();
+
+        }
+    }
+    
+    //function BalanceSlicesEditHandler(e) {
+        
+    //    var hasMonthlyBalance = e.container.find('[name="HasMonthlyBalance"]').is(':checked');
+    //    HasMonthlyBalance(e, hasMonthlyBalance);
+        
+    //    e.container.find('[name="HasMonthlyBalance"]').change(function () {
+    //        var hasBalance = e.container.find('[name="HasMonthlyBalance"]').is(':checked');
+    //        HasMonthlyBalance(e, hasBalance);
+    //    });
+
+    //    reOrderControls(e.container);
+    //}
+
+    //function BalanceSlicesViewHandler(e) {
+
+    //    var hasMonthlyBalance = Boolean(e.model.HasMonthlyBalance);
+    //    HasMonthlyBalance(e, hasMonthlyBalance);
+    //    reOrderControls(e.container);
+    //}
+
+    //function HasMonthlyBalance(e, hasMonthlyBalance) {
+
+    //    e.container.find(".control-MonthlyBalance").hide();
+
+    //    if (hasMonthlyBalance == true) {
+    //        e.container.find(".control-MonthlyBalance").show();
+    //        addRequiredStar('MonthlyBalance');
+    //    } else {
+    //        removeRequiredStar('MonthlyBalance');
+    //        e.container.find(".control-MonthlyBalance").hide();
+    //    }
+    //}
+
+
+</script>

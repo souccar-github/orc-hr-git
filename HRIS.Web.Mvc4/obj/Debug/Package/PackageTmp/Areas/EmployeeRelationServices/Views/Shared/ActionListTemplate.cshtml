@@ -1,0 +1,505 @@
+﻿@using  Project.Web.Mvc4.Factories
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+@using HRIS.Domain.Global.Constant
+@Html.Partial("AssignmentEditHandler")
+@Html.Partial("LeaveSettingEditHandler")
+@Html.Partial("RewardSettingView")
+@Html.Partial("FinancialPromotionEditHandler")
+@Html.Partial("LeaveRequest")
+@Html.Partial("UpdateWorkFlowSettingView")
+@Html.Partial("ExitInterviewViewHandler")
+@Html.Partial("DisciplinarySettingView")
+@Html.Partial("EmployeeDisciplinary")
+@Html.Partial("EmployeeReward")
+
+
+<div class="TerminationAssigningEmployeeDiv"></div>
+<script>
+
+    function LeaveTemplateDetailActionListHandler(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function LeaveTemplateDetailViewHandler(e) {
+        e.container.find("#view_edit").remove();
+    }
+    function CancelPenalty(modelId) {
+        window.Souccar.ajax('@Url.Action("CancelPenalty", "Service", new { area = "EmployeeRelationServices" })', { id: modelId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Status) {
+
+                window.Souccar.showInfoMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+                $('#grid').data("kendoGrid").dataSource.read();
+            } else {
+                window.Souccar.showErrorMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+            }
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+
+    }
+    function LeaveTemplateDetailAfterRequestEnd(e) {
+        //console.log(e);
+        //$("#grid .k-grid-add").remove();
+    }
+    function DownloadAttachment(rowId) {
+        var fileName = '';
+        var _dataGrid = $("#grid").data("kendoGrid")._data;
+        for (var i = 0; i < _dataGrid.length; i++) {
+            if (_dataGrid[i].Id == rowId)
+                fileName = _dataGrid[i].FilePath;
+        }
+        if (fileName == null)
+            return "";
+        var filepathstrs = fileName.split('_');
+        var downloadFileName = "";
+        for (var i = 3; i < filepathstrs.length; i++) {
+            downloadFileName += filepathstrs[i];
+        }
+        downloadFile('FilePath', gridModel.TypeFullName, fileName, downloadFileName);
+    }
+    function RecycleActionListHandler(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function RecycleViewHandler(e) {
+        e.container.find("#view_edit").remove();
+    }
+
+    function initializeAssignmentActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+    function TerminateAfterPreparationPeriod(modelId) {
+        window.Souccar.ajax('@Url.Action("TerminateAfterPreparationPeriod", "Service", new { area = "EmployeeRelationServices" })', { id: modelId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Status) {
+                window.Souccar.showInfoMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+                $('#grid').data("kendoGrid").dataSource.read();
+            } else {
+                window.Souccar.showErrorMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+            }
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+    }
+
+    function CloseTransferRequest(modelId) {
+        window.Souccar.ajax('@Url.Action("CloseTransferRequest", "Service", new { area = "EmployeeRelationServices" })', { id: modelId }, successFunc, erorrFunc);
+        function successFunc(data) {
+            if (data.Status) {
+                window.Souccar.showInfoMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+                $('#grid').data("kendoGrid").dataSource.read();
+            } else {
+                window.Souccar.showErrorMessage(data.MessageTitle, data.Message, "@GlobalResource.Ok");
+            }
+        }
+        function erorrFunc() {
+            window.Souccar.showErrorMessage("@GlobalResource.Fail", "@GlobalResource.FailMessage", "@GlobalResource.Ok");
+        }
+    }
+    function initializeEndingSecondaryPositionEmployeeActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+    function initializeEmployeeCardActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (dataItem.CardStatus.Id != 0 && actionListItems[i].Name == "@ServiceFactory.LocalizationService.GetResource(CommandsNames.ResourceGroupName + '_'  +CommandsNames.TerminateAfterPreparationPeriod)") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function initializeEmployeeTransferRequestActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            debugger;
+            actionListItems[i].ShowCommand = true;
+
+            if (dataItem.RequestStatus.Id != 2 && actionListItems[i].Name == "@ServiceFactory.LocalizationService.GetResource(CommandsNames.ResourceGroupName + '_'  +CommandsNames.CloseTransferRequest)") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function initializeEmployeeLoanRequestActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+
+            if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+
+    function initializeLeaveRequestActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            actionListItems[i].ShowCommand = true;
+            if (dataItem.IsTransferToPayroll == true) {
+                if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+
+                if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+        }
+    }
+
+    function initializeDisciplinaryActionList(actionListItems, dataItem) {
+        debugger;
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            actionListItems[i].ShowCommand = true;
+            if (dataItem.IsTransferToPayroll == true) {
+                if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+
+                if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+                if (actionListItems[i].HandlerName == "@CommandsNames.CancelPenalty") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+        }
+    }
+
+    function initializeRewardActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            actionListItems[i].ShowCommand = true;
+
+            if (dataItem.IsTransferToPayroll == true) {
+
+                if (actionListItems[i].Name == "@GlobalResource.Delete") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+
+                if (actionListItems[i].Name == "@GlobalResource.Edit") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+        }
+    }
+
+    function IncidenceDefinitionDataBoundHandler(e) {
+        e.sender.hideColumn("ApprovedDateByBCS");
+        e.sender.hideColumn("FirstDate");
+        e.sender.hideColumn("SecondDate");
+        e.sender.hideColumn("FirstDouble");
+        e.sender.hideColumn("SecondDouble");
+        e.sender.hideColumn("IsSalary");
+        e.sender.hideColumn("CurrencyType");
+        e.sender.hideColumn("FirstInt");
+        e.sender.hideColumn("FirstString");
+        e.sender.hideColumn("RewardType");
+        e.sender.hideColumn("RatingPenalty");
+        e.sender.hideColumn("RecruitmentType");
+        e.sender.hideColumn("WorkSide");
+        e.sender.hideColumn("TransportType");
+        e.sender.hideColumn("AssignmentType");
+        e.sender.hideColumn("MonthNumber");
+        e.sender.hideColumn("CausePremium");
+        e.sender.hideColumn("ServiceEndType");
+        e.sender.hideColumn("Recurrence");
+        e.sender.hideColumn("MilitaryStatus");
+        e.sender.hideColumn("AbsencePenalty");
+        e.sender.hideColumn("StrongPenalty");
+        e.sender.hideColumn("LightPenalty");
+        e.sender.hideColumn("MajorType");
+        e.sender.hideColumn("Major");
+        e.sender.hideColumn("OrganizationalLevel");
+        e.sender.hideColumn("Grade");
+        e.sender.hideColumn("JobTitle");
+        e.sender.hideColumn("JobDescription");
+        e.sender.hideColumn("Position");
+        e.sender.hideColumn("Branch");
+        e.sender.hideColumn("Node");
+        e.sender.hideColumn("CostCenter");
+    }
+
+    @*AppointmentInformation*@
+
+    function AppointmentInformationDropDownListsCascade(e) {
+        e.container.find("#dropDownListOrganizationalLevel").data("kendoDropDownList").bind("change", onOrganizationalLevelChanged);
+    }
+
+    function onOrganizationalLevelChanged() {
+        alert("change");
+        var organizationalLevelId = $("#dropDownListOrganizationalLevel").data("kendoDropDownList").value();
+        getGradesListByOrganizationalLevel(organizationalLevelId);
+
+    }
+
+    function getGradesListByOrganizationalLevel(organizationalLevelId) {
+        $.ajax({
+            url: '@Url.Action("GetGradesListByOrganizationalLevel", "DropDownListHelper")',
+            type: "POST",
+            data: JSON.stringify({ organizationalLevelId: organizationalLevelId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var gradesInformationData = new kendo.data.DataSource(
+                    {
+                        data: data.result
+                    }
+                );
+                $("#dropDownListGrade").data("kendoDropDownList").setDataSource(gradesInformationData);
+            }
+        });
+    }
+
+    @*AppointmentInformation*@
+
+
+    @*StartupInformation*@
+
+    function StartupInformationDropDownListsCascade(e) {
+        e.container.find("#dropDownListBranch").data("kendoDropDownList").bind("change", onBranchChanged);
+        e.container.find("#dropDownListManagement").data("kendoDropDownList").bind("change", onManagementChanged);
+        e.container.find("#dropDownListJobDescription").data("kendoDropDownList").bind("change", onJobDescriptionChanged);
+        getBranchesList();
+    }
+
+    function getBranchesList() {
+
+        $.ajax({
+            url: '@Url.Action("GetBranchesList", "DropDownListHelper")',
+            type: "POST",
+            //data: JSON.stringify({ branchlId: branchlId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var branchesInformationData = new kendo.data.DataSource(
+                    {
+                        data: data.result
+                    }
+                );
+                $("#dropDownListBranch").data("kendoDropDownList").setDataSource(branchesInformationData);
+            }
+        });
+    }
+
+    function onBranchChanged() {
+        alert("onBranchChanged");
+        var branchlId = $("#dropDownListBranch").data("kendoDropDownList").value();
+        getManagementsListByBranch(branchlId);
+
+    }
+
+    function getManagementsListByBranch(branchlId) {
+
+        $.ajax({
+            url: '@Url.Action("GetManagementsListByBranch", "DropDownListHelper")',
+            type: "POST",
+            data: JSON.stringify({ branchlId: branchlId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var managementsInformationData = new kendo.data.DataSource(
+                    {
+                        data: data.result
+                    }
+                );
+                $("#dropDownListManagement").data("kendoDropDownList").setDataSource(managementsInformationData);
+            }
+        });
+    }
+
+    function onManagementChanged() {
+        alert("onManagementChanged");
+        var branchlId = $("#dropDownListManagement").data("kendoDropDownList").value();
+        getJobDescriptionsListByBranch(branchlId);
+
+    }
+
+    function getJobDescriptionsListByBranch(branchlId) {
+
+        $.ajax({
+            url: '@Url.Action("GetJobDescriptionsListByBranch", "DropDownListHelper")',
+            type: "POST",
+            data: JSON.stringify({ branchlId: branchlId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var jobDescriptionsInformationData = new kendo.data.DataSource(
+                    {
+                        data: data.result
+                    }
+                );
+                $("#dropDownListJobDescription").data("kendoDropDownList").setDataSource(jobDescriptionsInformationData);
+            }
+        });
+    }
+
+    function onJobDescriptionChanged() {
+        alert("onJobDescriptionChanged");
+        var jobDescriptionId = $("#dropDownListJobDescription").data("kendoDropDownList").value();
+        getPositionsListByJobDescription(jobDescriptionId);
+
+    }
+
+    function getPositionsListByJobDescription(jobDescriptionId) {
+
+        $.ajax({
+            url: '@Url.Action("GetPositionsListByJobDescription", "DropDownListHelper")',
+            type: "POST",
+            data: JSON.stringify({ jobDescriptionId: jobDescriptionId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var positionsInformationData = new kendo.data.DataSource(
+                    {
+                        data: data.result
+                    }
+                );
+                $("#dropDownListPosition").data("kendoDropDownList").setDataSource(positionsInformationData);
+            }
+        });
+    }
+
+    @*StartupInformation*@
+    var databind = kendo.observable();
+    function TerminationAssigningEmployee(assignId) {
+        var tempdata = [
+            { Name: "DocumentType", Title: "Document Type", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.DocumentType", Creatable: true, IsRequired: true },
+            { Name: "DocumentNumber", Title: "Document Number", Type: "Number" },
+            { Name: "DocumentDate", Title: "Document Date", Type: "Date" },
+            { Name: "TerminationAssigningStartDate", Title: "Termination Assigning Start Date", Type: "Date" },
+        ];
+
+
+        var title = "Termination Assigning Employee";
+        var buttons = [
+            { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "TerminationAssigningEmployeeContainer";
+        var bodyHTML = "<div class='TerminationAssigningEmployee'></div>";
+        var isTwoColumns = false;
+        createAndOpenCustomWindow($(".TerminationAssigningEmployeeDiv"), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+        $("#cancel").off('click').on('click', function () {
+            $(".TerminationAssigningEmployeeDiv").data("kendo-window").close();
+        });
+
+        $("#update").off('click').on('click', function () {
+
+            $.ajax({
+                url: '@Url.Action("Save", "TerminationAssigningEmployee")',
+                type: "POST",
+                data: JSON.stringify({
+                    assignEmployeeToPositionId: assignId,
+                    model: databind
+                }),
+
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+
+                    } else {
+
+                    }
+                }
+            });
+
+            $(".TerminationAssigningEmployeeDiv").data("kendo-window").close();
+        });
+
+        createCustomEditForm($(".TerminationAssigningEmployee"), { Fields: tempdata, Key: "jjj" }, databind);
+
+    }
+
+
+    function initializeExitInterviewActionList(actionListItems, dataItem) {
+
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (actionListItems[i].Name != "@ServiceFactory.LocalizationService.GetResource(GridModelLocalizationConst.ResourceGroupName + "_" + GridModelLocalizationConst.View)") {
+
+                actionListItems[i].ShowCommand = false;
+                continue;
+            }
+            actionListItems[i].ShowCommand = true;
+
+        }
+    }
+
+</script>

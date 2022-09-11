@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="08/17/2016 14:02:53" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW8gFsHCgaHV/m0hFNCLZ7iuH7VzCsOega+KAIksaNQhNQDc1EUrsGBNZ3I3MTQ16Vr+WI/gWcjuIUs4wcM1Xdm6119K4A1Tci4OMHoKUQQOHxUhgTn9DHGlwQ8polEKXTg==">
+      <TableDataSource Name="Table1" Alias="DataSourse" DataType="System.Int32" Enabled="true" SelectCommand="with temp as(&#13;&#10;---------------------------------------------------------------------------------------------&#13;&#10;SELECT    &#13;&#10;EmployeeCard_id as EmployeeCardId,&#13;&#10;(SELECT EC.Employee_id FROM dbo.EmployeeCard EC where EC.Id = EmployeeCard_id AND EC.IsVertualDeleted=0) as EmployeeId,&#13;&#10;(SELECT dbo.Position.Code From dbo.Position where Position.Id=Position_id AND Position.IsVertualDeleted=0)+'-'+'تعيين' as [Description],&#13;&#10;CreationDate,&#13;&#10;AssigningDate as StartingDate,&#13;&#10;Comment&#13;&#10;FROM         &#13;&#10;dbo.Assignment&#13;&#10;---------------------------------------------------------------------------------------------&#13;&#10;union&#13;&#10;SELECT     &#13;&#10;EmployeeCard_id as EmployeeCardId,&#13;&#10;(SELECT EC.Employee_id FROM dbo.EmployeeCard EC where EC.Id = EmployeeCard_id AND EC.IsVertualDeleted=0) as EmployeeId,&#13;&#10;(SELECT dbo.Position.Code From dbo.Position where Position.Id=Position_id AND Position.IsVertualDeleted=0)+'-'+'الترقية الادارية' as [Description],&#13;&#10;CreationDate,&#13;&#10;PositionJoiningDate as StartingDate,&#13;&#10;Comment&#13;&#10;FROM&#13;&#10;dbo.EmployeePromotion&#13;&#10;---------------------------------------------------------------------------------------------&#13;&#10;union&#13;&#10;SELECT &#13;&#10;EmployeeCard_id,&#13;&#10;(SELECT EC.Employee_id FROM dbo.EmployeeCard EC where EC.Id = EmployeeCard_id AND EC.IsVertualDeleted=0) as EmployeeId,&#13;&#10;'نقل من'+(SELECT dbo.Position.Code From dbo.Position where Position.Id=SourcePosition_id AND Position.IsVertualDeleted=0)&#13;&#10;+'الى'+(SELECT dbo.Position.Code From dbo.Position where Position.Id=DestinationPosition_id  AND Position.IsVertualDeleted=0) as [Description],&#13;&#10;CreationDate, &#13;&#10;StartingDate,&#13;&#10;Comment&#13;&#10;FROM         &#13;&#10;dbo.EmployeeTransfer&#13;&#10;---------------------------------------------------------------------------------------------&#13;&#10;union&#13;&#10;SELECT &#13;&#10;EmployeeCard_id,&#13;&#10;(SELECT EC.Employee_id FROM dbo.EmployeeCard EC where EC.Id = EmployeeCard_id AND EC.IsVertualDeleted=0) as EmployeeId,&#13;&#10;&#13;&#10;CAST(&#13;&#10;(CASE WHEN IsPercentage=1 THEN  '('+Cast((100*NewSalary)/(Percentage+100) AS NVARCHAR)+'+'+Cast(NewSalary-((100*NewSalary)/(Percentage+100)) AS NVARCHAR)+'='+Cast(NewSalary AS NVARCHAR)+')'&#13;&#10;ELSE '('+Cast(NewSalary-FixedValue AS NVARCHAR)+'+'+Cast(FixedValue AS NVARCHAR)+'='+Cast(NewSalary AS NVARCHAR)+')'&#13;&#10;END ) &#13;&#10;AS NVARCHAR)+'-'+'الترقية المالية' as [Description],&#13;&#10;&#13;&#10;CreationDate, &#13;&#10;CreationDate AS StartingDate,&#13;&#10;Comment&#13;&#10;FROM         &#13;&#10;dbo.FinancialPromotion&#13;&#10;---------------------------------------------------------------------------------------------&#13;&#10;union&#13;&#10;SELECT &#13;&#10;EmployeeCard_id,&#13;&#10;(SELECT EC.Employee_id FROM dbo.EmployeeCard EC where EC.Id = EmployeeCard_id AND EC.IsVertualDeleted=0) as EmployeeId,&#13;&#10;'انهاء الخدمة' as [Description],&#13;&#10;CreationDate, &#13;&#10;CreationDate AS StartingDate,&#13;&#10;Comment&#13;&#10;FROM         &#13;&#10;dbo.EmployeeResignation&#13;&#10;---------------------------------------------------------------------------------------------&#13;&#10;union&#13;&#10;SELECT &#13;&#10;EmployeeCard_id,&#13;&#10;(SELECT EC.Employee_id FROM dbo.EmployeeCard EC where EC.Id = EmployeeCard_id AND EC.IsVertualDeleted=0) as EmployeeId,&#13;&#10;'استفالة' as [Description],&#13;&#10;CreationDate, &#13;&#10;CreationDate AS StartingDate,&#13;&#10;Comment&#13;&#10;FROM         &#13;&#10;dbo.EmployeeTermination&#13;&#10;WHERE EmployeeTermination.IsVertualDeleted=0&#13;&#10;)&#13;&#10;select * from temp order by StartingDate,CreationDate;">
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="EmployeeCardId" DataType="System.Int32"/>
+        <Column Name="CreationDate" DataType="System.DateTime"/>
+        <Column Name="StartingDate" DataType="System.DateTime"/>
+        <Column Name="Comment" DataType="System.String"/>
+        <Column Name="Description" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Employee" DataType="System.Int32" Enabled="true" TableName="Employee" SelectCommand="SELECT E.Id, E.IsVertualDeleted,&#13;&#10;E.FirstName+' '+E.FatherName+' '+E.LastName AS FullName, E.FirstName, E.LastName, E.FatherName, E.MotherName, E.FirstNameL2, E.LastNameL2, E.FatherNameL2, E.MotherNameL2, E.PlaceOfBirthL2, E.Gender, E.MaritalStatus, E.DateOfBirth, E.CivilRecordPlaceAndNumber, E.PersonalRecordSource, E.BloodType, E.Religion, E.MilitaryStatus, E.Status, E.Address, E.Phone, E.Mobile, E.Email, E.POBox, E.WebSite, E.Twitter, E.Facebook, E.IdentificationNo, E.Code, E.IsRetired, E.PhotoId, E.EmploymentStatus, E.SalaryStatus, E.DisabilityExist, E.PlaceOfBirth_id, E.CountryOfBirth_id, E.Nationality_id, E.OtherNationality_id, E.DisabilityType_id, E.RecruitmentInformation_id&#13;&#10;FROM &quot;Employee&quot; E&#13;&#10;WHERE E.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="MotherName" DataType="System.String"/>
+        <Column Name="FirstNameL2" DataType="System.String"/>
+        <Column Name="LastNameL2" DataType="System.String"/>
+        <Column Name="FatherNameL2" DataType="System.String"/>
+        <Column Name="MotherNameL2" DataType="System.String"/>
+        <Column Name="PlaceOfBirthL2" DataType="System.String"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="CivilRecordPlaceAndNumber" DataType="System.String"/>
+        <Column Name="PersonalRecordSource" DataType="System.String"/>
+        <Column Name="BloodType" DataType="System.Int32"/>
+        <Column Name="Religion" DataType="System.Int32"/>
+        <Column Name="MilitaryStatus" DataType="System.Int32"/>
+        <Column Name="Status" DataType="System.Int32"/>
+        <Column Name="Address" DataType="System.String"/>
+        <Column Name="Phone" DataType="System.String"/>
+        <Column Name="Mobile" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="POBox" DataType="System.String"/>
+        <Column Name="WebSite" DataType="System.String"/>
+        <Column Name="Twitter" DataType="System.String"/>
+        <Column Name="Facebook" DataType="System.String"/>
+        <Column Name="IdentificationNo" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="IsRetired" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PhotoId" DataType="System.String"/>
+        <Column Name="EmploymentStatus" DataType="System.Int32"/>
+        <Column Name="SalaryStatus" DataType="System.Int32"/>
+        <Column Name="DisabilityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="CountryOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="OtherNationality_id" DataType="System.Int32"/>
+        <Column Name="DisabilityType_id" DataType="System.Int32"/>
+        <Column Name="RecruitmentInformation_id" DataType="System.Int32"/>
+        <Column Name="FullName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table1" ParentDataSource="null" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Relation Name="Employee_Table11" ParentDataSource="Employee" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="EmployeeId" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير تاريخ الموظف" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text52" Top="56.7" Width="718.2" Height="37.8" Text="[EmployeeComboBox.Text] :الموظف المختار" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="121.09" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text2" Left="378" Width="340.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[DataSourse.Description]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Left="264.6" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [DataSourse.CreationDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[DataSourse.CreationDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Width="264.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[DataSourse.Comment]" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="98.35" Width="718.2" Height="18.9">
+        <TextObject Name="Text40" Left="377" Width="340.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الوصف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text41" Left="263.6" Width="114.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التاريخ" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text42" Left="-1" Width="265.25" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="ملاحظات" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataHeaderBand>
+      <DataFooterBand Name="DataFooter1" Top="143.84" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="378" Width="340.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Left="264.6" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text39" Width="264.6" Height="18.9" Border.Lines="Left, Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="166.58" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="298" Height="142" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="128" Top="79" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="212" Top="48" Width="42" Height="13" TabIndex="2" Text="الموظف"/>
+    <ComboBoxControl Name="EmployeeComboBox" Left="28" Top="44" Width="175" TabIndex="3" ClickEvent="" DataColumn="DataSourse.Employee.FullName" DropDownWidth="233" ItemHeight="13"/>
+  </DialogPage>
+</Report>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE Indexes SYSTEM "Indexes.dtd">
+
+<Indexes>
+	<Index Id="BloodGroup">
+		<Languages>
+			<Language LocaleId="en-US" Title="Blood Group" Description="Blood group type could be A, B, AB or O (+/-)" />
+			<Language LocaleId="ar-SY" Title="ÇáÒãÑÉ ÇáÏãæíÉ" Description="äæÚ ÇáÒãÑÉ ÇáÏãæíÉ æíãßä Ãä íßæä: Ã Ãæ È Ãæ ÃÈ Ãæ æ (+/-)" />
+		</Languages>
+	</Index>
+	<Index Id="Gender">
+		<Languages>
+			<Language LocaleId="en-US" Title="Gender" Description="Gender could be male, female ...etc" />
+			<Language LocaleId="ar-SY" Title="ÇáÌäÓ" Description="ÇáÌäÓ æíãßä Ãä íßæä ÐßÑ Ãæ ÃäËì Ãæ ...ÅáÎ" />
+		</Languages>
+	</Index>
+	<Index Id="AppraisalType">
+		<Languages>
+			<Language LocaleId="en-US" Title="Appraisal Type" Description="Type of the conducted performance appraisal" />
+			<Language LocaleId="ar-SY" Title="äæÚ ÇáÊÞííã" Description="äæÚ ÊÞííã ÃÏÇÁ ÇáÚãá ÇáãäÝÐ" />
+		</Languages>
+	</Index>
+	<Index Id="JobGroup">
+		<Languages>
+			<Language LocaleId="en-US" Title="Job Group" Description="Group to which the job belongs" />
+			<Language LocaleId="ar-SY" Title="äæÚ ÇáÊÞííã" Description="äæÚ ÊÞííã ÃÏÇÁ ÇáÚãá ÇáãäÝÐ" />
+		</Languages>
+	</Index>
+</Indexes>

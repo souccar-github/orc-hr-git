@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/09/2015 10:30:41" ReportInfo.Modified="06/07/2016 10:21:56" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a99IMTlP1Mo11JXtxEeGIWIJZ/Ob5cAmJyU+pRJWsE9kycYEZT4ytFFNyMUAWMM71g==">
+      <TableDataSource Name="Table" Alias="Master" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName,&#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;ISNULL((SELECT SUM(DATEDIFF(YEAR, dbo.Experience.StartDate, dbo.Experience.EndDate))FROM Experience WHERE Experience.Employee_id=dbo.Employee.Id AND Experience.IsVertualDeleted=0 GROUP BY Experience.Employee_id),0) AS PeriodDate&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0&#13;&#10;ORDER BY dbo.Employee.Id ASC">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PeriodDate" DataType="System.Int32"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="Details" DataType="System.Int32" Enabled="true" SelectCommand="SELECT  &#13;&#10;E.Employee_id AS EmpId,   &#13;&#10;E.CompanyName, &#13;&#10;E.StartDate, &#13;&#10;E.EndDate,&#13;&#10;(SELECT dbo.Industry.Name AS IndustryName From dbo.Industry WHERE dbo.Industry.Id = E.Industry_id AND Industry.IsVertualDeleted=0 ) AS IndustryName,&#13;&#10;(SELECT dbo.GlobalJobTitle.Name AS IndustryName From dbo.GlobalJobTitle WHERE dbo.GlobalJobTitle.Id = E.JobTitle_id AND GlobalJobTitle.IsVertualDeleted=0 ) AS GlobalJobTitleName,&#13;&#10;DATEDIFF(YEAR, E.StartDate, E.EndDate) AS PerDate&#13;&#10;FROM Experience E&#13;&#10;WHERE E.IsVertualDeleted=0">
+        <Column Name="EmpId" DataType="System.Int32"/>
+        <Column Name="CompanyName" DataType="System.String"/>
+        <Column Name="StartDate" DataType="System.DateTime"/>
+        <Column Name="EndDate" DataType="System.DateTime"/>
+        <Column Name="IndustryName" DataType="System.String"/>
+        <Column Name="GlobalJobTitleName" DataType="System.String"/>
+        <Column Name="PerDate" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table_Table1" ParentDataSource="Table" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="EmpId" Enabled="true"/>
+    <Total Name="Total" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="132.3">
+      <TextObject Name="Text5" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين حسب مجال سنوات الخبرة" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text6" Width="141.75" Height="18.9" Text="[Date]" Format="Date" Format.Format="d"/>
+      <TextObject Name="Text44" Top="56.7" Width="718.2" Height="37.8" Text="([TextBox1.Text]) الحد الادنى لعدد سنوات الخبرة  " Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+      <TextObject Name="Text45" Top="94.5" Width="718.2" Height="37.8" Text="([TextBox2.Text]) الحد الاعلى لعدد سنوات الخبرة " Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="136.3" Width="718.2" Height="48.25" DataSource="Table" Filter="[Master.PeriodDate]&gt;=ToInt32(TextBox1.Text) &amp;&amp; [Master.PeriodDate]&lt;=ToInt32(TextBox2.Text)">
+      <TextObject Name="Text1" Left="368.55" Top="28.25" Width="189" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Master.FullName]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+      <TextObject Name="Text8" Left="132.3" Top="28.25" Width="236.25" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Master.PositionCode]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+      <TextObject Name="Text3" Left="557.55" Top="28.25" Width="160.65" Height="19.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Master.Code]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+      <TextObject Name="Text15" Top="28.25" Width="132.3" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Master.PeriodDate]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+      <TextObject Name="Text16" Top="0.45" Width="132.3" Height="28.35" GroupIndex="1" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مجموع سنوات الخبرة" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text9" Left="132.3" Top="0.45" Width="236.25" Height="28.35" GroupIndex="1" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="368.55" Top="0.45" Width="189" Height="28.35" GroupIndex="1" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الثلاثي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text4" Left="557.55" Top="0.45" Width="160.65" Height="28.35" GroupIndex="1" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرمز" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <DataBand Name="Data2" Top="219.9" Width="718.2" Height="19.75" DataSource="Table1">
+        <TextObject Name="Text31" Left="699.3" Top="-0.7" Width="18.9" Height="19.9" Border.Lines="All" Border.Color="Silver" Fill.Color="Silver" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text14" Top="-0.7" Width="132.3" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Details.PerDate]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+        <TextObject Name="Text12" Left="368.55" Top="-0.7" Width="189" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Details.GlobalJobTitleName]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+        <TextObject Name="Text10" Left="557.55" Top="-0.7" Width="141.75" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Details.IndustryName]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+        <TextObject Name="Text34" Left="132.3" Top="-0.7" Width="236.25" Height="19.9" Border.Lines="All" Border.Color="Silver" Text="[Details.CompanyName]" Format="Date" Format.Format="d" HorzAlign="Right" Font="Arial, 11pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="188.55" Width="718.2" Height="27.35">
+          <TextObject Name="Text37" Width="132.3" Height="26.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد سنوات الخبرة" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text35" Left="132.3" Width="236.25" Height="26.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم المؤسسة" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text13" Left="368.55" Width="189" Height="26.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المسمى الوظيفي" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text11" Left="557.55" Width="141.75" Height="26.35" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مجال العمل" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Left="699.3" Width="18.9" Height="26.35" Border.Lines="All" Border.Color="Silver" Fill.Color="Silver" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="243.65" Width="718.2" Height="19.75">
+        <TextObject Name="Text17" Left="557.55" Top="-0.15" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد العناصر ضمن التقرير" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text7" Top="-0.15" Width="557.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Total]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="267.4" Width="718.2" Height="37.65"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="292" Height="206" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="28" Top="123" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="116" Top="40" Width="146" Height="13" TabIndex="4" Text="الحد الادنى لعدد سنوات الخبرة"/>
+    <LabelControl Name="Label2" Left="116" Top="88" Width="149" Height="13" TabIndex="4" Text="الحد الاعلى لعدد سنوات الخبرة"/>
+    <TextBoxControl Name="TextBox1" Left="28" Top="36" Width="76" TabIndex="5" Text="0" DataColumn="Master.PeriodDate" FilterOperation="GreaterThanOrEqual"/>
+    <TextBoxControl Name="TextBox2" Left="28" Top="84" Width="76" TabIndex="6" Text="0" DataColumn="Master.PeriodDate" FilterOperation="LessThanOrEqual"/>
+  </DialogPage>
+</Report>

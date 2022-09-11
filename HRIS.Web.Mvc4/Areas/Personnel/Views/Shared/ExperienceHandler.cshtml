@@ -1,0 +1,21 @@
+﻿<script>
+
+    function ExperienceEditHandler(e) {
+        if (e.container.find("[name='EndDate']").data("kendoDatePicker")!=null)
+            e.container.find("[name='EndDate']").data("kendoDatePicker").value(null);
+        if (e.container.find("[name='StartDate']").data("kendoDatePicker")!=null)
+        e.container.find("[name='StartDate']").data("kendoDatePicker").value(null);
+        if (e.container.find("[name='EndDate']").data("kendoDatePicker")!=null)
+            e.model.EndDate = e.container.find("[name='EndDate']").data("kendoDatePicker").value();
+        if (e.container.find("[name='StartDate']").data("kendoDatePicker")!=null)
+        e.model.StartDate = e.container.find("[name='StartDate']").data("kendoDatePicker").value();
+
+        $('input[name=ReferenceContact]').keypress(function (e) {
+            if (!(e.which >= 48 && e.which <= 57))
+            {
+                e.preventDefault();
+            }
+        });
+    }
+    
+ </script>

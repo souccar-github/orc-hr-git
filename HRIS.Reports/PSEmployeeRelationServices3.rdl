@@ -1,0 +1,2051 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=maestro;Initial Catalog=SEI-ORC</ConnectString>
+      </ConnectionProperties>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>9a350a56-51d6-40e0-b0cf-07e98984a2ce</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="NodeDataSet">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText>
+          SELECT        Id, Name, Parent_Id
+          FROM            Node
+          WHERE        (IsVertualDeleted = 0)
+          ORDER BY Name
+        </CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Id">
+          <DataField>Id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Parent_Id">
+          <DataField>Parent_Id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Filters>
+        <Filter>
+          <FilterExpression>=IIF(InStr(LCase(Fields!Name.Value) , LCase(Parameters!SearchNode.Value)),TRUE,FALSE)</FilterExpression>
+          <Operator>Equal</Operator>
+          <FilterValues>
+            <FilterValue DataType="Boolean">true</FilterValue>
+          </FilterValues>
+        </Filter>
+      </Filters>
+    </DataSet>
+    <DataSet Name="ChildNodeDataSet">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@Node">
+            <Value>=Parameters!JobDesc0JobDescription0Node.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>
+          SET
+          NOCOUNT ON; WITH EntityChildren AS
+          (SELECT *
+          FROM
+          dbo.Node
+          WHERE
+          Node.Id = @Node
+
+          UNION ALL
+
+          SELECT e.*
+          FROM
+          dbo.Node e INNER JOIN
+          EntityChildren e2 ON e.Parent_Id = e2.Id)
+          SELECT *
+          FROM EntityChildren
+
+          UNION ALL
+          SELECT 0 AS Id,0,'بلا عقدة' AS Name,null,0,0,0
+        </CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Id">
+          <DataField>Id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="IsVertualDeleted">
+          <DataField>IsVertualDeleted</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Code">
+          <DataField>Code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsHistorical">
+          <DataField>IsHistorical</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Type_id">
+          <DataField>Type_id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Parent_Id">
+          <DataField>Parent_Id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Filters>
+        <Filter>
+          <FilterExpression>=IIF(InStr(LCase(Fields!Name.Value) , LCase(Parameters!SearchChildNode.Value)),TRUE,FALSE)</FilterExpression>
+          <Operator>Equal</Operator>
+          <FilterValues>
+            <FilterValue DataType="Boolean">true</FilterValue>
+          </FilterValues>
+        </Filter>
+      </Filters>
+    </DataSet>
+    <DataSet Name="BasicInfoDataSet">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@Year_">
+            <Value>=Parameters!LabelYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>DECLARE @DateNow DATETIME, @StartOfYear DATETIME, @EndOfYear DATETIME;
+SET                @DateNow = GETDATE();
+SET                @StartOfYear = CAST(DATEADD(yy, DATEDIFF(yy, 0, getdate()), 0) AS date);
+SET                @EndOfYear = CAST(DATEADD(yy, DATEDIFF(yy, 0, getdate()) + 1, - 1) AS date);
+                             SELECT        dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, dbo.Employee.Id AS EmployeeId, 
+                                                       dbo.EmployeeCard.StartWorkingDate, dbo.JobDescription.Node_id, dbo.Node.Name NodeName, dbo.JobDescription.Name JobDescriptionName, 
+                                                       dbo.EmployeeCard.Id AS EmployeeCardId, dbo.LeaveSetting.Name AS LeaveName, dbo.LeaveType.Name AS LeaveTypeName, 
+                                                       dbo.LeaveType.Id AS LeaveTypeId, (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) AS YearDiff, (((CAST(CASE WHEN Year(@DateNow) 
+                                                       &gt; @Year_ THEN 12 ELSE Month(@DateNow) + 1 END - Month(dbo.EmployeeCard.StartWorkingDate) AS float) / 12) 
+                                                       - CAST((@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) AS int)) * 12) AS MonthDiff, 
+                                                       /*----------------------------------------------LeaveBalance--------------------------------------------------------------*/ CASE
+                                                        WHEN ((@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate))) &gt;= 1 AND 
+                                                       LeaveSetting.IsAffectedByStartWorkingDate = 1 THEN (round(ISNULL((cast
+                                                           (((SELECT        TOP 1 N .Balance
+                                                                 FROM            dbo.BalanceSlice N
+                                                                 WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate)) 
+                                                                                          = N .FromYearOfServices) -
+                                                           (SELECT        TOP 1 N .Balance
+                                                              FROM            dbo.BalanceSlice N
+                                                              WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate)) 
+                                                                                       = N .ToYearOfServices)) AS float) / cast(12 AS float)) * (CAST((12 - Month(dbo.EmployeeCard.StartWorkingDate) + 1) AS float)) +
+                                                           (SELECT        TOP 1 N .Balance
+                                                              FROM            dbo.BalanceSlice N
+                                                              WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate)) 
+                                                                                       = N .ToYearOfServices),
+                                                           /*((cast(dbo.LeaveSetting.Balance AS float) / cast(12 AS float)) * (CAST((12 - Month(dbo.EmployeeCard.StartWorkingDate) + 1) AS float))*/ ((SELECT        TOP
+                                                                                                                                                                                                                                                                                                                                                                                                    1
+                                                                                                                                                                                                                                                                                                                                                                                                    N
+                                                                                                                                                                                                                                                                                                                                                                                                    .Balance
+                                                                                                                                                                                                                                                                                                                                                                          FROM            dbo.BalanceSlice
+                                                                                                                                                                                                                                                                                                                                                                                                    N
+                                                                                                                                                                                                                                                                                                                                                                          WHERE        N
+                                                                                                                                                                                                                                                                                                                                                                                                    .IsVertualDeleted
+                                                                                                                                                                                                                                                                                                                                                                                                    =
+                                                                                                                                                                                                                                                                                                                                                                                                    0
+                                                                                                                                                                                                                                                                                                                                                                                                    AND
+                                                                                                                                                                                                                                                                                                                                                                                                    N
+                                                                                                                                                                                                                                                                                                                                                                                                    .LeaveSetting_id
+                                                                                                                                                                                                                                                                                                                                                                                                    =
+                                                                                                                                                                                                                                                                                                                                                                                                    dbo.LeaveSetting.Id
+                                                                                                                                                                                                                                                                                                                                                                                                    AND
+                                                                                                                                                                                                                                                                                                                                                                                                    (@Year_
+                                                                                                                                                                                                                                                                                                                                                                                                    -
+                                                                                                                                                                                                                                                                                                                                                                                                    YEAR(dbo.EmployeeCard.StartWorkingDate)
+                                                                                                                                                                                                                                                                                                                                                                                                    +
+                                                                                                                                                                                                                                                                                                                                                                                                    1)
+                                                                                                                                                                                                                                                                                                                                                                                                    &gt;=
+                                                                                                                                                                                                                                                                                                                                                                                                    N
+                                                                                                                                                                                                                                                                                                                                                                                                    .FromYearOfServices
+                                                                                                                                                                                                                                                                                                                                                                                                    AND
+                                                                                                                                                                                                                                                                                                                                                                                                    (@Year_
+                                                                                                                                                                                                                                                                                                                                                                                                    -
+                                                                                                                                                                                                                                                                                                                                                                                                    YEAR(dbo.EmployeeCard.StartWorkingDate)
+                                                                                                                                                                                                                                                                                                                                                                                                    +
+                                                                                                                                                                                                                                                                                                                                                                                                    1)
+                                                                                                                                                                                                                                                                                                                                                                                                    &lt;
+                                                                                                                                                                                                                                                                                                                                                                                                    N
+                                                                                                                                                                                                                                                                                                                                                                                                    .ToYearOfServices))),
+                                                        2)) WHEN (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate)) = 0 AND 
+                                                       dbo.LeaveSetting.IsAffectedByAssigningDate = 1 THEN (round(ISNULL((cast
+                                                           ((SELECT        TOP 1 N .Balance
+                                                               FROM            dbo.BalanceSlice N
+                                                               WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate)) 
+                                                                                         &gt;= N .FromYearOfServices AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt; N .ToYearOfServices) AS float) 
+                                                       / cast(12 AS float)) * (CAST((12 - Month(dbo.EmployeeCard.StartWorkingDate) + 1) AS float)), ((cast(dbo.LeaveSetting.Balance AS float) 
+                                                       / cast(12 AS float)) * (CAST((12 - Month(dbo.EmployeeCard.StartWorkingDate) + 1) AS float)))), 2)) ELSE ISNULL
+                                                           ((SELECT        TOP 1 N .Balance
+                                                               FROM            dbo.BalanceSlice N
+                                                               WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (CASE WHEN (Month(@DateNow) 
+                                                                                         - Month(dbo.EmployeeCard.StartWorkingDate)) &gt; 0 OR
+                                                                                         Year(@DateNow) != @Year_ THEN @Year_ ELSE @Year_ - 1 END - YEAR(dbo.EmployeeCard.StartWorkingDate)) 
+                                                                                         &gt;= N .FromYearOfServices AND (CASE WHEN (Month(@DateNow) - Month(dbo.EmployeeCard.StartWorkingDate)) &gt; 0 OR
+                                                                                         Year(@DateNow) != @Year_ THEN @Year_ ELSE @Year_ - 1 END - YEAR(dbo.EmployeeCard.StartWorkingDate)) 
+                                                                                         &lt; N .ToYearOfServices), dbo.LeaveSetting.Balance) END AS LeaveBalance, ROUND(ISNULL
+                                                           ((SELECT        ISNULL(SUM(M.RoundedBalance), 0)
+                                                               FROM            dbo.RecycledLeave M
+                                                               WHERE        M.IsVertualDeleted = 0 AND M.EmployeeCard_id = dbo.EmployeeCard.Id AND M.leaveSetting_Id = dbo.LeaveSetting.Id AND 
+                                                                                         M.RecycleType = 0 AND M.Year = (@Year_ - 1)), 0), 2) AS RoundedBalance, 
+                                                       /*----------------------------------------------GrantedBalance--------------------------------------------------------------*/ ROUND(isnull
+                                                           ((SELECT        SUM(N .SpentDays)
+                                                               FROM            dbo.LeaveRequest N
+                                                               WHERE        (YEAR(N .StartDate) = @Year_ OR
+                                                                                         YEAR(N .EndDate) = @Year_) AND (N .LeaveStatus = 0 OR
+                                                                                         N .LeaveStatus = 2) AND N .IsVertualDeleted = 0 AND N .EmployeeCard_id = dbo.EmployeeCard.Id AND 
+                                                                                         N .LeaveSetting_id = dbo.LeaveSetting.Id), 0), 2) AS GrantedBalance, 
+                                                       /*----------------------------------------------RemainingBalance--------------------------------------------------------------*/ CASE
+                                                        WHEN (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) &gt;= 1 THEN (ISNULL
+                                                           ((SELECT        N .Balance
+                                                               FROM            dbo.BalanceSlice N
+                                                               WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) 
+                                                                                         &gt;= N .FromYearOfServices AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) &lt; N .ToYearOfServices), 
+                                                       (dbo.LeaveSetting.Balance))) WHEN (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) = 0 AND ((((CAST(CASE WHEN Year(@DateNow) 
+                                                       &gt; @Year_ THEN 12 ELSE Month(@DateNow) + 1 END - Month(dbo.EmployeeCard.StartWorkingDate) AS float) / 12) 
+                                                       - CAST(@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1 AS int)) * 12)) &gt; 0 AND 
+                                                       dbo.LeaveSetting.IsAffectedByAssigningDate = 1 THEN (ISNULL
+                                                           (((SELECT        TOP 1 N .Balance
+                                                                 FROM            dbo.BalanceSlice N
+                                                                 WHERE        N .IsVertualDeleted = 0 AND N .LeaveSetting_id = dbo.LeaveSetting.Id AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) 
+                                                                                          + 1) &gt;= N .FromYearOfServices AND (@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1) &lt; N .ToYearOfServices) / 12) 
+                                                       * ((((CAST(CASE WHEN Year(@DateNow) &gt; @Year_ THEN 12 ELSE Month(@DateNow) + 1 END - Month(dbo.EmployeeCard.StartWorkingDate) 
+                                                       AS float) / 12) - CAST(@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1 AS int)) * 12)), ((dbo.LeaveSetting.Balance / 12) 
+                                                       * ((((CAST(CASE WHEN Year(@DateNow) &gt; @Year_ THEN 12 ELSE Month(@DateNow) + 1 END - Month(dbo.EmployeeCard.StartWorkingDate) 
+                                                       AS float) / 12) - CAST(@Year_ - YEAR(dbo.EmployeeCard.StartWorkingDate) + 1 AS int)) * 12))))) +
+                                                           (SELECT        ISNULL(SUM(M.RoundedBalance), 0)
+                                                              FROM            dbo.RecycledLeave M
+                                                              WHERE        M.IsVertualDeleted = 0 AND M.EmployeeCard_id = dbo.EmployeeCard.Id AND M.leaveSetting_Id = dbo.LeaveSetting.Id AND 
+                                                                                       M.RecycleType = 0 AND M.Year = @Year_) END -
+                                                           (SELECT        SUM(LR.SpentDays)
+                                                              /*SUM(DATEDIFF(DAY, LR.StartDate, LR.EndDate))          */ FROM dbo.LeaveRequest LR INNER JOIN
+                                                                                       dbo.EmployeeCard EC ON LR.EmployeeCard_id = EC.Id
+                                                              WHERE        LR.IsVertualDeleted = 0 AND EC.IsVertualDeleted = 0 AND LR.LeaveSetting_id = dbo.LeaveSetting.Id AND 
+                                                                                       EC.Id = dbo.EmployeeCard.Id AND (Year(LR.StartDate) = @Year_ AND Month(LR.StartDate) &gt;= 1 AND Day(LR.StartDate) &gt;= 1) AND 
+                                                                                       (Year(LR.EndDate) = @Year_ AND Month(LR.EndDate) &lt;= 12 AND Day(LR.EndDate) &lt;= 31) AND LR.LeaveStatus = 2/*Status Approved*/ )
+                                                        AS RemainingBalance, 
+                                                       /*------------------------------------------------------------------------------------------------------------*/ dbo.LeaveSetting.HasMaximumNumber,
+                                                        dbo.LeaveSetting.MaximumNumber, 
+                                                       /*----------------------------------------------GivenTheNumberOfTimes------------------------------------------*/ CASE WHEN dbo.LeaveSetting.HasMaximumNumber
+                                                        = 1 THEN
+                                                           (SELECT        COUNT(LR.Id)
+                                                              FROM            dbo.LeaveRequest LR INNER JOIN
+                                                                                       dbo.EmployeeCard EC ON LR.EmployeeCard_id = EC.Id
+                                                              WHERE        LR.IsVertualDeleted = 0 AND EC.IsVertualDeleted = 0 AND LR.LeaveSetting_id = dbo.LeaveSetting.Id AND 
+                                                                                       EC.Id = dbo.EmployeeCard.Id AND (Year(LR.StartDate) = @Year_ AND Month(LR.StartDate) &gt;= 1 AND Day(LR.StartDate) &gt;= 1) AND 
+                                                                                       (Year(LR.EndDate) = @Year_ AND Month(LR.EndDate) &lt;= 12 AND Day(LR.EndDate) &lt;= 31) AND LR.LeaveStatus = 2/*Status Approved*/ )
+                                                        WHEN dbo.LeaveSetting.HasMaximumNumber = 0 THEN 0 END AS GivenTheNumberOfTimes, 
+                                                       /*----------------------------------------------TheRemainingNumberOfTimes---------------------------------------*/ CASE WHEN
+                                                        dbo.LeaveSetting.HasMaximumNumber = 1 THEN dbo.LeaveSetting.MaximumNumber -
+                                                           (SELECT        COUNT(LR.Id)
+                                                              FROM            dbo.LeaveRequest LR INNER JOIN
+                                                                                       dbo.EmployeeCard EC ON LR.EmployeeCard_id = EC.Id
+                                                              WHERE        LR.IsVertualDeleted = 0 AND EC.IsVertualDeleted = 0 AND LR.LeaveSetting_id = dbo.LeaveSetting.Id AND 
+                                                                                       EC.Id = dbo.EmployeeCard.Id AND (Year(LR.StartDate) = @Year_ AND Month(LR.StartDate) &gt;= 1 AND Day(LR.StartDate) &gt;= 1) AND 
+                                                                                       (Year(LR.EndDate) = @Year_ AND Month(LR.EndDate) &lt;= 12 AND Day(LR.EndDate) &lt;= 31) AND LR.LeaveStatus = 2/*Status Approved*/ )
+                                                        WHEN dbo.LeaveSetting.HasMaximumNumber = 0 THEN 0 END AS TheRemainingNumberOfTimes, 
+                                                       CASE WHEN ISNULL(dbo.EmployeeCard.LeaveTemplateMaster_id, 0) 
+                                                       != 0 THEN dbo.EmployeeCard.LeaveTemplateMaster_id WHEN ISNULL(dbo.Grade.LeaveTemplateMaster_id, 0) 
+                                                       != 0 THEN dbo.Grade.LeaveTemplateMaster_id END AS TemplateMasterId
+                              FROM            dbo.Employee INNER JOIN
+                                                       dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id INNER JOIN
+                                                       dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id INNER JOIN
+                                                       dbo.Position ON dbo.Position.Id = dbo.AssigningEmployeeToPosition.Position_Id INNER JOIN
+                                                       dbo.JobDescription ON dbo.Position.JobDescription_id = dbo.JobDescription.Id INNER JOIN
+                                                       dbo.Node ON dbo.JobDescription.Node_id = Node.Id INNER JOIN
+                                                       dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id INNER JOIN
+                                                       dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id INNER JOIN
+                                                       dbo.LeaveTemplateMaster ON dbo.LeaveTemplateMaster.Id = dbo.EmployeeCard.LeaveTemplateMaster_id OR 
+                                                       dbo.Grade.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id INNER JOIN
+                                                       dbo.LeaveTemplateDetail ON dbo.LeaveTemplateDetail.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id AND 
+                                                       dbo.LeaveTemplateDetail.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id INNER JOIN
+                                                       dbo.LeaveSetting ON dbo.LeaveTemplateDetail.LeaveSetting_id = dbo.LeaveSetting.Id INNER JOIN
+                                                       dbo.LeaveType ON dbo.LeaveSetting.Type_id = dbo.LeaveType.Id
+                              WHERE        (CASE WHEN ISNULL(dbo.EmployeeCard.LeaveTemplateMaster_id, 0) 
+                                                       != 0 THEN dbo.EmployeeCard.LeaveTemplateMaster_id WHEN ISNULL(dbo.Grade.LeaveTemplateMaster_id, 0) 
+                                                       != 0 THEN dbo.Grade.LeaveTemplateMaster_id END) = LeaveTemplateMaster.Id AND dbo.EmployeeCard.CardStatus = 1 AND 
+                                                       dbo.AssigningEmployeeToPosition.IsPrimary = 'True' AND Employee.IsVertualDeleted = 0 AND AssigningEmployeeToPosition.IsVertualDeleted = 0 AND
+                                                        Position.IsVertualDeleted = 0 AND JobDescription.IsVertualDeleted = 0 AND JobTitle.IsVertualDeleted = 0 AND Grade.IsVertualDeleted = 0 AND 
+                                                       LeaveSetting.IsVertualDeleted = 0 AND LeaveType.IsVertualDeleted = 0 AND LeaveTemplateDetail.IsVertualDeleted = 0 AND 
+                                                       LeaveTemplateMaster.IsVertualDeleted = 0</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="FullName">
+          <DataField>FullName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="EmployeeId">
+          <DataField>EmployeeId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="StartWorkingDate">
+          <DataField>StartWorkingDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Node_id">
+          <DataField>Node_id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="EmployeeCardId">
+          <DataField>EmployeeCardId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="NodeName">
+          <DataField>NodeName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="JobDescriptionName">
+          <DataField>JobDescriptionName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LeaveName">
+          <DataField>LeaveName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LeaveTypeName">
+          <DataField>LeaveTypeName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LeaveTypeId">
+          <DataField>LeaveTypeId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="LeaveBalance">
+          <DataField>LeaveBalance</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="RemainingBalance">
+          <DataField>RemainingBalance</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="YearDiff">
+          <DataField>YearDiff</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="RoundedBalance">
+          <DataField>RoundedBalance</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="MonthDiff">
+          <DataField>MonthDiff</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="GrantedBalance">
+          <DataField>GrantedBalance</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="HasMaximumNumber">
+          <DataField>HasMaximumNumber</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="MaximumNumber">
+          <DataField>MaximumNumber</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="GivenTheNumberOfTimes">
+          <DataField>GivenTheNumberOfTimes</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="TheRemainingNumberOfTimes">
+          <DataField>TheRemainingNumberOfTimes</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="TemplateMasterId">
+          <DataField>TemplateMasterId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Filters>
+        <Filter>
+          <FilterExpression>=Fields!Node_id.Value</FilterExpression>
+          <Operator>In</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!LabelChildNode.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+        <Filter>
+          <FilterExpression>=Fields!LeaveTypeId.Value</FilterExpression>
+          <Operator>In</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!EmployeeRelationServices0Indexes0LeaveType.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+        <Filter>
+          <FilterExpression>=Year(Fields!StartWorkingDate.Value)</FilterExpression>
+          <Operator>LessThanOrEqual</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!LabelYear.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+      </Filters>
+    </DataSet>
+    <DataSet Name="LeaveTypeDataSet">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText>
+          SELECT        Id, Name
+          FROM            LeaveType
+          WHERE        (IsVertualDeleted = 0)
+        </CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Id">
+          <DataField>Id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText>
+          with yearlist as
+          (
+          select 2017 as year
+          union all
+          select yl.year + 1 as year
+          from yearlist yl
+          where yl.year + 1 &lt;= YEAR(GetDate())
+          )
+          select year from yearlist order by year desc;
+        </CommandText>
+      </Query>
+      <Fields>
+        <Field Name="year">
+          <DataField>year</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix2">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.46862cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.12371cm</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.6cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelEmployeeRelationServices0LeaveSetting0Name">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Leave Name</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelEmployeeRelationServices0Indexes0LeaveType">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Leave Type</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelLeaveBalance">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Leave Balance</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelRemainBalance">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Remain Balance</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelGrantedBalance">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Granted Balance</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelHasMaximumNumber">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Has Maximum Number</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelMaximumNumber">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Maximum Number</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelGivenTheNumberOfTimes">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Given The Number Of Times</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelTheRemainingNumberOfTimes">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>The Remaining Number Of Times</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.6cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LeaveName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LeaveTypeName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LeaveBalance.Value+Fields!RoundedBalance.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Round(((Fields!LeaveBalance.Value+Fields!RoundedBalance.Value)-Fields!GrantedBalance.Value),2)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Round((Fields!GrantedBalance.Value),2)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(Fields!HasMaximumNumber.Value = False, "لا", "نعم")</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!MaximumNumber.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!GivenTheNumberOfTimes.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveSettingName10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TheRemainingNumberOfTimes.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveSettingName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.70583cm</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>5</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell />
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LeaveTypeName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Count(Fields!LeaveTypeName.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LeaveTypeName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>2</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelNoOfRows">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>No Of Rows</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>2</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>3.12371cm</Size>
+                    <CellContents>
+                      <Textbox Name="LabelJobDesc0JobDescription0Node">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Node</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <FontSize>12pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>LightGrey</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>3.12371cm</Size>
+                        <CellContents>
+                          <Textbox Name="LabelRecruitment0JobApplication0FullName">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>FullName</Value>
+                                    <Style>
+                                      <FontFamily>Tahoma</FontFamily>
+                                      <FontSize>12pt</FontSize>
+                                      <FontWeight>Bold</FontWeight>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style>
+                                  <TextAlign>Center</TextAlign>
+                                </Style>
+                              </Paragraph>
+                            </Paragraphs>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <BackgroundColor>LightGrey</BackgroundColor>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <TablixHeader>
+                            <Size>2.5cm</Size>
+                            <CellContents>
+                              <Textbox Name="LabelJobDesc0JobDescription0Name">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value>JobDescription Name</Value>
+                                        <Style>
+                                          <FontFamily>Tahoma</FontFamily>
+                                          <FontSize>12pt</FontSize>
+                                          <FontWeight>Bold</FontWeight>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style>
+                                      <TextAlign>Center</TextAlign>
+                                    </Style>
+                                  </Paragraph>
+                                </Paragraphs>
+                                <Style>
+                                  <Border>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <BackgroundColor>LightGrey</BackgroundColor>
+                                  <VerticalAlign>Middle</VerticalAlign>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember />
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="NodeName">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!NodeName.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!NodeName.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>3.12371cm</Size>
+                    <CellContents>
+                      <Textbox Name="NodeName">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!NodeName.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <FontSize>11pt</FontSize>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>NodeName</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="FullName1">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!FullName.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!FullName.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>3.12371cm</Size>
+                        <CellContents>
+                          <Textbox Name="FullName11">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!FullName.Value</Value>
+                                    <Style>
+                                      <FontFamily>Tahoma</FontFamily>
+                                      <FontSize>11pt</FontSize>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style>
+                                  <TextAlign>Center</TextAlign>
+                                </Style>
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>FullName11</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <Group Name="JobDescriptionName">
+                            <GroupExpressions>
+                              <GroupExpression>=Fields!JobDescriptionName.Value</GroupExpression>
+                            </GroupExpressions>
+                          </Group>
+                          <SortExpressions>
+                            <SortExpression>
+                              <Value>=Fields!JobDescriptionName.Value</Value>
+                            </SortExpression>
+                          </SortExpressions>
+                          <TablixHeader>
+                            <Size>2.5cm</Size>
+                            <CellContents>
+                              <Textbox Name="JobDescriptionName">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value>=Fields!JobDescriptionName.Value</Value>
+                                        <Style>
+                                          <FontFamily>Tahoma</FontFamily>
+                                          <FontSize>11pt</FontSize>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style>
+                                      <TextAlign>Center</TextAlign>
+                                    </Style>
+                                  </Paragraph>
+                                </Paragraphs>
+                                <rd:DefaultName>JobDescriptionName</rd:DefaultName>
+                                <Style>
+                                  <Border>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember>
+                              <Group Name="Details1" />
+                            </TablixMember>
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>8.74742cm</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox90">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value />
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <FontSize>11pt</FontSize>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox90</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>BasicInfoDataSet</DataSetName>
+            <Top>2.95424cm</Top>
+            <Left>0.35257cm</Left>
+            <Height>1.90583cm</Height>
+            <Width>37.20572cm</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix3">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.32894in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.91554in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.31261in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelReleaseDate">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Release Date</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Format(Globals!ExecutionTime,"yyyy/MM/dd")</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <Format>d</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.34039in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelJobDesc0JobDescription00Node">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Node</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!JobDesc0JobDescription0Node.Label</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.36122in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LabelYear">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Year</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!LabelYear.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>BasicInfoDataSet</DataSetName>
+            <Top>0.01389in</Top>
+            <Left>5.3245in</Left>
+            <Height>1.01422in</Height>
+            <Width>4.24448in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+              <TopBorder>
+                <Color>Black</Color>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </TopBorder>
+              <BottomBorder>
+                <Color>Black</Color>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </BottomBorder>
+              <LeftBorder>
+                <Color>Black</Color>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </LeftBorder>
+              <RightBorder>
+                <Color>Black</Color>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </RightBorder>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>3.19863in</Height>
+        <Style />
+      </Body>
+      <Width>14.81353in</Width>
+      <Page>
+        <PageHeader>
+          <Height>2.33425cm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="LabelLeaveBalanceOfNodeEmployees">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Leave Balance of Node Employees</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>20pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Left>0cm</Left>
+              <Height>0.59609in</Height>
+              <Width>14.78673in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <BackgroundColor>LightGrey</BackgroundColor>
+                <VerticalAlign>Middle</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <PageFooter>
+          <Height>0.63528cm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <PageHeight>29.7cm</PageHeight>
+        <PageWidth>37cm</PageWidth>
+        <LeftMargin>0.5cm</LeftMargin>
+        <RightMargin>0.5cm</RightMargin>
+        <TopMargin>2cm</TopMargin>
+        <BottomMargin>2cm</BottomMargin>
+        <ColumnSpacing>0.13cm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="SearchNode">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value />
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Search Node</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="JobDesc0JobDescription0Node">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>Node</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>NodeDataSet</DataSetName>
+          <ValueField>Id</ValueField>
+          <LabelField>Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="SearchChildNode">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value />
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Search Child Node</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="LabelChildNode">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>ChildNodeDataSet</DataSetName>
+          <ValueField>Id</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Prompt>Child Node</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>ChildNodeDataSet</DataSetName>
+          <ValueField>Id</ValueField>
+          <LabelField>Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+    <ReportParameter Name="EmployeeRelationServices0Indexes0LeaveType">
+      <DataType>Integer</DataType>
+      <Prompt>Leave Type</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>LeaveTypeDataSet</DataSetName>
+          <ValueField>Id</ValueField>
+          <LabelField>Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+    <ReportParameter Name="LabelYear">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSet1</DataSetName>
+          <ValueField>year</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Prompt>Year</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSet1</DataSetName>
+          <ValueField>year</ValueField>
+          <LabelField>year</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>3</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>SearchNode</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>JobDesc0JobDescription0Node</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>SearchChildNode</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>LabelChildNode</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>2</RowIndex>
+          <ParameterName>EmployeeRelationServices0Indexes0LeaveType</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>2</RowIndex>
+          <ParameterName>LabelYear</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>0ea7a57c-d865-429d-b149-0922ff15b21f</rd:ReportID>
+</Report>

@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="04/26/2016 14:27:44" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {     
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {
+      if (CheckBox1.Checked)
+      {        
+        ComboBox1.SelectedIndex=-1;
+        ComboBox1.AutoFilter=false;
+      }else
+      { 
+        ComboBox1.AutoFilter=true;	         
+      } 
+    }
+
+    private void CheckBox3_Click(object sender, EventArgs e)
+    { 
+      if (CheckBox3.Checked)
+      {        
+        NodesComboBox.SelectedIndex=-1;
+        NodesComboBox.AutoFilter=false;
+      }else
+      { 
+        NodesComboBox.AutoFilter=true;	         
+      } 
+      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW08b4vnv63y3pQOIzsekw21uNjg+yrRglVTFsjrCnoxmN0Yoo+JJR2/bFioVL6n/a12c0D+QFI8RGEft/lTAhOjqICaI1kta2dTouK4+cKLvMvHC2ak9CegEFODenMr7vg==">
+      <TableDataSource Name="Node" DataType="System.Int32" Enabled="true" TableName="Node" SelectCommand="SELECT     dbo.AssigningEmployeeToPosition.Employee_id, dbo.Node.Name, dbo.JobDescription.IsVertualDeleted, dbo.JobDescription.Name AS JobDescriptionNam&#13;&#10;FROM         dbo.AssigningEmployeeToPosition INNER JOIN&#13;&#10;                      dbo.JobDescription INNER JOIN&#13;&#10;                      dbo.Node ON dbo.JobDescription.Node_id = dbo.Node.Id ON dbo.AssigningEmployeeToPosition.JobDescription_id = dbo.JobDescription.Id&#13;&#10;WHERE     (dbo.Node.IsVertualDeleted = 0) AND (dbo.JobDescription.IsVertualDeleted = 0) AND (dbo.AssigningEmployeeToPosition.IsVertualDeleted = 0)">
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Employee_id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="JobDescriptionNam" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="BasicDataSource" DataType="System.Int32" Enabled="true" SelectCommand="DECLARE @DateNow datetime;&#13;&#10;SET @DateNow = GETDATE();&#13;&#10;&#13;&#10;SELECT &#13;&#10;dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName,&#13;&#10;dbo.Employee.Id AS EmployeeId,&#13;&#10;dbo.EmployeeCard.Id AS EmployeeCardId,  &#13;&#10;dbo.LeaveSetting.Name AS LeaveName,&#13;&#10;dbo.LeaveType.Name AS LeaveTypeName, &#13;&#10;&#13;&#10;CASE &#13;&#10;WHEN (YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= 1 &#13;&#10;THEN &#13;&#10;(&#13;&#10;ISNULL(&#13;&#10;		(SELECT TOP 1 N.Balance FROM dbo.BalanceSlice N &#13;&#10;		WHERE  N.IsVertualDeleted = 0 AND&#13;&#10;		N.LeaveSetting_id = dbo.LeaveSetting.Id AND&#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= N.FromYearOfServices AND &#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= N.ToYearOfServices)&#13;&#10;		+&#13;&#10;		(SELECT SUM(M.RoundedBalance) FROM dbo.RecycledLeave M &#13;&#10;		WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;		M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;		M.Year = YEAR(@DateNow))&#13;&#10;		,&#13;&#10;		(&#13;&#10;			dbo.LeaveSetting.Balance&#13;&#10;			+&#13;&#10;			(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;			WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;			M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;			M.Year = YEAR(@DateNow))&#13;&#10;		)&#13;&#10;	)	&#13;&#10;) &#13;&#10;WHEN ((YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= 1)  AND dbo.LeaveSetting.IsAffectedByAssigningDate = 1&#13;&#10;THEN &#13;&#10;	&#13;&#10;(&#13;&#10;ISNULL(&#13;&#10;		(SELECT TOP 1 (N.Balance/12)*(12-(MONTH(dbo.EmployeeCard.StartWorkingDate))) FROM dbo.BalanceSlice N &#13;&#10;		WHERE  N.IsVertualDeleted = 0 AND&#13;&#10;		N.LeaveSetting_id = dbo.LeaveSetting.Id AND&#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= N.FromYearOfServices AND &#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= N.ToYearOfServices)&#13;&#10;		+&#13;&#10;		(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;		WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;		M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;		M.Year = YEAR(@DateNow))&#13;&#10;		,&#13;&#10;		(&#13;&#10;			(dbo.LeaveSetting.Balance/12)*(12-(MONTH(dbo.EmployeeCard.StartWorkingDate)))&#13;&#10;			+&#13;&#10;			(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;			WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;			M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;			M.Year = YEAR(@DateNow))&#13;&#10;		)&#13;&#10;	)	&#13;&#10;) &#13;&#10;WHEN ((YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= 1)  AND dbo.LeaveSetting.IsAffectedByAssigningDate = 0&#13;&#10;THEN &#13;&#10;	&#13;&#10;(&#13;&#10;ISNULL(&#13;&#10;		(SELECT TOP 1 N.Balance FROM dbo.BalanceSlice N &#13;&#10;		WHERE  N.IsVertualDeleted = 0 AND&#13;&#10;		N.LeaveSetting_id = dbo.LeaveSetting.Id AND&#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= N.FromYearOfServices AND &#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= N.ToYearOfServices)&#13;&#10;		+&#13;&#10;		(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;		WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;		M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;		M.Year = YEAR(@DateNow))&#13;&#10;		,&#13;&#10;		(&#13;&#10;			(dbo.LeaveSetting.Balance)&#13;&#10;			+&#13;&#10;			(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;			WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;			M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;			M.Year = YEAR(@DateNow))&#13;&#10;		)&#13;&#10;	)	&#13;&#10;) 	&#13;&#10;	&#13;&#10;	&#13;&#10;END AS LeaveBalance,&#13;&#10;&#13;&#10;&#13;&#10;'' AS RemainingBalance,&#13;&#10;'' AS GrantedBalance,&#13;&#10;dbo.LeaveSetting.HasMaximumNumber, &#13;&#10;dbo.LeaveSetting.MaximumNumber,&#13;&#10;&#13;&#10;CASE &#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 1&#13;&#10;THEN &#13;&#10;(SELECT COUNT(N.Id) &#13;&#10;FROM dbo.LeaveRequest N &#13;&#10;WHERE &#13;&#10;(YEAR(N.StartDate) = YEAR(@DateNow) OR YEAR(N.EndDate) = YEAR(@DateNow)) AND&#13;&#10;N.IsVertualDeleted = 0 AND N.EmployeeCard_id = dbo.EmployeeCard.Id AND N.LeaveSetting_id = dbo.LeaveSetting.Id)&#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 0&#13;&#10;THEN '0'&#13;&#10;END AS GivenTheNumberOfTimes,&#13;&#10;&#13;&#10;&#13;&#10;CASE &#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 1&#13;&#10;THEN &#13;&#10;dbo.LeaveSetting.MaximumNumber - (SELECT COUNT(N.Id) &#13;&#10;FROM dbo.LeaveRequest N &#13;&#10;WHERE &#13;&#10;(YEAR(N.StartDate) = YEAR(@DateNow) OR YEAR(N.EndDate) = YEAR(@DateNow)) AND&#13;&#10;N.IsVertualDeleted = 0 AND N.EmployeeCard_id = dbo.EmployeeCard.Id AND N.LeaveSetting_id = dbo.LeaveSetting.Id)&#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 0&#13;&#10;THEN '0'&#13;&#10;END AS TheRemainingNumberOfTimes,&#13;&#10;&#13;&#10;(SELECT SUM(N.SpentDays) &#13;&#10;FROM dbo.LeaveRequest N &#13;&#10;WHERE &#13;&#10;(YEAR(N.StartDate) = YEAR(@DateNow) OR YEAR(N.EndDate) = YEAR(@DateNow)) AND&#13;&#10;N.IsVertualDeleted = 0 AND N.EmployeeCard_id = dbo.EmployeeCard.Id AND N.LeaveSetting_id = dbo.LeaveSetting.Id&#13;&#10;) AS SumSpentDays&#13;&#10;FROM         &#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id INNER JOIN&#13;&#10;dbo.LeaveTemplateMaster ON dbo.EmployeeCard.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id AND &#13;&#10;dbo.EmployeeCard.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id INNER JOIN&#13;&#10;dbo.LeaveTemplateDetail ON dbo.LeaveTemplateDetail.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id AND &#13;&#10;dbo.LeaveTemplateDetail.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id INNER JOIN&#13;&#10;dbo.LeaveSetting ON dbo.LeaveTemplateDetail.LeaveSetting_id = dbo.LeaveSetting.Id INNER JOIN&#13;&#10;dbo.LeaveType ON dbo.LeaveSetting.Type_id = dbo.LeaveType.Id&#13;&#10;WHERE &#13;&#10;dbo.Employee.IsVertualDeleted = 0 AND&#13;&#10;dbo.EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;dbo.LeaveTemplateMaster.IsVertualDeleted = 0 AND&#13;&#10;dbo.LeaveTemplateDetail.IsVertualDeleted = 0 AND&#13;&#10;dbo.LeaveSetting.IsVertualDeleted = 0 AND&#13;&#10;dbo.LeaveType.IsVertualDeleted = 0&#13;&#10;&#13;&#10;Union&#13;&#10;&#13;&#10;&#13;&#10;SELECT     &#13;&#10;dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName,&#13;&#10;dbo.Employee.Id AS EmployeeId,&#13;&#10;dbo.EmployeeCard.Id AS EmployeeCardId,  &#13;&#10;dbo.LeaveSetting.Name AS LeaveName,&#13;&#10;dbo.LeaveType.Name AS LeaveTypeName, &#13;&#10;&#13;&#10;CASE &#13;&#10;WHEN (YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= 1 &#13;&#10;THEN &#13;&#10;(&#13;&#10;ISNULL(&#13;&#10;		(SELECT TOP 1 N.Balance FROM dbo.BalanceSlice N &#13;&#10;		WHERE  N.IsVertualDeleted = 0 AND&#13;&#10;		N.LeaveSetting_id = dbo.LeaveSetting.Id AND&#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= N.FromYearOfServices AND &#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= N.ToYearOfServices)&#13;&#10;		+&#13;&#10;		(SELECT SUM(M.RoundedBalance) FROM dbo.RecycledLeave M &#13;&#10;		WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;		M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;		M.Year = YEAR(@DateNow))&#13;&#10;		,&#13;&#10;		(&#13;&#10;			dbo.LeaveSetting.Balance&#13;&#10;			+&#13;&#10;			(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;			WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;			M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;			M.Year = YEAR(@DateNow))&#13;&#10;		)&#13;&#10;	)	&#13;&#10;) &#13;&#10;WHEN ((YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= 1)  AND dbo.LeaveSetting.IsAffectedByAssigningDate = 1&#13;&#10;THEN &#13;&#10;	&#13;&#10;(&#13;&#10;ISNULL(&#13;&#10;		(SELECT TOP 1 (N.Balance/12)*(12-(MONTH(dbo.EmployeeCard.StartWorkingDate))) FROM dbo.BalanceSlice N &#13;&#10;		WHERE  N.IsVertualDeleted = 0 AND&#13;&#10;		N.LeaveSetting_id = dbo.LeaveSetting.Id AND&#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= N.FromYearOfServices AND &#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= N.ToYearOfServices)&#13;&#10;		+&#13;&#10;		(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;		WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;		M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;		M.Year = YEAR(@DateNow))&#13;&#10;		,&#13;&#10;		(&#13;&#10;			(dbo.LeaveSetting.Balance/12)*(12-(MONTH(dbo.EmployeeCard.StartWorkingDate)))&#13;&#10;			+&#13;&#10;			(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;			WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;			M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;			M.Year = YEAR(@DateNow))&#13;&#10;		)&#13;&#10;	)	&#13;&#10;) &#13;&#10;WHEN ((YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= 1)  AND dbo.LeaveSetting.IsAffectedByAssigningDate = 0&#13;&#10;THEN &#13;&#10;	&#13;&#10;(&#13;&#10;ISNULL(&#13;&#10;		(SELECT TOP 1 N.Balance FROM dbo.BalanceSlice N &#13;&#10;		WHERE  N.IsVertualDeleted = 0 AND&#13;&#10;		N.LeaveSetting_id = dbo.LeaveSetting.Id AND&#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &gt;= N.FromYearOfServices AND &#13;&#10;		(YEAR(@DateNow)-YEAR(dbo.EmployeeCard.StartWorkingDate)) &lt;= N.ToYearOfServices)&#13;&#10;		+&#13;&#10;		(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;		WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;		M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;		M.Year = YEAR(@DateNow))&#13;&#10;		,&#13;&#10;		(&#13;&#10;			dbo.LeaveSetting.Balance&#13;&#10;			+&#13;&#10;			(SELECT ISNULL(SUM(M.RoundedBalance), 0) FROM dbo.RecycledLeave M &#13;&#10;			WHERE M.EmployeeCard_id = dbo.EmployeeCard.Id AND &#13;&#10;			M.leaveSetting_Id = dbo.LeaveSetting.Id AND &#13;&#10;			M.Year = YEAR(@DateNow))&#13;&#10;		)&#13;&#10;	)	&#13;&#10;) &#13;&#10;	&#13;&#10;	&#13;&#10;	&#13;&#10;END AS LeaveBalance,&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;  &#13;&#10;'' AS RemainingBalance,&#13;&#10;'' AS GrantedBalance,&#13;&#10;dbo.LeaveSetting.HasMaximumNumber, &#13;&#10;dbo.LeaveSetting.MaximumNumber,&#13;&#10;&#13;&#10;CASE &#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 1&#13;&#10;THEN &#13;&#10;(SELECT COUNT(N.Id) &#13;&#10;FROM dbo.LeaveRequest N &#13;&#10;WHERE &#13;&#10;(YEAR(N.StartDate) = YEAR(@DateNow) OR YEAR(N.EndDate) = YEAR(@DateNow)) AND&#13;&#10;N.IsVertualDeleted = 0 AND N.EmployeeCard_id = dbo.EmployeeCard.Id AND N.LeaveSetting_id = dbo.LeaveSetting.Id)&#13;&#10;&#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 0&#13;&#10;THEN '0'&#13;&#10;END AS GivenTheNumberOfTimes,&#13;&#10;&#13;&#10;CASE &#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 1&#13;&#10;THEN &#13;&#10;dbo.LeaveSetting.MaximumNumber - (SELECT COUNT(N.Id) &#13;&#10;FROM dbo.LeaveRequest N &#13;&#10;WHERE &#13;&#10;(YEAR(N.StartDate) = YEAR(@DateNow) OR YEAR(N.EndDate) = YEAR(@DateNow)) AND&#13;&#10;N.IsVertualDeleted = 0 AND N.EmployeeCard_id = dbo.EmployeeCard.Id AND N.LeaveSetting_id = dbo.LeaveSetting.Id)&#13;&#10;WHEN dbo.LeaveSetting.HasMaximumNumber = 0&#13;&#10;THEN '0'&#13;&#10;END AS TheRemainingNumberOfTimes,&#13;&#10;&#13;&#10;(SELECT SUM(N.SpentDays) &#13;&#10;FROM dbo.LeaveRequest N &#13;&#10;WHERE &#13;&#10;(YEAR(N.StartDate) = YEAR(@DateNow) OR YEAR(N.EndDate) = YEAR(@DateNow)) AND&#13;&#10;N.IsVertualDeleted = 0 AND N.EmployeeCard_id = dbo.EmployeeCard.Id AND N.LeaveSetting_id = dbo.LeaveSetting.Id&#13;&#10;) AS SumSpentDays&#13;&#10;       &#13;&#10;FROM         &#13;&#10;dbo.JobDescription INNER JOIN&#13;&#10;dbo.Employee INNER JOIN&#13;&#10;dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id ON dbo.JobDescription.Id = dbo.Employee.Id INNER JOIN&#13;&#10;dbo.JobTitle ON dbo.JobDescription.JobTitle_id = dbo.JobTitle.Id INNER JOIN&#13;&#10;dbo.Grade ON dbo.JobTitle.Grade_id = dbo.Grade.Id INNER JOIN&#13;&#10;dbo.LeaveTemplateDetail INNER JOIN&#13;&#10;dbo.LeaveTemplateMaster ON dbo.LeaveTemplateDetail.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id AND &#13;&#10;dbo.LeaveTemplateDetail.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id INNER JOIN&#13;&#10;dbo.LeaveSetting ON dbo.LeaveTemplateDetail.LeaveSetting_id = dbo.LeaveSetting.Id INNER JOIN&#13;&#10;dbo.LeaveType ON dbo.LeaveSetting.Type_id = dbo.LeaveType.Id ON dbo.Grade.LeaveTemplateMaster_id = dbo.LeaveTemplateMaster.Id&#13;&#10;&#13;&#10;">
+        <Column Name="FullName" DataType="System.String"/>
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+        <Column Name="EmployeeCardId" DataType="System.Int32"/>
+        <Column Name="LeaveName" DataType="System.String"/>
+        <Column Name="LeaveTypeName" DataType="System.String"/>
+        <Column Name="LeaveBalance" DataType="System.Double"/>
+        <Column Name="RemainingBalance" DataType="System.String"/>
+        <Column Name="GrantedBalance" DataType="System.String"/>
+        <Column Name="HasMaximumNumber" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="MaximumNumber" DataType="System.Int32"/>
+        <Column Name="GivenTheNumberOfTimes" DataType="System.Int32"/>
+        <Column Name="TheRemainingNumberOfTimes" DataType="System.Int32"/>
+        <Column Name="SumSpentDays" DataType="System.Double"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="JobDescription_Table1" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="JobDescription_id" Enabled="true"/>
+    <Relation Name="Node_Table1" ParentDataSource="Node" ChildDataSource="null" ParentColumns="Id" ChildColumns="NodeId" Enabled="true"/>
+    <Relation Name="LeaveType_Table1" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="Table_Node" ParentDataSource="Node" ChildDataSource="Table" ParentColumns="Employee_id" ChildColumns="EmployeeId" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="132.3">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير رصيد اجازات موظفي عقدة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text52" Top="56.7" Width="718.2" Height="37.8" Text="[NodesComboBox.Text]:العقدة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text56" Top="94.5" Width="718.2" Height="37.8" Text="[ComboBox1.Text]:نوع الاجازة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="136.42" Width="718.2" Height="18.9"/>
+    <DataBand Name="Data1" Top="159.45" Width="718.2" Height="122.85" DataSource="Table">
+      <TextObject Name="Text50" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text40" Left="547.1" Top="18.9" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="547.1" Top="37.8" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Left="547.1" Top="56.7" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="رصيد الموظف من الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text43" Left="547.1" Top="75.6" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرصيد المتبقي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text44" Left="547.1" Top="94.5" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الممنوح من الاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text47" Left="188" Top="37.8" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العدد الاعظمي للاجازة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text48" Left="188" Top="56.7" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد المرات الممنوحة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text51" Top="113.4" Width="717.85" Height="9.45" Border.Lines="All" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      <TextObject Name="Text53" Left="188" Top="18.9" Width="171.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="يوجد للاجازة عدد اعظمي " HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text54" Left="189" Top="75.6" Width="169.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد المرات المتبقية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text2" Left="359.1" Top="18.9" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.LeaveName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text4" Left="359.1" Top="37.8" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.LeaveTypeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="359.1" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.LeaveBalance]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="359.1" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[ToDouble([BasicDataSource.LeaveBalance]-[BasicDataSource.SumSpentDays])]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="359.1" Top="94.5" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.SumSpentDays]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 8pt"/>
+      <CheckBoxObject Name="CheckBox2" Left="85.05" Top="18.9" Width="18.9" Height="18.9" DataColumn="BasicDataSource.HasMaximumNumber"/>
+      <TextObject Name="Text1" Top="37.8" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.MaximumNumber]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text10" Top="56.7" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.GivenTheNumberOfTimes]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text12" Top="75.6" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.TheRemainingNumberOfTimes]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text55" Top="94.5" Width="358.65" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text57" Left="547.1" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text58" Left="359.1" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[BasicDataSource.FullName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text59" Left="188" Width="170.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text60" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Node.JobDescriptionNam]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="286.42" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="548.1" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Left="359.1" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text39" Width="359.1" Height="18.9" Border.Lines="Left, Top, Bottom" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="309.44" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="286" Height="234" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="114" Top="175" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="192" Top="104" Width="54" Height="13" TabIndex="2" Text="نوع الإجازة"/>
+    <ComboBoxControl Name="NodesComboBox" Left="12" Top="32" Width="175" TabIndex="1" ClickEvent="NodesComboBox_Click" DataColumn="BasicDataSource.Node.Name" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="172" Top="136" Width="78" Height="17" TabIndex="3" Text="كل الاجازات" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+    <LabelControl Name="Label2" Left="192" Top="36" Width="36" Height="13" TabIndex="2" Text="العقدة"/>
+    <ComboBoxControl Name="ComboBox1" Left="12" Top="100" Width="175" TabIndex="2" ClickEvent="NodesComboBox_Click" DataColumn="BasicDataSource.LeaveTypeName" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox3" Left="172" Top="68" Width="66" Height="17" TabIndex="3" Text="كل العقد" ClickEvent="CheckBox3_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

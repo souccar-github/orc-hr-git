@@ -1,0 +1,293 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+<div class="employee-transfer-container-title"><label>@GlobalResource.Employee</label></div><br />
+<div class="employee-transfer-container"></div><br />
+<div class="employee-transfer-container-info"></div><br />
+<div class="employee-transfer-approval-container-title"><label>@GlobalResource.PendingTransferRequest</label></div><br />
+<div class="employee-transfer-approval-container"></div><br />
+<div class="employee-transfer-request-workflow-container"></div>
+
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+    var employeeTransferId = window.localStorage.getItem('ServiceId');
+    var employeeContainer = $('.employee-transfer-container');
+    var employeeTransferRequestInfoContainer = $('.employee-transfer-container-info');
+    var approvalContainer = $('.employee-transfer-approval-container');
+    var workflowContainer = $(".employee-transfer-request-workflow-container");
+    var employeeTitleContainer = $(".employee-transfer-container-title");
+    var employeeTransferApprovalTitleContainer = $(".employee-transfer-approval-container-title");
+
+    getEmployeeActionViewModel();
+    function getEmployeeActionViewModel() {
+
+        Souccar.ajax('@Url.Action("GetDataForPSTransferRequestService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+            showEmployee(data.SubEmployees);
+            console.log(data.EmployeeApproval);
+            showEmployeeApproval(data.EmployeeApproval);
+        }, failedMessage);
+    }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        employeeContainer.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            employeeContainer.html('');
+            approvalContainer.html('');
+            employeeTitleContainer.html('');
+            employeeTransferApprovalTitleContainer.html('');
+
+
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+            window.nodes = [];
+            window.positions = [];
+            debugger;
+            Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/GetDestNodes", {}, function (data) { window.nodes = data.Data; }, failedMessage);
+
+
+
+            var employeeTransferRequestTemplateData = [
+                { Name: "DestNode", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestNode)", Type: "Dropdown", DataSource: "nodes", Creatable: false, IsRequired: true },
+                { Name: "DestPosition", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestPosition)", Type: "Dropdown", DataSource: "positions", Creatable: false, IsRequired: true },
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea" }
+            ];
+
+            var employeeTransferRequestDatabind = kendo.observable(
+                {
+                    DestNode: -1,
+                    DestPosition: -1,
+                    Note: ""
+                });
+
+            createCustomEditForm(employeeTransferRequestInfoContainer, { Fields: employeeTransferRequestTemplateData, Key: "employee-employeeTransfer" }, employeeTransferRequestDatabind);
+            $("[name='DestNode']").kendoDropDownList({
+                filter: "contains",
+                autoBind: true,
+                minLength: 1,
+                dataTextField: "Name",
+                dataValueField: "Id",
+            });
+            var dropdownlist = $("[name='DestNode']").data("kendoDropDownList");
+            dropdownlist.setDataSource(nodes);
+            debugger;
+            var nodeDropownlist = $("[name='DestNode']").data("kendoDropDownList");
+            nodeDropownlist.bind("change", function () {
+                var nodeId = Number(employeeTransferRequestInfoContainer.find("#DestNode_employee-employeeTransfer").data("kendoDropDownList").value());
+                if (nodeId > 0) {
+                    Souccar.ajax(window.applicationpath + "EmployeeRelationServices/Service/GetDestPositions", { nodeId: nodeId }, function (data) {
+                        $("[name='DestPosition']").kendoDropDownList({
+                            filter: "contains",
+                            autoBind: true,
+                            minLength: 1,
+                            dataTextField: "Name",
+                            dataValueField: "Id",
+                        });
+                        var posDropownlist = $("[name='DestPosition']").data("kendoDropDownList");
+                        posDropownlist.setDataSource(data.Data);
+                    }, failedMessage);
+                }
+                else {
+                    var dropdownlist = $('[name="DestPosition"]').data("kendoDropDownList");
+                    dropdownlist.setDataSource([]);
+                }
+            });
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            employeeTransferRequestInfoContainer.find("[name='Note']").after(applyButton);
+
+            var DestNode = $('[name="DestNode"]');
+            var DestPosition = $('[name="DestPosition"]');
+
+            employeeTransferRequestInfoContainer.find(".applyButton").off('click').on('click', function () {
+                debugger;
+                var destNode = Number(employeeTransferRequestInfoContainer.find("#DestNode_employee-employeeTransfer").data("kendoDropDownList").value());
+                var destPosition = Number(employeeTransferRequestInfoContainer.find("#DestPosition_employee-employeeTransfer").data("kendoDropDownList").value());
+                var note = employeeTransferRequestInfoContainer.find("[name='Note']").val();
+                employeeTransferRequestDatabind.set("DestNode", destNode);
+                employeeTransferRequestDatabind.set("DestPosition", destPosition);
+                employeeTransferRequestDatabind.set("Note", note);
+                var jsonParam = { employeeId: employeeId, positionId: positionId, request: employeeTransferRequestDatabind };
+
+                debugger;
+                if (destNode == "" || destNode == "0" || destNode == 0 || destNode == null || destNode == -1) {
+                    debugger;
+                    var destNodeDropownlist = $("[name='DestNode']").data("kendoDropDownList");
+                    var destNodeValue = destNodeDropownlist.value();
+                    if (destNodeValue == "0" || destNodeValue == "-1" || destNodeValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "DestNode");
+                    }
+                    destNodeDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-DestNode').remove();
+                    });
+                }
+                if (destPosition == "" || destPosition == "0" || destPosition == 0 || destPosition == null) {
+                    debugger;
+                    var destPositionDropownlist = $("[name='DestPosition']").data("kendoDropDownList");
+                    var destPositionValue = destPositionDropownlist.value();
+                    if (destPositionValue == "0" || destPositionValue == "-1" || destPositionValue == "") {
+                        debugger;
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "DestPosition");
+                    }
+                    destPositionDropownlist.bind("change", function () {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-DestPosition').remove();
+                    });
+                }
+                if (destNode == null || destNode == -1 || destPosition == null || destPosition == -1) {
+                   // requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeePSTransferItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+            });
+
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            employeeTransferRequestInfoContainer.html('');
+            employeeTransferRequestInfoContainer.html('');
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+
+    function showEmployeeApproval(data) {
+        var template = kendo.template($("#employee-employee-transfer-approval-template").html());
+        approvalContainer.html(template(data));
+        window.EmployeesTransferInfo = data;
+    }
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, employeeTransferId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, employeeTransferId) {
+
+        employeeContainer.html('');
+        approvalContainer.html('');
+        employeeTitleContainer.html('');
+        employeeTransferApprovalTitleContainer.html('');
+
+        createWorkflow(workflowContainer, workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+
+        function initWorkflow() {
+
+            var employeeTransferRequestTemplateData = [
+                {Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "DestNode", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestNode)", Type: "Text", IsReadonly: true },
+                { Name: "DestPosition", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestPosition)", Type: "Text", IsReadonly: true },
+                { Name: "RequestDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)", Type: "Date", IsReadonly: true },
+                { Name: "Note", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)", Type: "Textarea", IsReadonly: true }
+            ];
+            var employeeTransferRequestViewDatabind = kendo.observable(
+                {
+                    FullName:"",
+                    DestNode: "",
+                    DestPosition: "",
+                    RequestDate: null,
+                    Note: ""
+                });
+
+            for (var i = 0; i < window.EmployeesTransferInfo.length; i++) {
+                if (window.EmployeesTransferInfo[i].WorkflowItemId == workflowId) {
+                    employeeTransferRequestViewDatabind.FullName = window.EmployeesTransferInfo[i].FullName;
+                    employeeTransferRequestViewDatabind.DestNode = window.EmployeesTransferInfo[i].DestNodeName;
+                    employeeTransferRequestViewDatabind.DestPosition = window.EmployeesTransferInfo[i].DestPositionName;
+                    employeeTransferRequestViewDatabind.RequestDate = window.EmployeesTransferInfo[i].RequestDate;
+                    employeeTransferRequestViewDatabind.Note = window.EmployeesTransferInfo[i].Note;
+                }
+            }
+
+            createCustomEditForm($("#workflow_data"), { Fields: employeeTransferRequestTemplateData, Key: "employee-employeeTransfer" }, employeeTransferRequestViewDatabind);
+
+        }
+
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptPSTransferRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectPSTransferRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingPSTransferRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            debugger;
+            var jsonParam = { workflowId: workflowId, requestId: employeeTransferId, note: $("#NewStepDescription").val() };
+            Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+        }
+    }
+</script>
+
+<script id="employee-employee-transfer-approval-template" type="text/x-kendo-template">
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestNode)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestPosition)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Note)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){#
+            #var employee=data[i];#
+            <tr>
+                <td>#=employee.FullName#</td>
+                <td>#=employee.DestNodeName#</td>
+                <td>#=employee.DestPositionName#</td>
+                <td>#=window.Souccar.toStringForDate(employee.RequestDate)#</td>
+                <td>#=employee.Note#</td>
+                <td style="display: flex; justify-content: center; align-items: center;"><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.RequestId#')">@GlobalResource.Approval</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

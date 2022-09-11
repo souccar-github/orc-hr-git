@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SharedDataSource">
+  <ConnectionProperties>
+    <Extension>SQL</Extension>
+    <ConnectString>Data Source=AMMAR-ALZAIEBAK;Initial Catalog=TestPsReports</ConnectString>
+  </ConnectionProperties>
+  <DataSourceID>85c1ffbe-fd84-4ce3-8d7f-648544a8318a</DataSourceID>
+</RptDataSource>

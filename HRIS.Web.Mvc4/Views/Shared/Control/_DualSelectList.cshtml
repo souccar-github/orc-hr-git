@@ -1,0 +1,270 @@
+﻿<script id="GenericDualSelectListTemplate" type="text/x-kendo-template">
+    <div class="dual-select">
+        <div class="dual-select-header">
+            <div class="first-label">
+                <label>#=data.FirstTitle#</label>
+            </div>
+            <div class="second-label">
+                <label>#=data.SecondTitle#</label>
+            </div>
+        </div>
+        <div class="dual-select-body">
+            <div class="list-first" id="#= data.Name#LeftId"></div>
+            <div class="list-buttons">
+                <div class="forward"><button id="butMoveRight#=data.Name#"></button></div>
+                <div class="forward-all"><button id="butMoveRightAll#= data.Name#"></button></div>
+                <div class="backward"><button id="butMoveLeft#= data.Name#"></button></div>
+                <div class="backward-all"><button id="butMoveLeftAll#= data.Name#"></button></div>
+            </div>
+            <div class="list-second" id="#= data.Name#RightId"></div>
+        </div>
+        <div class="dual-select-footer dual-select-footer-development">
+        </div>
+    </div>
+</script>
+
+<script id="GenericSelectListTemplate" type="text/x-kendo-template">
+    <select id="selectList#= data.Name##= data.Dir#" class="selectList#= data.Name##= data.Dir#Class" multiple="multiple" name="selectList#= data.Name##= data.Dir#Name" size="15" >
+        # if (data.Grouping==true) { #
+            # var groupsNames = getGroupsNames(data.DataSource); #
+            # for (var i = 0; i<groupsNames.length; i++) { #
+                # var items=getItemsInGroup(data.DataSource,groupsNames[i],data.Dir); #
+                #if(items.length>0){#
+                    <optgroup label="#=groupsNames[i]#">
+                    # for (var j = 0; j < items.length; j++) { #                        
+                        # var textValue = items[j].Title; #
+                        # if (items[j].Metadata!=null&&items[j].Metadata.length!=0&&data.Dir=="Right") { #
+                            # textValue +="   [ "+items[j].Metadata[0].Name ; #
+                            # for (var k = 1; k < items[j].Metadata.length; k++) { #
+                                # textValue += ", "+items[j].Metadata[k].Name; #
+                            # } #
+                            # textValue +="] "; #
+                        # } #
+                        <option value="#=items[j].Value#" data-group="#=groupsNames[i]#" data-title="#=items[j].Title#">#=textValue#</option>                       
+                    # } #
+                    </optgroup>
+                # } #
+            # } #
+        # } else {#
+            # for (var i = 0; i < data.DataSource.length; i++) { #
+                # if (data.DataSource[i].Dir==data.Dir) { #
+                    # var textValue = data.DataSource[i].Title; #
+                    # if (data.DataSource[i].Metadata!=null&&data.DataSource[i].Metadata.length!=0&&data.Dir=="Right") { #
+                        # textValue +="   [ "+data.DataSource[i].Metadata[0].Name ; #
+                        # for (var k = 1; k < data.DataSource[i].Metadata.length; k++) { #
+                            # textValue += ", "+data.DataSource[i].Metadata[k].Name ; #
+                        # } #
+                        # textValue +="] "; #
+                    # } #
+                    <option value="#=data.DataSource[i].Value#">#=textValue#</option>
+                # } #
+            # } #
+        # } #
+
+    </select>
+</script>
+
+<script>
+
+    function getItemsInGroup(dataSource, groupName,dir) {
+        var result = [];
+        for (var i = 0; i < dataSource.length; i++) {
+            if (dataSource[i].Group == groupName&&dataSource[i].Dir==dir) {
+                result.push(dataSource[i]);
+            }
+        }
+        return result;
+    }
+
+    function getGroupsNames(dataSource) {
+        var result = [];
+        for (var i = 0; i < dataSource.length; i++) {
+            if (!inSet(result, dataSource[i].Group)) {
+                result.push(dataSource[i].Group);
+            }
+        }
+        return result;
+    }
+
+    function inSet(set, item) {
+        for (var i = 0; i < set.length; i++) {
+            if (set[i] == item)
+                return true;
+        }
+        return false;
+    }
+
+    function removeFromSet(set, item) {
+        var result = [];
+        for (var i = 0; i < set.length; i++) {
+            if (set[i] != item)
+                result.push(set[i]);
+        }
+        return result;
+    }
+
+    function refreshSelectList(name, dataSource, grouping) {
+        var date = {
+            Name: name,
+            Dir: "Left",
+            Grouping: grouping,
+            DataSource: dataSource
+        };
+        var template = kendo.template($("#GenericSelectListTemplate").html());
+        $("#" + name + "LeftId").html(template(date));
+
+        template = kendo.template($("#GenericSelectListTemplate").html());
+        date.Dir = "Right";
+        $("#" + name + "RightId").html(template(date));
+    }
+    
+    function refreshSelectListWithReBindEventHandler(name, dataSource, grouping) {
+        var date = {
+            Name: name,
+            Dir: "Left",
+            Grouping: grouping,
+            DataSource: dataSource
+        };
+        var template = kendo.template($("#GenericSelectListTemplate").html());
+        $("#" + name + "LeftId").html(template(date));
+
+        template = kendo.template($("#GenericSelectListTemplate").html());
+        date.Dir = "Right";
+        $("#" + name + "RightId").html(template(date));
+        
+
+        $("#butMoveRight" + name).off("click").on("click",function () {
+            var items = dataSource;
+            var selectedItems = $("#selectList" + name + "Left  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            refreshSelectList(name, items, grouping);
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            $("#selectList" + name + "Right").val(temp);
+        });
+
+        $("#butMoveRightAll" + name).off("click").on("click",function () {
+            var items = dataSource;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            refreshSelectList(name, items, grouping);
+        });
+
+        $("#butMoveLeft" + name).off("click").on("click", function () {
+            var items = dataSource;
+            var selectedItems = $("#selectList" + name + "Right  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            refreshSelectList(name, items, grouping);
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            $("#selectList" + name + "Left").val(temp);
+        });
+
+        $("#butMoveLeftAll" + name).off("click").on("click", function () {
+            var items = dataSource;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            refreshSelectList(name, items, grouping);
+        });
+
+
+
+
+    }
+
+    function createDualSelectList(name, dataSource, containerId, firstListTitle, secondListTitle, grouping) {
+        var template = kendo.template($("#GenericDualSelectListTemplate").html());
+        var data = { Name: name, FirstTitle: firstListTitle, SecondTitle: secondListTitle };
+        $("#" + containerId).html(template(data));
+        refreshSelectList(name, dataSource, grouping);
+        $("#butMoveRight" + name).click(function () {
+            var items = dataSource;
+            var selectedItems = $("#selectList" + name + "Left  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Group == null || selectedItems.data('group') == undefined) {
+                        if (item.Value == selectedItems[i].value) {
+                            item.Dir = "Right";
+                        }
+                    } else {
+                        if (item.Value == selectedItems[i].value && item.Group == selectedItems.data('group')) {//&& item.Title == selectedItems.data('title')
+                            item.Dir = "Right";
+                        }
+                    }
+                });
+            }
+            refreshSelectList(name, items, grouping);
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            $("#selectList" + name + "Right").val(temp);
+        });
+
+        $("#butMoveRightAll" + name).click(function () {
+            var items = dataSource;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            refreshSelectList(name, items, grouping);
+        });
+
+        $("#butMoveLeft" + name).click(function () {
+            var items = dataSource;
+            var selectedItems = $("#selectList" + name + "Right  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Group == null || selectedItems.data('group') == undefined) {
+                        if (item.Value == selectedItems[i].value) {
+                            item.Dir = "Left";
+                        }
+                    } else {
+                        if (item.Value == selectedItems[i].value && item.Group == selectedItems.data('group')) {//&& item.Title == selectedItems.data('title')
+                            item.Dir = "Left";
+                        }
+                    }
+                });
+            }
+            refreshSelectList(name, items, grouping);
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            $("#selectList" + name + "Left").val(temp);
+        });
+
+        $("#butMoveLeftAll" + name).click(function () {
+            var items = dataSource;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            refreshSelectList(name, items, grouping);
+        });
+    }
+
+    var temp =
+    [
+        { Dir: "Left", Value: "V1", Title: "V1" },
+        { Dir: "Left", Value: "V2", Title: "V2" },
+        { Dir: "Left", Value: "V3", Title: "V3" },
+        { Dir: "Right", Value: "V4", Title: "V4" }
+    ];
+</script>

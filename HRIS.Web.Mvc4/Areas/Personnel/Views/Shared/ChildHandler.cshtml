@@ -1,0 +1,59 @@
+﻿
+<script type="text/javascript">
+    function ChildEditHandler(e) {
+        if (e.model.isNew()) {
+            $("[name='DeathDate']").data("kendoDatePicker").value(null);
+            $("[name='ResidencyExpiryDate']").data("kendoDatePicker").value(null);
+            $("[name='PassportExpiryDate']").data("kendoDatePicker").value(null);
+            e.model.DeathDate = null;
+            e.model.ResidencyExpiryDate = null;
+            e.model.PassportExpiryDate = null;
+        }
+        $("[name='HasChildBenefit']").off("click").on("click", controlClick);
+        $("[name='IsDeath']").off("click").on("click", controlClick);
+        controlClick();
+        function controlClick() {
+            var container = e.container.find(".fieldsets-div");
+           
+            var isDeath = $("[name='IsDeath']").is(":checked");
+            var hasChildBenefit = $("[name='HasChildBenefit']").is(":checked");
+         
+            childUpdateEditView(container, isDeath, hasChildBenefit);
+            if (isDeath) {
+                e.model.DeathDate = e.container.find("[name='DeathDate']").data("kendoDatePicker").value();
+            }
+            reOrderControls($(".fieldset-PersonnelGoupesNames_ChildBenefitInfo"));
+            reOrderControls($(".fieldset-PersonnelGoupesNames_ChildInfo"));
+        }
+    }
+
+    function ChildViewHandler(e) {
+        var container = $(".show-fieldsets-div");
+    
+        var isDeath = e.model.IsDeath;
+        var hasChildBenefit = e.model.HasChildBenefit;
+        childUpdateEditView(container, isDeath, hasChildBenefit);
+        reOrderControls($(".fieldset-PersonnelGoupesNames_ChildBenefitInfo"));
+        reOrderControls($(".fieldset-PersonnelGoupesNames_ChildInfo"));
+    }
+
+
+    function childUpdateEditView(container, isDeath, hasChildBenefit) {
+        if (isDeath) {
+            container.find(".control.control-DeathDate").show();
+            addRequiredStar('DeathDate');
+        } else {
+            container.find(".control.control-DeathDate").hide();
+            removeRequiredStar('DeathDate');
+        }
+
+        if (hasChildBenefit) {
+            container.find(".control.control-ChildBenefitStartDate").show();
+            container.find(".control.control-ChildBenefitEndDate").hide();
+        } else {
+            container.find(".control.control-ChildBenefitStartDate").show();
+            container.find(".control.control-ChildBenefitEndDate").show();
+        }
+    }
+
+</script>

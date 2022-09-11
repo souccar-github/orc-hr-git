@@ -1,0 +1,29 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
+    <%: Resources.Areas.ProjectManagment.Views.Shared.ProjectMaster.ProjectMaster.ProjectManagement %>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div>
+        <div id="MainData">
+            <div>
+                <%--<% Html.RenderPartial("NodeChooser"); %>--%>
+            </div>
+            <div id="Ribbon">
+                <% Html.RenderAction("GetRibbonPartial", "ProjectManagement", new { area = "ProjectManagement" }); %>
+            </div>
+            <div id="Navigator">
+                <% Html.RenderPartial("Navigator"); %>
+            </div>
+            <div id="menucontainer">
+                <%--<% Html.RenderPartial("ModulesMenu"); %>--%>
+            </div>
+            <div id="ContentPlaceHolder">
+                <% Html.RenderPartial("GlobalError"); %>
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </div>
+                <%: Html.Telerik().StyleSheetRegistrar().DefaultGroup(group => group
+                                            .Add("telerik.forest.min.css"))%>
+</asp:Content>

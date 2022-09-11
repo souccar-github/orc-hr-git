@@ -1,0 +1,76 @@
+﻿  <head>
+      <title>Tree</title>
+  
+      <script type="text/javascript" src='@Url.Content("/Scripts/jquery-1.5.min.js")'></script>
+        <script type="text/javascript" src='@Url.Content("/Scripts/jquery-ui.min.js")'></script>
+      <script type="text/javascript" src='@Url.Content("/Scripts/jquery.jOrgChart.js")'> </script>
+    
+      <link rel="stylesheet" type="text/css" href='@Url.Content("/Content/Treecss/jquery.jOrgChart.css")' />
+
+     
+          <script>
+              jQuery(document).ready(function () {
+
+
+                  $.ajax({
+                      url: '@Url.Action("GenerateJqueryTree", "Node", new {area = "OrganizationChart"})'
+                      , type: "POST",
+                      data: {},
+                      dataType: "json",
+                      success: function (result) {
+                          if (result.Success) {                        
+                              $("#newTree").html(result.txt);
+                              $("#org").jOrgChart({
+                                  chartElement: '#chart',
+                                  dragAndDrop: true
+                              });
+                          }
+                      }
+                  });
+                  
+              });
+    </script>
+  </head>
+
+<body onload="prettyPrint();">
+
+   
+    
+    <div id="newTree"></div>
+    <div id="chart" class="orgChart"></div>
+
+  
+    <pre class="prettyprint lang-html" id="list-html" style="display:none"></pre>   
+
+
+</body>
+
+ <script>
+     jQuery(document).ready(function () {
+
+         /* Custom jQuery for the example */
+         $("#show-list").click(function (e) {
+             e.preventDefault();
+
+             $('#list-html').toggle('fast', function () {
+                 if ($(this).is(':visible')) {
+                     $('#show-list').text('Hide underlying list.');
+                     $(".topbar").fadeTo('fast', 0.9);
+                 } else {
+                     $('#show-list').text('Show underlying list.');
+                     $(".topbar").fadeTo('fast', 1);
+                 }
+             });
+         });
+
+         $('#list-html').text($('#org').html());
+
+         $("#org").bind("DOMSubtreeModified", function () {
+             $('#list-html').text('');
+
+             $('#list-html').text($('#org').html());
+
+             prettyPrint();
+         });
+     });
+    </script>

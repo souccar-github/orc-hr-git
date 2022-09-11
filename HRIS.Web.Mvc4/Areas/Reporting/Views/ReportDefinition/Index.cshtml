@@ -1,0 +1,58 @@
+﻿@using  Project.Web.Mvc4.Helpers
+<script>
+    function ReportDefinitionAfterRequestEnd(e) {
+        $(".GenerateBasicReports").off("click").on("click", function() {
+
+            var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+            var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                width: "300px",
+                height: "150px",
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+            });
+            var objWindow = kendoWindow.data("kendoWindow");
+            objWindow.open();
+            kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+            objWindow
+                .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.GenerateBasicReportsConfirm", IconClass: "k-icon w-b-question", Commands: commands }))
+                .center().open();
+            kendoWindow
+                .find(gedCommandsClassNames(commands))
+                .click(function() {
+                    for (var i = 0; i < commands.length - 1; i++) {
+                        if ($(this).hasClass("Accept")) {
+                            GenerateBasicReports();
+                        }
+                    }
+                    objWindow.close();
+                })
+                .end();
+        });
+
+
+        function GenerateBasicReports() {
+            $.ajax({
+                url: '@Url.Action("GenerateBasicReports", "Home")',
+                type: "POST",
+                data: JSON.stringify({ filter: $("#grid").data("kendoGrid").dataSource.filter() }),
+                contentType: 'application/json',
+                async: false,
+                success: function(data) {
+                    var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                    if (data.Success) {
+                        console.log(data);
+                        ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                    } else {
+                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                    }
+                    $("#grid").data("kendoGrid").dataSource.fetch();
+                }
+            });
+        }
+
+        ;
+    }
+</script>

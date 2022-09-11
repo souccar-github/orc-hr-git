@@ -1,0 +1,183 @@
+﻿<div id="payroll-employee-finance-card">
+    <div id="payroll-employees-grid"></div>
+    <span>Employee Deduction</span>
+    <div id="payroll-employees-deduction-grid"></div>
+    <span>Employee Benefit</span>
+    <div id="payroll-employees-benefit-grid"></div>
+        <span>Employee Loan</span>
+    <div id="payroll-employees-loan-grid"></div>    
+</div>    
+
+<script>
+function AddSuggestionStaffToCourse()
+    {
+        $.ajax({
+            url: window.applicationpath + "Training/Service" + "/" + "SuggestionStaffToCourse",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify(window.requestInformation),
+            success: function (data) {
+                $("#dynamic_content").html(data);
+            }
+        });     
+        //AddTraineestoCourse();    
+}
+
+    $("#payroll-employees-grid").kendoGrid({
+        height: 185,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetEmployeeByFilter","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        },
+        selectable: "multiple, row",
+        sortable: true,
+        pageable: {
+            refresh: true,
+            pageSizes: true,
+            messages: {
+                display: "{2} items"
+            }
+        },
+        columns: [{
+            field: "Id",
+            width: 50,
+            title: "Id"
+        }, {
+            field: "SocialInsuranceNo",
+            width: 100,
+            title: "SocialInsuranceNo"
+        }, {
+            field: "FirstName",
+            width: 100,
+            title: "First Name"
+        }, {
+            field: "LastName",
+            width: 100,
+            title: "Last Name"
+        }
+        ]
+    });
+
+
+    $("#payroll-employees-deduction-grid").kendoGrid({
+        height: 185,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetEmployeeDeduction","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        },
+        selectable: "multiple, row",
+        sortable: true,
+        pageable: {
+            refresh: true,
+            pageSizes: true,
+            messages: {
+                display: "{2} items"
+            }
+        },
+        columns: [{
+            field: "Id",
+            width: 50,
+            title: "Id"
+        }, {
+            field: "SocialInsuranceNo",
+            width: 100,
+            title: "SocialInsuranceNo"
+        }, {
+            field: "FirstName",
+            width: 100,
+            title: "First Name"
+        }, {
+            field: "LastName",
+            width: 100,
+            title: "Last Name"
+        }
+        ]
+    });
+
+    $("#payroll-employees-benefit-grid").kendoGrid({
+        height: 185,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetEmployeeBenefit","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        },
+            selectable: "multiple, row",
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                messages: {
+                    display: "{2} items"
+                }
+            },
+            columns: [{
+                field: "Id",
+                width: 50,
+                title: "Id"
+            }, {
+                field: "SocialInsuranceNo",
+                width: 100,
+                title: "SocialInsuranceNo"
+            }, {
+                field: "FirstName",
+                width: 100,
+                title: "First Name"
+            }, {
+                field: "LastName",
+                width: 100,
+                title: "Last Name"
+            }
+            ]
+    });
+
+    $("#payroll-employees-loan-grid").kendoGrid({
+        height: 185,
+        dataSource: {
+            transport: {
+                read: {
+                    dataType: "json",
+                    url: "@Url.Action("GetEmployeeLoan","PayrollEmployee",new {area="Payroll"})"
+                }
+            }
+        },
+            selectable: "multiple, row",
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                messages: {
+                    display: "{2} items"
+                }
+            },
+            columns: [{
+                field: "Id",
+                width: 50,
+                title: "Id"
+            }, {
+                field: "SocialInsuranceNo",
+                width: 100,
+                title: "SocialInsuranceNo"
+            }, {
+                field: "FirstName",
+                width: 100,
+                title: "First Name"
+            }, {
+                field: "LastName",
+                width: 100,
+                title: "Last Name"
+            }
+            ]
+    });
+
+</script>

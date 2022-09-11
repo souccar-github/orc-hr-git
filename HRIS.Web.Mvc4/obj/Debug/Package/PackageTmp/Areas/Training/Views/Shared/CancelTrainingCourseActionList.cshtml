@@ -1,0 +1,145 @@
+﻿@using HRIS.Domain.Training.Entities
+@using Project.Web.Mvc4.Helpers
+@using Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Infrastructure.Extenstions
+
+<script type="text/javascript">
+    function TrainingCourseCancellation(id) {
+        $.ajax({
+            url: '@Url.Action("CheckCourseStatus", "Home", new {area = "Training"})',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ courseId: id }),
+            success: function (data) {
+                if (!data.Success)
+                    showErrorMessage(data.Message);
+                else {
+                    if (data.CourseStatus == 0 || data.CourseStatus == 1) { 
+                        generateCancelTrainingCourseWindow(id);
+                    } else {
+                        showErrorMessage(
+                            '@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TheCourseStatusMustBeActivated)');
+                    }
+                }
+            }
+        });
+
+    }
+
+
+    function generateCancelTrainingCourseWindow(id) {
+        var commands = [
+            { Name: "Accept", Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" },
+            { Name: "Cancel", Title: "@GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+        var kendoWindow = $("<div class='cancel-box-div'></div>").kendoWindow({
+            width: "400px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: "@TrainingLocalizationHelper.GetResource(TrainingLocalizationHelper.TrainingCourseCancellation)"
+        });
+        var cancelCourseWindow = kendoWindow.data("kendoWindow");
+        cancelCourseWindow.open();
+
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+
+        cancelCourseWindow
+            .content(kendo.template($("#cancelCourseMessageBoxTemplate").html())({ Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+                for (var i = 0; i < commands.length - 1; i++) {
+                    if ($(this).hasClass("Accept")) {
+                        cancelTrainingCourse(id);
+                    }
+                }
+                cancelCourseWindow.close();
+            })
+            .end();
+    }
+
+    function cancelTrainingCourse(id) {
+        var description = $('#cancellationDescriptionId').val();
+        $.ajax({
+            url: '@Url.Action("CancelTrainingCourse", "ActionList")',
+            type: "POST",
+            data: JSON.stringify({ description: description, id: id }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    $('#grid').data("kendoGrid").dataSource.read();
+                    showSuccessMessage(data.Message);
+                } else {
+                    showErrorMessage(data.Message);
+                }
+            }
+        });
+    }
+
+
+    function generateCancelTrainingCourseWindow2(id) {
+
+        var title = "@TrainingLocalizationHelper.TrainingCourseCancellation";
+        var buttons = [
+            { Name: "CancelButton", CssClass: "cancel", Title: "@GlobalResource.Cancel" },
+            { Name: "UpdateButton", CssClass: "save", Title: "@GlobalResource.Save" }
+        ];
+        var containerId = "cancel-course-container";
+        var popupDiv = $("<div id='cancelCourseWindow'></div>");
+        var bodyHTML = "<div class='cancel-course-body k-edit-form-container two-columns-popup controls-div'></div>";
+
+
+        var templateData = [
+            {
+                Name: "CancellationDescription",
+                Title: "@typeof(Course).GetProperty("CancellationDescription").GetTitle()",
+                Type: "Textarea"
+            }
+        ];
+
+
+        var viewModel = kendo.observable();
+        viewModel.CancellationDescription = $("[Name='CancellationDescription']").val();
+
+        createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, true);
+        createCustomEditForm(popupDiv.find(".cancel-course-body"),
+            { Fields: templateData, Key: "container_div" },
+            viewModel);
+        reOrderControls($(".cancelCoursePopupView-body "));
+
+
+        
+        $("#UpdateButton").off('click').on('click', function () {
+            cancelTrainingCourse();
+        });
+
+        $("#CancelButton").off('click').on('click', function () {
+            popupDiv.data("kendoWindow").close();
+        });
+
+    }
+</script>
+
+<script id="cancelCourseMessageBoxTemplate" type="text/x-kendo-template">
+    <div class="control control-Name control-CancellationDescription first-column">
+
+        <div class="k-edit-label">
+            <label for="CancellationDescription">Cancellation Description</label>
+        </div>
+        <div data-container-for="CancellationDescription" class="k-edit-field">
+            <textarea class="k-textbox k-valid" id="cancellationDescriptionId" data-bind="value: CancellationDescription" name="CancellationDescription"> </textarea>
+        </div>
+
+    </div>
+
+    <div class="k-edit-buttons k-state-default message-box-buttons not-default-button">
+        #for(var i=0;i<Commands.length;i++){ #
+            <a class="k-button #=Commands[i].Name#" href="\\#">
+                <span class="#=Commands[i].ClassName#"></span>#=Commands[i].Title#
+            </a>
+        #}#
+    </div>
+
+</script>

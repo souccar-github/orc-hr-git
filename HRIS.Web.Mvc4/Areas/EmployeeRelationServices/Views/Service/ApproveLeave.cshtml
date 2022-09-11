@@ -1,0 +1,152 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@Html.Partial("Templates/Appraisal/EmployeeAppraisalTemplate")
+<div class="pms-final-approval-container">
+    <div class="leave-request-approval-employees-grid"></div>
+    <div class="leave-request-approval-workflow-container"></div>
+</div>
+
+<script type="text/javascript"> 
+    showApprovalGrid();
+    function showApprovalGrid() {
+        $.ajax({
+            url: '@Url.Action("GetEmployeeForApproval", "Service", new { area = "EmployeeRelationServices" })',
+
+            contentType: 'application/json',
+            success: function (data) {
+                generateGridEmployeesForFinalApproval(data);
+                window.EmployeesForLeaveApproval = data;
+            }
+        });
+    }
+
+    function generateGridEmployeesForFinalApproval(data) {
+        var gridContainer = $(".leave-request-approval-employees-grid");
+        var template = kendo.template($("#leave-request-approval-template").html());
+        gridContainer.html(template(data));
+        
+    }
+    function approvalAction(workflowId) {
+        $(".leave-request-approval-employees-grid").html('');
+        $(".leave-request-approval-workflow-container").html('');
+        createWorkflow($(".leave-request-approval-workflow-container"), workflowId, initWorkflow, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+        
+        function initWorkflow() {
+            var template = kendo.template($("#leave-request-approval-workflow-template").html());
+            var emp = {};
+            for (var i = 0; i < window.EmployeesForLeaveApproval.Employees.length; i++) {
+                if (window.EmployeesForLeaveApproval.Employees[i].WorkflowId == workflowId) {
+                    emp = window.EmployeesForLeaveApproval.Employees[i];
+                    console.log(window.EmployeesForLeaveApproval.Employees[i].WorkflowId + '_' + workflowId);
+                }
+            }
+            $("#workflow_data").html(template(emp));
+        }
+        function acceptWorkflow() {
+            var acceptUrl = "@Url.Action("AcceptLeaveRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(acceptUrl);
+        }
+
+        function pendingWorkflow() {
+            var acceptUrl = "@Url.Action("PendingLeaveRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(acceptUrl);
+        }
+        function rejectWorkflow() {
+            var acceptUrl = "@Url.Action("RejectLeaveRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(acceptUrl);
+        }
+        
+        function saveWorkflow(saveUrl) {
+            $.ajax({
+                url: saveUrl,
+                type: "POST",
+                data: JSON.stringify({ workflowId: workflowId, note: $("#NewStepDescription").val() }),
+                contentType: 'application/json',
+                success: function (e) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-info" }];
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                    $(".leave-request-approval-workflow-container").html("");
+                    showApprovalGrid();
+                }
+            });
+        }
+    }
+</script>
+
+
+
+<script id="leave-request-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.TripleName</th>
+                <th>@GlobalResource.Node</th>
+                <th>@GlobalResource.Grade</th>
+                <th>@GlobalResource.JobTitle</th>
+                <th>@GlobalResource.JobDescription</th>
+                <th>@GlobalResource.EmploymentStatus</th>
+                <th>@GlobalResource.EmployeeStatus</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveType)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i<data.Employees.length;i++){# 
+                #var emp=data.Employees[i];#
+                <tr>
+                    <td>#=emp.TripleName#</td>
+                    <td>#=emp.Node#</td>
+                    <td>#=emp.Grade#</td>
+                    <td>#=emp.JobTitle#</td>
+                    <td>#=emp.JobDescription#</td>
+                    <td>#=emp.EmploymentStatus#</td>
+                    <td>#=emp.EmployeeStatus#</td>
+                    <td>#=emp.Date#</td>
+                    <td>#=emp.LeaveTypeTitle#</td>
+                    <td><button class="k-button" onclick="approvalAction('#=emp.WorkflowId#')">@GlobalResource.Approval</button></td>
+                </tr>
+                #}#
+        </tbody>
+    </table>
+
+
+</script>
+<script id="leave-request-approval-workflow-template" type="text/x-kendo-template">
+    <fieldset class="workflow-leavedetails">
+        <legend>@GlobalResource.Information</legend>
+        <div>
+            <span class="workflow-key">@GlobalResource.TripleName: </span>
+            <span class="workflow-value">#=data.TripleName#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveType): </span>
+            <span class="workflow-value">#=data.LeaveTypeTitle#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RequestDate): </span>
+            <span class="workflow-value">#=data.Date#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveDuration): </span>
+            <span class="workflow-value">#=data.RequriedDays#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveStartDate): </span>
+            <span class="workflow-value">#=data.StartDate#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveEndDate): </span>
+            <span class="workflow-value">#=data.EndDate#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LeaveCause): </span>
+            <span class="workflow-value">#=data.LeaveReason#</span>
+        </div>
+        <div>
+            <span class="workflow-key">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Description): </span>
+            <span class="workflow-value">#=data.Description#</span>
+        </div>
+    </fieldset>
+
+</script>

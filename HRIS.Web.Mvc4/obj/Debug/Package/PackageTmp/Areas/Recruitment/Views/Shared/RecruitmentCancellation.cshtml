@@ -1,0 +1,79 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function RecruitmentCancellation(advertisementId) {
+
+        var title = "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.RecruitmentCancellation)";
+        var databind = kendo.observable();
+        databind.AdvertisementId = advertisementId;
+
+        $.ajax({
+            url: '@Url.Action("CheckIsCancelledRecruitment", "Home")',
+            type: "POST",
+            data: JSON.stringify({ id: advertisementId }),
+            contentType: 'application/json',
+            async: false,
+            success: function (result) {
+
+                if (result.Success) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                }
+                else {
+
+                    var tempdata = [
+                        { Name: "CancellationDecisionNumber", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.DecisionNumber)", Type: "Text" },
+                        { Name: "CancellationDecisionDate", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.DecisionDate)", Type: "Date" },
+                        { Name: "CancellationDecisionIssuedBy", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.DecisionIssuedBy)", Type: "Index", TypeName: "HRIS.Domain.EmployeeRelationServices.Indexes.WorkSide", Creatable: true },
+                        { Name: "CancellationNotes", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.Notes)", Type: "Textarea" }
+                    ];
+
+                    var buttons = [
+                        { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                        { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                    ];
+                    var containerId = "RecruitmentCancellationContainer";
+                    var bodyHTML = "<div class='RecruitmentCancellation fix-custom-popup'></div>";
+                    var isTwoColumns = false;
+
+                    createAndOpenCustomWindow($('<div class="RecruitmentCancellationDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+                    $("#cancel").off('click').on('click', function () {
+                        $(".RecruitmentCancellationDiv").data("kendo-window").close();
+                    });
+
+                    $("#update").off('click').on('click', function () {
+                        if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                            $.ajax({
+                                url: '@Url.Action("ExecuteRecruitmentCancellationProcedure", "Home")',
+                                type: "POST",
+                                data: JSON.stringify({
+                                    model: databind
+                                }),
+
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    if (data.Success) {
+                                        var grid = $("#" + gridModel.Name).data("kendoGrid");
+                                        grid.refresh();
+                                        $(".RecruitmentCancellationDiv").data("kendo-window").close();
+                                    } else {
+                                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                        ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    createCustomEditForm($(".RecruitmentCancellation"), { Fields: tempdata, Key: "RecruitmentCancellationKey" }, databind);
+
+                }
+
+            }
+        });
+
+    }
+ </script>

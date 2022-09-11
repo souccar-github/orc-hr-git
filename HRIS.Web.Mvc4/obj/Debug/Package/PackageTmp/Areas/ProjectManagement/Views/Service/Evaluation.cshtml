@@ -1,0 +1,415 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<div class="project-container"></div>
+<div class="project-table-container"></div><br />
+
+<script>
+    //Messages
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+    function ForbidMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.ThisMemberIsAlreadyExist", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    var container = $(".project-container");
+    var templateContainer = $(".project-table-container");
+    var getMember = [{ Id: 0, Name: "" }];
+
+    addProjectInformation();
+
+    function addProjectInformation() {
+
+        getProjectViewModel();
+
+        var projectTemplateData = [
+            { Name: "EvaluationDate", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.EvaluationDate)", Type: "Date", IsReadonly: true },
+            { Name: "FromDate", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.FromDate)", Type: "Date", IsRequired: true },
+            { Name: "ToDate", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.ToDate)", Type: "Date", IsRequired: true },
+            { Name: "Quarter", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Quarter)", Type: "Enum", TypeName: "HRIS.Domain.Global.Enums.Quarter", IsRequired: true },
+            { Name: "ProjectId", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Project)", Type: "Reference", TypeName: "HRIS.Domain.ProjectManagement.RootEntities.Projects", Creatable: false, IsRequired: true },
+            { Name: "EvaluatorId", Title: "@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Member)", Type: "Dropdown", DataSource: "getMember", IsRequired: true }
+        ];
+
+        var projectDatabind = kendo.observable(
+            {
+                EvaluationDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                FromDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                ToDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                Quarter: 0,
+                ProjectId: 0,
+                EvaluatorId: 0
+            });
+
+        createCustomEditForm(container, { Fields: projectTemplateData, Key: "project" }, projectDatabind);
+
+        var ProjectControl = $("[Name='ProjectId']").data("kendoDropDownList");
+
+        ProjectControl.bind("change", onProjectDropDownChange);
+
+        function onProjectDropDownChange() {
+
+            var ProjectId = Number(ProjectControl.value());
+
+            $.ajax({
+                url: '@Url.Action("GetAllMembers", "Service", new {area = "ProjectManagement"})',
+                type: "POST",
+                data: JSON.stringify({ id: ProjectId }),
+                contentType: 'application/json',
+                success: function(data) {
+
+                    var controlMember = $("[Name='EvaluatorId']").data("kendoDropDownList");
+
+                    fillMemberDropdown(controlMember, data);
+                }
+            });
+        }
+
+        function fillMemberDropdown(control, data) {
+
+            data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+            var dataSource = new kendo.data.DataSource({
+                data: data.Data
+            });
+            control.setDataSource(dataSource);
+            control.text("@GlobalResource.Select");
+        }
+
+        var quarter = $("#Quarter_project").data("kendoDropDownList");
+        quarter.bind("change", onQuarterDropDownChange);
+
+        function onQuarterDropDownChange() {
+            var quarterIndex = quarter.value();
+            var year = (new Date).getFullYear();
+            if (quarterIndex == 0) {
+                $("[Name='FromDate']").val("01/01/" + year);
+                $("[Name='ToDate']").val("31/03/" + year);
+            } else if (quarterIndex == 1) {
+                $("[Name='FromDate']").val("01/04/" + year);
+                $("[Name='ToDate']").val("30/06/" + year);
+            } else if (quarterIndex == 2) {
+                $("[Name='FromDate']").val("01/07/" + year);
+                $("[Name='ToDate']").val("30/09/" + year);
+            } else {
+                $("[Name='FromDate']").val("01/10/" + year);
+                $("[Name='ToDate']").val("31/12/" + year);
+            }
+        }
+
+        function setQuarterDateValuesInModel() {
+            projectDatabind.ToDate = kendo.parseDate($("[Name='ToDate']").val(), "dd/MM/yyyy");
+            projectDatabind.FromDate = kendo.parseDate($("[Name='FromDate']").val(), "dd/MM/yyyy");
+        }
+
+        $(".applyButton").off("click").on("click", function(data) {
+
+
+            setQuarterDateValuesInModel();
+            $.ajax({
+                url: '@Url.Action("SaveProjectInformation", "Service", new {area = "ProjectManagement"})',
+                type: "POST",
+                data: JSON.stringify({ item: projectDatabind }),
+                async: false,
+                contentType: 'application/json',
+                success: function(data) {
+                    if (data.EvaluatorExist == true) {
+                        ForbidMessage();
+                    }
+                }
+            });
+            getProjectViewModel();
+        });
+    }
+    
+    function getProjectViewModel() {
+        Souccar.ajax('@Url.Action("GetDataForEvaluationService", "Service", new {area = "ProjectManagement"})', null, function(data) {
+                showProjectInfo(data.ProjectInfo);
+            }, failedMessage);
+        }
+
+        function showProjectInfo(data) {
+            var template = kendo.template($("#evaluation-project-template").html());
+            templateContainer.html(template(data));
+        }
+
+        function failedMessage() {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+        }
+
+        function evaluateAction(projectId) {
+            var jsonParam = { projectId: projectId };
+            Souccar.ajax('@Url.Action("GetProjectPhases", "Service", new {area = "ProjectManagement"})', jsonParam, function(data) {
+                showProjectPhaseInfo(data.ProjectPhasesInfo);
+                $('.project-container').hide();
+            }, failedMessage);
+        }
+
+        function deleteEvalwithConfirm(evaluationId) {
+
+            var commands = [{ Name: "ConfirmDeletion", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                { Name: "CancelDeletion", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+            var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                width: "300px",
+                height: "150px",
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.GlobalResource.Delete",
+            });
+
+            var objWindow = kendoWindow.data("kendoWindow");
+            objWindow.open();
+            kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+            objWindow
+                .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.DeleteConfirmationMessage", IconClass: "k-icon w-b-question", Commands: commands }))
+                .center().open();
+
+            kendoWindow
+                .find(gedCommandsClassNames(commands))
+                .click(function() {
+                    for (var i = 0; i < commands.length - 1; i++) {
+                        if ($(this).hasClass("ConfirmDeletion")) {
+                            deleteEvaluation(evaluationId);
+                        }
+                    }
+                    objWindow.close();
+                })
+                .end();
+        }
+    function deleteEvaluation(evaluationId){
+
+        $.ajax({
+            url: '@Url.Action("DeleteEvaluation", "Service", new {area = "ProjectManagement"})',
+                type: "POST",
+                data: JSON.stringify({ evaluationId: evaluationId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    getProjectViewModel();
+                    succeedMessage();
+                }
+            });
+           
+        }
+        function showProjectPhaseInfo(data) {
+
+            var template = kendo.template($("#project-phases-template").html());
+            templateContainer.html(template(data));
+
+            $("[name='completion-percent-value']").kendoNumericTextBox({
+                max: 100,
+                min: 0
+            });
+
+            $("[name='Status-value']").kendoDropDownList({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetPhaseStatusValues", "Service", new {area = "ProjectManagement"})',
+                            dataType: "json",
+                            type: "POST"
+                        }
+                    }
+                },
+                template: "#=data.Name#"
+            });
+            $(".calculateAndClose-del-btn").off("click").on("click", function () {
+
+                var phaseDataItems = [];
+
+                $("#tbl1 tbody tr").each(function () {
+
+                    var status = Number($(this).find("[name=Status-value]").data("kendoDropDownList").value());
+                    var completionPercent = Number($(this).find("[name=completion-percent-value]").val());
+                    var phaseId = Number($(this).find(".phaseId").text());
+                    phaseDataItems.push({ PhaseId: phaseId, PhaseNumber: 0, Status: status, PhaseRate: 0, CompletionPercent: completionPercent });
+                });
+                $.ajax({
+                    url: '@Url.Action("SavePhases", "Service", new { area = "ProjectManagement" })',
+                    type: "POST",
+                    data: JSON.stringify({ items: phaseDataItems }),
+                    contentType: 'application/json',
+                    success: function () {
+                        $('.project-container').show();
+                        addProjectInformation();
+                    }
+                });
+            });
+        }
+
+        function calculatePhaseRateAction(phaseId) {
+            var jsonParam = { phaseId: phaseId };
+            Souccar.ajax('@Url.Action("GetPhaseTasks", "Service", new {area = "ProjectManagement"})', jsonParam, function(data) {
+                showProjectTaskInfo(data.PhaseTasksInfo, phaseId);
+                $('.project-container').hide();
+            }, failedMessage);
+        }
+
+        function showProjectTaskInfo(data) {
+
+            var template = kendo.template($("#phase-tasks-template").html());
+            templateContainer.html(template(data));
+
+            $("[name='task-rate-value']").kendoNumericTextBox({
+                max: 100,
+                min: 0
+            });
+
+            $("[name='Status-value']").kendoDropDownList({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetTaskStatusValues", "Service", new {area = "ProjectManagement"})',
+                            dataType: "json",
+                            type: "POST"
+                        }
+                    }
+                },
+                template: "#=data.Name#"
+            });
+
+            $(".saveAndClose-del-btn").off("click").on("click", function () {
+
+                var taskDataItems = [];
+
+                $("#tbl2 tbody tr").each(function () {
+                    
+                    var taskRate = Number($(this).find("[name=task-rate-value]").val());
+                    var status = Number($(this).find("[name=Status-value]").data("kendoDropDownList").value());
+                    var taskId = Number($(this).find(".taskId").text());
+                    var weight = Number($(this).find(".task-weight").text());
+                    taskDataItems.push({ TaskId: taskId, TaskNumber: 0, Status: status, TaskRate: taskRate, Weight: weight });
+                });
+                $.ajax({
+                    url: '@Url.Action("SaveTasks", "Service", new {area = "ProjectManagement"})',
+                    type: "POST",
+                    data: JSON.stringify({ items: taskDataItems }),
+                    contentType: 'application/json',
+                    success: function () {
+                        //$('#tbl2').hide();
+                        $('.project-container').show();
+                        addProjectInformation();
+                    }
+                });
+            });
+        }
+
+</script>
+
+<script id="evaluation-project-template" type="text/x-kendo-template">
+    <table id="tbl">
+        <thead>
+            <tr>
+                <th style="display: none;"></th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.EvaluationDate)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.FromDate)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.ToDate)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Quarter)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Project)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Member)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Position)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Role)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.ProjectRate)</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++) {#
+            #var project=data[i];#
+            <tr>
+                <td class="evaluationId" style="display: none;">#=project.EvaluationId#</td>
+                <td>#=ToStringForDate(project.EvaluationDate)#</td>
+                <td>#=ToStringForDate(project.ToDate)#</td>
+                <td>#=ToStringForDate(project.FromDate)#</td>
+                <td>#=project.Quarter#</td>
+                <td>#=project.ProjectName#</td>
+                <td>#=project.Evaluator#</td>
+                <td>#=project.PositionName#</td>
+                <td>#=project.RoleName#</td>
+                <td>#=project.ProjectRate#</td>
+                <td><button class="k-button" onclick="evaluateAction('#=project.ProjectId#', '#=project.EvaluatorId#')">@ProjectManagementLocalizationHelper.Evaluation</button></td>
+                <td><button class="k-button" onclick="deleteEvalwithConfirm('#=project.EvaluationId#')">@GlobalResource.Delete</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+    <div class="top-commands">
+        <button class="k-button applyButton">
+            <span class="command-icon save"></span>
+            @GlobalResource.Save
+        </button>
+    </div>
+</script>
+
+<script id="project-phases-template" type="text/x-kendo-template">
+    <table id="tbl1">
+        <thead>
+            <tr>
+                <th style ="display: none;"></th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Number)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Status)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.CompletionPercent)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.PhaseRate)</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++) {#
+            #var projectPhase=data[i];#
+            <tr>
+                <td class="phaseId" style="display: none;" >#=projectPhase.PhaseId#</td>
+                <td>#=projectPhase.PhaseName#</td>
+                <td><input name="Status-value" data-text-field="Name" data-value-field="Id" data-bind="value:' #=projectPhase.Status# '" /></td>
+                <td><input class="completion-percent-value" type="text" name="completion-percent-value" value="#=projectPhase.CompletionPercent#" /></td>
+                <td>#=projectPhase.PhaseRate#</td>
+                <td><button class="k-button" onclick="calculatePhaseRateAction('#=projectPhase.PhaseId#')">@ProjectManagementLocalizationHelper.EvaluatePhase</button></td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+    <div class="top-commands">
+        <button class="k-button calculateAndClose-del-btn">
+            <span class="command-icon calculateandclose"></span>
+            @GlobalResource.CalculateAndClose
+        </button>
+    </div>
+</script>
+
+<script id="phase-tasks-template" type="text/x-kendo-template">
+    <table id="tbl2">
+        <thead>
+            <tr>
+                <th style="display: none;"></th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Number)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Status)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.TaskRate)</th>
+                <th>@ProjectManagementLocalizationHelper.GetResource(ProjectManagementLocalizationHelper.Weight)</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++) {#
+            #var phaseTask=data[i];#
+            <tr>
+                <td class="taskId" style="display: none;">#=phaseTask.TaskId#</td>
+                <td>#=phaseTask.TaskNumber#</td>
+                <td><input name="Status-value" data-text-field="Name" data-value-field="Id" data-bind="value:' #=phaseTask.Status# '" /></td>
+                <td><input class="task-rate-value" type="text" name="task-rate-value" value="#=phaseTask.TaskRate#" /></td>
+                <td class="task-weight">#=phaseTask.Weight#</td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+    <div class="top-commands">
+        <button class="k-button saveAndClose-del-btn">
+            <span class="command-icon saveandclose"></span>
+            @GlobalResource.SaveAndClose
+        </button>
+    </div>
+</script>

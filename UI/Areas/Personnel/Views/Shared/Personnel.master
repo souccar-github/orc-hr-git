@@ -1,0 +1,26 @@
+<%@ Master Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
+    <%: Resources.Views.Site_Master.Title %>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div>
+        <div id="MainData">
+            <div id="Ribbon">
+                <% Html.RenderAction("GetRibbonPartial", "Personnel", new { area = "Personnel" }); %>
+            </div>
+            <div id="Navigator">
+                <% Html.RenderPartial("Navigator"); %>
+            </div>
+            <div id="menucontainer">
+                <%--<% Html.RenderPartial("ModulesMenu"); %>--%>
+            </div>
+            <div id="ContentPlaceHolder">
+                <% Html.RenderPartial("GlobalError"); %>
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </div>
+        <%: Html.Telerik().StyleSheetRegistrar().DefaultGroup(group => group
+                            .Add("telerik.metro.min.css"))%>
+</asp:Content>

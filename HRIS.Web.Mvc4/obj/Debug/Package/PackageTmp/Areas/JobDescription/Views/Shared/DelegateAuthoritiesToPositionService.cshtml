@@ -1,0 +1,231 @@
+﻿@using HRIS.Domain.JobDescription.Enum
+@using HRIS.Domain.JobDescription.RootEntities
+@using HRIS.Domain.JobDescription.Entities
+@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+@using Souccar.Infrastructure.Extenstions
+@using  Project.Web.Mvc4.Helpers.Resource
+<div class="contDel" style="display:none">
+    <div class="top-commands">
+        <button class="k-button cancel-btn">
+            <span class="command-icon cancel"></span>
+            @GlobalResource.Cancel
+        </button>
+        
+        <button class="k-button saveAndClose-del-btn" data-positionid="#=data[i].Id#">
+            <span class="command-icon saveandclose"></span>
+            @GlobalResource.SaveAndClose
+        </button>
+
+        <button class="k-button primary-command save-del-btn">
+            <span class="command-icon save"></span>
+            @GlobalResource.Save
+        </button>
+
+    </div>
+
+    <div class="authorities-container"></div>
+
+    <fieldset class="has-comments">
+        <legend>@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Delegations)</legend>
+        <div id="delegations" class="delegations-container"></div>
+    </fieldset>
+    <p>@GlobalResource.DelegationHistory</p>
+    <div class="history-container"></div>
+</div>
+
+<div class="positions-container"></div>
+
+<script> 
+    var positionsContainer = $('.positions-container');
+    var authoritiesContainer = $('.authorities-container');
+    var delegationsContainer = $('.delegations-container');
+    var historyContainer = $('.history-container');
+
+    //Messages
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    //Get Vacant Positions
+    Souccar.ajax(window.applicationpath + "JobDescription/Service/GetVacantPositions", null, getVacantPosition, failedMessage);
+    
+    function getVacantPosition(data) {
+        var template = kendo.template($("#position-list-action-template").html());
+        positionsContainer.html(template(data));
+    }
+
+    //Get Position Authorities
+    $(".action-btn").off("click").on("click", function () {
+        var positionId = $(this).attr('data-positionid');
+        Souccar.ajax(window.applicationpath + "JobDescription/Service/GetPositionAuthorities", { positionId: positionId }, function (data) {
+            showAuthorities(data.Authorities, positionId);
+            showHistory(data.AllAuthDel);
+        }, failedMessage);
+    });
+    
+    //Show Authorities
+    function showAuthorities(data, positionId)
+    {
+        //Get not Vacant Positions
+        window.notVacantPositions = [];
+        Souccar.ajax(window.applicationpath + "JobDescription/Service/GetNOtVacantPositions", null, function (data) { window.notVacantPositions = data; }, failedMessage);
+        
+        positionsContainer.hide();
+        historyContainer.hide();
+        var template = kendo.template($("#view-position-Authorities").html());
+        authoritiesContainer.html(template(data));
+        var databind = kendo.observable();
+        var tempdata = [
+            { Name: "Position", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.AssignToPosition)", Type: "Dropdown", DataSource: "notVacantPositions", IsRequired: true },
+            { Name: "Reason", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ReasonForDelegation)", Type: "Textarea", IsRequired: true },
+            { Name: "FromDate", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.StartDate)", Type: "Date", IsRequired: true },
+            { Name: "ToDate", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.EndDate)", Type: "Date", IsRequired: true },
+            { Name: "Comment", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Comment)", Type: "Textarea" }
+        ];
+        createCustomEditForm($("#delegations"), { Fields: tempdata, Key: "Id" }, databind);
+
+        // save and close button
+        $(".saveAndClose-del-btn").off("click").on("click", function ()
+        {
+            //For validation
+            var position = $("[name='Position']").data("kendoDropDownList").value();
+            var fromDate = $("[name='FromDate']").data("kendoDatePicker").value();
+            var toDate = $("[name='ToDate']").data("kendoDatePicker").value();
+            var reason = $("[name='Reason']").val().trim();
+            
+            if (fromDate == null || toDate == null || position == "" || reason == "" || fromDate > toDate) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+                //return false;
+            }
+            else {
+                //array of Authorities Checked
+                var AuthChecked = [];
+                $.each($("input[class='auth-chb']:checked"), function () {
+                    AuthChecked.push($(this).val());
+                });
+                if (AuthChecked != "")
+                {
+                    var data = {
+                        FromPositionId: positionId,
+                        AuthChecked: AuthChecked,
+                        ToPositionId: Number(position),//databind.Position,
+                        Reason: databind.Reason,
+                        FromDate: databind.FromDate,
+                        ToDate: databind.ToDate,
+                        Comment: databind.Comment
+                    };
+                    Souccar.ajax(window.applicationpath + "JobDescription/Service/SaveAuthDel", data, succeedMessage, failedMessage);
+                    $('.contDel').hide();
+                    positionsContainer.show();
+                }
+                else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+                    //return false;
+                }
+
+            }
+        });
+
+
+        // save button
+        $(".save-del-btn").off("click").on("click", function () {
+            //For validation
+            var position = $("[name='Position']").data("kendoDropDownList").value();
+            var fromDate = $("[name='FromDate']").data("kendoDatePicker").value();
+            var toDate = $("[name='ToDate']").data("kendoDatePicker").value();
+            var reason = $("[name='Reason']").val().trim();
+            
+            if (fromDate == null || toDate == null || position == "" || reason == "" || fromDate > toDate) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+                //return false;
+            }
+            else {
+                //array of Authorities Checked
+                var AuthChecked = [];
+                $.each($("input[class='auth-chb']:checked"), function () {
+                    AuthChecked.push($(this).val());
+                });
+                if (AuthChecked != "") {
+                    var data = {
+                        FromPositionId: positionId,
+                        AuthChecked: AuthChecked,
+                        ToPositionId: Number(position),//databind.Position,
+                        Reason: databind.Reason,
+                        FromDate: databind.FromDate,
+                        ToDate: databind.ToDate,
+                        Comment: databind.Comment
+                    };
+                    Souccar.ajax(window.applicationpath + "JobDescription/Service/SaveAuthDel", data, succeedMessage, failedMessage);
+
+                    Souccar.ajax(window.applicationpath + "JobDescription/Service/GetPositionAuthorities",
+                        { positionId: positionId }, function (data) {
+                        showHistory(data.AllAuthDel);
+                    }, failedMessage);
+
+                        $('.contDel').show();
+                }
+                else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+                    //return false;
+                }
+
+            }
+        });
+
+
+        // save and close button
+        $(".cancel-btn").off("click").on("click", function () {
+            $('.contDel').hide();
+            positionsContainer.show();                
+        });
+
+        $('.contDel').show();
+    }
+
+    //show history delegation
+    function showHistory(data) {
+        historyContainer.show();        
+        var template = kendo.template($("#view-history-delegate").html());
+        historyContainer.html(template(data));
+        
+    }
+</script>
+
+
+
+<script id="view-position-Authorities" type="text/kendo-x-template">
+    <fieldset>
+        <legend>
+            @GlobalResource.Authorities
+    </legend>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>@GlobalResource.Name</th>
+                <th>@GlobalResource.Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            #for (var i=0;i < data.length; i++) {#
+            <tr>
+                <td><input type="checkbox" class="auth-chb" value="#=data[i].Id#" /></td>
+                <td>#=data[i].Name#</td>
+                <td>#=data[i].Description#</td>
+            </tr>
+            #}#
+        </tbody>
+    </table>
+</fieldset>
+</script>

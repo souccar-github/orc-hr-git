@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 12:22:37" ReportInfo.CreatorVersion="0.0.0.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqtis+rNOUXql9HL1HltlmQ4xrZNcFdWmqbzG+em7BFI2SYgX0JmavMyZ62c5siTv8emusZ3BaHLjZ77wseBf54IpcUyR/Z6fpr0A/QSOW42fQ5BcgxHWIdBMEBH6MSkOF0DQx8KAVUPtx2aZ/ZFVqK5pAe25hxPHGMn1K0HBFoEO5hAS5KVZAO2u1y8D4CH8h">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;(SELECT TOP (1) No FROM dbo.Passport WHERE Employee_id = dbo.Employee.Id AND Passport.IsVertualDeleted=0 ORDER BY IssuanceDate DESC) AS [No],&#13;&#10;(SELECT TOP (1) PlaceOfIssuance_id FROM dbo.Passport WHERE Employee_id = dbo.Employee.Id AND Passport.IsVertualDeleted=0 ORDER BY IssuanceDate DESC) AS PlaceOfIssuance_id,&#13;&#10;(SELECT TOP (1) dbo.Country.Name FROM dbo.Passport INNER JOIN dbo.Country ON dbo.Passport.PlaceOfIssuance_id = dbo.Country.Id &#13;&#10;WHERE dbo.Passport.Employee_id=dbo.Employee.Id AND Passport.IsVertualDeleted=0 AND Country.IsVertualDeleted=0 ORDER BY dbo.Passport.IssuanceDate DESC) AS Country,&#13;&#10;(SELECT TOP (1) IssuanceDate FROM dbo.Passport WHERE Employee_id = dbo.Employee.Id AND Passport.IsVertualDeleted=0 ORDER BY IssuanceDate DESC) AS IssuanceDate,&#13;&#10;(SELECT TOP (1) ExpiryDate FROM dbo.Passport WHERE Employee_id = dbo.Employee.Id AND Passport.IsVertualDeleted=0 ORDER BY IssuanceDate DESC) AS ExpiryDate&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND&#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0&#13;&#10;ORDER BY ExpiryDate ASC">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="No" DataType="System.String"/>
+        <Column Name="PlaceOfIssuance_id" DataType="System.Int32"/>
+        <Column Name="Country" DataType="System.String"/>
+        <Column Name="IssuanceDate" DataType="System.DateTime"/>
+        <Column Name="ExpiryDate" DataType="System.DateTime"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="113.4">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير الموظفين حسب تاريخ  انتهاء جواز السفر" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text44" Top="56.7" Width="718.2" Height="37.8" Text="[DateTimePicker1.Value]  حتى تاريخ " Format="Date" Format.Format="dd/MM/yyyy" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="119.75" Width="718.2" Height="37.8">
+      <TextObject Name="Text31" Left="413.8" Width="181.2" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="595.35" Width="122.85" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="321.3" Width="92.95" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text40" Left="236.25" Width="84.5" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="رقم جواز السفر" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text41" Left="160.65" Width="76.05" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مكان الإصدار" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text42" Left="85.05" Width="76.05" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الإصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text43" Width="85.5" Height="37.8" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الإنتهاء" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="163.9" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text4" Left="415.8" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text5" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="321.3" Width="94.5" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Left="236.25" Width="85.05" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.No]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="160.65" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Country]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="85.05" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EmployeesDataSourse.IssuanceDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[EmployeesDataSourse.IssuanceDate] )]&#13;&#10;" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Width="85.05" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EmployeesDataSourse.ExpiryDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[EmployeesDataSourse.ExpiryDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="189.15" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="595.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="214.4" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="290" Height="166" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="86" Top="75" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <DateTimePickerControl Name="DateTimePicker1" Left="20" Top="28" Width="140" RightToLeft="Yes" TabIndex="2" DataColumn="EmployeesDataSourse.ExpiryDate" FilterOperation="LessThanOrEqual" CustomFormat="dd/mm/yyyy" Format="Short" Value="04/08/2015 15:38:16"/>
+    <LabelControl Name="Label1" Left="164" Top="32" Width="35" Height="13" RightToLeft="Yes" TabIndex="3" Text="التاريخ"/>
+    <LabelControl Name="Label2" Left="20" Top="56" Width="67" Height="13" ForeColor="Red" RightToLeft="Yes" TabIndex="4" Text="dd/mm/yyyy"/>
+  </DialogPage>
+</Report>

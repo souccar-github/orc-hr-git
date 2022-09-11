@@ -1,0 +1,96 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script>
+    function ManageDelegate(id) {
+        $.ajax({
+            url: '@Url.Action("GetDelegate", "JobDescription", new { area = "JobDescription" })',
+            type: "POST",
+            data: JSON.stringify({ jobDescriptionId: parseInt(id) }),
+            contentType: 'application/json',
+            success: function (data) {
+                var title = "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.ManageDelegate)";
+                var buttons = [
+                         { Name: "Delegate_JobDescription_update", CssClass: "update", Title: "@GlobalResource.Save" },
+                         { Name: "Delegate_JobDescription_cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                ];
+                var containerId = "Delegate_JobDescription_container";
+                var bodyHTML = "<div id='Delegate_JobDescription'></div>";
+                var popupDiv = $('<div></div>');
+
+                createAndOpenCustomWindow(popupDiv, bodyHTML, containerId, title, buttons, false);
+                createDualSelectList("DelegateJobDescription", data, "Delegate_JobDescription", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.JobDescription)", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.SelectedJobDescription)", true);
+
+                window.DelegateJobDescriptionDatabind = kendo.observable();
+
+                var tempdata = [
+                    { Name: "DelegateType", Title: "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.DelegateType)", Type: "Index", TypeName: "HRIS.Domain.JobDescription.Indexes.AuthorityType", Creatable: true, IsRequired: true },
+                ];
+
+
+                createCustomEditForm($("#Delegate_JobDescription .dual-select-footer-development"), { Fields: tempdata, Key: "delegateJD" }, DelegateJobDescriptionDatabind);
+
+                $("#Delegate_JobDescription .dual-select-footer-development").append("<button class='k-button apply-delegate-type'>@GlobalResource.Apply</button>");
+
+
+                $("#Delegate_JobDescription .apply-delegate-type").off('click').on('click', function () {
+                    if (DelegateJobDescriptionDatabind.DelegateType == 0) {
+                        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("@GlobalResource.Fail", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.SelectTypeFirst)", "k-icon w-b-warning", commands);
+                        return;
+                    }
+
+                    var selectedItems = $("#selectListDelegateJobDescriptionRight :selected");
+                    var items = data;
+                    for (var i = 0; i < selectedItems.length; i++) {
+                        for (var j = 0; j < items.length; j++) {
+                            if (items[j].Value == selectedItems[i].value) {
+
+                                items[j].Metadata = [
+                                    {
+                                        Name: $("#DelegateType_delegateJD").data("kendoDropDownList").text(),
+                                        Id: $("#DelegateType_delegateJD").data("kendoDropDownList").value()
+                                    }
+                                ];
+                                break;
+                            }
+                        }
+                    }
+                    var temp = [];
+                    for (i = 0; i < selectedItems.length; i++) {
+                        temp[i] = selectedItems[i].value;
+                    }
+                    //createDualSelectList("DelegateJobDescription", data, "Delegate_JobDescription", true);
+                    refreshSelectList("DelegateJobDescription", data, true);
+                    $("#selectListDelegateJobDescriptionRight").val(temp);
+
+                });
+
+                $("#Delegate_JobDescription_cancel").off('click').on('click', function () {
+                    popupDiv.data("kendo-window").close();
+                });
+
+                $("#Delegate_JobDescription_update").off('click').on('click', function () {
+                    for (var i = 0; i < data.length; i++) {
+                        if ((data[i].Dir == "Right") && (data[i].Metadata == null || data[i].Metadata.length == 0)) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            ShowMessageBox("@GlobalResource.Fail", "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.SelectTypeForAllDelegation)", "k-icon w-b-warning", commands);
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        url: '@Url.Action("SaveDelegate", "JobDescription", new { area = "JobDescription" })',
+                        type: "POST",
+                        data: JSON.stringify({ jobDescriptionId: parseInt(id), delegates: data }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                            popupDiv.data("kendo-window").close();
+                            ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+                        }
+                    });
+                });
+            }
+        });
+    }
+</script>

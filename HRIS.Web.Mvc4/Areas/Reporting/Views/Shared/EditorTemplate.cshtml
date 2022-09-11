@@ -1,0 +1,79 @@
+﻿@using Project.Web.Mvc4.Helpers
+
+@Html.Partial("../ReportDefinition/Index")
+
+<script>
+    function ReportDefinitionEditHandler(e) {
+
+        $("#FileName").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("GetFullPath", "Home", new {area = "Reporting"})" + "?typeName=" + window.gridModel.TypeFullName + "&fieldName=FileName",
+
+
+            },
+            localization: {
+                select: "@Project.Web.Mvc4.Helpers.GlobalResource.Browse"
+            },
+            multiple: false,
+            success: onComplete
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetModules", "Home", new {area = "Reporting"})',
+
+            success: function(data) {
+
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                setTimeout(function() {
+                    $("[name='ModuleName']").kendoDropDownList({
+                        dataSource: dataSource,
+                        dataTextField: "Name",
+                        dataValueField: "Id"
+                    });
+                }, 50);
+            }
+        });
+    }
+
+    function onComplete(e) {
+
+        var name = e.files[0].name;
+        $.ajax({
+            url: '@Url.Action("GetReportName", "Home", new {area = "Reporting"})',
+            type: 'POST',
+            dataType: 'json',
+            data:{"fileName":name},
+            success: function (data) {
+
+            }
+        });
+    }
+
+    function RemoveEditFromSystemReport(actionListItems, dataItem) {
+        debugger;
+        try {
+            for (var i = 0; i < actionListItems.length; i++) {
+
+                if (actionListItems[i].Name == "@GlobalResource.Edit" && dataItem.CreatedBy.Id == 0) {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+
+                actionListItems[i].ShowCommand = true;
+            }
+        }
+        catch (err) {
+
+        }
+
+    }
+
+    function ReportDefinitionViewHandler(e) {
+        if (e.model.CreatedBy.Id == 0)
+            $('#view_edit').remove();
+    }
+
+
+</script>

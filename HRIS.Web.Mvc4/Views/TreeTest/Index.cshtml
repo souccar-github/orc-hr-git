@@ -1,0 +1,245 @@
+﻿<div id="example" class="k-content">
+    <input data-role="numerictextbox"  />
+    <input data-role="datepicker" />
+    <div id="treeview"></div>
+
+    <script>
+        kendo.init($("#example"));
+    </script>
+    <script>
+
+    $("#treeview").kendoTreeView({
+        dragAndDrop: true,
+        dataSource: getTreeFullDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: false,
+
+    });
+
+
+    function getTreeFullDataSource() {
+        var result = {};
+        result.transport = {
+            read: {
+                //url: "@Url.Action("GetData")",
+                url: "@Url.Action("GetALLData")",
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                children: "Items",
+                //hasChildren: "HasChildren"
+            }
+        };
+        return result;
+    }
+
+    function getInputs(tag) {
+        var inputs = tag.find("input");
+        var result = {};
+        for (var i = 0; i < inputs.length; i++) {
+            result[inputs[i].name] = inputs[i].value;
+        }
+        return result;
+    }
+
+    function getTreeDataSource() {
+        var result = {};
+        result.transport = {
+            read: {
+                url: "@Url.Action("GetData")",
+                //url: "@Url.Action("GetALLData")",
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                //children: "Items",
+                hasChildren: "HasChildren"
+            }
+        };
+        return result;
+    }
+
+    function addNodeToTree() {
+        var treeview = $("#treeview").data("kendoTreeView");
+        var selectedNode = treeview.select();
+        if (selectedNode.length == 0) {
+            alert("select node");
+            return;
+        }
+        var uid = selectedNode.data("uid");
+        var id = treeview.dataSource.getByUid(uid).Id;
+        var window = $("#addNodeWindow");
+
+
+        var template = kendo.template($("#templateAddNodeWindow").html());
+
+        window.html(template({ container: window }));
+
+        //if (!$("#FromDate").data("kendoDatePicker")) {
+        //     $("#FromDate").kendoDatePicker();
+        //}
+
+        @*            $("#Type").kendoDropDownList({
+                dataTextField: "Name",
+                dataValueField: "Id",
+                dataSource: {
+                    type: "json",
+                    serverFiltering: false,
+                    transport: {
+                        read: {
+                            cache: true,
+                            url: "@Url.Action("ReadDropDownList", "Index", new { id = "HRIS.Domain.OrganizationChart.Configurations.NodeType" })"
+                        }
+                    }, schema: {
+                        model: {
+                            id: "Id"
+                        },
+                        data: "Data"
+                    }
+                },
+            });*@
+
+
+
+        $(".cancel").click(function () {
+            $("#addNodeWindow").data("kendoWindow").close();
+        });
+
+        $(".save").click(function () {
+            var result = getInputs($(".k-edit-form-container"));
+            result["ParentId"] = id;
+            $.ajax({
+                url: "@Url.Action("SaveNode")",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ model: result }),
+                success: function (data) {
+                    alert(data);
+                }
+            });
+
+        });
+
+        window.kendoWindow({
+            modal: true,
+            resizable: false,
+            title: "View Intormation",
+            open: function () {
+                window.data("kendoWindow").center();
+            }
+        });
+        window.data("kendoWindow").open();
+
+        @* var dataSource = kendo.data.DataSource({
+               type: "json",
+                serverFiltering: false,
+                transport: {
+                    read: {
+                        cache: true,
+                        url: "@Url.Action("ReadDropDownList", "Index", new { id = "HRIS.Domain.OrganizationChart.Configurations.NodeType" })"
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "Id"
+                    },
+                    data: "Data"
+                }
+            });*@
+
+        kendo.init($("#addNodeWindow"));
+    }
+
+    //var dataSource = new kendo.data.DataSource({
+    //    data: ["One", "Two"]
+    //});
+    var types = [{
+        Name: "Star Wars: A New Hope",
+        Id: 1977
+    }, {
+        Name: "Star Wars: The Empire Strikes Back",
+        Id: 1980
+    }, {
+        Name: "Star Wars: Return of the Jedi",
+        Id: 1983
+    }
+    ];
+    //var dataSource = new kendo.data.DataSource({ data: types });
+
+    var dataSource = kendo.data.DataSource({
+        transport: {
+            read: {
+                url: "@Url.Action("ReadDropDownList", "Index", new { id = "HRIS.Domain.OrganizationChart.Configurations.NodeType" })"
+            }
+        },
+        schema: {
+            data: "Data"
+        }
+    });
+
+
+</script>
+
+    <br />
+
+    <span class="k-link" onclick="addNodeToTree()">Add </span>
+
+
+    <div id="addNodeWindow" style="overflow: hidden">
+    </div>
+
+</div>
+
+`<script type="text/x-kendo-template" id="templateAddNodeWindow">
+        <div class="k-edit-form-container">
+            <div class="k-edit-label"></div>
+            <div class="k-edit-field">
+                <div onmouseover="mouseOverActionList(0)" onmouseout="mouseOutActionList(0)"></div>
+            </div>
+
+            <div class="k-edit-label">
+                <label for="Name">Name</label>
+    
+            </div>
+            <div data-container-for="Name" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="Name" data-bind="value:Name">
+            </div>
+
+            <div class="k-edit-label">
+                <label for="Code">Code</label>
+            </div>
+            <div data-container-for="Code" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="Code" data-bind="value:Code">
+            </div>
+
+            <div class="k-edit-label">
+                <label for="FromDate">FromDate</label>
+            </div>
+            <div data-container-for="FromDate" class="k-edit-field">
+                <input id="FromDate" name="FromDate" data-role="datepicker"/>
+            </div>
+            <div class="k-edit-label">
+                <label for="Comment">Comment</label>
+            </div>
+            <div data-container-for="Comment" class="k-edit-field">
+                <input type="text" class="k-input k-textbox" name="Comment" data-bind="value:Comment">
+            </div>
+            <div class="k-edit-label">
+                <label for="NodeType">NodeType</label>
+            </div>
+            <div data-container-for="Type" class="k-edit-field">
+                <input id="Type" name="Type" data-role="dropdownlist" data-text-field="Name"  data-source="dataSource"  />
+            </div>
+            <div class="k-edit-buttons k-state-default">
+                <a class="k-button k-button-icontext save " href="\\#"><span class="k-icon k-update"></span>Save</a>
+                <a class="k-button k-button-icontext cancel" href="\\#"><span class="k-icon k-cancel"></span>Cancel</a>
+            </div>
+        </div>
+    </script>

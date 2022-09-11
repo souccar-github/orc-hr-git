@@ -1,0 +1,52 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
+    Objective
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <%: Html.Telerik().StyleSheetRegistrar().DefaultGroup(group => group
+                                                       .Add("telerik.web20.min.css"))%>
+    <div>
+        <%--<div id="SlidingPanel">
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $(".trigger").click(function () {
+                        $(".panel").toggle("fast");
+                        $(this).toggleClass("active");
+                        return false;
+                    });
+                });
+            </script>
+            <div class="panel">
+                <% Html.RenderAction("GetJobDescriptionPlate", "Dashboard", new { area = "Integration" }); %>
+                <div style="clear: both;">
+                </div>
+                <div class="columns">
+                    <div class="colleft">
+                    </div>
+                    <div class="colright">
+                    </div>
+                </div>
+                <div style="clear: both;">
+                </div>
+            </div>
+            <a class="trigger" href="#">Services</a>
+        </div>--%>
+        <div id="MainData">
+            <div id="Ribbon">
+                <% Html.RenderAction("GetRibbonPartial", "ObjectiveModule", new { area = "Objective" }); %>
+            </div>
+            <div id="Navigator">
+                <% Html.RenderPartial("Navigator"); %>
+            </div>
+            <div id="menucontainer">
+               <%-- <% Html.RenderPartial("ModulesMenu"); %>--%>
+            </div>
+            <div id="ContentPlaceHolder">
+                <% Html.RenderPartial("GlobalError"); %>
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </div>
+
+</asp:Content>

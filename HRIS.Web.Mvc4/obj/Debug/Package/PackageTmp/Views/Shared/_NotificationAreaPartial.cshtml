@@ -1,0 +1,421 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Services
+@using Souccar.Domain.Notification
+@using  Project.Web.Mvc4
+@using  Project.Web.Mvc4.Factories
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Models
+@using  Project.Web.Mvc4.Models.GridModel
+@using  Project.Web.Mvc4.Models.Navigation
+@using Souccar.Infrastructure.Core
+
+<div id="notifications_area">
+    <ul>
+        <li class="dropdown">
+            <a id="notification_button_id" href="#" class="dropdown-toggle" onclick="openNotificationDropdown()">
+                <!-- use these two classes with_notification_icon and without_notification_icon -->
+                @{
+                    var notificationsCount = @NotificationService.Instance.GetUnreadNotifications(WebSecurity.CurrentUserId).Count();
+                    var notificationClass = notificationsCount == 0 ? "without_notification_icon" : "with_notification_icon";
+                    var notificationsCountText = notificationsCount == 0 ? "" : "(" + notificationsCount + ")";
+                }
+                <span id="notification_icon_id" class="@notificationClass notification_icon"></span>
+                <span id="notification_number_id" class="number_of_notifications">@notificationsCountText ▾</span>
+            </a>
+            <div class="notification_list dropdown-menu pull-right blue_d">
+                <div id="notfiDatanotfi" class="white_lin nlist_block">
+                    <ul>
+                        @{
+                            var themingName = Project.Web.Mvc4.Helpers.DomainExtensions.UserExtensions.CurrentUserTheming;
+
+                            var isReadNotify = "";
+                            foreach (var notify in NotificationService.Instance.GetNotifications(WebSecurity.CurrentUserId).OrderByDescending(x=>x.Date))
+                            {
+                                if (@notify.Receivers.Any(x => x.IsRead == false))
+                                {
+                                    isReadNotify = "not-readed-notify";
+                                }
+                                else
+                                {
+                                    isReadNotify = "";
+                                }
+
+        <li class="notification-item-@notify.Id @isReadNotify" onclick="onClickViewNotification(@notify.Id)">
+            <div class="nlist_thumb">
+                <img src="@Url.Content("~/Content/images/theme-"+ themingName+"/notification_type_images/NotificationTypeImg"+notify.Type+".png")" width="40" height="40" alt="img">
+            </div>
+            <div class="list_inf">
+                <a href="#">@notify.Subject</a>
+            </div>
+        </li>
+    }
+}
+                    </ul>
+                    <span class="bottom_button"><a class="menu_bottom_button" onclick="onClickViewAllNotification()" href="#">@Project.Web.Mvc4.Helpers.Resource.NotificationLocalizationHelper.GetResource(NotificationLocalizationHelper.ShowAllNotification)</a></span>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<!-- end of notifications area -->
+<div id="view_all_notification" style="overflow: hidden"></div>
+<div id="view_notification" style="overflow: hidden"></div>
+<script src="~/Scripts/signalR-2.2.0.js"></script>
+<script src="~/signalr/hubs"></script>
+<script>
+
+    //---begin
+    //---begin
+    var obj = $.connection.myhub;
+    $.connection.hub.start().done().fail(function () { console.log("connect with hub"); });
+
+    setInterval(function () {
+        try {
+            obj.server.chkNotfyChang().done(function (data) {
+
+                var notificationsCount = data;
+                if (notificationsCount != 0) {
+                    var notificationsCountText = notificationsCount == 0 ? "" : "(" + notificationsCount + ")";
+                    var notificationClass = notificationsCount == 0 ? "without_notification_icon" : "with_notification_icon";
+                    $(".number_of_notifications").html(notificationsCountText + " ▾");
+                    if (parseInt(notificationsCount) != 0) {
+                        $(".notification_icon").removeClass("without_notification_icon");
+                        $(".notification_icon").addClass("with_notification_icon");
+                    } else {
+
+                        $(".notification_icon").removeClass("with_notification_icon");
+                        $(".notification_icon").addClass("without_notification_icon");
+                    }
+                }
+
+
+            });
+
+
+
+            //});
+        } catch (err) {
+            console.log("notification");
+        }
+
+    }, 5000);
+
+
+    //---end
+
+    //---end
+    function changeTab(tabName) {
+        $(".tab_modules").css("display", "none");
+        $("#" + tabName).css("display", "block");
+        $(".active_tab").removeClass("active_tab");
+        $(".tab_" + tabName).addClass("active_tab");
+    }
+    $("body").click(function(e){
+       if (e.target.id != "notification_button_id" && e.target.id != "notification_icon_id" && e.target.id != "notification_number_id") {
+          var ele = $("#notification_button_id").parent();
+          ele.removeClass("open");
+        }
+    });
+    function openNotificationDropdown() {
+        var _themingName = "";
+        var cookies = decodeURIComponent(document.cookie).split(';');
+        for (var i = 0 ; i < cookies.length; i++) {
+            var cookie = cookies[i].split('=');
+            if (cookie[0].includes("Theming"))
+                _themingName = cookie[1];
+        }
+        var ele = $("#notification_button_id").parent();
+        if(!ele.hasClass("open")){
+            obj.server.getNotifis().done(function (data) {
+                if (data.length != 0) {
+                    $("#notfiDatanotfi ul").html("");
+                    $.each(data, function (i, e) {
+
+                        var id = e.Id;
+                        var isReadNotify = e.IsReaded;
+                        var subject = e.Subject;
+                        var type = e.Type;
+
+                        $("#notfiDatanotfi ul").prepend('<li class="notification-item-' + id + ' ' + isReadNotify + ' " onclick="onClickViewNotification(' + id + ')"><div class="nlist_thumb"><img src="' + window.applicationpath + '/Content/images/theme-' + _themingName + '/notification_type_images/NotificationTypeImg' + type + '.png" width="40" height="40" alt="img"></div><div class="list_inf"><a href="#">' + subject + '</a></div></li>');
+
+                    });
+
+                }
+            });
+            ele.addClass("open");
+        }
+        else
+            ele.removeClass("open");
+    }
+    function onClickViewNotification(notificationId)
+    {
+        debugger;
+        var destinationTabName = "";
+        var destinationModuleName = "";
+        var destinationLocalizationModuleName = "";
+        var destinationLowerModuleName = "";
+        var destinationControllerName = "";
+        var destinationActionName = "";
+        var destinationData = "";
+        var destinationEntityId = "";
+        var destinationEntityTypeFullName = "";
+        var destinationEntityTitle = "";
+        var destinationEntityOperationType = "";
+        var destinationPageSize = "";
+        var notifyType;
+
+        $.ajax(
+            {
+                url: window.applicationpath + "Notification/ReadNotification/",
+                type: "POST",
+                contentType: 'application/json',
+                async: false,
+                data: JSON.stringify({ itemId: notificationId }),
+                success: function (data) {
+                    destinationTabName = data.DestinationTabName;
+                    destinationModuleName = data.DestinationModuleName;
+                    destinationLocalizationModuleName = data.DestinationLocalizationModuleName;
+                    destinationLowerModuleName = data.DestinationLowerModuleName;
+                    destinationControllerName = data.DestinationControllerName;
+                    destinationActionName = data.DestinationActionName;
+                    destinationData = data.DestinationData;
+                    destinationEntityId = data.DestinationEntityId;
+                    destinationEntityTypeFullName = data.DestinationEntityTypeFullName;
+                    destinationEntityTitle = data.DestinationEntityTitle;
+                    destinationEntityOperationType = data.DestinationEntityOperationType;
+                    destinationPageSize = "@Project.Web.Mvc4.Models.GridModel.GridViewModel.DefaultPageSize";
+                    notifyType = data.Type.Name;
+                    debugger;
+                    if (notifyType == "@NotificationType.Request.ToString()") {
+                        $.ajax(
+                            {
+                               
+                                url: window.applicationpath + destinationControllerName + "/" + "CkeckWorkflow",
+                                type: "POST",
+                                data: JSON.stringify({ workflowId: destinationData["WorkflowId"] }),
+                                async: false,
+                                contentType: 'application/json',
+                                success: function (CkeckWorkflow) {
+                                    if (CkeckWorkflow) {
+                                        changeTab(destinationTabName);
+                                        var dataToStore = JSON.stringify(data);
+                                        localStorage.setItem('data', dataToStore);
+                                        redirectToModule(destinationModuleName);
+                                    }
+                                    else {
+
+                                        ShowMessageBox("@GlobalResource.Information", "@Project.Web.Mvc4.Helpers.Resource.NotificationLocalizationHelper.GetResource(NotificationLocalizationHelper.YouHaveDoneThisOperation)", "k-icon w-b-info", [{ Title: "Ok", ClassName: "k-icon k-update" }]);
+
+                                    }
+                                }
+                            }
+                            );
+                    }
+                    else {
+                        openPopupWindow(data);
+                    }
+                }
+            });
+    }
+
+    function redirectToModule(destinationModuleName) {
+        window.location = window.applicationpath + "Module/Welcome/" + destinationModuleName;
+    }
+
+    function onClickViewAllNotification() {
+        if (window.requestInformation == null) {
+            window.requestInformation = {
+                NavigationInfo: {
+                }
+            };
+        }
+        window.requestInformation.NavigationInfo.Status = "@Project.Web.Mvc4.Models.RequestInformation.Navigation.NavigationStatus.Notification";
+        window.requestInformation.NavigationInfo.Previous = [];
+        window.requestInformation.NavigationInfo.Next = [];
+        changeLocation();
+    }
+    function notification_grid_dataBound(e) {
+        if (e.sender.dataSource.view().length == 0) {
+
+            var colspan = e.sender.thead.find("th").length;
+            //insert empty row with colspan equal to the table header th count
+            var emptyRow = "<tr><td colspan='" + colspan + "'></td></tr>";
+            e.sender.tbody.html(emptyRow);
+        }
+        else {
+            var notificationsId = [];
+            var _data = e.sender.dataSource._data;
+            for (var i = 0; i < _data.length; i++) {
+                notificationsId.push(_data[i].Id);
+            }
+            $.ajax({
+                url: window.applicationpath + "Notification/getReadNotifications",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ Ids: notificationsId }),
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        changeRowColor(data[i], true);
+                    }
+                }
+            });
+        }
+        $("#message_div").empty();
+    }
+    function changeRowColor(id, color) {
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataSource.get(id);
+        if (dataItem != null) {
+
+            var row = grid.tbody.find("tr[data-uid='" + dataItem.uid + "']");
+            if (color)
+                row.addClass("unread-notify");
+            else
+                row.removeClass("unread-notify");
+        }
+
+    }
+    function notification_grid_change(e) {
+        var selectedCells = this.select();
+        var selectedDataItems = [];
+        for (var i = 0; i < selectedCells.length; i++) {
+            var dataItem = this.dataItem(selectedCells[i]);
+            selectNotification(dataItem);
+        }
+    }
+    function initDeleteAll() {
+        $(".deleteAllNotifications").off("click").on("click", function () {
+            var commands = [{ Name: "Accept", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                         { Name: "Cancel", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+            var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+                width: "300px",
+                height: "150px",
+                modal: true,
+                resizable: false,
+                title: "@Project.Web.Mvc4.Helpers.GlobalResource.Confirm",
+            });
+            var objWindow = kendoWindow.data("kendoWindow");
+            objWindow.open();
+            kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+            objWindow
+                .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.Resource.NotificationLocalizationHelper.GetResource(NotificationLocalizationHelper.AreYouSureToDeleteAllNotifications)", IconClass: "k-icon w-b-question", Commands: commands }))
+                .center().open();
+            kendoWindow
+                .find(gedCommandsClassNames(commands))
+                .click(function () {
+                    for (var i = 0; i < commands.length - 1; i++) {
+                        if ($(this).hasClass("Accept")) {
+                            deleteNotifications();
+                        }
+                    }
+                    objWindow.close();
+                })
+                .end();
+        });
+    }
+    function deleteNotifications() {
+        $.ajax({
+            url: window.applicationpath + "Notification/MarkAllAsDeleted",
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                if (data) {
+                    ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", [{ Title: "Ok", ClassName: "k-icon k-update" }]);
+                    $(".number_of_notifications")[0].innerHTML = " ▾";
+                    $(".notification_icon").removeClass("with_notification_icon");
+                    $(".notification_icon").addClass("without_notification_icon");
+                    $('#notfiDatanotfi').children("ul").children().remove();
+                }
+                else {
+                    ShowMessageBox("@GlobalResource.Fail", "@GlobalResource.FailMessage", "k-icon w-b-error", [{ Title: "Ok", ClassName: "k-icon k-update" }]);
+                }
+                var grid = $("#grid").data("kendoGrid");
+                grid.dataSource.read();
+                $("#message_div").empty();
+            }
+        });
+    }
+    function selectNotification(item) {
+        if (item == null)
+            return;
+        $.ajax({
+            url: window.applicationpath + "Notification/MarkAsRead",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ itemId: item.Id }),
+            success: function (data) {
+                changeRowColor(item.Id, false);
+                $(".notification-item-" + item.Id).remove();
+                if (data != 0)
+                    $(".number_of_notifications")[0].innerHTML = "(" + data + ") ▾";
+                else {
+                    $(".number_of_notifications")[0].innerHTML = " ▾";
+                    $(".notification_icon").removeClass("with_notification_icon");
+                    $(".notification_icon").addClass("without_notification_icon");
+                }
+            }
+        });
+        item.StringDate = kendo.toString(item.Date, "dd/MM/yyyy");
+        item.StringTime = kendo.toString(item.Time, "hh:mm");
+        item.FromGrid = true;
+        var template = kendo.template($("#messagePreviewTemplate").html());
+        $("#message_div").html(template(item));
+        $(".delete").off('click').on('click', function () {
+            deleteNotify(item.Id, true);
+        });
+    }
+
+    function deleteNotify(id, fromGrid) {
+        fromGrid = (typeof fromGrid !== 'undefined') ? fromGrid : false;
+        $.ajax({
+            url: window.applicationpath + "Notification/MarkAsDeleted",
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify({ itemId: id }),
+            success: function (data) {
+                var _notification_element = $("#view_notification");
+                if (_notification_element != null && !fromGrid) {
+                    var _el_div_notificaton = _notification_element.parent();
+                    _el_div_notificaton.hide();
+                }
+
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", [{ Title: "Ok", ClassName: "k-icon k-update" }]);
+                var grid = $("#grid").data("kendoGrid");
+                if (grid != null && grid.dataSource != null)
+                   grid.dataSource.read();
+            }
+        });
+    }
+
+</script>
+<script type="text/x-kendo-template" id="messagePreviewTemplate">
+    <div class="message-header-info">
+        <div class="notification_type_image">
+            <img src="#=window.applicationpath#Content/images/theme-@themingName/notification_type_images/NotificationTypeImg#=data.Type.Name#.png" />
+        </div>
+
+        <div class="meta">
+            <p class="message-subject">#=data.Subject#</p>
+            <p class="message-date">#=data.StringDate #</p>
+            
+        </div>
+        <hr />
+    </div>
+    <div class="message-body">
+        <br />
+        <div>#=data.Body#</div>
+    </div>
+    <div class="k-edit-buttons k-state-default notification_bottom_btns">
+        #var onclick="";#
+        #var deleteClass="";#
+
+        #if(data.FromGrid==null){#
+        #onclick="onclick=deleteNotify("+data.Id+")";#
+        #}else{#
+        #deleteClass="delete";#
+        #}#
+        <a class="k-button k-button-icontext #=deleteClass#" #=onclick# href="\\#"><span class="k-icon k-delete"></span>@GlobalResource.Delete</a>
+    </div>
+</script>

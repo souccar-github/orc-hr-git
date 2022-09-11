@@ -1,0 +1,109 @@
+﻿@*@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<script>
+    function OralExamInfo(advertisementId) {
+
+        var title = "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.OralExamInformation)";
+        var databind = kendo.observable();
+        databind.AdvertisementId = advertisementId;
+
+        $.ajax({
+            url: '@Url.Action("CheckIsCancelledRecruitment", "Home")',
+            type: "POST",
+            data: JSON.stringify({ id: advertisementId }),
+            contentType: 'application/json',
+            async: false,
+            success: function (result) {
+
+                if (result.Success) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                }
+                else {
+
+                    $.ajax({
+                        url: '@Url.Action("IsTest", "Home")',
+                        type: "POST",
+                        data: JSON.stringify({ advertisementId: advertisementId }),
+                        contentType: 'application/json',
+                        async: false,
+                        success: function (result) {
+                            if (result.Success) {
+                                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                ShowMessageBox("Error", result.Msg, "k-icon w-b-error", commands);
+                            }
+                            else {
+
+                                var tempdata = [
+                                    { Name: "OralAcceptedPersonsDecisionNumber", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.AcceptedPersonsDecisionNumber)", Type: "Text" },
+                                    { Name: "OralAcceptedPersonsDecisionDate", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.AcceptedPersonsDecisionDate)", Type: "Date" },
+                                    { Name: "OralExaminationPlace", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ExaminationPlace)", Type: "Index", TypeName: "HRIS.Domain.Recruitment.Indexes.Place", Creatable: true },
+                                    { Name: "OralExaminationDate", Title: "@RecruitmentLocalizationHelper.GetResource(RecruitmentLocalizationHelper.ExaminationDate)", Type: "Date" }
+                                ];
+
+                                $.ajax({
+                                    url: '@Url.Action("GetOralExamInformation", "Home")',
+                                    type: "POST",
+                                    data: JSON.stringify({ id: advertisementId }),
+                                    contentType: 'application/json',
+                                    async: false,
+                                    success: function (data) {
+
+                                        databind.OralAcceptedPersonsDecisionNumber = data.OralAcceptedPersonsDecisionNumber;
+                                        databind.OralAcceptedPersonsDecisionDate = kendo.parseDate(data.OralAcceptedPersonsDecisionDate, "MM/dd/yyyy");
+                                        databind.OralExaminationPlace = data.OralExaminationPlace;
+                                        databind.OralExaminationDate = kendo.parseDate(data.OralExaminationDate, "MM/dd/yyyy");
+
+                                    }
+                                });
+
+                                var buttons = [
+                                    { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                                    { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+                                ];
+                                var containerId = "OralExamInfoContainer";
+                                var bodyHTML = "<div class='OralExamInfo fix-custom-popup'></div>";
+                                var isTwoColumns = false;
+
+                                createAndOpenCustomWindow($('<div class="OralExamInfoDiv"></div>'), bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+                                $("#cancel").off('click').on('click', function () {
+                                    $(".OralExamInfoDiv").data("kendo-window").close();
+                                });
+
+                                $("#update").off('click').on('click', function () {
+                                    if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+
+                                        $.ajax({
+                                            url: '@Url.Action("SaveOralExamInformation", "Home")',
+                                            type: "POST",
+                                            data: JSON.stringify({
+                                                model: databind
+                                            }),
+
+                                            contentType: 'application/json',
+                                            success: function (data) {
+                                                if (data.Success) {
+                                                    var grid = $("#" + gridModel.Name).data("kendoGrid");
+                                                    grid.refresh();
+                                                    $(".OralExamInfoDiv").data("kendo-window").close();
+                                                } else {
+                                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+
+                                createCustomEditForm($(".OralExamInfo"), { Fields: tempdata, Key: "OralExamInfoKey" }, databind);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+ </script>*@

@@ -1,0 +1,365 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+@using Souccar.Domain.Workflow.Enums
+@using HRIS.Validation.MessageKeys
+@using Souccar.Infrastructure.Core;
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 5/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<div class="resignation-employee-container-title"><label>@GlobalResource.Employee</label></div>
+<div class="resignation-employee-container"></div><br />
+<div class="resignation-approval-container-title"><label>@GlobalResource.PendingResignationRequest</label></div>
+<div class="resignation-approval-container"></div><br />
+<div class="resignation-request-workflow-container"></div>
+<script id="resignation-workflow-template" type="text/x-kendo-template">
+    <div class="appraisal-form">
+        <ul>
+            <li class="k-state-active">@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Primary)</li>
+            <li>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Attachments)</li>
+        </ul>
+        <div class="appraisal-tab-div tab-resignation-primary-section"></div>
+        <div class="appraisal-tab-div tab-resignation-attachments-section">
+            <div id="grid"></div>
+        </div>
+    </div>
+</script>
+<script type="text/javascript">
+    var notifyWorkflowId = window.localStorage.getItem('workflowId');
+            var resignationId = window.localStorage.getItem('ServiceId');
+            var container = $('.resignation-employee-container');
+            var approval_container = $('.resignation-approval-container');
+            var workflowContainer = $(".resignation-request-workflow-container");
+            var workflowItemStatus;
+    getEmployeeActionViewModel();
+            function getEmployeeActionViewModel() {
+
+                Souccar.ajax('@Url.Action("GetDataForResignationService", "Service", new { area = "EmployeeRelationServices" })', null, function (data) {
+
+                    workflowItemStatus = data.workflowItemStatus;
+                    showEmployee(data.SubEmployees);
+                    showEmployeeApproval(data.EmployeeApproval);
+                }, failedMessage);
+            }
+
+    function failedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.Error", "k-icon w-b-error", commands);
+    }
+
+    function succeedMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+    }
+
+    function requiredMessage() {
+        var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+        ShowMessageBox("@GlobalResource.Error", "@GlobalResource.RequiredMessage", "k-icon w-b-error", commands);
+    }
+
+    function showEmployee(data) {
+        $(".resignation-employee-container-title").html('<label>@GlobalResource.Employee</label>');
+
+        var template = kendo.template($("#employee-position-list-action-template").html());
+        container.html(template(data));
+
+        $('.action-btn').off('click').on('click', function () {
+
+            var workflowStatus = workflowItemStatus + "";
+            if (workflowStatus == "@((int)WorkflowStatus.Canceled)")
+            {
+
+            approval_container.html('');
+            container.html("");
+            $(".resignation-employee-container-title").html('');
+            $(".resignation-approval-container-title").html('');
+
+            var positionId = Number($(this).attr('data-positionid'));
+            var employeeId = Number($(this).attr('data-employeeid'));
+
+
+            var employeeResignationTemplateData = [
+                { Name: "NoticeStartDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NoticeStartDate)", Type: "Date", IsRequired: true },
+                { Name: "NoticeEndDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NoticeEndDate)", Type: "Date", IsRequired: true },
+                { Name: "LastWorkingDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LastWorkingDate)", Type: "Date", IsRequired: true },
+                { Name: "ResignationReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ResignationReason)", Type: "Textarea" },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea" }
+            ];
+
+            var employeeResignationDatabind = kendo.observable(
+                {
+                    NoticeStartDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    NoticeEndDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    LastWorkingDate: kendo.parseDate(new Date(), "MM/dd/yyyy"),
+                    ResignationReason: "",
+                    Comment: ""
+                });
+
+            createCustomEditForm(container, { Fields: employeeResignationTemplateData, Key: "employee-resignation" }, employeeResignationDatabind);
+
+            var applyButton = $('<div class="top-commands"><button class="k-button primary-command applyButton"><span class="command-icon save"></span>@GlobalResource.Save</button></div>');
+            container.find(".control-Comment").after(applyButton);
+
+            container.find(".applyButton").off('click').on('click', function () {
+
+                var startDate = $("[name='NoticeStartDate']").data("kendoDatePicker").value();
+                var endDate = $("[name='NoticeEndDate']").data("kendoDatePicker").value();
+                var date = $("[name='LastWorkingDate']").data("kendoDatePicker").value();
+                var reason = container.find("[name='ResignationReason']").val();
+                var comment = container.find("[name='Comment']").val();
+                var jsonParam = { employeeId: employeeId, positionId: positionId, employeeResignationItem: employeeResignationDatabind };
+
+                employeeResignationDatabind.ResignationReason = reason;
+                employeeResignationDatabind.Comment = comment;
+                employeeResignationDatabind.NoticeStartDate = startDate;
+                employeeResignationDatabind.NoticeEndDate = endDate;
+                employeeResignationDatabind.LastWorkingDate = date;
+
+
+                $("[name='ResignationReason']").focusout(function () {
+                    debugger;
+                    if ($("[name='ResignationReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "ResignationReason");
+                    } else {
+
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-ResignationReason').remove();
+                    }
+
+                });
+
+                $("[name='ResignationReason']").keyup(function () {
+                    if ($("[name='ResignationReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "ResignationReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-ResignationReason').remove();
+                    }
+
+                });
+                if (reason == "") {
+                    if ($("[name='ResignationReason']").val() == "") {
+
+                        addCustomValidationMessage("@GlobalResource.RequiredMessage", "ResignationReason");
+                    } else {
+                        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-ResignationReason').remove();
+                    }
+                }
+
+                if (date == null || reason == null || reason == "" || startDate == null || endDate == null) {
+                   // requiredMessage();
+                    return;
+                }
+
+                Souccar.ajax('@Url.Action("SaveEmployeeResignationItem", "Service", new { area = "EmployeeRelationServices" })', jsonParam, function (data) {
+                    actionMessage(data);
+                }, failedMessage);
+                //getEmployeeActionViewModel();
+
+            });
+
+            }
+            else
+            {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysEmployeeRelationServicesModule.GetFullKey(CustomMessageKeysEmployeeRelationServicesModule.SorryYouHaveAlreadySubmittedThisResignationRequest))", "k-icon w-b-error", commands);
+            }
+        });
+    }
+    function addCustomValidationMessage(validationMessage, type) {
+
+        var template = kendo.template($('#CustomTooltipInvalidMessageTemplate').html())({ message: validationMessage, type: type });
+        $('span.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg-' + type).remove();
+        $("[data-container-for='" + type + "']").append(template);
+    }
+    function actionMessage(data) {
+        if (data.IsSuccess) {
+            succeedMessage();
+            getEmployeeActionViewModel();
+        } else {
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", data.Message, "k-icon w-b-error", commands);
+        }
+    }
+    function showEmployeeApproval(data) {
+        $(".resignation-approval-container-title").html('@GlobalResource.PendingResignationRequest');
+        var template = kendo.template($("#employee-resignation-approval-template").html());
+        approval_container.html(template(data));
+        window.EmployeesResignationInfo = data;
+    }
+
+
+
+    if (notifyWorkflowId != null) {
+        localStorage.clear();
+        approvalAction(notifyWorkflowId, resignationId);
+        notifyWorkflowId = null;
+    }
+    function approvalAction(workflowId, resignationId) {
+        container.html('');
+        approval_container.html('');
+
+        $(".resignation-employee-container-title").html('');
+        $(".resignation-approval-container-title").html('');
+        createWorkflow(workflowContainer, workflowId, initResignation, acceptWorkflow, rejectWorkflow, pendingWorkflow);
+        function initResignation() {
+            var template = kendo.template($("#resignation-workflow-template").html());
+            $("#workflow_data").html(template);
+            $("#workflow_data").find(".appraisal-form").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+            initWorkflow();
+            var emp_id = localStorage.getItem("employeeId");
+            var employeeResignationId = localStorage.getItem("employeeResignationId");
+            initAttachments(emp_id, employeeResignationId);
+        }
+        function initWorkflow() {
+
+            var employeeResignationTemplateData = [
+                { Name: "FullName", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeName)", Type: "Text", IsReadonly: true },
+                { Name: "NoticeStartDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NoticeStartDate)", Type: "Date", IsReadonly: true },
+                { Name: "NoticeEndDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NoticeEndDate)", Type: "Date", IsReadonly: true },
+                { Name: "LastWorkingDate", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LastWorkingDate)", Type: "Date", IsReadonly: true },
+                { Name: "ResignationReason", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ResignationReason)", Type: "Textarea", IsReadonly: true },
+                { Name: "Comment", Title: "@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)", Type: "Textarea", IsReadonly: true }
+            ];
+
+            var employeeResignationViewDatabind = kendo.observable(
+                {
+                    FullName: "",
+                    NoticeStartDate: null,
+                    NoticeEndDate: null,
+                    LastWorkingDate: null,
+                    ResignationReason: "",
+                    Comment: ""
+                });
+
+            for (var i = 0; i < window.EmployeesResignationInfo.length; i++) {
+                if (window.EmployeesResignationInfo[i].WorkflowItemId == workflowId) {
+                    employeeResignationViewDatabind.FullName = window.EmployeesResignationInfo[i].FullName;
+                    employeeResignationViewDatabind.NoticeStartDate = window.EmployeesResignationInfo[i].NoticeStartDate;
+                    employeeResignationViewDatabind.NoticeEndDate = window.EmployeesResignationInfo[i].NoticeEndDate;
+                    employeeResignationViewDatabind.LastWorkingDate = window.EmployeesResignationInfo[i].LastWorkingDate;
+                    employeeResignationViewDatabind.ResignationReason = window.EmployeesResignationInfo[i].ResignationReason;
+                    employeeResignationViewDatabind.Comment = window.EmployeesResignationInfo[i].Comment;
+                    console.log(window.EmployeesResignationInfo[i].WorkflowItemId + '_' + workflowId);
+                    localStorage.removeItem("employeeId");
+                    localStorage.removeItem("employeeResignationId");
+                    localStorage.setItem("employeeId", window.EmployeesResignationInfo[i].EmployeeId);
+                    localStorage.setItem("employeeResignationId", window.EmployeesResignationInfo[i].ResignationId);
+                }
+            }
+
+            createCustomEditForm($(".tab-resignation-primary-section"), { Fields: employeeResignationTemplateData, Key: "employee-resignation" }, employeeResignationViewDatabind);
+        }
+        function initAttachments(emp_id, employeeResignationId) {
+            $.ajax({
+                url: '@Url.Action("getUploadFiles", "Service", new{area= "EmployeeRelationServices" })',
+                type: 'POST',
+                data: JSON.stringify(
+                {
+                    emp_id: emp_id,
+                    employeeResignationId : employeeResignationId
+                }),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (!data.IsExcption) {
+                        window.gridModel = data.GridModel;
+                        data.Name = "grid";
+                        generateGrid(data.GridModel);
+                        var grid = $("#grid").data("kendoGrid");
+                        requestInformation.NavigationInfo.Previous[requestInformation.NavigationInfo.Previous.length - 1].IsMasterContainsThisDetail = true;
+                    }
+                }
+            });
+
+        }
+        function acceptWorkflow() {
+            var url = "@Url.Action("AcceptResignationRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function rejectWorkflow() {
+            var url = "@Url.Action("RejectResignationRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function pendingWorkflow() {
+            var url = "@Url.Action("PendingResignationRequest", "Service", new { area = "EmployeeRelationServices" })";
+            saveWorkflow(url);
+        }
+
+        function saveWorkflow(saveUrl) {
+            var jsonParam = { workflowId: workflowId,resignationId:resignationId, note: $("#NewStepDescription").val() };
+            //Souccar.ajax(saveUrl, jsonParam, succeedMessage, failedMessage);
+            $.ajax({
+                url: saveUrl,
+                type: 'POST',
+                data: JSON.stringify(
+                {
+                    workflowId: workflowId,
+                    resignationId: resignationId,
+                    note: $("#NewStepDescription").val()
+                }),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox(data.MessageTitle, data.Message, "k-icon w-b-info", commands);
+                }
+            });
+            getEmployeeActionViewModel();
+            workflowContainer.html('');
+            localStorage.removeItem("employeeId");
+            localStorage.removeItem("employeeResignationId");
+        }
+    }
+</script>
+
+<script id="employee-resignation-approval-template" type="text/x-kendo-template">
+    <table>
+        <thead>
+            <tr>
+                <th>@GlobalResource.FullName</th>
+                <th>@GlobalResource.Position</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NoticeStartDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.NoticeEndDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LastWorkingDate)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.ResignationReason)</th>
+                <th>@EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Comment)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #for(var i=0;i < data.length;i++){# 
+            #var employee=data[i];#
+                <tr>
+                    <td>#=employee.FullName#</td>
+                    <td>#=employee.PositionName#</td>
+                    <td>#=ToStringForDate(employee.NoticeStartDate)#</td>
+                    <td>#=ToStringForDate(employee.NoticeEndDate)#</td>
+                    <td>#=ToStringForDate(employee.LastWorkingDate)#</td>
+                    <td>#=employee.ResignationReason#</td>
+                    <td>#=employee.Comment#</td>
+                    <td><button class="k-button" onclick="approvalAction('#=employee.WorkflowItemId#', '#=employee.ResignationId#')">@GlobalResource.Approval</button></td>
+                </tr>
+                #}#
+        </tbody>
+    </table>
+</script>
+<script id="CustomTooltipInvalidMessageTemplate" type="text/x-kendo-template">
+    <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg-#= type #">
+        <span class="k-icon k-warning"></span>
+        #= message #
+    </span>
+</script>

@@ -1,0 +1,191 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRIS.Domain", "HRIS.Domain\HRIS.Domain.csproj", "{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRIS.Mapping", "HRIS.Mapping\HRIS.Mapping.csproj", "{911D3780-0078-45CD-BEB7-3AADD6B247F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRIS.SDKs", "HRIS.SDKs\HRIS.SDKs.csproj", "{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRIS.Validation", "HRIS.Validation\HRIS.Validation.csproj", "{4B856B7C-13BB-4381-BD07-AD40FF3D864E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar", "Souccar.Domain\Souccar.csproj", "{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.Infrastructure", "Souccar.Infrastructure\Souccar.Infrastructure.csproj", "{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.NHibernate", "Souccar.NHibernate\Souccar.NHibernate.csproj", "{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.Reflector", "Souccar.Reflector\Souccar.Reflector.csproj", "{D518FAA9-2FA7-47A5-A22F-D650F14484DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.NHibernateManager", "Souccar.NHibernateManager\Souccar.NHibernateManager.csproj", "{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.CodeGenerator", "CodeGeneratorLibrary\Souccar.CodeGenerator.csproj", "{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "project.Web.Mvc4", "HRIS.Web.Mvc4\project.Web.Mvc4.csproj", "{9D814031-A96D-4119-908B-FE71FD1EFFDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.ReportGenerator.Services", "ReportGenerator.Services\Souccar.ReportGenerator.Services.csproj", "{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Souccar.ReportGenerator.Domain", "ReportGenerator.Domain\Souccar.ReportGenerator.Domain.csproj", "{53DB57E4-FAD3-46AC-8273-9F89A3516A19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting", "Reporting\Reporting.csproj", "{3C6B435C-0703-421E-B088-045BBB49E3B3}"
+EndProject
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "HRIS.Reports", "HRIS.Reports\HRIS.Reports.rptproj", "{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugLocal|Any CPU = DebugLocal|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{911D3780-0078-45CD-BEB7-3AADD6B247F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{911D3780-0078-45CD-BEB7-3AADD6B247F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{911D3780-0078-45CD-BEB7-3AADD6B247F8}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{911D3780-0078-45CD-BEB7-3AADD6B247F8}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{911D3780-0078-45CD-BEB7-3AADD6B247F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{911D3780-0078-45CD-BEB7-3AADD6B247F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA06BE27-1BEA-467D-AE9E-F3E22DBB54FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B856B7C-13BB-4381-BD07-AD40FF3D864E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B856B7C-13BB-4381-BD07-AD40FF3D864E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B856B7C-13BB-4381-BD07-AD40FF3D864E}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B856B7C-13BB-4381-BD07-AD40FF3D864E}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{4B856B7C-13BB-4381-BD07-AD40FF3D864E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B856B7C-13BB-4381-BD07-AD40FF3D864E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DCEEC2B-3843-40FA-BF57-1D5901F6D6BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD77F13-8DF6-4C16-9508-33AA4CF0677A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D518FAA9-2FA7-47A5-A22F-D650F14484DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D518FAA9-2FA7-47A5-A22F-D650F14484DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D518FAA9-2FA7-47A5-A22F-D650F14484DE}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{D518FAA9-2FA7-47A5-A22F-D650F14484DE}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{D518FAA9-2FA7-47A5-A22F-D650F14484DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D518FAA9-2FA7-47A5-A22F-D650F14484DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF55E544-F74A-43AB-BC17-2BCE5A3F47E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7A30FF3-DACF-4290-8A4B-7AA0229F86AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D814031-A96D-4119-908B-FE71FD1EFFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D814031-A96D-4119-908B-FE71FD1EFFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D814031-A96D-4119-908B-FE71FD1EFFDB}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D814031-A96D-4119-908B-FE71FD1EFFDB}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{9D814031-A96D-4119-908B-FE71FD1EFFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D814031-A96D-4119-908B-FE71FD1EFFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07D014B6-C71A-4AD9-90B4-D8136CBF2B58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DB57E4-FAD3-46AC-8273-9F89A3516A19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DB57E4-FAD3-46AC-8273-9F89A3516A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DB57E4-FAD3-46AC-8273-9F89A3516A19}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DB57E4-FAD3-46AC-8273-9F89A3516A19}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{53DB57E4-FAD3-46AC-8273-9F89A3516A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DB57E4-FAD3-46AC-8273-9F89A3516A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C6B435C-0703-421E-B088-045BBB49E3B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C6B435C-0703-421E-B088-045BBB49E3B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C6B435C-0703-421E-B088-045BBB49E3B3}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C6B435C-0703-421E-B088-045BBB49E3B3}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{3C6B435C-0703-421E-B088-045BBB49E3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C6B435C-0703-421E-B088-045BBB49E3B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.Debug|Any CPU.ActiveCfg = Debug
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.Debug|Any CPU.Build.0 = Debug
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.Debug|Any CPU.Deploy.0 = Debug
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.DebugLocal|Any CPU.ActiveCfg = DebugLocal
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.DebugLocal|Any CPU.Build.0 = DebugLocal
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.DebugLocal|Any CPU.Deploy.0 = DebugLocal
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.Release|Any CPU.ActiveCfg = Release
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.Release|Any CPU.Build.0 = Release
+		{80E1FE30-008E-4AC2-B5D2-3EFE88C72A97}.Release|Any CPU.Deploy.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 16
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs-lab:8080/tfs/isdcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = HRIS.Domain\\HRIS.Domain.csproj
+		SccProjectName1 = HRIS.Domain
+		SccLocalPath1 = HRIS.Domain
+		SccProjectUniqueName2 = HRIS.Mapping\\HRIS.Mapping.csproj
+		SccProjectName2 = HRIS.Mapping
+		SccLocalPath2 = HRIS.Mapping
+		SccProjectUniqueName3 = HRIS.SDKs\\HRIS.SDKs.csproj
+		SccProjectName3 = HRIS.SDKs
+		SccLocalPath3 = HRIS.SDKs
+		SccProjectUniqueName4 = HRIS.Validation\\HRIS.Validation.csproj
+		SccProjectName4 = HRIS.Validation
+		SccLocalPath4 = HRIS.Validation
+		SccProjectUniqueName5 = Souccar.Domain\\Souccar.csproj
+		SccProjectName5 = Souccar.Domain
+		SccLocalPath5 = Souccar.Domain
+		SccProjectUniqueName6 = Souccar.Infrastructure\\Souccar.Infrastructure.csproj
+		SccProjectName6 = Souccar.Infrastructure
+		SccLocalPath6 = Souccar.Infrastructure
+		SccProjectUniqueName7 = Souccar.NHibernate\\Souccar.NHibernate.csproj
+		SccProjectName7 = Souccar.NHibernate
+		SccLocalPath7 = Souccar.NHibernate
+		SccProjectUniqueName8 = Souccar.Reflector\\Souccar.Reflector.csproj
+		SccProjectName8 = Souccar.Reflector
+		SccLocalPath8 = Souccar.Reflector
+		SccProjectUniqueName9 = Souccar.NHibernateManager\\Souccar.NHibernateManager.csproj
+		SccProjectName9 = Souccar.NHibernateManager
+		SccLocalPath9 = Souccar.NHibernateManager
+		SccProjectUniqueName10 = CodeGeneratorLibrary\\Souccar.CodeGenerator.csproj
+		SccProjectName10 = CodeGeneratorLibrary
+		SccLocalPath10 = CodeGeneratorLibrary
+		SccProjectUniqueName11 = HRIS.Web.Mvc4\\project.Web.Mvc4.csproj
+		SccProjectName11 = HRIS.Web.Mvc4
+		SccLocalPath11 = HRIS.Web.Mvc4
+		SccProjectUniqueName12 = ReportGenerator.Domain\\Souccar.ReportGenerator.Domain.csproj
+		SccProjectName12 = ReportGenerator.Domain
+		SccLocalPath12 = ReportGenerator.Domain
+		SccProjectUniqueName13 = ReportGenerator.Services\\Souccar.ReportGenerator.Services.csproj
+		SccProjectName13 = ReportGenerator.Services
+		SccLocalPath13 = ReportGenerator.Services
+		SccProjectUniqueName14 = Reporting\\Reporting.csproj
+		SccProjectName14 = Reporting
+		SccLocalPath14 = Reporting
+		SccProjectUniqueName15 = HRIS.Reports\\HRIS.Reports.rptproj
+		SccProjectName15 = HRIS.Reports
+		SccLocalPath15 = HRIS.Reports
+	EndGlobalSection
+EndGlobal

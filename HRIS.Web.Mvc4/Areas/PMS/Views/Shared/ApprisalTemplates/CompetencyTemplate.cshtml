@@ -1,0 +1,96 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script id="competenceSection-workflow-template" type="text/x-kendo-template">
+<div>
+    <fieldset class="competence-info">
+        <legend>@GlobalResource.JobDescriptionInformation</legend>  
+
+        <div class="appraisal-meta-info">
+            <div>
+                <span>@GlobalResource.Name :</span>
+                <span class="val">#=JobDescriptionName#</span>
+            </div>    
+             <div>
+                <span>@GlobalResource.JobTitle :</span>
+                <span class="val">#=JobTitle#</span>
+            </div>
+            <div>
+                <span>@GlobalResource.SectionWeight :</span>
+                <span class="val">#=SectionWeight#</span>
+            </div>
+        </div>
+
+
+        <div class="appraisal-meta-desc">
+            <span>@GlobalResource.Description:</span>
+                #if(JobDescriptionDescription==null||JobDescriptionDescription=="null"){#
+
+                #JobDescriptionDescription="";#
+                #}#
+            <textarea readonly>#=JobDescriptionDescription#</textarea>
+        </div>
+
+    </fieldset>
+    #var typesNames=getCompetenceTypesNames(AppraisalItems);#
+    
+    #for (var j = 0; j < typesNames.length; j++) {# 
+    <div class="responsibilities">
+        <fieldset>
+                <legend>#=typesNames[j]#</legend>
+                <table>
+                    <colgroup>
+                    <col>
+                    <col class="column-level">
+                    <col class="column-weight">
+                    <col class="column-rate">
+                    <col class="column-notes">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Name)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Level)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Weight)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Rate)</th>
+                            <th class="">@Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.GetResource(Project.Web.Mvc4.Helpers.Resource.PMSLocalizationHelper.Note)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        #for (var i = 0; i < AppraisalItems.length; i++) {#
+                                #var item=AppraisalItems[i];#
+                                #if(item.Type==typesNames[j]){#
+                                    <tr class="responsibility-#=i#">
+                                        <td><p>#=item.Name#</p></td>
+                                        <td><p>#=item.Level#</p></td>
+                                        <td class="center-column">
+                                            <input value="#=item.Weight#" data-role="numerictextbox" name="appraisal-competence-weight-#=item.Id#" class="appraisal-competence-weight" type="text" /></td>
+                                        <td class="center-column">
+                                            <input value="#=item.Rate#" name="appraisal-competence-rate-#=item.Id#" class="appraisal-competence-rate appraisal-rate" type="text" /></td>
+                                        <td class="center-column">
+                                             #if(item.Note==null||item.Note=="null"){#
+                                                #item.Note="";#
+                                            #}#
+                                            <textarea name="appraisal-competence-note#=item.Id#" class="appraisal-note appraisal-competence-note k-textbox">#=item.Note#</textarea>
+                                        </td>
+                                    </tr>
+                                #}#
+                        #}#
+                    </tbody>
+                </table>
+    </fieldset>
+    </div>
+     #}#
+
+</div>
+</script>
+<script>
+    function getCompetenceTypesNames(data) {
+        var result = [];
+        for (var i = 0; i < data.length; i++) {
+            if (!IsInSet(result, data[i].Type)) {
+                result.push(data[i].Type);
+            }
+        }
+        return result;
+    }
+</script>

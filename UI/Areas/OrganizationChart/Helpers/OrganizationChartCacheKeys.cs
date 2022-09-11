@@ -1,0 +1,36 @@
+namespace UI.Areas.OrganizationChart.Helpers
+{
+    public enum OrganizationChartCacheKeys
+    {
+        JobGroup,
+        InsuranceType,
+        CashBenefitsType,
+        NonCashBenefitType,
+        CashDeductionType,
+        TimeInterval,
+        AssetStatus,
+        AssetType,
+        CostCenter,
+        JobTitle,
+        //JobRole,
+        PositionLevel,
+        PositionStatus,
+        PositionType,
+        NodeType,
+        Grade,
+        DisabilityStatus,
+        GroupSalaryScale,
+        Node,
+        FirstLevelNodes,
+        SelectedNodeChildern,
+        Position,
+        SelectedNodePositions,
+        CurrencyType,
+        InsuranceCompany,
+        ContractType,
+        EmployeeType,
+        OrganizationalLevel,
+        GradeName,
+        GradeStep
+    }
+}

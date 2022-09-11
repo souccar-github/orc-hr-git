@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 14:17:33" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {      
+      if (CheckBox1.Checked)
+      {        
+        HealthInsuranceTypesComboBox.SelectedIndex=-1;
+        HealthInsuranceTypesComboBox.AutoFilter=false;
+        HealthInsuranceTypesComboBox.AutoFill=false;
+        HealthInsuranceTypesComboBox.Enabled=false;
+      }else
+      {
+        HealthInsuranceTypesComboBox.AutoFilter=true;	
+        HealthInsuranceTypesComboBox.AutoFill=true; 
+        HealthInsuranceTypesComboBox.Enabled=true;        
+      }  
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {        
+      HealthInsuranceTypesComboBox.SelectedIndex=-1;      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqtis+rNOUXql9HL1HltlmQ4xrZNcFdWmqbzG+em7BFI2SYgX0JmavMyZ62c5siTv8emusZ3BaHLjZ77wseBf54BrQ2uMpbUrroU88dlEIStzwztbRc1XIWjXq4RwJz6tzb+wXVc11rY8Xc5ftibdhuYUoomN8fc1sWWnwKzWC99xApvy20p6TMpsEhzt7C+P7">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="with temp as(&#13;&#10;SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;dbo.EmployeeCard.InsuranceActivationDate, &#13;&#10;dbo.EmployeeCard.InsuranceExpiryDate,&#13;&#10;dbo.Position.Id AS PositionId,&#13;&#10;(SELECT &#13;&#10;dbo.OrganizationalLevel.Name&#13;&#10;FROM&#13;&#10;dbo.Grade INNER JOIN dbo.OrganizationalLevel ON dbo.Grade.OrganizationalLevel_id = dbo.OrganizationalLevel.Id &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = dbo.Position.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND&#13;&#10;Grade.IsVertualDeleted = 0 AND&#13;&#10;JobTitle.IsVertualDeleted = 0 AND&#13;&#10;JobDescription.IsVertualDeleted = 0 AND&#13;&#10;Position.IsVertualDeleted = 0 ) AS OrganizationalLevelName,&#13;&#10;(SELECT&#13;&#10;dbo.Grade.Name&#13;&#10;FROM            &#13;&#10;dbo.Grade &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = P.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND&#13;&#10;Grade.IsVertualDeleted = 0 AND&#13;&#10;JobTitle.IsVertualDeleted = 0 AND&#13;&#10;JobDescription.IsVertualDeleted = 0 AND&#13;&#10;Position.IsVertualDeleted = 0 ) AS GradeName,&#13;&#10;ISNULL((SELECT&#13;&#10;dbo.Grade.HealthInsuranceTypes_id&#13;&#10;FROM            &#13;&#10;dbo.Grade &#13;&#10;INNER JOIN dbo.JobTitle ON dbo.Grade.Id = dbo.JobTitle.Grade_id &#13;&#10;INNER JOIN dbo.JobDescription ON dbo.JobTitle.Id = dbo.JobDescription.JobTitle_id &#13;&#10;INNER JOIN dbo.Position P ON dbo.JobDescription.Id = P.JobDescription_id&#13;&#10;WHERE P.Id=dbo.Position.Id AND&#13;&#10;Grade.IsVertualDeleted = 0 AND&#13;&#10;JobTitle.IsVertualDeleted = 0 AND&#13;&#10;JobDescription.IsVertualDeleted = 0 AND&#13;&#10;Position.IsVertualDeleted = 0 ),0) AS GradeHealthInsuranceTypes_id,&#13;&#10;ISNULL(dbo.EmployeeCard.HealthInsuranceTypes_id,0) AS EmployeeCardHealthInsuranceTypes_id&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;WHERE        &#13;&#10;--dbo.EmployeeCard.HealthInsuranceTypes_id Is Not NULL AND&#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND&#13;&#10;Employee.IsVertualDeleted = 0 AND&#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;Position.IsVertualDeleted = 0 AND&#13;&#10;EmployeeCard.IsVertualDeleted = 0 &#13;&#10;--ORDER BY dbo.Employee.Id DESC&#13;&#10;)&#13;&#10;select	Id, &#13;&#10;		FirstName, &#13;&#10;		LastName, &#13;&#10;		FatherName, &#13;&#10;		Code, &#13;&#10;		PositionCode,&#13;&#10;		InsuranceActivationDate, &#13;&#10;		InsuranceExpiryDate,&#13;&#10;		PositionId,&#13;&#10;		OrganizationalLevelName,&#13;&#10;		GradeName,&#13;&#10;		GradeHealthInsuranceTypes_id,&#13;&#10;		EmployeeCardHealthInsuranceTypes_id,&#13;&#10;		case when EmployeeCardHealthInsuranceTypes_id != 0 THEN EmployeeCardHealthInsuranceTypes_id ELSE GradeHealthInsuranceTypes_id END AS HealthInsuranceTypes_id&#13;&#10;from temp">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="InsuranceActivationDate" DataType="System.DateTime"/>
+        <Column Name="InsuranceExpiryDate" DataType="System.DateTime"/>
+        <Column Name="PositionId" DataType="System.Int32"/>
+        <Column Name="OrganizationalLevelName" DataType="System.String"/>
+        <Column Name="GradeName" DataType="System.String"/>
+        <Column Name="HealthInsuranceTypes_id" DataType="System.Int32"/>
+        <Column Name="GradeHealthInsuranceTypes_id" DataType="System.Int32"/>
+        <Column Name="EmployeeCardHealthInsuranceTypes_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="HealthInsuranceTypes" Alias="HealthInsuranceTypeDetails" DataType="System.Int32" Enabled="true" TableName="HealthInsuranceTypes" SelectCommand="SELECT H.Id, H.IsVertualDeleted, H.InsuranceType, H.HospitalPercentage, H.ClinicsPercentage, H.XRayPercentage, H.LaboratoryPercentage, H.TeethPercentage, H.EyesPercentage, H.WithSpouse, H.WithChildren, H.Description&#13;&#10;FROM &quot;HealthInsuranceTypes&quot; H&#13;&#10;WHERE H.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="InsuranceType" DataType="System.String"/>
+        <Column Name="WithSpouse" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="WithChildren" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Description" DataType="System.String"/>
+        <Column Name="HospitalPercentage" DataType="System.Single"/>
+        <Column Name="ClinicsPercentage" DataType="System.Single"/>
+        <Column Name="XRayPercentage" DataType="System.Single"/>
+        <Column Name="LaboratoryPercentage" DataType="System.Single"/>
+        <Column Name="TeethPercentage" DataType="System.Single"/>
+        <Column Name="EyesPercentage" DataType="System.Single"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="HealthInsuranceType" DataType="System.Int32" Enabled="true" SelectCommand="SELECT H.Id, H.InsuranceType&#13;&#10;FROM &quot;HealthInsuranceTypes&quot; H&#13;&#10;WHERE H.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="InsuranceType" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Relation Name="Table_HealthInsuranceTypes" ParentDataSource="Table" ChildDataSource="HealthInsuranceTypes" ParentColumns="Id" ChildColumns="Id" Enabled="true"/>
+    <Relation Name="HealthInsuranceTypes_Table1" ParentDataSource="HealthInsuranceTypes" ChildDataSource="Table1" ParentColumns="Id" ChildColumns="HealthInsuranceTypes_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="94.5">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير الموظفين حسب الضمان الصحي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text44" Top="56.7" Width="718.2" Height="37.8" Text="[HealthInsuranceTypesComboBox.Text]  :نوع الضمان الصحي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="100.85" Width="718.2" Height="18.9"/>
+    <DataBand Name="Data1" Top="126.1" Width="718.2" Height="94.5" DataSource="HealthInsuranceTypes">
+      <TextObject Name="Text59" Left="194.45" Top="9.45" Width="98.8" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text60" Top="9.45" Width="75.8" Height="18.9" Border.Lines="All" Border.Color="LightGray" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text46" Left="584.9" Top="9.45" Width="132.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع الضمان الصحي" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text47" Left="584.9" Top="47.25" Width="132.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نسبة التغطية للمشافي" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text48" Left="292.95" Top="66.15" Width="130.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نسبة التغطية للسنية" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text49" Left="76.05" Top="66.15" Width="118.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نسبة التغطية للعينية" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text53" Left="292.95" Top="47.25" Width="130.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نسبة التغطية للعيادات" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text54" Left="75.6" Top="47.25" Width="118.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نسبة التغطية للاشعة" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text55" Left="584.9" Top="66.15" Width="132.75" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نسبة التغطية للمخابر" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text56" Left="293.5" Top="9.45" Width="130.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="يشمل الزوجة" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text57" Left="75.6" Top="9.45" Width="118.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="يشمل الاولاد" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text2" Left="424.25" Top="9.45" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.InsuranceType]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text7" Left="424.25" Top="47.25" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.HospitalPercentage]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text9" Left="194.45" Top="47.25" Width="98.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.ClinicsPercentage]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text10" Top="47.25" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.XRayPercentage]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text12" Left="424.25" Top="66.15" Width="160.65" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.LaboratoryPercentage]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text13" Left="194.45" Top="66.15" Width="98.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.TeethPercentage]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text14" Top="66.15" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.EyesPercentage]" HorzAlign="Center" VertAlign="Center" WordWrap="false" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text58" Left="584.9" Top="28.35" Width="133.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="التوصيف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text3" Top="28.35" Width="584.9" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[HealthInsuranceTypeDetails.Description]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+      <TextObject Name="Text62" Top="85.05" Width="718.4" Height="9.45" Border.Lines="All" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text63" Width="718.4" Height="9.45" Border.Lines="All" Border.Color="LightGray" Fill.Color="WhiteSmoke" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <CheckBoxObject Name="CheckBox4" Left="274.6" Top="9.45" Width="18.9" Height="18.9" Border.Lines="All" DataColumn="HealthInsuranceTypeDetails.WithSpouse"/>
+      <CheckBoxObject Name="CheckBox2" Left="57.25" Top="9.45" Width="18.9" Height="18.9" Border.Lines="All" DataColumn="HealthInsuranceTypeDetails.WithChildren"/>
+      <DataBand Name="Data3" Top="226.95" Width="718.2" Height="94.5" DataSource="Table1">
+        <TextObject Name="Text31" Left="424.25" Top="-0.1" Width="162.3" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text30" Left="585.9" Top="-0.1" Width="132.3" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text29" Left="292.95" Top="-0.1" Width="131.75" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text17" Left="245.7" Top="-0.1" Width="47.25" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الفئة" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text19" Left="151.2" Top="-0.1" Width="94.5" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المستوى التنظيمي" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text21" Left="75.6" Top="-0.1" Width="75.6" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ تفعيل الضمان الصحي" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text61" Top="-0.1" Width="75.6" Height="56.7" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الانتهاء للضمان الصحي" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        <TextObject Name="Text4" Left="424.25" Top="56.6" Width="161.65" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text1" Left="292.95" Top="56.6" Width="131.3" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text5" Left="585.9" Top="56.6" Width="132.3" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text16" Left="245.7" Top="56.6" Width="47.25" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.GradeName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text18" Left="151.2" Top="56.6" Width="94.5" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.OrganizationalLevelName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 10pt"/>
+        <TextObject Name="Text20" Left="75.6" Top="56.6" Width="75.6" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EmployeesDataSourse.InsuranceActivationDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[EmployeesDataSourse.InsuranceActivationDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text22" Top="56.6" Width="75.6" Height="37.8" Border.Lines="All" Border.Color="LightGray" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EmployeesDataSourse.InsuranceExpiryDate])) == &quot;01/01/0001&quot;,&quot;&quot;,[EmployeesDataSourse.InsuranceExpiryDate] )]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="327.8" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="584.9" Width="133.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="584.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="353.05" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="338" Height="174" LoadEvent="Form1_Load">
+    <ButtonControl Name="btnOk" Left="122" Top="95" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="224" Top="36" Width="93" Height="13" TabIndex="2" Text="نوع الضمان الصحي"/>
+    <ComboBoxControl Name="HealthInsuranceTypesComboBox" Left="44" Top="32" Width="175" TabIndex="3" ClickEvent="" DataColumn="EmployeesDataSourse.HealthInsuranceTypeDetails.HealthInsuranceType.InsuranceType" DropDownStyle="DropDownList" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="172" Top="60" Width="46" Height="17" RightToLeft="Yes" TabIndex="4" Text="الكل" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

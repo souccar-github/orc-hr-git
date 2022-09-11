@@ -1,0 +1,27 @@
+﻿@using  Project.Web.Mvc4.Helpers
+@{
+    ViewBag.Title = "PopupWindow";
+}
+
+<h2>PopupWindow</h2>
+<div id="test-window"></div>
+<a id="Show_Window" class="k-button k-button-icontext" href="#"><span class="k-icon k-minus"></span>Show Window</a>
+<script>
+    $("#Show_Window").off('click').on('click', function () {
+        var title = "Test PopupWindow";
+        var buttons = [
+                 { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+                 { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "container_div";
+        var bodyHTML = "<div><h2> hahaha </h2></div>";
+        var isTwoColumns = false;
+        createAndOpenCustomWindow($("#test-window"), bodyHTML, containerId, title, buttons, isTwoColumns);
+        $("#cancel").off('click').on('click', function () {
+            $("#test-window").data("kendo-window").close();
+        });
+    });
+    
+</script>
+
+

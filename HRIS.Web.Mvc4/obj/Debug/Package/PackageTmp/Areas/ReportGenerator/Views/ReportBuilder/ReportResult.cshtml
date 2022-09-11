@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "DisplayReports";
+}
+@Html.DevExpress().DocumentViewer(settings =>
+    {
+        
+        settings.Name = "DocumentViewer";
+        settings.CallbackRouteValues = new
+        {
+            Controller = "ReportBuilder",
+            Action = "DocumentViewerPartial"
+        };
+        settings.ExportRouteValues = new
+        {
+            Controller = "ReportBuilder",
+            Action = "DocumentViewerExport"
+        };
+        settings.Report = (DevExpress.XtraReports.UI.XtraReport)Model;
+    }).GetHtml()
+@*@Scripts.Render("~/bundles/mainTheme")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")*@

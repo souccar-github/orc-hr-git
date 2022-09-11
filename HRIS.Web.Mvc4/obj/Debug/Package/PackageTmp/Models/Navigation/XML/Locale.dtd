@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE Locales [
+	<!ELEMENT Locales (Locale+)>
+	<!ATTLIST Locale
+		Id			ID		#REQUIRED
+		Name		CDATA	#REQUIRED
+		Description	CDATA	#IMPLIED
+	>
+]>

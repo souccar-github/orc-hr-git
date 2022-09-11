@@ -1,0 +1,37 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
+    PMS Comprehensive
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <%: Html.Telerik().StyleSheetRegistrar().DefaultGroup(group => group
+                                .Add("telerik.sunset.min.css"))%>
+    <div>
+        <%--<div id="SlidingPanel">
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $(".trigger").click(function () {
+                        $(".panel").toggle("fast");
+                        $(this).toggleClass("active");
+                        return false;
+                    });
+                });
+            </script>
+        </div>--%>
+        <div id="MainData">
+            <div id="Ribbon">
+                <% Html.RenderAction("GetRibbonPartial", "PMSComprehensive", new { area = "PMSComprehensive" }); %>
+            </div>
+            <div id="Navigator">
+                <% Html.RenderPartial("Navigator"); %>
+            </div>
+            <div id="menucontainer">
+                <%--<% Html.RenderPartial("ModulesMenu"); %>--%>
+            </div>
+            <div id="ContentPlaceHolder">
+                <% Html.RenderPartial("GlobalError"); %>
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </div>
+</asp:Content>

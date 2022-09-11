@@ -1,0 +1,317 @@
+﻿@using HRIS.Domain.PayrollSystem.Enums
+@using HRIS.Validation.MessageKeys
+@using Souccar.Infrastructure.Core
+@using Project.Web.Mvc4.Helpers
+@Html.Partial("../Month/Index")
+@Html.Partial("../PrimaryCard/Index")
+@Html.Partial("../TravelLicence/Index")
+@Html.Partial("../StatusManagement/Index")
+@Html.Partial("../SalaryIncreaseOrdinance/Index")
+@Html.Partial("BenefitsDeduction")
+
+<script type="text/javascript">
+
+
+
+
+    function initializeSalaryIncreaseOrdinanceActionList(actionListItems, dataItem) {
+        for (var i = 0; i < actionListItems.length; i++) {
+            if (
+                actionListItems[i].Name == "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.GenerateTitle))"
+            || actionListItems[i].Name == "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.CalculateTitle))"
+            || actionListItems[i].Name == "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.AcceptTitle))") {
+                if (dataItem.Status.Name == "Accepted") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+            actionListItems[i].ShowCommand = true;
+        }
+    }
+  
+    function initializeAdvanceMonthlyCardActionList(actionListItems, dataItem) {
+        debugger;
+        let updateAL = actionListItems.find(e => e.HandlerName == "update");
+        if (updateAL != undefined) updateAL.ShowCommand = false;  
+    }
+
+    function EmployeeAdvanceViewHandler(e) {
+        debugger;
+        $("#view_edit").remove();
+       
+    }
+    function GeneralOptionAdvance_ViewHandler(e) {
+        debugger;
+        if (e.model.AdvanceDependesOnFromDateToDate) {
+            $(".control-AdvanceFromDate").show();
+            $(".control-AdvanceToDate").show();
+        }
+        else {
+            $(".control-AdvanceFromDate").hide();
+            $(".control-AdvanceToDate").hide();
+        }
+    }
+    function GeneralOptionAdvance_EditHandler(e) {
+        debugger;
+        if ($("[name='AdvanceDependesOnFromDateToDate']").is(':checked')) {
+            $(".control-AdvanceFromDate").show();
+            $(".control-AdvanceToDate").show();
+        }
+        else {
+            $(".control-AdvanceFromDate").hide();
+            $(".control-AdvanceToDate").hide();
+        }
+        $("[name='AdvanceDependesOnFromDateToDate']").click(function () {
+            if (!$("[name='AdvanceDependesOnFromDateToDate']").is(':checked')) {
+
+                $(".control-AdvanceFromDate").hide();
+                $(".control-AdvanceToDate").hide();
+            }
+            else {
+
+                $(".control-AdvanceFromDate").show();
+                $(".control-AdvanceToDate").show();
+            }
+        });
+    }
+    function PayrollSystemChildBenefit_EditHandler(e) {
+        $('[name="FirstName"]').attr("disabled", "disabled");
+        $('[name="LastName"]').attr("disabled", "disabled");
+        $('[name="IsEmployed"]').attr("disabled", "disabled");
+        $('[name="IsStudying"]').attr("disabled", "disabled");
+        $('[name="DisabilityExist"]').attr("disabled", "disabled");
+        $('[name="ResidencyNo"]').attr("disabled", "disabled");
+        $('[name="PassportNo"]').attr("disabled", "disabled");
+        $('[name="IsDeath"]').attr("disabled", "disabled");
+
+        $("#dropDownListSpouse").data("kendoDropDownList").enable(false);
+        $("#dropDownListGender").data("kendoDropDownList").enable(false);
+        $("#dropDownListMaritalStatus").data("kendoDropDownList").enable(false);
+        $("#dropDownListPlaceOfBirth").data("kendoDropDownList").enable(false);
+        $("#dropDownListNationality").data("kendoDropDownList").enable(false);
+
+        $("#openPlaceOfBirth").hide();
+        $("#openNationality").hide();
+
+
+
+        $('[name="OrderInFamily"]').data("kendoNumericTextBox").enable(false);
+
+        $("[Name='DateOfBirth']").data("kendoDatePicker").enable(false);
+        $("[Name='ResidencyExpiryDate']").data("kendoDatePicker").enable(false);
+        $("[Name='PassportExpiryDate']").data("kendoDatePicker").enable(false);
+        $("[Name='ChildBenefitStartDate']").data("kendoDatePicker").enable(false);
+        $("[Name='ChildBenefitEndDate']").data("kendoDatePicker").enable(false);
+        $("[Name='DeathDate']").data("kendoDatePicker").enable(false);
+    }
+
+    function PayrollSystemSpouseBenefit_EditHandler(e) {
+        $('[name="IdentificationNo"]').attr("disabled", "disabled");
+        $('[name="FirstName"]').attr("disabled", "disabled");
+        $('[name="LastName"]').attr("disabled", "disabled");
+        $('[name="FatherName"]').attr("disabled", "disabled");
+        $('[name="MatherName"]').attr("disabled", "disabled");
+        $('[name="ResidencyNo"]').attr("disabled", "disabled");
+        $('[name="FirstContactNumber"]').attr("disabled", "disabled");
+        $('[name="SecondContactNumber"]').attr("disabled", "disabled");
+        $('[name="Email"]').attr("disabled", "disabled");
+        $('[name="Note"]').attr("disabled", "disabled");
+        $('[name="IsDivorce"]').attr("disabled", "disabled");
+        $('[name="IsDeath"]').attr("disabled", "disabled");
+        $('[name="HasJob"]').attr("disabled", "disabled");
+        $('[name="IsGovernmentWork"]').attr("disabled", "disabled");
+        $('[name="IsInternalJob"]').attr("disabled", "disabled");
+        $('[name="CompanyName"]').attr("disabled", "disabled");
+        $('[name="WorkAddress"]').attr("disabled", "disabled");
+        $('[name="WorkPhone"]').attr("disabled", "disabled");
+        $('[name="WorkEmail"]').attr("disabled", "disabled");
+        $('[name="PassportNo"]').attr("disabled", "disabled");
+
+        $("#dropDownListNationality").data("kendoDropDownList").enable(false);
+        $("#dropDownListPlaceOfBirth").data("kendoDropDownList").enable(false);
+        $("#dropDownListJobTitle").data("kendoDropDownList").enable(false);
+
+        $("#openNationality").hide();
+        $("#openPlaceOfBirth").hide();
+        $("#openJobTitle").hide();
+
+
+
+        $('[name="Order"]').data("kendoNumericTextBox").enable(false);
+
+        $("[Name='DateOfBirth']").data("kendoDatePicker").enable(false);
+        $("[Name='PassportExpiryDate']").data("kendoDatePicker").enable(false);
+        $("[Name='MarriageDate']").data("kendoDatePicker").enable(false);
+        $("[Name='DivorceDate']").data("kendoDatePicker").enable(false);
+        $("[Name='DeathDate']").data("kendoDatePicker").enable(false);
+        $("[Name='DateOfFamilyBenefitActivation']").data("kendoDatePicker").enable(false);
+        $("[Name='ResidencyExpiryDate']").data("kendoDatePicker").enable(false);
+    }
+
+    function CrossDeductionWithBenefit_EditHandler(e) {
+        $("#dropDownListCrossType").data("kendoDropDownList").bind("change", onCrossTypeSelect);
+        $("#dropDownListCrossType").data("kendoDropDownList").dataSource.one("change", onCrossTypeSelect);
+        onCrossTypeSelect();
+        function onCrossTypeSelect() {
+            var crossTypeId = $("#dropDownListCrossType").data("kendoDropDownList").value();
+
+            if (crossTypeId == "" || crossTypeId == null) {
+                $("[name=Value]").data("kendoNumericTextBox").enable(false);
+                $("[name=CrossFormula]").data("kendoDropDownList").enable(false);
+            }
+
+            if (crossTypeId == '@((int)CrossType.AsDefined)') {
+                $("[name=Value]").data("kendoNumericTextBox").enable(false);
+                $("[name=CrossFormula]").data("kendoDropDownList").enable(false);
+            }
+            else if (crossTypeId == '@((int)CrossType.Custom)') {
+                $("[name=Value]").data("kendoNumericTextBox").enable(true);
+                $("[name=CrossFormula]").data("kendoDropDownList").enable(true);
+            }
+        }
+    }
+
+    function CrossDeductionWithDeduction_EditHandler(e) {
+        $("#dropDownListCrossType").data("kendoDropDownList").bind("change", onCrossTypeSelect);
+        $("#dropDownListCrossType").data("kendoDropDownList").dataSource.one("change", onCrossTypeSelect);
+        onCrossTypeSelect();
+        function onCrossTypeSelect() {
+            var crossTypeId = $("#dropDownListCrossType").data("kendoDropDownList").value();
+
+            if (crossTypeId == "" || crossTypeId == null) {
+                $("[name=Value]").data("kendoNumericTextBox").enable(false);
+                $("[name=CrossFormula]").data("kendoDropDownList").enable(false);
+            }
+
+            if (crossTypeId == '@((int)CrossType.AsDefined)') {
+                $("[name=Value]").data("kendoNumericTextBox").enable(false);
+                $("[name=CrossFormula]").data("kendoDropDownList").enable(false);
+            }
+            else if (crossTypeId == '@((int)CrossType.Custom)') {
+                $("[name=Value]").data("kendoNumericTextBox").enable(true);
+                $("[name=CrossFormula]").data("kendoDropDownList").enable(true);
+            }
+        }
+    }
+
+   // function BenefitCard_EditHandler(e) {
+   //     isFirstEditLoad = true;
+
+   //     ChangeViewBySelectedField(e);
+   // }
+
+    @*function ChangeViewBySelectedField(e) {
+        if (!e.model.isNew()) {
+            formulaChange(e.model.Formula.Id);
+            extraFormulaChange(e.model.ExtraValueFormula.Id);
+            ceilFormulaChange(e.model.CeilFormula.Id);
+        }
+          var formulaDropdownlist = $("[name='Formula']").data("kendoDropDownList");
+        formulaDropdownlist.bind("change", function() {
+            formulaChange(formulaDropdownlist.value());
+        });
+        formulaDropdownlist.bind("select", function() {
+            formulaChange(formulaDropdownlist.value());
+        });
+
+       function formulaChange(formula) {
+            @{ var nothing = ((int) Formula.Nothing).ToString();}
+            if (formula == "@nothing") {
+                $(".control-Value").hide();
+                $("[name='Value']").val('0');
+            } else {
+                $(".control-Value").show();
+            }
+
+        }
+
+        var extraFormulaDropdownlist = $("[name='ExtraValueFormula']").data("kendoDropDownList");
+        extraFormulaDropdownlist.bind("change", function() {
+            extraFormulaChange(extraFormulaDropdownlist.value());
+        });
+        extraFormulaDropdownlist.bind("select", function() {
+            extraFormulaChange(extraFormulaDropdownlist.value());
+        });
+
+        function extraFormulaChange(extraFormula) {
+            @{ var none = ((int) ExtraValueFormula.None).ToString();}
+            if (extraFormula == "@none") {
+                $(".control-ExtraValue").hide();
+                $("[name='ExtraValue']").val(0);
+            } else {
+                $(".control-ExtraValue").show();
+            }
+
+        }*@
+
+        @*var ceilFormulaDropdownlist = $("[name='CeilFormula']").data("kendoDropDownList");
+        ceilFormulaDropdownlist.bind("change", function() {
+            ceilFormulaChange(ceilFormulaDropdownlist.value());
+        });
+        ceilFormulaDropdownlist.bind("select", function() {
+            ceilFormulaChange(ceilFormulaDropdownlist.value());
+        });
+
+        function ceilFormulaChange(ceilFormula) {
+            @{ var nothing1 = ((int) Formula.Nothing).ToString();}
+            if (ceilFormula == "@nothing1") {
+                $(".control-CeilValue").hide();
+                $("[name='CeilValue']").val(0);
+            } else {
+                $(".control-CeilValue").show();
+            }
+
+        }*@
+  //  }
+
+    //function DeductionCard_EditHandler(e) {
+    //    isFirstEditLoad = true;
+
+    //    ChangeViewBySelectedField(e);
+    //}
+
+    @*function ChangeViewBySelectedField(e) {
+        if (!e.model.isNew()) {
+            formulaChange(e.model.Formula.Id);
+            extraFormulaChange(e.model.ExtraValueFormula.Id);
+        }
+        var formulaDropdownlist = $("[name='Formula']").data("kendoDropDownList");
+        formulaDropdownlist.bind("change", function() {
+            formulaChange(formulaDropdownlist.value());
+        });
+        formulaDropdownlist.bind("select", function() {
+            formulaChange(formulaDropdownlist.value());
+        });
+
+        function formulaChange(formula) {
+            @{ var no_thing = ((int) Formula.Nothing).ToString();}
+            if (formula == "@no_thing") {
+                $(".control-Value").hide();
+                $("[name='Value']").val('0');
+            } else {
+                $(".control-Value").show();
+            }
+
+        }
+
+        var extraFormulaDropdownlist = $("[name='ExtraValueFormula']").data("kendoDropDownList");
+        extraFormulaDropdownlist.bind("change", function() {
+            extraFormulaChange(extraFormulaDropdownlist.value());
+        });
+        extraFormulaDropdownlist.bind("select", function() {
+            extraFormulaChange(extraFormulaDropdownlist.value());
+        });
+
+        function extraFormulaChange(extraFormula) {
+            @{ var non = ((int) ExtraValueFormula.None).ToString();}
+            if (extraFormula == "@non") {
+                $(".control-ExtraValue").hide();
+                $("[name='ExtraValue']").val(0);
+            } else {
+                $(".control-ExtraValue").show();
+            }
+
+        }
+    }*@
+
+</script>

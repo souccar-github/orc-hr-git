@@ -1,0 +1,233 @@
+﻿<script id="EmployeeTemplate" type="text/x-kendo-template">
+    <legend> Family Information </legend>
+    <table>
+        <tr>
+            <td>
+                <label for="FirstNameTxt"> First Name </label>
+            </td>
+            <td>
+                <input id="FirstNameTxt" type="text" data-bind="value: FirstName"> </input><br/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="LastNameTxt"> Last Name </label>
+            </td>
+            <td>
+                <input id="LastNameTxt" type="text" data-bind="value: LastName"> </input><br/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="MiddleNameTxt"> Middle Name </label>
+            </td>
+            <td>
+                <input id="MiddleNameTxt" type="text" data-bind="value: MiddleName"> </input><br/><br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="FatherNameTxt"> Father Name </label>
+            </td>
+            <td>
+                <input id="FatherNameTxt" type="text" data-bind="value: FatherName"> </input><br/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="MotherNameTxt"> Mother Name </label>
+            </td>
+            <td>
+                <input id="MotherNameTxt" type="text" data-bind="value: MotherName"> </input><br/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="LoginNameTxt"> Login Name </label>
+            </td>
+            <td>
+                <input id="LoginNameTxt" type="text" data-bind="value: LoginName"> </input><br/><br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="MaritalStatusList"> Marital Status </label>
+            </td>
+            <td>
+                <input id="MaritalStatusList" data-role="dropdownlist" data-value-field="Id" data-text-field="Name" data-bind="value: MaritalStatusId" /><br/><br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="DateOfBirth"> Data of Birth </label>
+            </td>
+            <td>
+                <input id="DataOfBirth" data-role="datepicker" data-bind="value: DateOfBirth"/><br/><br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="PlaceOfBirthTxt"> Place of Birth </label>
+            </td>
+            <td>
+                <input id="PlaceOfBirthTxt" type="text" data-bind="value: PlaceOfBirth"> </input><br/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ChildrenNoTxt"> Number of Children </label>
+            </td>
+            <td>
+                <input id="ChildrenNoTxt" data-role="numerictextbox" data-bind="value: ChildrenNo"> </input><br/>
+            </td>
+        </tr>
+    </table>
+    
+    <legend> Identity Information </legend>
+    <table>
+        <tr>
+            <td>
+                <label for="NationalityList"> Nationality </label>
+            </td>
+            <td>
+                <input id="NationalityList" data-role="autocomplete" data-value-field="Id" data-text-field="Name" data-bind="value: NationalityName"> </input><br/>
+            </td>
+        </tr>
+    </table>
+</script>
+
+
+@using HRIS.Domain.Global.Enums
+@using Project.Web.Mvc4.Helpers
+<script type="text/javascript">
+  
+    function initializeEmployeeTemplate(e) {
+        $(e.container).parent().css({
+            width: '700px',
+            height: '500px',
+            top: '0px'
+        });
+
+        var maritalStatus = e.container.find("#MaritalStatusList").data("kendoDropDownList");
+        var maritalStatusDataSource = new kendo.data.DataSource({
+            type: "json",
+            serverFiltering: false,
+            transport: {
+                read: {
+                    url: window.applicationpath + 'Index/ReadDropDownList/' + 'HRIS.Domain.Personnel.Indexes.MaritalStatus'
+                }
+            },
+            schema: {
+                model: {
+                    id: "Id"
+                },
+                data: "Data"
+            }
+        });
+        maritalStatus.setDataSource(maritalStatusDataSource);
+
+        var nationality = e.container.find("#NationalityList").data("kendoAutoComplete");
+        nationality.bind("select", function (eSelect) {
+            var dataItem = this.dataItem(eSelect.item.index());
+            e.model.NationalityId = dataItem.Id;
+            e.model.NationalityName = dataItem.Name;
+        });
+
+        var nationalityDataSource = new kendo.data.DataSource({
+            type: "json",
+            serverFiltering: false,
+            transport: {
+                read: {
+                    url: window.applicationpath + 'Index/ReadDropDownList/' + 'HRIS.Domain.Personnel.Indexes.Nationality'
+                }
+            },
+            schema: {
+                model: {
+                    id: "Id"
+                },
+                data: "Data"
+            }
+        });
+        nationality.setDataSource(nationalityDataSource);
+    }
+
+    @*----------Default Value Course Cost------------*@
+
+    function DefaultValueEditHandler(e) {
+        var currentGridRowId = e.model.Id;
+        if (currentGridRowId == 0) {
+
+            if ($('[name="EyesPercentage"]').data("kendoNumericTextBox") != null){
+                $('[name="EyesPercentage"]').data("kendoNumericTextBox").value(100);
+                e.model.EyesPercentage = 100;
+            }
+
+        }
+
+    }
+    function initializeView() {
+        $("#view_edit").remove();
+    }
+    function RemoveDeleteForAprovedAdvance(actionListItems, dataItem) {
+        debugger;
+        for (var i = 0; i < actionListItems.length; i++) {
+
+            actionListItems[i].ShowCommand = true;
+        }
+
+        if (dataItem.AdvanceStatus.Id == "@((int)Status.Approved)") {
+            for (var i = 0; i < actionListItems.length; i++) {
+                if (actionListItems[i].Name == "@GlobalResource.Delete" || actionListItems[i].Name == "@GlobalResource.Edit") {
+                    actionListItems[i].ShowCommand = false;
+                    continue;
+                }
+            }
+
+        }
+
+    }
+
+    function EmployeeAdvanceEditHandler(e) {
+        debugger;
+        var employeeCardId = window.requestInformation.NavigationInfo.Previous[0].RowId;
+       
+        $('[name="DeservableAdvanceAmount"]').data("kendoNumericTextBox").enable(false);
+       
+        $.ajax({
+            url: "Personnel/Service/GetDeservableAdvanceAmount",
+            type: "POST",
+            data: JSON.stringify(
+                {
+                    employeeCardId: employeeCardId,
+                    employeeId :0
+
+                }),
+            contentType: 'application/json',
+            success: function (data) {
+             
+                $('[name="DeservableAdvanceAmount"]').data("kendoNumericTextBox").value(data.deservableAdvanceAmount);
+
+            }
+        });
+        
+
+    }
+    function PayrollSystemEmpLoan_EditHandler(e) {
+        debugger;
+        if (e.model.Id != 0) {
+            $("[name=PrePayed]").attr("disabled", "disabled")
+        }
+        $("[name=RemainingAmountOfLoan]").attr("disabled", "disabled")
+    }
+
+    function BankingInfoEditHandler(e) {
+        debugger;
+        if (e.model.isNew()) {
+
+            $("[name='StartDate']").data("kendoDatePicker").value(null);
+            $("[name='ExpiryDate']").data("kendoDatePicker").value(null);
+            e.model.StartDate = null;
+            e.model.ExpiryDate = null;
+        }
+    }
+</script>

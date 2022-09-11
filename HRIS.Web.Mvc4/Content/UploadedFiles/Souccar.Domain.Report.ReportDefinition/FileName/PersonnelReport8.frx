@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="05/17/2016 13:55:03" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+    private void AllMaritalStatusCheckBox_Click(object sender, EventArgs e)
+    {  
+      if (AllMaritalStatusCheckBox.Checked)
+      {
+        MaritalStatusComboBox.SelectedIndex=-1;		 
+        MaritalStatusComboBox.AutoFilter=false;
+        MaritalStatusComboBox.AutoFill=false;
+        MaritalStatusComboBox.Enabled=false;
+      }else
+      {
+        MaritalStatusComboBox.AutoFilter=true;
+        MaritalStatusComboBox.AutoFill=true;
+        MaritalStatusComboBox.Enabled=true;        
+      }         
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqtis+rNOUXql9HL1HltlmQ4xrZNcFdWmqbzG+em7BFI2SYgX0JmavMyZ62c5siTv8emusZ3BaHLjZ77wseBf54IpcUyR/Z6fpr0A/QSOW42fQ5BcgxHWIdBMEBH6MSkOF0DQx8KAVUPtx2aZ/ZFVqK5pAe25hxPHGMn1K0HBFoEOsIalUSlw7nDl3nhywv4hH">
+      <TableDataSource Name="Table1" Alias="EmployeeWithMaritalStatusDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id AS EmployeeId, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode,&#13;&#10;dbo.Employee.MaritalStatus,&#13;&#10;CASE WHEN dbo.Employee.MaritalStatus = 0 THEN 'أعزب' &#13;&#10;	 WHEN dbo.Employee.MaritalStatus = 1 THEN 'متزوج'&#13;&#10;	 WHEN dbo.Employee.MaritalStatus = 2 THEN 'مطلق'&#13;&#10;	 WHEN dbo.Employee.MaritalStatus = 3 THEN 'أرمل'&#13;&#10;	 WHEN dbo.Employee.MaritalStatus = 4 THEN 'خاطب'&#13;&#10;	 END AS MaritalStatusName,&#13;&#10;(SELECT COUNT(DISTINCT Id) FROM dbo.Child WHERE Employee_id=dbo.Employee.Id AND Child.IsVertualDeleted=0) AS ChildCount&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id&#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND&#13;&#10;Employee.IsVertualDeleted = 0 AND&#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted = 0 AND&#13;&#10;Position.IsVertualDeleted = 0 AND&#13;&#10;EmployeeCard.IsVertualDeleted = 0">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="MaritalStatusName" DataType="System.String"/>
+        <Column Name="ChildCount" DataType="System.Int32"/>
+        <Column Name="EmployeeId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Child" DataType="System.Int32" Enabled="true" TableName="Child" SelectCommand="SELECT C.Id, C.IsVertualDeleted, C.FirstName, C.LastName, C.OrderInFamily, C.Gender, C.MaritalStatus, C.IsEmployed, C.IsStudying, C.DisabilityExist, C.IsDeath, C.DeathDate, C.DateOfBirth, C.ResidencyNo, C.ResidencyExpiryDate, C.PassportNo, C.PassportExpiryDate, C.HasChildBenefit, C.ChildBenefitStartDate, C.ChildBenefitEndDate, C.PlaceOfBirth_id, C.Spouse_id, C.Nationality_id, C.Employee_id&#13;&#10;FROM &quot;Child&quot; C&#13;&#10;WHERE C.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="OrderInFamily" DataType="System.Int32"/>
+        <Column Name="Gender" DataType="System.Int32"/>
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="IsEmployed" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="IsStudying" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="DisabilityExist" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="IsDeath" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="DeathDate" DataType="System.DateTime"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="ResidencyNo" DataType="System.String"/>
+        <Column Name="ResidencyExpiryDate" DataType="System.DateTime"/>
+        <Column Name="PassportNo" DataType="System.String"/>
+        <Column Name="PassportExpiryDate" DataType="System.DateTime"/>
+        <Column Name="HasChildBenefit" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="ChildBenefitStartDate" DataType="System.DateTime"/>
+        <Column Name="ChildBenefitEndDate" DataType="System.DateTime"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Spouse_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="Employee_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Spouse" DataType="System.Int32" Enabled="true" TableName="Spouse" SelectCommand="SELECT S.Id, S.IsVertualDeleted, S.IdentificationNo, S.FirstName, S.LastName, S.FatherName, S.MatherName, S.DateOfBirth, S.ResidencyNo, S.ResidencyExpiryDate, S.PassportNo, S.PassportExpiryDate, S.HasChildBenefit, S.Note, S.SpouseOrder, S.MarriageDate, S.IsDeath, S.DeathDate, S.IsDivorce, S.DivorceDate, S.FirstContactNumber, S.SecondContactNumber, S.Email, S.HasJob, S.IsGovernmentWork, S.IsInternalJob, S.DateOfFamilyBenefitActivation, S.CompanyName, S.WorkAddress, S.WorkEmail, S.WorkPhone, S.PlaceOfBirth_id, S.Nationality_id, S.JobTitle_id, S.Employee_id&#13;&#10;FROM &quot;Spouse&quot; S&#13;&#10;WHERE S.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="IdentificationNo" DataType="System.String"/>
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="MatherName" DataType="System.String"/>
+        <Column Name="DateOfBirth" DataType="System.DateTime"/>
+        <Column Name="ResidencyNo" DataType="System.String"/>
+        <Column Name="ResidencyExpiryDate" DataType="System.DateTime"/>
+        <Column Name="PassportNo" DataType="System.String"/>
+        <Column Name="PassportExpiryDate" DataType="System.DateTime"/>
+        <Column Name="HasChildBenefit" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Note" DataType="System.String"/>
+        <Column Name="SpouseOrder" DataType="System.Int32"/>
+        <Column Name="MarriageDate" DataType="System.DateTime"/>
+        <Column Name="IsDeath" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="DeathDate" DataType="System.DateTime"/>
+        <Column Name="IsDivorce" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="DivorceDate" DataType="System.DateTime"/>
+        <Column Name="FirstContactNumber" DataType="System.String"/>
+        <Column Name="SecondContactNumber" DataType="System.String"/>
+        <Column Name="Email" DataType="System.String"/>
+        <Column Name="HasJob" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="IsGovernmentWork" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="IsInternalJob" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="DateOfFamilyBenefitActivation" DataType="System.DateTime"/>
+        <Column Name="CompanyName" DataType="System.String"/>
+        <Column Name="WorkAddress" DataType="System.String"/>
+        <Column Name="WorkEmail" DataType="System.String"/>
+        <Column Name="WorkPhone" DataType="System.String"/>
+        <Column Name="PlaceOfBirth_id" DataType="System.Int32"/>
+        <Column Name="Nationality_id" DataType="System.Int32"/>
+        <Column Name="JobTitle_id" DataType="System.Int32"/>
+        <Column Name="Employee_id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="MaritalStatusTable" DataType="System.Int32" Enabled="true" SelectCommand="SELECT 0 MaritalStatus,'أعزب' MaritalStatusName&#13;&#10;UNION&#13;&#10;SELECT 1 MaritalStatus,'متزوج' MaritalStatusName&#13;&#10;UNION&#13;&#10;SELECT 2 MaritalStatus,'مطلق' MaritalStatusName&#13;&#10;UNION&#13;&#10;SELECT 3 MaritalStatus,'أرمل' MaritalStatusName&#13;&#10;UNION&#13;&#10;SELECT 4 MaritalStatus,'خاطب' MaritalStatusName">
+        <Column Name="MaritalStatus" DataType="System.Int32"/>
+        <Column Name="MaritalStatusName" DataType="System.String"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="Table1" ChildDataSource="Child" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="Table1" ChildDataSource="Spouse" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table_Table1" ParentDataSource="Table" ChildDataSource="Table1" ParentColumns="MaritalStatus" ChildColumns="MaritalStatus" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="PageFooter1"/>
+    <Total Name="ChildCount" TotalType="Count" Evaluator="Data2" PrintOn="DataFooter2"/>
+    <Total Name="SpouseCount" TotalType="Count" Evaluator="Data3" PrintOn="DataFooter3"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="103.95">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="توليد تقرير الموظفين حسب الحالة الاجتماعية" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text50" Top="66.15" Width="718.2" Height="28.35" Text="الحالة الإجتماعية: [MaritalStatusComboBox.Text]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="108.07" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="359.1" Width="189" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="548.1" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Left="179.55" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text36" Left="75.6" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحالة الإجتماعية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text40" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأولاد" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="131.1" Width="718.2" Height="18.9" DataSource="Table1">
+      <TextObject Name="Text5" Left="548.1" Width="170.1" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithMaritalStatusDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="359.1" Width="189" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithMaritalStatusDataSourse.FirstName] [EmployeeWithMaritalStatusDataSourse.FatherName] [EmployeeWithMaritalStatusDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Left="179.55" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithMaritalStatusDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text2" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithMaritalStatusDataSourse.ChildCount]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text3" Left="75.6" Width="103.95" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeeWithMaritalStatusDataSourse.MaritalStatusName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <ChildBand Name="Child1" Top="154.12" Width="718.2" Height="18.9">
+        <SubreportObject Name="ChildSubreport" Width="359.1" Height="18.9" ReportPage="Page2"/>
+        <SubreportObject Name="SpouseSubreport" Left="359.1" Width="359.1" Height="18.9" ReportPage="Page3"/>
+      </ChildBand>
+      <DataFooterBand Name="DataFooter1" Top="177.14" Width="718.2" Height="28.35">
+        <TextObject Name="Text6" Top="9.45" Width="718.2" Height="18.9" Border.Lines="All" Border.Color="LightGray" Fill.Color="WhiteSmoke" Text="عدد النتائج: [TotalCount]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 8pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="209.62" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="374" Height="194" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="122" Top="87" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="198" Top="28" Width="83" Height="13" TabIndex="2" Text="الحالة الإجتماعية"/>
+    <ComboBoxControl Name="MaritalStatusComboBox" Left="20" Top="24" Width="175" RightToLeft="Yes" TabIndex="3" DataColumn="EmployeeWithMaritalStatusDataSourse.MaritalStatusTable.MaritalStatusName" DropDownStyle="DropDownList" DropDownWidth="169" ItemHeight="13"/>
+    <CheckBoxControl Name="AllMaritalStatusCheckBox" Left="180" Top="60" Width="164" Height="17" TabIndex="5" Text="عرض جميع الحالات الإجتماعية" ClickEvent="AllMaritalStatusCheckBox_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+  <ReportPage Name="Page2">
+    <DataBand Name="Data2" Top="23.08" Width="718.2" Height="18.9" DataSource="Child">
+      <TextObject Name="Text9" Left="180.1" Width="177.55" Height="18.9" Border.Lines="Top, Bottom" Border.Color="LightGray" Text="[Child.FirstName]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text10" Width="179.55" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[Child.LastName]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataHeaderBand Name="DataHeader1" Width="718.2" Height="18.96">
+        <TextObject Name="Text47" Top="0.06" Width="179.55" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="النسبة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text48" Left="179.1" Top="0.06" Width="180" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الولد" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataHeaderBand>
+      <DataFooterBand Name="DataFooter2" Top="46.11" Width="718.2" Height="19.21">
+        <TextObject Name="Text49" Left="-0.45" Top="0.31" Width="359.2" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الاولاد: [ChildCount]" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+  </ReportPage>
+  <ReportPage Name="Page3">
+    <DataBand Name="Data3" Top="23.02" Width="718.2" Height="18.9" DataSource="Spouse">
+      <TextObject Name="Text42" Left="189" Width="170.1" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="LightGray" Text="[Spouse.FirstName]" Format="Currency" Format.UseLocale="true" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text41" Width="189" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="LightGray" Text="[Spouse.LastName]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataHeaderBand Name="DataHeader2" Width="718.2" Height="18.9">
+        <TextObject Name="Text43" Width="189" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="النسبة" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text4" Left="189" Width="170.1" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الشريك" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      </DataHeaderBand>
+      <DataFooterBand Name="DataFooter3" Top="46.05" Width="718.2" Height="18.9">
+        <TextObject Name="Text44" Width="359.1" Height="18.9" Anchor="Right" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الشركاء: [SpouseCount]" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+  </ReportPage>
+</Report>

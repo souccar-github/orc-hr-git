@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{942B938B-82EF-4839-B6CE-57A7B6FFBAF3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Souccar</RootNamespace>
+    <AssemblyName>Souccar</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\ui\binaries\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DOT_NET_4</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetOpenAuth.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\DotNetOpenAuth.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="SpecExpress, Version=1.6.1.56, Culture=neutral, PublicKeyToken=76939f3daa87791a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\SpecExpress.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\CustomAttribute\CommandAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\DetailAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\DetailsAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\ExceptedTypeFromLog.cs" />
+    <Compile Include="Core\CustomAttribute\GridUi.cs" />
+    <Compile Include="Core\CustomAttribute\UserInterfaceParameterAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\LocalizationDisplayNameAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\LocalizationKeyAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\ModuleAttribute.cs" />
+    <Compile Include="Core\CustomAttribute\OrderAttribute.cs" />
+    <Compile Include="Core\DesignByContract\AssertionException.cs" />
+    <Compile Include="Core\DesignByContract\Check.cs" />
+    <Compile Include="Core\DesignByContract\DesignByContractException.cs" />
+    <Compile Include="Core\DesignByContract\InvariantException.cs" />
+    <Compile Include="Core\DesignByContract\PostconditionException.cs" />
+    <Compile Include="Core\DesignByContract\PreconditionException.cs" />
+    <Compile Include="Core\Enums.cs" />
+    <Compile Include="Core\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Core\Extensions\EnumExtensions.cs" />
+    <Compile Include="Core\Extensions\ObjectExtensions.cs" />
+    <Compile Include="Core\Extensions\PropertyInfoExtensions.cs" />
+    <Compile Include="Core\Extensions\StringExtenstions.cs" />
+    <Compile Include="Core\Extensions\TypeExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Caching\Cache.cs" />
+    <Compile Include="Core\Fasterflect\Caching\CacheStrategy.cs" />
+    <Compile Include="Core\Fasterflect\Common\Constants.cs" />
+    <Compile Include="Core\Fasterflect\Common\Delegates.cs" />
+    <Compile Include="Core\Fasterflect\Common\Flags.cs" />
+    <Compile Include="Core\Fasterflect\Common\FormatOptions.cs" />
+    <Compile Include="Core\Fasterflect\Common\MemberFilter.cs" />
+    <Compile Include="Core\Fasterflect\Common\Utils.cs" />
+    <Compile Include="Core\Fasterflect\DynamicReflection\DynamicBuilder.cs" />
+    <Compile Include="Core\Fasterflect\DynamicReflection\DynamicWrapper.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\ArrayGetEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\ArraySetEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\BaseEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\CallInfo.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\CtorInvocationEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\EmitHelper.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\InvocationEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\LookupUtils.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\MapCallInfo.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\MapEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\MemberGetEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\MemberSetEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\MethodInvocationEmitter.cs" />
+    <Compile Include="Core\Fasterflect\Emitter\ValueTypeHolder.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\AppDomainExtenstions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\ArrayExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\AssemblyExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\AttributeExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\ConstructorExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\ConstructorInfoExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\FieldExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\FieldInfoExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\MemberExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\MemberInfoExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\MethodExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\MethodInfoExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\ParameterInfoExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\PropertyExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\PropertyInfoExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\TypeExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Core\ValueTypeExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\CloneExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\EventExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\MapExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\Probing\ConstructorMap.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\Probing\MapFactory.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\Probing\MethodDispatcher.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\Probing\MethodMap.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\Probing\SourceInfo.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\Probing\TypeConverter.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\TryCallMethodExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\TryCreateInstanceExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\TryInvokeWithValuesExtensions.cs" />
+    <Compile Include="Core\Fasterflect\Extensions\Services\XmlTransformerExtensions.cs" />
+    <Compile Include="Core\Services\ILanguageService.cs" />
+    <Compile Include="Core\Services\ILocalizationService.cs" />
+    <Compile Include="Core\Services\INotifyService.cs" />
+    <Compile Include="Core\Services\IORMService.cs" />
+    <Compile Include="Core\Services\ISecurityService.cs" />
+    <Compile Include="Core\Services\IService.cs" />
+    <Compile Include="Core\UI\Initializers\IAppInitializer.cs" />
+    <Compile Include="Core\Utilities\DateTimeFormatter.cs" />
+    <Compile Include="Core\Utilities\FileCache.cs" />
+    <Compile Include="Core\Utilities\ObjectCopier.cs" />
+    <Compile Include="Core\Utilities\Round.cs" />
+    <Compile Include="Domain\Attachment\Entities\AttachmentInfo.cs" />
+    <Compile Include="Domain\Attachment\Enums\EntityType.cs" />
+    <Compile Include="Domain\Audit\Log.cs" />
+    <Compile Include="Domain\Audit\OperationType.cs" />
+    <Compile Include="Domain\Commands\CommandBase.cs" />
+    <Compile Include="Domain\Commands\CommandHandlerNotFoundException.cs" />
+    <Compile Include="Domain\Commands\CommandProcessor.cs" />
+    <Compile Include="Domain\Commands\ICommand.cs" />
+    <Compile Include="Domain\Commands\ICommandHandler.cs" />
+    <Compile Include="Domain\Commands\ICommandProcessor.cs" />
+    <Compile Include="Domain\DomainModel\HistoryEntity.cs" />
+    <Compile Include="Domain\DomainModel\IConfigurationRoot.cs" />
+    <Compile Include="Domain\Localization\LanguageCulture.cs" />
+    <Compile Include="Domain\Localization\LanguageFactory.cs" />
+    <Compile Include="Domain\Localization\ResourceGroup.cs" />
+    <Compile Include="Domain\Localization\ResourceStatus.cs" />
+    <Compile Include="Domain\Notification\NotificationType.cs" />
+    <Compile Include="Domain\Notification\Notify.cs" />
+    <Compile Include="Domain\Notification\NotifyReceiver.cs" />
+    <Compile Include="Domain\Notification\OperationType.cs" />
+    <Compile Include="Domain\Reporting\ReportDefinition.cs" />
+    <Compile Include="Domain\Security\AuthorizableDetailsFieldRole.cs" />
+    <Compile Include="Domain\Security\AuthorizableElementType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\Security\AuthorizableFieldRole.cs" />
+    <Compile Include="Domain\Security\AuthorizeType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\Security\AuthorizableElementRole.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\Security\Role.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\Security\ThemingType.cs" />
+    <Compile Include="Domain\Security\User.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\Security\UserRole.cs" />
+    <Compile Include="Domain\Validation\PreDefinedValidatorKeys.cs" />
+    <Compile Include="Domain\Validation\ValidationResult.cs" />
+    <Compile Include="Core\GlobalConstant.cs" />
+    <Compile Include="Domain\Workflow\Entities\WorkflowApproval.cs" />
+    <Compile Include="Domain\Workflow\Entities\WorkflowStep.cs" />
+    <Compile Include="Domain\Workflow\Enums\WorkflowStatus.cs" />
+    <Compile Include="Domain\Workflow\Enums\WorkflowStepStatus.cs" />
+    <Compile Include="Domain\Workflow\Enums\WorkflowType.cs" />
+    <Compile Include="Domain\Workflow\RootEntities\WorkflowItem.cs" />
+    <Compile Include="SouccarEntityException.cs" />
+    <Compile Include="Domain\Domain.Seedwork\IUnitOfWork.cs" />
+    <Compile Include="Domain\DomainModel\BaseObject.cs" />
+    <Compile Include="Domain\DomainModel\BaseObjectEqualityComparer.cs" />
+    <Compile Include="Domain\DomainModel\BusinessProcess.cs" />
+    <Compile Include="Domain\DomainModel\BusinessProcessLogEntry.cs" />
+    <Compile Include="Domain\DomainModel\DomainSignatureAttribute.cs" />
+    <Compile Include="Domain\DomainModel\Entity.cs" />
+    <Compile Include="Domain\DomainModel\EntityWithTypedId.cs" />
+    <Compile Include="Domain\DomainModel\IAggregateRoot.cs" />
+    <Compile Include="Domain\DomainModel\IBusinessProcess.cs" />
+    <Compile Include="Domain\DomainModel\IBusinessProcessContent.cs" />
+    <Compile Include="Domain\DomainModel\IContent.cs" />
+    <Compile Include="Domain\DomainModel\IEntity.cs" />
+    <Compile Include="Domain\DomainModel\IEntityWithTypedId.cs" />
+    <Compile Include="Domain\DomainModel\IHasAssignedId.cs" />
+    <Compile Include="Domain\DomainModel\IHistory.cs" />
+    <Compile Include="Domain\DomainModel\IIndex.cs" />
+    <Compile Include="Domain\DomainModel\IndexEntity.cs" />
+    <Compile Include="Domain\DomainModel\IOrder.cs" />
+    <Compile Include="Domain\DomainModel\LogEntry.cs" />
+    <Compile Include="Domain\DomainModel\OrderEntity.cs" />
+    <Compile Include="Domain\DomainModel\ValidatableObject.cs" />
+    <Compile Include="Domain\DomainModel\ValueObject.cs" />
+    <Compile Include="Domain\Entities\EntityServiceBase.cs" />
+    <Compile Include="Domain\Entities\IAggregateController.cs" />
+    <Compile Include="Domain\Entities\IEntityServiceBase.cs" />
+    <Compile Include="Domain\Events\DomainEventRegistrationRemover.cs" />
+    <Compile Include="Domain\Events\DomainEvents.cs" />
+    <Compile Include="Domain\Events\IDomainEvent.cs" />
+    <Compile Include="Domain\Events\IHandles.cs" />
+    <Compile Include="Domain\Extensions\TypeExtensions.cs" />
+    <Compile Include="Domain\Localization\Language.cs" />
+    <Compile Include="Domain\Localization\LocaleStringResource.cs" />
+    <Compile Include="Domain\Localization\LocalizedProperty.cs" />
+    <Compile Include="Domain\PersistenceSupport\IClassMapping.cs" />
+    <Compile Include="Domain\PersistenceSupport\IDbContext.cs" />
+    <Compile Include="Domain\PersistenceSupport\IEntityDuplicateChecker.cs" />
+    <Compile Include="Domain\PersistenceSupport\IRepository.cs" />
+    <Compile Include="Domain\PersistenceSupport\IRepositoryWithTypedId.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Domain\Repositories\IRepository.cs" />
+    <Compile Include="SafeServiceLocator.cs" />
+    <Compile Include="SouccarException.cs" />
+    <Compile Include="Domain\Specification\AndSpecification.cs" />
+    <Compile Include="Domain\Extensions\AssemblyExtensions.cs" />
+    <Compile Include="Domain\Specification\CompositeSpecification.cs" />
+    <Compile Include="Domain\Specification\DirectSpecification.cs" />
+    <Compile Include="Domain\Specification\ExpressionBuilder.cs" />
+    <Compile Include="Domain\Specification\ISpecification.cs" />
+    <Compile Include="Domain\Specification\NotSpecification.cs" />
+    <Compile Include="Domain\Specification\OrSpecification.cs" />
+    <Compile Include="Domain\Specification\ParametersRebinder.cs" />
+    <Compile Include="Domain\Specification\Specification.cs" />
+    <Compile Include="Domain\Specification\TrueSpecification.cs" />
+    <Compile Include="Domain\Validation\BrokenBusinessRule.cs" />
+    <Compile Include="Domain\Validation\IError.cs" />
+    <Compile Include="Core\Services\IValidationService.cs" />
+    <Compile Include="Domain\Validation\IRule.cs" />
+    <Compile Include="Domain\Validation\ObjectRules.cs" />
+    <Compile Include="Domain\Validation\ValidationRules.cs" />
+    <Compile Include="Domain\Validation\ValidatorInfo.cs" />
+    <Compile Include="Domain\Validation\ValidatorType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Localization\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="zkemkeeper">
+      <Guid>{FE9DED34-E159-408E-8490-B720A5E632C7}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

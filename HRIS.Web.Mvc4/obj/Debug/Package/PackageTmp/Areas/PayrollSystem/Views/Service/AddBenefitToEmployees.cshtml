@@ -1,0 +1,322 @@
+﻿@using HRIS.Domain.PayrollSystem.Enums
+@using HRIS.Domain.PayrollSystem.RootEntities
+@using HRIS.Domain.PayrollSystem.Configurations
+@using HRIS.Validation.MessageKeys
+@using  Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+@using Souccar.Infrastructure.Extenstions
+
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+<div id="BenefitInfo" class="payroll-service"></div>
+<div id="FilterInfo"></div>
+<div id="gridCards"></div>
+<script>
+    $("#FilterInfo").html(GenerateFilterHtml());
+
+    var monthsDataSource;
+    var benefitCardsDataSource;
+
+    $.ajax({
+        url: window.applicationpath + 'PayrollSystem/Reference/ReadMonthToList',
+        type: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify({ typeName: "@typeof(Month).FullName", requestInformation: null }),
+        async: false,
+        success: function (data) {
+            monthsDataSource = data.Data;
+        }
+    });
+
+    $.ajax({
+        url: window.applicationpath + 'Reference/ReadToList',
+        type: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify({ typeName: "@typeof(BenefitCard).FullName", requestInformation: null }),
+        async: false,
+        success: function (data) {
+            benefitCardsDataSource = data.Data;
+        }
+    });
+
+
+    var databind = kendo.observable();
+
+    var tempdata = [
+        { Name: "ForMonthlyCards", Title: "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.ForMonthlyCardsCheckboxTitle))", Type: "Boolean" },
+         { Name: "ForEmployeeHasTheSameBenefit", Title: "@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.ForEmployeeHasTheSameBenefit))", Type: "Boolean" },
+        { Name: "Months", Title: '@typeof(Month).GetTitle()', Type: "Dropdown", DataSource: "monthsDataSource" },
+        { Name: "BenefitCard", Title: '@typeof(BenefitCard).GetTitle()', Type: "Dropdown", DataSource: "benefitCardsDataSource"},
+        { Name: "Value", Title: '@typeof(BenefitCard).GetProperty("Value").GetTitle()', Type: "Number" },
+        { Name: "Formula", Title: '@typeof(BenefitCard).GetProperty("Formula").GetTitle()', Type: "Enum", TypeName: "HRIS.Domain.PayrollSystem.Enums.Formula", IsRequired: false },
+        { Name: "ExtraValue", Title: '@typeof(BenefitCard).GetProperty("ExtraValue").GetTitle()', Type: "Number" },
+        { Name: "ExtraValueFormula", Title: '@typeof(BenefitCard).GetProperty("ExtraValueFormula").GetTitle()', Type: "Enum", TypeName: "HRIS.Domain.PayrollSystem.Enums.ExtraValueFormula", IsRequired: false },
+        { Name: "CeilValue", Title: '@typeof(BenefitCard).GetProperty("CeilValue").GetTitle()', Type: "Number" },
+        { Name: "CeilFormula", Title: '@typeof(BenefitCard).GetProperty("CeilFormula").GetTitle()', Type: "Enum", TypeName: "HRIS.Domain.PayrollSystem.Enums.Formula", IsRequired: false },
+        { Name: "ConflictOption", Title: "@PayrollLocalizationHelper.GetResource(PayrollLocalizationHelper.ConflictOption)", Type: "Enum", TypeName: "HRIS.Domain.PayrollSystem.Enums.ConflictOption"}
+    ];
+    createCustomEditForm($("#BenefitInfo"), { Fields: tempdata, Key: "" }, databind);
+    $("[name='Months']").kendoDropDownList({
+        filter: "contains",
+        autoBind: true,
+        minLength: 1,
+        dataTextField: "Name",
+        dataValueField: "Id",
+    });
+    var dropdownlist = $("[name='Months']").data("kendoDropDownList");
+    dropdownlist.setDataSource(monthsDataSource);
+
+    $("[name='BenefitCard']").kendoDropDownList({
+        filter: "contains",
+        autoBind: true,
+        minLength: 1,
+        dataTextField: "Name",
+        dataValueField: "Id",
+    });
+    var dropdownlist = $("[name='BenefitCard']").data("kendoDropDownList");
+    dropdownlist.setDataSource(benefitCardsDataSource);
+    reOrderControls($("#BenefitInfo"));
+    $("[name=CeilValue]").data("kendoNumericTextBox").min(0);
+    $("[name=Value]").data("kendoNumericTextBox").min(0);
+    addRequiredStar("BenefitCard");
+    addRequiredStar("ConflictOption");
+    addRequiredStar("ExtraValueFormula");
+    addRequiredStar("Formula");
+    addRequiredStar("CeilFormula");
+
+    $("[name=Value]").data("kendoNumericTextBox").enable(false);
+    $("[name=ExtraValue]").data("kendoNumericTextBox").enable(false);
+    $("[name=CeilValue]").data("kendoNumericTextBox").enable(false);
+
+    $("[name=Formula]").data("kendoDropDownList").enable(false);
+    $("[name=ExtraValueFormula]").data("kendoDropDownList").enable(false);
+    $("[name=CeilFormula]").data("kendoDropDownList").enable(false);
+
+
+
+
+    $('[name="ForMonthlyCards"]').change(function () {
+        if (this.checked) {
+            $('[name="Months"]').data("kendoDropDownList").enable(true);
+        } else {
+            $('[name="Months"]').data("kendoDropDownList").enable(false);
+        }
+    });
+    $('[name="ForMonthlyCards"]').trigger("change");
+
+
+    $('[name="BenefitCard"]').change(function () {
+        onBenefitCardChanged();
+    });
+    $('[name="BenefitCard"]').trigger("change");
+
+    $('[name="Months"]').change(function () {
+        $('[name="ForMonthlyCards"]').trigger("change");
+    });
+
+    function onBenefitCardChanged() {
+        var benefitCardId = $('[name="BenefitCard"]').data("kendoDropDownList").value();
+        if (benefitCardId > 0) {
+            $.ajax({
+                url: 'BenefitCard/GetBenefitCardInformation',
+                type: "POST",
+                data: JSON.stringify({ id: benefitCardId }),
+                contentType: 'application/json',
+                success: function (data) {
+                    $("[name=Value]").data("kendoNumericTextBox").value(data.result.Value);
+                    $("[name=ExtraValue]").data("kendoNumericTextBox").value(data.result.ExtraValue);
+                    $("[name=CeilValue]").data("kendoNumericTextBox").value(data.result.CeilValue);
+
+                    $("[name=Formula]").data("kendoDropDownList").value(data.result.Formula);
+                    $("[name=ExtraValueFormula]").data("kendoDropDownList").value(data.result.ExtraValueFormula);
+                    $("[name=CeilFormula]").data("kendoDropDownList").value(data.result.CeilFormula);
+
+                    $("[name=Value]").data("kendoNumericTextBox").enable(true);
+                    $("[name=ExtraValue]").data("kendoNumericTextBox").enable(true);
+                    $("[name=CeilValue]").data("kendoNumericTextBox").enable(true);
+                    $("[name=Formula]").data("kendoDropDownList").enable(true);
+                    $("[name=ExtraValueFormula]").data("kendoDropDownList").enable(true);
+                    $("[name=CeilFormula]").data("kendoDropDownList").enable(true);
+                }
+            });
+        }
+    }
+
+    function GenerateFilterHtml() {
+        var appendedFilterHtml = "<fieldset><legend>@GlobalResource.FilterBy</legend><div><input type='radio' name='MonthFilter' value='FilterByEmployee' id='FilterByEmployee' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByEmployee')" + '"' + "/>" +
+            "<label for='FilterByEmployee'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByEmployeeTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByPrimaryCard' id='FilterByPrimaryCard' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByPrimaryCard')" + '"' + "/>" +
+            "<label for='FilterByPrimaryCard'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByPrimaryCardTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByGrade' id='FilterByGrade' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByGrade')" + '"' + "/>" +
+            "<label for='FilterByGrade'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByGradeTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByJobTitle' id='FilterByJobTitle' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByJobTitle')" + '"' + "/>" +
+            "<label for='FilterByJobTitle'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByJobTitleTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByJobDescription' id='FilterByJobDescription' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByJobDescription')" + '"' + "/>" +
+            "<label for='FilterByJobDescription'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByJobDescriptionTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByPosition' id='FilterByPosition' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByPosition')" + '"' + "/>" +
+            "<label for='FilterByPosition'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByPositionTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByNode' id='FilterByNode' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByNode')" + '"' + "/>" +
+            "<label for='FilterByNode'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByNodeTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByMajorType' id='FilterByMajorType' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByMajorType')" + '"' + "/>" +
+            "<label for='FilterByMajorType'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByMajorTypeTitle))</label></div>";
+
+        appendedFilterHtml += "<div><input type='radio' name='MonthFilter' value='FilterByMajor' id='FilterByMajor' " +
+            "onclick=" + '"' + "LoadSpecificFilter('FilterByMajor')" + '"' + "/>" +
+            "<label for='FilterByMajor'>@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FilterByMajorTitle))</label></div></fieldset>";
+
+        return appendedFilterHtml;
+    }
+
+    function LoadSpecificFilter(filterBy) {
+        var actionName = "";
+
+        if (filterBy == "FilterByEmployee") {
+            actionName = "GetEmployeeGridModel";
+        } else if (filterBy == "FilterByPrimaryCard") {
+            actionName = "GetPrimaryCardGridModel";
+        } else if (filterBy == "FilterByGrade") {
+            actionName = "GetGradeGridModel";
+        } else if (filterBy == "FilterByJobTitle") {
+            actionName = "GetJobTitleGridModel";
+        } else if (filterBy == "FilterByJobDescription") {
+            actionName = "GetJobDescriptionGridModel";
+        } else if (filterBy == "FilterByPosition") {
+            actionName = "GetPositionGridModel";
+        } else if (filterBy == "FilterByNode") {
+            actionName = "GetNodeGridModel";
+        } else if (filterBy == "FilterByMajorType") {
+            actionName = "GetMajorTypeGridModel";
+        } else if (filterBy == "FilterByMajor") {
+            actionName = "GetMajorGridModel";
+        }
+        debugger;
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/Filter/' + actionName,
+            type: "POST",
+            contentType: 'application/json',
+            success: function (data) {
+                debugger;
+                //$("#gridCards").html("<div id='grid'></div>");
+                //generateGrid(data);
+                data.Name = "gridCards";
+                new Grid(data).CreateSimpleGrid();
+                $(".GenerateButtonKey").off("click").on("click", function () {
+
+                    var benefitCardId = $('[name="BenefitCard"]').data("kendoDropDownList").value();
+                    var ConflictOption = $('[name="ConflictOption"]').data("kendoDropDownList").value();
+                    var Formula = $('[name="Formula"]').data("kendoDropDownList").value();
+                    var ExtraValueFormula = $('[name="ExtraValueFormula"]').data("kendoDropDownList").value();
+                    var CeilFormula = $('[name="CeilFormula"]').data("kendoDropDownList").value();
+
+                    if ((!benefitCardId > 0) || benefitCardId == "")
+                    {
+                        var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.BenefitCardMustBeSelected))';
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+                    } else if (Formula == "" || Formula == null) {
+                        var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.FormulaMustBeSelected))';
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+                    }
+                    else if (ExtraValueFormula == "" || ExtraValueFormula == null) {
+                        var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.ExtraValueFormulaMustBeSelected))';
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+                    } else if (CeilFormula == "" || CeilFormula == null) {
+                        var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.CeilFormulaMustBeSelected))';
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+                    }
+                    else if ((!ConflictOption > 0) || ConflictOption == "")
+                    {
+                        var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.ConflictOptionMustBeSelected))';
+                        var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+                        ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+                    }
+                    else
+                    {
+                        GenerateByFilteredData(filterBy);
+            }
+
+
+                });
+            }
+        });
+    }
+
+    function GenerateByFilteredData(filterBy) {
+        var isForMonthlyCards = $("[name=ForMonthlyCards]").is(':checked');
+        var isForEmployeeHasTheSameBenefit = $("[name=ForEmployeeHasTheSameBenefit]").is(':checked')
+        var value = $("[name=Value]").data("kendoNumericTextBox").value();
+        var extraValue = $("[name=ExtraValue]").data("kendoNumericTextBox").value();
+        var ceilValue = $("[name=CeilValue]").data("kendoNumericTextBox").value();
+
+        var formula = $("[name=Formula]").data("kendoDropDownList").value();
+        var extraValueFormula = $("[name=ExtraValueFormula]").data("kendoDropDownList").value();
+        var ceilFormula = $("[name=CeilFormula]").data("kendoDropDownList").value();
+
+        var monthId = $("[name=Months]").data("kendoDropDownList").value();
+        var conflictOption = $("[name=ConflictOption]").data("kendoDropDownList").value();
+        var benefitCardId = $("[name=BenefitCard]").data("kendoDropDownList").value();
+
+
+        if (monthId == "") {
+            monthId = 0;
+        }
+
+
+        if (value == null || extraValue == null || ceilValue == null) {
+            var msg = '@ServiceFactory.LocalizationService.GetResource(CustomMessageKeysPayrollSystemModule.GetFullKey(CustomMessageKeysPayrollSystemModule.SetValuesToAllNumericFieldsBeforeExecution))';
+            var commands = [{ Title: "Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("Error", msg, "k-icon w-b-error", commands);
+            return;
+        }
+
+
+        $.ajax({
+            url: window.applicationpath + 'PayrollSystem/BenefitDeductionService/ApplyAddBenefitToEmployees',
+            type: "POST",
+            data: JSON.stringify(
+                {
+                    filterBy: filterBy,
+                    benefitCardId: benefitCardId,
+                    value: value,
+                    extraValue: extraValue,
+                    ceilValue: ceilValue,
+                    formula: formula,
+                    extraValueFormula: extraValueFormula,
+                    ceilFormula: ceilFormula,
+                    isForMonthlyCards: isForMonthlyCards,
+                    isForEmployeeHasTheSameBenefit: isForEmployeeHasTheSameBenefit,
+                    monthId: monthId,
+                    conflictOption: conflictOption,
+                    filter: $("#gridCards").data("kendoGrid").dataSource.filter()
+                }),
+            contentType: 'application/json',
+            success: function (data) {
+                var commands = [{ Title: '@GlobalResource.Ok', ClassName: "k-icon k-update" }];
+                if (data.Success) {
+                    ShowMessageBox("info", data.Msg, "k-icon w-b-info", commands);
+                } else {
+                    ShowMessageBox("Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+</script>

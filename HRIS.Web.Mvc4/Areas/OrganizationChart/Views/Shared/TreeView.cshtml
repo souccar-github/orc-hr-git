@@ -1,0 +1,659 @@
+﻿@using  Project.Web.Mvc4.Helpers.Resource
+@using  Project.Web.Mvc4.Helpers
+
+@*<div class="NewEditNodeDiv"></div>*@
+<div class="k-content" id="organization_chart_tree">
+
+    <fieldset class="expandable-collapseable">
+        <legend> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.OrganizationTreeCaption) </legend>
+        <div class="commands_box">
+            <div class="holder">
+                <button class="k-button" id="expandAllNodes"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ExpandOneLevelCaption) </button>
+                <button class="k-button" id="collapseAllNodes"> @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.CollapseCaption) </button>
+
+
+
+                <hr />
+                <div>
+                    <button onclick="NewEditNode('NewRoot')" class="k-button">
+                        <span class="k-icon k-add"></span>
+                        @OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.AddRootCaption)
+                    </button>
+                </div>
+                <div>
+                    <button onclick="NewEditNode('NewNode')" class="k-button">
+                        <span class="k-icon k-add"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.AddNodeCaption)
+                    </button>
+                </div>
+                <div>
+                    <button onclick="NewEditNode('EditNode')" class="k-button">
+                        <span class="k-icon k-edit"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.EditNodeCaption)
+                    </button>
+                </div>
+                <div>
+                    <button onclick="deleteNodeTree()" class="k-button">
+                        <span class="k-icon k-delete"></span>@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.DeleteNodeCaption)
+                    </button>
+                </div>
+            </div> <!-- end of holder -->
+        </div><!-- end of commands -->
+        <div id="treeview" class="tree">
+        </div>
+    </fieldset> <!-- end of fieldset -->
+</div>
+
+<div id="NewEditNodeWindow"  style="display: none">
+    <div class="k-edit-form-container">
+        
+        <div class="k-edit-label" >
+            <label id="ParentNameLable" for="ParentName" >Parent</label>
+        </div>
+        <div data-container-for="ParentName" class="k-edit-field">
+            <input id="ParentName" disabled="disabled" name="ParentName"  type="text" class="k-input k-textbox" data-bind="value:ParentName">
+            <input id="ParentId" name="ParentId"  type="hidden" class="k-input k-textbox" data-bind="value:ParentId">
+        </div>
+        <div class="k-edit-label">
+            <label for="Name">Name</label>
+        </div>
+        <div data-container-for="Name" class="k-edit-field">
+            <input id="Name" name="Name" type="text" class="k-input k-textbox"  data-bind="value:Name">
+        </div>
+
+        <div class="k-edit-label">
+            <label for="Code">Code</label>
+        </div>
+        <div data-container-for="Code" class="k-edit-field">
+            <input id="Code" name="Code" type="text" class="k-input k-textbox"  data-bind="value:Code">
+        </div>
+        
+        <div class="k-edit-label">
+            <label for="Type">Type</label>
+        </div>
+        <div data-container-for="Type" class="k-edit-field">
+            <input id="Type" name="Type" 
+                 data-role="dropdownlist" data-text-field="Name" data-source="dataSource" data-value-primitive="true" data-value-field="Id"  data-bind="value:Type" />
+        </div>
+        
+        <div class="k-edit-buttons k-state-default not-default-button">
+            <a class="k-button k-button-icontext k-grid-update" id="SaveNodeButton" href="#"><span class="k-icon k-update"></span>Save</a>
+            <a class="k-button k-button-icontext k-grid-cancel" id="CancelButton" href="#"><span class="k-icon k-cancel"></span>Cancel</a>
+        </div>    
+    </div>
+</div>
+<script id="deleteMessageBoxTemplate" type="text/x-kendo-template">
+    <div class="message-box">
+        <span class="#=IconClass#"></span>
+        <p class="message-box-body ">#=Message#</p>
+    </div>
+    <div class="k-edit-buttons k-state-default message-box-buttons not-default-button">
+        #for(var i=0;i< Commands.length;i++){ #
+        <a class="k-button #=Commands[i].Name#" href="\\#">
+            <span class="#=Commands[i].ClassName#"></span>#=Commands[i].Title#
+        </a>
+        #}#
+    </div>
+
+</script>
+<script>
+    var generalNodeId = [];
+    var dataSource = {
+        transport: {
+            read: {
+                url: "@Url.Action("ReadToList", "Reference", new { typeName = "HRIS.Domain.OrganizationChart.Configurations.NodeType", area = "" })"
+            }
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+
+    var newRootViewModel = kendo.observable();
+    var newNodeViewModel = kendo.observable();
+    var updatedNodeViewModel = kendo.observable();
+
+    kendo.init($("#NewEditNodeWindow"));
+
+    $("#treeview").kendoTreeView({
+        dragAndDrop: false,
+        dataSource: getTreeViewDataSource(),
+        dataTextField: "Name",
+        loadOnDemand: true
+    }).on("click", ".k-in", function (e) {
+        var tree = $("#treeview").data('kendoTreeView');
+        tree.toggle($(e.target).closest(".k-item"));
+    });
+
+    function getTreeViewDataSource() {
+        var result = {};
+        result.transport = {
+            read: {
+                url: '@Url.Action("GetTreeNodes", "Node")',
+                type: "POST",
+                dataType: "json"
+            }
+        };
+        result.schema = {
+            model: {
+                id: "Id",
+                //children: "Items",
+                hasChildren: "HasChildren"
+            }
+        };
+        return result;
+    }
+
+    function rebuildTree() {
+        var tree = $("#treeview").data("kendoTreeView");
+        tree.dataSource.read();
+    }
+
+    function addRootToTree() {
+
+        $("#ParentName").hide();
+        $("#ParentNameLable").hide();
+
+        var newRootWindow = $("#NewEditNodeWindow");
+        kendo.bind($("#NewEditNodeWindow"), newRootViewModel);
+        newRootWindow.kendoWindow({
+            height: 300,
+            modal: true,
+            resizable: false,
+            title: "Add New Root",
+            open: function () {
+                newRootWindow.data("kendoWindow").center();
+            }
+        });
+        newRootWindow.data("kendoWindow").open();
+
+        $("#SaveNodeButton").off('click').on('click', function () {
+
+            newRootViewModel.Name = $("#Name").val();
+            newRootViewModel.Code = $("#Code").val();
+            newRootViewModel.Type = parseInt($("#Type").val());
+
+            $.ajax({
+                url: '@Url.Action("SaveNode", "Node")',
+                type: "POST",
+                data: JSON.stringify({
+                    model: newRootViewModel
+                }),
+
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        CloseNewEditNodeWindow();
+                        //alert(data.Msg);
+                        rebuildTree();
+                    } else {
+                        if (data.Errors != null) {
+                            if (data.Errors.Exception != null) {
+                                CloseNewEditNodeWindow();
+                                alert("Could not save element: " + data.Errors.Exception);
+                            } else {
+                                for (var prop in data.Errors) {
+                                    var messageText = data.Errors[prop];
+                                    var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                                    $('[name="' + prop + '"]').after(t);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            });
+        });
+
+        $("#CancelButton").off('click').on('click', function () {
+            CloseNewEditNodeWindow();
+        });
+    }
+
+    function addNodeToTree() {
+
+        $("#ParentName").show();
+        $("#ParentNameLable").show();
+
+        var treeview = $("#treeview").data("kendoTreeView");
+        var selectedNode = treeview.select();
+        if (selectedNode.length == 0) {
+            alert("Please select node first..");
+            return;
+        }
+        var uid = selectedNode.data("uid");
+        newNodeViewModel.ParentId = treeview.dataSource.getByUid(uid).Id;
+        newNodeViewModel.ParentName = treeview.dataSource.getByUid(uid).Name;
+
+        var newNodeWindow = $("#NewEditNodeWindow");
+        //kendo.bind($("#NewNodeWindow"), newNodeViewModel);
+        newNodeWindow.kendoWindow({
+            height: 300,
+            modal: true,
+            resizable: false,
+            title: "Add New Node",
+            open: function () {
+                newNodeWindow.data("kendoWindow").center();
+            }
+        });
+        $("#ParentId").val(newNodeViewModel.ParentId);
+        $("#ParentName").val(newNodeViewModel.ParentName);
+        newNodeWindow.data("kendoWindow").open();
+
+        $("#SaveNodeButton").off('click').on('click', function () {
+
+            newNodeViewModel.Name = $("#Name").val();
+            $("#Name").val("");
+            newNodeViewModel.Code = $("#Code").val();
+            $("#Code").val("");
+            newNodeViewModel.Type = parseInt($("#Type").val());
+
+            $.ajax({
+                url: '@Url.Action("SaveNode", "Node")',
+                type: "POST",
+                data: JSON.stringify({
+                    model: newNodeViewModel
+                }),
+
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        CloseNewEditNodeWindow();
+                        //alert(data.Msg);
+                        rebuildTree();
+                    } else {
+                        if (data.Errors != null) {
+                            if (data.Errors.Exception != null) {
+                                CloseNewEditNodeWindow();
+                                alert("Could not save element: " + data.Errors.Exception);
+                            } else {
+                                for (var prop in data.Errors) {
+                                    var messageText = data.Errors[prop];
+                                    var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                                    $('[name="' + prop + '"]').after(t);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            });
+        });
+
+        $("#CancelButton").off('click').on('click', function () {
+            CloseNewEditNodeWindow();
+        });
+    }
+
+    function editNodeTree() {
+
+        $("#ParentName").hide();
+        $("#ParentNameLable").hide();
+
+        var treeview = $("#treeview").data("kendoTreeView");
+        var selectedNode = treeview.select();
+        if (selectedNode.length == 0) {
+            alert("Please select node first..");
+            return;
+        }
+        var uid = selectedNode.data("uid");
+        var nodeId = treeview.dataSource.getByUid(uid).Id;
+
+
+        $.ajax({
+            url: '@Url.Action("GetNodeInformation", "Node")',
+            type: "POST",
+            data: JSON.stringify({ id: nodeId }),
+            contentType: 'application/json',
+            success: function (data) {
+                var dataRow = data;
+
+                type = dataRow.Type;
+
+                updatedNodeViewModel = kendo.observable({
+                    ParentId: data.ParentId,
+                    ParentName: data.ParentName,
+                    NodeId: nodeId,
+                    Name: data.Name,
+                    Code: data.Code,
+                    Type: data.Type
+                });
+
+                kendo.bind($("#NewEditNodeWindow"), updatedNodeViewModel);
+            }
+        });
+
+        var newNodeWindow = $("#NewEditNodeWindow");
+        newNodeWindow.kendoWindow({
+            height: 300,
+            modal: true,
+            resizable: false,
+            title: "Edit Node",
+            open: function () {
+                newNodeWindow.data("kendoWindow").center();
+            }
+        });
+
+        newNodeWindow.data("kendoWindow").open();
+
+        $("#SaveNodeButton").off('click').on('click', function () {
+
+            newNodeViewModel.ParentId = $("#ParentId").val();
+            newNodeViewModel.Name = $("#Name").val();
+            newNodeViewModel.Code = $("#Code").val();
+            newNodeViewModel.Type = parseInt($("#Type").val());
+
+            $.ajax({
+                url: '@Url.Action("SaveNode", "Node")',
+                type: "POST",
+                data: JSON.stringify({
+                    model: updatedNodeViewModel
+                }),
+
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success) {
+                        CloseNewEditNodeWindow();
+                        //alert(data.Msg);
+                        rebuildTree();
+                    } else {
+                        if (data.Errors != null) {
+                            if (data.Errors.Exception != null) {
+                                CloseNewEditNodeWindow();
+                                alert("Could not save element: " + data.Errors.Exception);
+                            } else {
+                                for (var prop in data.Errors) {
+                                    var messageText = data.Errors[prop];
+                                    var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                                    $('[name="' + prop + '"]').after(t);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+
+
+        $("#CancelButton").off('click').on('click', function () {
+            CloseNewEditNodeWindow();
+        });
+
+    }
+
+  function deleteNodeTree() {
+
+        var treeview = $("#treeview").data("kendoTreeView");
+        var selectedNode = treeview.select();
+        if (selectedNode.length == 0) {
+
+            var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+            ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectNodeFirst)", "k-icon w-b-error", commands);
+
+            //alert("Please select node first..");
+            return;
+        }
+        var uid = selectedNode.data("uid");
+        var nodeId = treeview.dataSource.getByUid(uid).Id;
+        var selecteditem = treeview.dataItem(selectedNode);
+        if (nodeId == null) {
+            var nodeIds = generalNodeId.filter(function (a) { return a.Name == selecteditem.Name })[0];
+            nodeId = nodeIds.Id;
+            //alert(nodeId);
+        }
+
+        var commands = [{ Name: "ConfirmDeletion", Title: "@Project.Web.Mvc4.Helpers.GlobalResource.Ok", ClassName: "k-icon k-update" },
+                            {  Name: "CancelDeletion",Title: "@Project.Web.Mvc4.Helpers.GlobalResource.No", ClassName: "k-icon k-cancel" }];
+
+        @*ShowMessageBox("@Project.Web.Mvc4.Helpers.GlobalResource.Delete", "@Project.Web.Mvc4.Helpers.GlobalResource.DeleteConfirmationMessage", "k-icon w-b-question", commands);*@
+
+
+        var kendoWindow = $("<div class='message-box-div'></div>").kendoWindow({
+            width: "300px",
+            height: "150px",
+            modal: true,
+            resizable: false,
+            title: "@Project.Web.Mvc4.Helpers.GlobalResource.Delete",
+        });
+        var objWindow = kendoWindow.data("kendoWindow");
+        objWindow.open();
+        kendoWindow.parent().find("div.k-window-titlebar.k-header").prepend("<span class='maestro-popup-icon'></span>");
+        objWindow
+            .content(kendo.template($("#customMessageBoxTemplate").html())({ Message: "@Project.Web.Mvc4.Helpers.GlobalResource.DeleteConfirmationMessage", IconClass: "k-icon w-b-question", Commands: commands }))
+            .center().open();
+        kendoWindow
+            .find(gedCommandsClassNames(commands))
+            .click(function () {
+                for (var i = 0; i < commands.length-1; i++) {
+                    if ($(this).hasClass("ConfirmDeletion")) {
+                        deleteNode(nodeId);
+                    }
+                }
+                objWindow.close();
+            })
+            .end();
+      }
+
+    function deleteNode(nodeId) {
+        $.ajax({
+            url: '@Url.Action("DeleteNode", "Node")',
+            type: "POST",
+            data: JSON.stringify({ nodeId: nodeId }),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.Success) {
+                    var treeview=$("#treeview").data("kendoTreeView");
+                    var selectedNode = treeview.select();
+                    treeview.remove(selectedNode);
+                }
+                else {
+                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                    ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                }
+            }
+        });
+    }
+
+    function cancelDeleteNode() {
+        return;
+    }
+
+    function CloseNewEditNodeWindow() {
+        var newNodeWindow = $("#NewEditNodeWindow");
+        newNodeWindow.data("kendoWindow").close();
+    }
+
+    $("#expandAllNodes").click(function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        treeview.expand(".k-item");
+    });
+
+    $("#collapseAllNodes").click(function () {
+        var treeview = $("#treeview").data("kendoTreeView");
+        treeview.collapse(".k-item");
+    });
+
+
+    function NewEditNode(operationType) {
+        var containerDiv = $('<div class="NewEditNodeDiv"></div>');
+        var title = "";
+        var databind = kendo.observable();
+        var oldname = "";
+        if (operationType != "NewRoot") {
+
+            var treeview = $("#treeview").data("kendoTreeView");
+            var selectedNode = treeview.select();
+            if (selectedNode.length == 0) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Error", "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.MsgPleaseSelectNodeFirst)", "k-icon w-b-error", commands);
+                return;
+            }
+
+            var uid = selectedNode.data("uid");
+            var selecteditem = treeview.dataItem(selectedNode);
+        }
+
+
+        if (operationType == "EditNode") {
+
+            title = "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.EditNodeCaption)";
+            var nodeId = treeview.dataSource.getByUid(uid).Id;
+
+            if (nodeId == null) {
+                var nodeIds = generalNodeId.filter(function (a) { return a.Name == selecteditem.Name })[0];
+                nodeId = nodeIds.Id;
+                //alert(nodeId);
+            }
+            $.ajax({
+                url: '@Url.Action("GetNodeInformation", "Node")',
+                type: "POST",
+                data: JSON.stringify({ id: nodeId }),
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+
+                    databind.ParentId = data.ParentId;
+                    databind.Parent = data.ParentName;
+                    databind.NodeId = nodeId;
+                    databind.Name = data.Name;
+                    databind.Code = data.Code;
+                    databind.Type = data.Type;
+                    oldname = data.Name;
+                }
+            });
+
+        } else if (operationType == "NewNode") {
+            title = "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.AddNodeCaption)";
+            databind.ParentId = treeview.dataSource.getByUid(uid).Id;
+            databind.Parent = treeview.dataSource.getByUid(uid).Name;
+            var nodeId = treeview.dataSource.getByUid(uid).Id;
+            if (nodeId == null) {
+                var nodeIds = generalNodeId.filter(function (a) { return a.Name == selecteditem.Name })[0];
+                databind.ParentId = nodeIds.Id;
+                databind.Parent = nodeIds.Name;
+            }
+        }
+
+        var tempdata = [];
+        if (operationType == "NewRoot") {
+            title = "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.AddRootCaption)";
+            tempdata = [
+            { Name: "Name", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.RootNameCaption)", Type: "Text", IsRequired: true },
+            { Name: "Code", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.RootCodeCaption)", Type: "Text", IsRequired: true },
+            { Name: "Type", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.RootTypeCaption)", Type: "Reference", TypeName: "HRIS.Domain.OrganizationChart.Configurations.NodeType", Creatable: true, IsRequired: true },
+            ];
+        } else {
+            tempdata = [
+               { Name: "Parent", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.ParentCaption)", Type: "Text", IsReadonly: true },
+               { Name: "Name", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeNameCaption)", Type: "Text", IsRequired: true },
+               { Name: "Code", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeCodeCaption)", Type: "Text", IsRequired: true },
+               { Name: "Type", Title: "@OrganizationChartLocalizationHelper.GetResource(OrganizationChartLocalizationHelper.NodeTypeCaption)", Type: "Reference", TypeName: "HRIS.Domain.OrganizationChart.Configurations.NodeType", Creatable: true, IsRequired: true },
+            ];
+        }
+
+
+        var buttons = [
+            { Name: "update", CssClass: "update", Title: "@GlobalResource.Save" },
+            { Name: "cancel", CssClass: "cancel", Title: "@GlobalResource.Cancel" }
+        ];
+        var containerId = "NewEditNodeContainer";
+        var bodyHTML = "<div class='NewEditNode fix-custom-popup'></div>";
+        var isTwoColumns = false;
+
+        createAndOpenCustomWindow(containerDiv, bodyHTML, containerId, title, buttons, isTwoColumns);
+
+
+        $("#cancel").off('click').on('click', function () {
+            containerDiv.data("kendo-window").close();
+        });
+
+        $("#update").off('click').on('click', function () {
+            if ($("#Type_NewEditNodeKey").val() == 0)
+                $("#Type_NewEditNodeKey").val(null);
+            if ($(".customPopupView-body").kendoValidator().data("kendoValidator").validate()) {
+                $.ajax({
+                    url: '@Url.Action("SaveNode", "Node")',
+                    type: "POST",
+                    data: JSON.stringify({
+                        model: databind
+                    }),
+
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success) {
+
+                            $.ajax({
+                                url: '@Url.Action("GetNodeInformationByCode", "Node")',
+                                type: "POST",
+                                data: JSON.stringify({ code: databind.Code }),
+                                contentType: 'application/json',
+                                async: false,
+                                success: function (data1) {
+
+                                    databind.ParentId = data1.ParentId;
+                                    databind.Parent = data1.ParentName;
+                                    databind.NodeId = data1.NodeId;
+                                    databind.Name = data1.Name;
+                                    databind.Code = data1.Code;
+                                    databind.Type = data1.Type;
+                                }
+                            });
+                            var treetemp = $("#treeview").data("kendoTreeView");
+                            var selectedNodetemp = treetemp.select();
+                            generalNodeId.push({ Id: databind.NodeId, Name: databind.Name });
+                            if (operationType == "NewNode") {
+                                treetemp.append(databind, selectedNodetemp);
+                                //selectedNodetemp.children.read();
+                            }
+                            else {
+                                if (operationType == "EditNode") {
+                                    // alert(oldname);
+                                    $(treetemp.findByText(oldname)).each(function () {
+                                        treetemp.text(this, databind.Name);
+                                    });
+                                }
+                                else
+                                    rebuildTree();
+                            }
+                        } else {
+                            if (data.Errors != null) {
+                                if (data.Errors.Exception != null) {
+                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                    ShowMessageBox("@GlobalResource.Error", data.Errors.Exception, "k-icon w-b-error", commands);
+                                }
+                            } else {
+
+                                if (data.Msg != null) {
+                                    var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                                    ShowMessageBox("@GlobalResource.Error", data.Msg, "k-icon w-b-error", commands);
+                                }
+                                else {
+                                    for (var prop in data.Errors) {
+                                        var messageText = data.Errors[prop];
+                                        var t = kendo.template($('#TooltipInvalidMessageTemplate').html())({ message: messageText });
+                                        if (!$('[name="' + prop + '"]').next().hasClass("k-widget k-tooltip k-tooltip-validation k-invalid-msg")) {
+                                            $('[name="' + prop + '"]').after(t);
+                                        } else {
+                                            $('[name="' + prop + '"]').next().html("<span class='k-icon k-warning'></span>" + messageText);
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+                });
+                containerDiv.data("kendo-window").close();
+            }
+        });
+
+
+        createCustomEditForm($(".NewEditNode"), { Fields: tempdata, Key: "NewEditNodeKey" }, databind);
+
+    }
+
+</script>
+
+
+

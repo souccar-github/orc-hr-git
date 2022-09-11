@@ -1,0 +1,74 @@
+﻿@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 04/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+
+@using HRIS.Domain.EmployeeRelationServices.Enums
+@using  Project.Web.Mvc4.Helpers
+@using  Project.Web.Mvc4.Helpers.Resource
+
+<script>
+
+    function DisciplinarySettingEditHandler(e) {
+        var container = e.container.find(".controls-div");
+        var isDeductFromSalary = e.model.IsDeductFromSalary;
+        var deductionType = e.model.DeductionType;
+
+        if (isDeductFromSalary) {
+
+            container.find(".control-Value").show();
+            container.find(".control-DeductionType").show();
+        } else {
+
+            container.find("[name='Value']").data("kendoNumericTextBox").value(0);
+
+            container.find(".control-Value").hide();
+            container.find(".control-DeductionType").hide();
+        }
+
+        var isDeductFromSalaryCkb = e.container.find('[name="IsDeductFromSalary"]');
+        isDeductFromSalaryCkb.bind("change", status_change);
+
+        function status_change() {
+            var isDeductFromSalary = $('[name="IsDeductFromSalary"]').is(':checked');
+            if (isDeductFromSalary) {
+                container.find(".control-Value").show();
+                container.find(".control-DeductionType").show();
+                
+            } else {
+
+                e.model.Value = 0;
+
+                container.find("[name='Value']").data("kendoNumericTextBox").value(0);
+
+                container.find(".control-Value").hide();
+                container.find(".control-DeductionType").hide();
+            }
+        }
+        reOrderControls(container);
+        
+    }
+
+    function DisciplinarySettingViewHandler(e) {
+        var container = e.container.find("#default-view-controls");
+        var isDeductFromSalary = e.model.IsDeductFromSalary;
+        if (isDeductFromSalary) {
+            
+            container.find(".control-IsDeductFromSalary").show();
+
+            container.find(".control-Value").show();
+            container.find(".control-DeductionType").show();
+        } else {
+
+            container.find(".control-IsDeductFromSalary").hide();
+            container.find(".control-Value").hide();
+            container.find(".control-DeductionType").hide();
+        }
+        reOrderControls(container);
+    }
+</script>

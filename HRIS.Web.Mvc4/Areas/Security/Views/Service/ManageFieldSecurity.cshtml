@@ -1,0 +1,548 @@
+﻿@using Project.Web.Mvc4.Helpers
+@using Souccar.Infrastructure.Core
+<script>
+    var viewModel = kendo.observable();
+    var viewModelCustom = kendo.observable();
+    var roleDataSource = {
+        type: "json",
+        serverFiltering: false,
+        transport: {
+            read: {
+                cache: true,
+                url: '@Url.Action("GetAllRoles", "Role", new {area = "Security"})'
+            }
+        },
+        requestEnd: function(e) {
+
+        },
+        schema: {
+            data: "Data",
+            id: "Id"
+        }
+    };
+</script>
+
+<script id="MetadataButtonsTemplate" type="text/x-kendo-template">
+    <div>
+        <input value="@GlobalResource.Editable" type="button" class="k-button" onclick="clickAddMetadata('#= data.Name#','Edit')" />
+        <input value="@GlobalResource.Insertable" type="button" class="k-button" onclick="clickAddMetadata('#= data.Name#','Insert')" />
+        <input value="@GlobalResource.Deleteable" type="button" class="k-button" onclick="clickAddMetadata('#= data.Name#','Delete')" />
+
+        <input value="@GlobalResource.EditableAll" type="button" class="k-button" onclick="clickAddMetadataAll('#= data.Name#', 'Edit')" />
+        <input value="@GlobalResource.InsertableAll" type="button" class="k-button" onclick="clickAddMetadataAll('#= data.Name#','Insert')" />
+        <input value="@GlobalResource.DeleteableAll" type="button" class="k-button" onclick="clickAddMetadataAll('#= data.Name#', 'Delete')" />
+    </div>
+    <div>
+        <input value="@GlobalResource.UnEditable" type="button" class="k-button" onclick="clickRemoveMetadata('#= data.Name#', 'Edit')" />
+        <input value="@GlobalResource.UnInsertable" type="button" class="k-button" onclick="clickRemoveMetadata('#= data.Name#', 'Insert')" />
+        <input value="@GlobalResource.UnDeleteable" type="button" class="k-button" onclick="clickRemoveMetadata('#= data.Name#', 'Delete')" />
+
+        <input value="@GlobalResource.UnEditableAll" type="button" class="k-button" onclick="clickRemoveMetadataAll('#= data.Name#', 'Edit')" />
+        <input value="@GlobalResource.UnInsertableAll" type="button" class="k-button" onclick="clickRemoveMetadataAll('#= data.Name#', 'Insert')" />
+        <input value="@GlobalResource.UnDeleteableAll" type="button" class="k-button" onclick="clickRemoveMetadataAll('#= data.Name#', 'Delete')" />
+    </div>
+</script>
+
+<div class="manage-roles-div">
+    <fieldset>
+        <legend>@GlobalResource.ManageFieldSecurity</legend>
+
+        <div>
+            <label for="roles">@GlobalResource.Role</label>
+        </div>
+        <br />
+        <div data-container-for="roles">
+            <input id="roles"
+                   name="roles"
+                   data-role="dropdownlist"
+                   data-text-field="Name"
+                   data-value-field="Id"
+                   data-source="roleDataSource"
+                   data-value-primitive="true"
+                   data-bind="value:RoleName" />
+        </div>
+        <br />
+        <input value="@GlobalResource.Save" type="button" class="k-button" id="save" />
+        <div id="tabstrip">
+            <ul>
+
+
+                <li class="k-state-active">@GlobalResource.Aggregate</li>
+                <li>@GlobalResource.AggregatesFields</li>
+                <li>@GlobalResource.Details</li>
+                <li>@GlobalResource.DetailsFields</li>
+
+                <li>@GlobalResource.Configuration</li>
+                <li>@GlobalResource.ConfigurationsFields</li>
+            </ul>
+
+
+
+
+            <div id="aggregate-div">
+                <div id="aggregate-div-dual-select-list"></div>
+                <div id="aggregate_metadata_buttons"></div>
+            </div>
+            <div id="aggregatesFields-div">
+                <div id="aggregatesFields-div-dual-select-list"></div>
+
+            </div>
+
+            <div id="detail-div">
+                <div id="detail-div-dual-select-list"></div>
+                <div id="detail_metadata_buttons"></div>
+            </div>
+            <div id="detailsFields-div">
+                <div id="detailsFields-div-dual-select-list"></div>
+
+            </div>
+
+            <div id="configuration-div">
+                <div id="configuration-div-dual-select-list"></div>
+                <div id="configuration_metadata_buttons"></div>
+            </div>
+            <div id="configurationFields-div">
+                <div id="configurationsFields-div-dual-select-list"></div>
+
+            </div>
+        </div>
+    </fieldset>
+
+</div>
+<script>
+    $("#save").click(function () {
+
+
+        viewModelCustom.AuthorizableDetails = [];
+        viewModelCustom.AuthorizableDashboards = [];
+        viewModelCustom.AuthorizableIndexs = [];
+        viewModelCustom.AuthorizableServices = [];
+        viewModelCustom.AuthorizableReports = [];
+        viewModelCustom.AuthorizableConfigurations = [];
+        viewModelCustom.AuthorizableModules = [];
+        viewModelCustom.AuthorizableActionLists = [];
+        viewModelCustom.AuthorizableConfigurations = [];
+        viewModelCustom.AuthorizableAggregateField = [];
+        viewModelCustom.AuthorizableConfigurationField = [];
+        viewModelCustom.AuthorizableDetailField = [];
+        var elementForModule;
+
+
+
+        var elementForAggregate = getElementForSave("aggregatesFields", "aggregate", viewModel.AuthorizableAggregateField);
+        for (var j = 0; j < elementForAggregate.length; j++) {
+
+            viewModelCustom.AuthorizableAggregateField.push(elementForAggregate[j]);
+        }
+
+        var elementForDetail = getElementForSave("detailsFields", "detail", viewModel.AuthorizableDetailField);
+        for (var j = 0; j < elementForDetail.length; j++) {
+
+            viewModelCustom.AuthorizableDetailField.push(elementForDetail[j]);
+        }
+        var elementForconfiguration = getElementForSave("configurationsFields", "configuration", viewModel.AuthorizableConfigurationField);
+        for (var j = 0; j < elementForconfiguration.length; j++) {
+
+            viewModelCustom.AuthorizableConfigurationField.push(elementForconfiguration[j]);
+        }
+
+
+
+
+
+        debugger;
+        viewModelCustom.RoleId = parseInt($("#roles").val());
+        $.ajax({
+            url: '@Url.Action("SaveFieldSecurity", "Role")',
+            type: "POST",
+            data: JSON.stringify(viewModelCustom),
+            contentType: 'application/json',
+            success: function(data) {
+                var commands = [{ Title: "@GlobalResource.Ok", ClassName: "k-icon k-update" }];
+                ShowMessageBox("@GlobalResource.Success", "@GlobalResource.SuccessMessage", "k-icon w-b-info", commands);
+            }
+        });
+    });
+
+    function rolesChange(e) {
+        $.ajax({
+            url: '@Url.Action("GetAuthorizableElementsForFields", "Role")',
+            type: "POST",
+            data: JSON.stringify({
+                roleId: $("#roles").val()
+            }),
+
+            contentType: 'application/json',
+            success: function (data) {
+                viewModel = data.Data;
+
+
+                updateLists();
+
+
+            }
+        });
+    }
+    kendo.init($(".manage-roles-div"));
+
+    function updateLists() {
+
+        viewModelCustom.AuthorizableAggregates = [];
+        viewModelCustom.AuthorizableDetails = [];
+        viewModelCustom.AuthorizableConfigurations = [];
+        viewModelCustom.AuthorizableAggregateField = [];
+        viewModelCustom.AuthorizableConfigurationField = [];
+        viewModelCustom.AuthorizableDetailField = [];
+
+        var copyOfAuthorizableAggregateField = $.extend(true, [], viewModel.AuthorizableAggregateField);
+        var copyOfAuthorizableConfigurationField = $.extend(true, [], viewModel.AuthorizableConfigurationField);
+        var copyOfAuthorizableDetailField = $.extend(true, [], viewModel.AuthorizableDetailField);
+
+        for (var i = 0; i < viewModel.AuthorizableModules.length; i++) {
+            if (viewModel.AuthorizableModules[i].Dir == "Right") {
+                var elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableAggregates);
+                for (var j = 0; j < elementForModule.length; j++) {
+
+                    viewModelCustom.AuthorizableAggregates.push(elementForModule[j]);
+                }
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableDetails);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableDetails.push(elementForModule[j]);
+                }
+
+
+
+                elementForModule = getElementForGroup(viewModel.AuthorizableModules[i].Value, viewModel.AuthorizableConfigurations);
+                for (var j = 0; j < elementForModule.length; j++) {
+                    viewModelCustom.AuthorizableConfigurations.push(elementForModule[j]);
+                }
+
+
+
+            }
+        }
+
+
+        createDualSelectList("aggregate", viewModelCustom.AuthorizableAggregates, "aggregate-div-dual-select-list", "@GlobalResource.AvailableAggregates", "@GlobalResource.AssignedAggregates", true);
+        createDualSelectList("detail", viewModelCustom.AuthorizableDetails, "detail-div-dual-select-list", "@GlobalResource.AvailableDetails", "@GlobalResource.AssignedDetails", true);
+        createDualSelectList("configuration", viewModelCustom.AuthorizableConfigurations, "configuration-div-dual-select-list", "@GlobalResource.AvailableConfigurations", "@GlobalResource.AssignedConfigurations", true);
+
+
+        var elementForAggregate = getElementForChoiceEelement("aggregatesFields", "aggregate", copyOfAuthorizableAggregateField);
+        for (var h = 0; h < elementForAggregate.length; h++) {
+            //var test = elementForAggregate[h].Group.split(/[. ]+/);
+            //elementForAggregate[h].Group = test[2]+":"+test[4];
+            viewModelCustom.AuthorizableAggregateField.push(elementForAggregate[h]);
+        }
+
+        var elementForDetail = getElementForChoiceEelement("detailsFields", "detail", copyOfAuthorizableDetailField);
+        debugger;
+        for (var h = 0; h < elementForDetail.length; h++) {
+
+            elementForDetail[h].Group = elementForDetail[h].Group.split(/[. ]+/).pop();
+            viewModelCustom.AuthorizableDetailField.push(elementForDetail[h]);
+        }
+        var elementForconfiguration = getElementForChoiceEelement("configurationsFields", "configuration", copyOfAuthorizableConfigurationField);
+        for (var h = 0; h < elementForconfiguration.length; h++) {
+            elementForconfiguration[h].Group = elementForconfiguration[h].Group.split(/[. ]+/).pop();
+            viewModelCustom.AuthorizableConfigurationField.push(elementForconfiguration[h]);
+        }
+
+        createDualSelectList("aggregatesFields", viewModelCustom.AuthorizableAggregateField, "aggregatesFields-div-dual-select-list", "@GlobalResource.ShowFields", "@GlobalResource.HiddenFields", true);
+        createDualSelectList("detailsFields", viewModelCustom.AuthorizableDetailField, "detailsFields-div-dual-select-list", "@GlobalResource.ShowFields", "@GlobalResource.HiddenFields", true);
+        createDualSelectList("configurationsFields", viewModelCustom.AuthorizableConfigurationField, "configurationsFields-div-dual-select-list", "@GlobalResource.ShowFields", "@GlobalResource.HiddenFields", true);
+
+
+
+        $("#butMoveRightaggregate").off('click').on('click', function () {
+            debugger;
+            var items = viewModel.AuthorizableAggregates;
+            var selectedItems = $("#selectListaggregateLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value && item.Group == selectedItems[i].parentNode.label) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListaggregateRight").val(temp);
+        });
+
+        $("#butMoveRightAllaggregate").click(function () {
+            var items = viewModel.AuthorizableAggregates;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftaggregate").click(function () {
+            var items = viewModel.AuthorizableAggregates;
+            var selectedItems = $("#selectListaggregateRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value && item.Group == selectedItems[i].parentNode.label) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListaggregateLeft").val(temp);
+        });
+
+        $("#butMoveLeftAllaggregate").click(function () {
+            var items = viewModel.AuthorizableAggregates;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+
+        /////////////////////////
+        $("#butMoveRightdetail").off('click').on('click', function () {
+            debugger;
+            var items = viewModel.AuthorizableDetails;
+            var selectedItems = $("#selectListdetailLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value && item.Group == selectedItems[i].parentNode.label) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListdetailRight").val(temp);
+        });
+
+        $("#butMoveRightAlldetail").click(function () {
+            var items = viewModel.AuthorizableDetails;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftdetail").click(function () {
+            var items = viewModel.AuthorizableDetails;
+            var selectedItems = $("#selectListdetailRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value && item.Group == selectedItems[i].parentNode.label) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListdetailLeft").val(temp);
+        });
+
+        $("#butMoveLeftAlldetail").click(function () {
+            var items = viewModel.AuthorizableDetails;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+        ////////////////////////
+
+        $("#butMoveRightconfiguration").off('click').on('click', function () {
+            debugger;
+            var items = viewModel.AuthorizableConfigurations;
+            var selectedItems = $("#selectListconfigurationLeft  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value && item.Group == selectedItems[i].parentNode.label) {
+                        item.Dir = "Right";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListconfigurationRight").val(temp);
+        });
+
+        $("#butMoveRightAllconfiguration").click(function () {
+            var items = viewModel.AuthorizableConfigurations;
+            items.forEach(function (item) {
+                item.Dir = "Right";
+            });
+            updateLists();
+        });
+
+        $("#butMoveLeftconfiguration").click(function () {
+            var items = viewModel.AuthorizableConfigurations;
+            var selectedItems = $("#selectListconfigurationRight  :selected");
+            for (var i = 0; i < selectedItems.length; i++) {
+                items.forEach(function (item) {
+                    if (item.Value == selectedItems[i].value && item.Group == selectedItems[i].parentNode.label) {
+                        item.Dir = "Left";
+                    }
+                });
+            }
+            var temp = [];
+            for (i = 0; i < selectedItems.length; i++) {
+                temp[i] = selectedItems[i].value;
+            }
+            updateLists();
+            $("#selectListconfigurationLeft").val(temp);
+        });
+
+        $("#butMoveLeftAllconfiguration").click(function () {
+            var items = viewModel.AuthorizableConfigurations;
+            items.forEach(function (item) {
+                item.Dir = "Left";
+            });
+            updateLists();
+        });
+
+
+    }
+
+    function setDir(dir,list) {
+        for (var i = 0; i < list.length; i++) {
+            list[i].Dit = dir;
+        }
+    }
+
+    function getElementForGroup(groupName,list) {
+        var result = [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].Group == groupName)
+                result.push(list[i]);
+        }
+        return result;
+    }
+    function getElementForChoiceEelement(name, parent, list) {
+        debugger;
+        var result = [];
+        var temp = [];
+        var items = list;
+        var selectedItems = $("#selectList" + name + "Right");
+        var selectedItemsparent = $("#selectList" + parent + "Right");
+        if (selectedItemsparent.length > 0)
+            selectedItemsparent = selectedItemsparent[0];
+
+
+
+
+        if (selectedItems.length > 0)
+            selectedItems = selectedItems[0];
+
+
+        for (var i = 0; i < selectedItemsparent.length; i++) {
+            items.forEach(function (item) {
+                var found = false;
+                if (item.Group == selectedItemsparent[i].value && item.Description == selectedItemsparent[i].parentNode.label) {
+
+
+
+                    for (var j = 0; j < selectedItems.length;j++) {
+
+                        var test = item.Group;
+                        test = test.split(/[. ]+/).pop();
+
+                        if ((item.Value == selectedItems[j].value) && (selectedItems[j].parentNode.label == item.Description+":"+test)) {
+                            found = true;
+                            var tem = item;
+                            tem.Dir = "Right";
+                            tem.Group = selectedItemsparent[i].parentNode.label + ":" + test;
+                            result.push(tem);
+                        }
+
+
+                    }
+
+
+                    if (found == false) {
+                        var tem = item;
+
+                        tem.Group = selectedItemsparent[i].parentNode.label + ":" + item.Group.split(/[. ]+/).pop();
+                        result.push(tem);
+
+                    }
+
+                }
+            });
+        }
+
+
+
+
+
+
+
+
+        return result;
+    }
+
+    function getElementForSave(name,parent, list) {
+        debugger;
+        var temp = [];
+        var result = [];
+
+        var items = list;
+        var selectedItems = $("#selectList" + name + "Right");
+        var selectedItemsparent = $("#selectList" + parent + "Right");
+        if (selectedItems.length > 0)
+            selectedItems = selectedItems[0];
+        for (var i = 0; i < selectedItems.length; i++) {
+            items.forEach(function (item) {
+                var test = item.Group;
+                test = test.split(/[. ]+/).pop();
+
+                if ((item.Value == selectedItems[i].value) && (selectedItems[i].parentNode.label == item.Description + ":" + test)) {
+                    result.push(item);
+                }
+            });
+
+        }
+
+
+
+
+
+        return result;
+    }
+
+    var dropdownlist = $("#roles").data("kendoDropDownList");
+    dropdownlist.bind("dataBound", rolesChange);
+    dropdownlist.bind("change", rolesChange);
+
+
+    kendo.bind($(".manage-roles-div"), viewModel);
+    $("#tabstrip").kendoTabStrip({
+        animation: {
+            close: {
+                duration: 100,
+                effects: "fadeOut"
+            },
+            open: {
+                duration: 100,
+                effects: "fadeIn"
+            }
+
+        }
+    });
+
+</script>

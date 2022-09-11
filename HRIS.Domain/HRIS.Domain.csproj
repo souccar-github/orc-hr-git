@@ -1,0 +1,697 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{29B681D3-AF3B-44B1-85D6-A92DAD474A6D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HRIS.Domain</RootNamespace>
+    <AssemblyName>HRIS.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\ui\binaries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentNHibernate, Version=1.3.0.733, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="LinqToExcel, Version=1.10.1.0, Culture=neutral, PublicKeyToken=9c8ea65a58f03f1f, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\LinqToExcel.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.NHibernate, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttendanceSystem\Configurations\GeneralSettings.cs" />
+    <Compile Include="AttendanceSystem\DTO\HourlyVacationDTO.cs" />
+    <Compile Include="AttendanceSystem\DTO\NormalShiftDTO.cs" />
+    <Compile Include="AttendanceSystem\DTO\ParticularOvertimeShiftDTO.cs" />
+    <Compile Include="AttendanceSystem\DTO\WorkshopRecurrenceDTO.cs" />
+    <Compile Include="AttendanceSystem\DTO\WorkshopRecurrenceTypeDTO.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceDailyAdjustment.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceDailyAdjustmentDetail.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceInfraction.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceMonthlyAdjustment.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceMonthlyAdjustmentDetail.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustment.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustmentDetail.cs" />
+    <Compile Include="AttendanceSystem\Enums\TravelMissionType.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ServiceWorkflow.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\DeductionType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\SalaryType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\ServiceType.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\FinancialPromotionReason.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\EmployeeInfraction.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\LeaveAttachment.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\InfractionName.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\EmployeeTransferRequest.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EntranceExitRecordRequest.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\InfractionSlice.cs" />
+    <Compile Include="AttendanceSystem\Entities\NonAttendanceSlice.cs" />
+    <Compile Include="AttendanceSystem\Entities\NonAttendanceSlicePercentage.cs" />
+    <Compile Include="AttendanceSystem\Entities\NormalShift.cs" />
+    <Compile Include="AttendanceSystem\Entities\OvertimeSlice.cs" />
+    <Compile Include="AttendanceSystem\Entities\ParticularOvertimeShift.cs" />
+    <Compile Include="AttendanceSystem\Configurations\TemporaryWorkshop.cs" />
+    <Compile Include="AttendanceSystem\Entities\WorkshopRecurrence.cs" />
+    <Compile Include="AttendanceSystem\Enums\AttendanceMonthStatus.cs" />
+    <Compile Include="AttendanceSystem\Enums\CalculationMethod.cs" />
+    <Compile Include="AttendanceSystem\Enums\DailyAdjustmentAttendanceStatus.cs" />
+    <Compile Include="AttendanceSystem\Enums\EntranceExitStatus.cs" />
+    <Compile Include="AttendanceSystem\Enums\ErrorType.cs" />
+    <Compile Include="AttendanceSystem\Enums\InsertSource.cs" />
+    <Compile Include="AttendanceSystem\Enums\LogType.cs" />
+    <Compile Include="AttendanceSystem\Enums\MonthlyAdjustmentAttendanceStatus.cs" />
+    <Compile Include="AttendanceSystem\Helpers\AttendanceSystemGroupNames.cs" />
+    <Compile Include="AttendanceSystem\Indexes\Penalty.cs" />
+    <Compile Include="AttendanceSystem\Indexes\PenaltyIndex.cs" />
+    <Compile Include="AttendanceSystem\Configurations\AttendanceForm.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\AttendanceRecord.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\BioMetricDevice.cs" />
+    <Compile Include="AttendanceSystem\Configurations\BioMetricSetting.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\EmployeeAttendanceCard.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\EntranceExitRecord.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\FingerprintTransferredData.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\HourlyMission.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\InfractionForm.cs" />
+    <Compile Include="AttendanceSystem\Configurations\NonAttendanceForm.cs" />
+    <Compile Include="AttendanceSystem\Configurations\OvertimeForm.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\OvertimeOrder.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\TravelMission.cs" />
+    <Compile Include="AttendanceSystem\Configurations\Workshop.cs" />
+    <Compile Include="EmployeeRelationServices\DTO\EmployeeServiceHistoryDTO.cs" />
+    <Compile Include="EmployeeRelationServices\DTO\PayrollSystemIntegrationDTO.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EndingSecondaryPositionEmployee.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\PositionsLogOfEmployee.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\Recycle.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\RecycledLeave.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\PaidSlice.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\BalanceSlice.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\LeaveTemplateDetail.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\Assignment.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\LeaveRequest.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeDisciplinary.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeePromotion.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeResignation.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeReward.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeTermination.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeTransfer.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ExitInterview.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ExitInterviewAnswer.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\FinancialPromotion.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ResignationAttachment.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\AbsencePenalty.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\AssigmentType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\DisengagementType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\RecycleType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\StrongPenalty.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\LightPenalty.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\ServiceEndType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\ContractType.cs" />
+    <Compile Include="EmployeeRelationServices\Helpers\EmployeeRelationServicesConstants.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\DisciplinaryType.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\FixedHolidayName.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\DisciplinarySetting.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\ExitSurveyItem.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\GeneralEmployeeRelationSetting.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\LeaveSetting.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\RewardSetting.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\AssigningEmployeeToPosition.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\AffectMethod.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\AssignmentType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\ChildOrder.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\EmployeeCountStatus.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\HealthDocumentType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\Dead.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\EmploymentType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\FixedLeaveType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\PenaltyType.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\RatingPenalty.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\Recurrence.cs" />
+    <Compile Include="EmployeeRelationServices\Enums\TransportType.cs" />
+    <Compile Include="EmployeeRelationServices\Helpers\EmployeeRelationServicesGroupNames.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\DocumentType.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\ChangeableHolidayName.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\LeaveReason.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\RewardType.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\WorkSide.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\ChangeableHoliday.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\LeaveTemplateMaster.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\PublicHoliday.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\FixedHoliday.cs" />
+    <Compile Include="Global\Constant\CommandsNames.cs" />
+    <Compile Include="Global\Constant\ModulesNames.cs" />
+    <Compile Include="Global\Entities\CodeSetting.cs" />
+    <Compile Include="Global\Enums\Day.cs" />
+    <Compile Include="Global\Enums\Month.cs" />
+    <Compile Include="Global\Enums\Period.cs" />
+    <Compile Include="Global\Enums\Quarter.cs" />
+    <Compile Include="Global\Enums\SemiAnnual.cs" />
+    <Compile Include="Global\Enums\Status.cs" />
+    <Compile Include="Global\Enums\TimeInterval.cs" />
+    <Compile Include="IResouceSource.cs" />
+    <Compile Include="JobDesc\Entities\AbstractKpi.cs" />
+    <Compile Include="JobDesc\Entities\DelegateAuthoritiesToPositionAuthority.cs" />
+    <Compile Include="JobDesc\Entities\CompetenceCategoryLevelDescription.cs" />
+    <Compile Include="JobDesc\Entities\DelegateAuthoritiesToPosition .cs" />
+    <Compile Include="JobDesc\Entities\DelegateRolesToPosition .cs" />
+    <Compile Include="JobDesc\Entities\JobDescriptionDelegate.cs" />
+    <Compile Include="JobDesc\Entities\JobDescriptionReporting.cs" />
+    <Compile Include="JobDesc\Entities\JobNature.cs" />
+    <Compile Include="JobDesc\Entities\Position.cs" />
+    <Compile Include="JobDesc\Entities\PositionDelegate.cs" />
+    <Compile Include="JobDesc\Entities\PositionReporting.cs" />
+    <Compile Include="JobDesc\Entities\ResponsibilityKpi.cs" />
+    <Compile Include="JobDesc\Entities\RoleKpi.cs" />
+    <Compile Include="JobDesc\Entities\DelegateRolesToPositionRole.cs" />
+    <Compile Include="JobDesc\Indexes\CompetenceName.cs" />
+    <Compile Include="JobDesc\Indexes\KnowledgeType.cs" />
+    <Compile Include="JobDesc\Indexes\NatureJobType.cs" />
+    <Compile Include="JobDesc\Configurations\CompetencyCategory.cs" />
+    <Compile Include="JobDesc\Configurations\PositionCode.cs" />
+    <Compile Include="JobDesc\Indexes\PositionType.cs" />
+    <Compile Include="Objectives\Entities\ActionPlan.cs" />
+    <Compile Include="Objectives\Entities\ObjectiveAppraisalWorkflow.cs" />
+    <Compile Include="Objectives\Entities\ObjectiveConstraint.cs" />
+    <Compile Include="Objectives\Entities\ObjectiveKpi.cs" />
+    <Compile Include="Objectives\Entities\SharedWith.cs" />
+    <Compile Include="Objectives\Enums\ActionPlanStatus.cs" />
+    <Compile Include="Objectives\Enums\ObjectiveStatus.cs" />
+    <Compile Include="Objectives\Enums\ObjectiveType.cs" />
+    <Compile Include="Objectives\Enums\Period.cs" />
+    <Compile Include="Objectives\Enums\Priority.cs" />
+    <Compile Include="Objectives\Indexes\Dimension.cs" />
+    <Compile Include="Objectives\Indexes\ObjectiveConstraintType.cs" />
+    <Compile Include="Objectives\Entities\AbstractObjective.cs" />
+    <Compile Include="Objectives\RootEntities\TestCascade.cs" />
+    <Compile Include="Objectives\RootEntities\Objective.cs" />
+    <Compile Include="Objectives\RootEntities\ObjectiveAppraisalPhase.cs" />
+    <Compile Include="Objectives\RootEntities\ObjectiveCreationPhase.cs" />
+    <Compile Include="Objectives\RootEntities\StrategicObjective.cs" />
+    <Compile Include="Grades\Entities\GradeByEducationQualification.cs" />
+    <Compile Include="Grades\Entities\JobTitleBenefitDetail.cs" />
+    <Compile Include="Grades\Entities\JobTitleDeductionDetail.cs" />
+    <Compile Include="OrgChart\Helpers\OrgChartGoupesNames.cs" />
+    <Compile Include="OrgChart\RootEntities\SubCompany.cs" />
+    <Compile Include="OrgChart\Indexes\OrganizationSize.cs" />
+    <Compile Include="PayrollSystem\BaseClasses\EmployeeBenefitBase.cs" />
+    <Compile Include="PayrollSystem\BaseClasses\EmployeeCardBase.cs" />
+    <Compile Include="PayrollSystem\BaseClasses\EmployeeDeductionBase.cs" />
+    <Compile Include="PayrollSystem\Entities\BankingInformation.cs" />
+    <Compile Include="PayrollSystem\Entities\CrossDeductionWithBenefit.cs" />
+    <Compile Include="PayrollSystem\Entities\CrossDeductionWithDeduction.cs" />
+    <Compile Include="PayrollSystem\Entities\CrossDependency.cs" />
+    <Compile Include="PayrollSystem\Entities\EmployeeLoan.cs" />
+    <Compile Include="PayrollSystem\Entities\LeaveDeduction.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyEmployeeAdvance.cs" />
+    <Compile Include="PayrollSystem\Entities\PositionDeductionDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\NodeDeductionDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\JobDescriptionDeductionDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\GradeDeductionDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\GradeBenefitDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\JobDescriptionBenefitDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\LoanPayment.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyEmployeeBenefit.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyEmployeeDeduction.cs" />
+    <Compile Include="PayrollSystem\Entities\NodeBenefitDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\PositionBenefitDetail.cs" />
+    <Compile Include="PayrollSystem\Entities\PrimaryEmployeeBenefit.cs" />
+    <Compile Include="PayrollSystem\Entities\EmployeeAdvance.cs" />
+    <Compile Include="PayrollSystem\Entities\PrimaryEmployeeDeduction.cs" />
+    <Compile Include="PayrollSystem\Entities\SalaryIncreaseOrdinanceEmployee.cs" />
+    <Compile Include="PayrollSystem\Enums\ConflictOption.cs" />
+    <Compile Include="PayrollSystem\Enums\CrossFormula.cs" />
+    <Compile Include="PayrollSystem\Enums\CrossType.cs" />
+    <Compile Include="PayrollSystem\Enums\ExtraValueFormula.cs" />
+    <Compile Include="PayrollSystem\Enums\Formula.cs" />
+    <Compile Include="PayrollSystem\Enums\MonthsNumber.cs" />
+    <Compile Include="PayrollSystem\Enums\MonthStatus.cs" />
+    <Compile Include="PayrollSystem\Enums\MonthType.cs" />
+    <Compile Include="PayrollSystem\Enums\PaymentType.cs" />
+    <Compile Include="PayrollSystem\Enums\Salaries.cs" />
+    <Compile Include="PayrollSystem\Enums\SalaryDeservableType.cs" />
+    <Compile Include="PayrollSystem\Enums\Status.cs" />
+    <Compile Include="PayrollSystem\Enums\TaxFormula.cs" />
+    <Compile Include="PayrollSystem\RootEntities\FinancialCard.cs" />
+    <Compile Include="Personnel\Configurations\BankInformation.cs" />
+    <Compile Include="PayrollSystem\Configurations\BenefitCard.cs" />
+    <Compile Include="PayrollSystem\Configurations\DeductionCard.cs" />
+    <Compile Include="PayrollSystem\Configurations\GeneralOption.cs" />
+    <Compile Include="PayrollSystem\RootEntities\Month.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyCard.cs" />
+    <Compile Include="PayrollSystem\RootEntities\SalaryIncreaseOrdinance.cs" />
+    <Compile Include="PayrollSystem\Configurations\TaxSlice.cs" />
+    <Compile Include="Global\Enums\CodeSettingDynamicPart.cs" />
+    <Compile Include="Global\Enums\SeparatorSymbol.cs" />
+    <Compile Include="JobDesc\RootEntities\JobDescription.cs" />
+    <Compile Include="JobDesc\Indexes\AuthorityType.cs" />
+    <Compile Include="JobDesc\Indexes\CompetenceType.cs" />
+    <Compile Include="JobDesc\Indexes\ConditionType.cs" />
+    <Compile Include="JobDesc\Indexes\Priority.cs" />
+    <Compile Include="JobDesc\Entities\Authority.cs" />
+    <Compile Include="JobDesc\Entities\Competence.cs" />
+    <Compile Include="JobDesc\Entities\ComputerSkill.cs" />
+    <Compile Include="JobDesc\Entities\Restriction.cs" />
+    <Compile Include="JobDesc\Entities\JEducation.cs" />
+    <Compile Include="JobDesc\Entities\JExperience.cs" />
+    <Compile Include="JobDesc\Entities\JLanguage.cs" />
+    <Compile Include="JobDesc\Entities\JSkill.cs" />
+    <Compile Include="JobDesc\Entities\Knowledge.cs" />
+    <Compile Include="JobDesc\Entities\Responsibility.cs" />
+    <Compile Include="JobDesc\Entities\Role.cs" />
+    <Compile Include="JobDesc\Entities\WorkingRestriction.cs" />
+    <Compile Include="Localize.cs" />
+    <Compile Include="Grades\Entities\GradeStep.cs" />
+    <Compile Include="OrgChart\Enum\GradeCategory.cs" />
+    <Compile Include="Grades\Indexes\CashDeductionType.cs" />
+    <Compile Include="Grades\Entities\JobTitle.cs" />
+    <Compile Include="Grades\RootEntities\Grade.cs" />
+    <Compile Include="Grades\RootEntities\GradeByEducation.cs" />
+    <Compile Include="OrgChart\RootEntities\Organization.cs" />
+    <Compile Include="Grades\Indexes\CostCenter.cs" />
+    <Compile Include="OrgChart\Indexes\CurrencyType.cs" />
+    <Compile Include="Grades\Indexes\JobGroup.cs" />
+    <Compile Include="OrgChart\Configurations\NodeType.cs" />
+    <Compile Include="Grades\Indexes\NoneCashBenefitType.cs" />
+    <Compile Include="OrgChart\Indexes\OrganizationalLevel.cs" />
+    <Compile Include="OrgChart\Indexes\TimeInterval.cs" />
+    <Compile Include="OrgChart\RootEntities\Node.cs" />
+    <Compile Include="Grades\Entities\NonCashBenefit.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\LeaveType.cs" />
+    <Compile Include="Personnel\Entities\CertificationAttachment.cs" />
+    <Compile Include="Personnel\Entities\ConvictionAttachment.cs" />
+    <Compile Include="Personnel\Entities\DrivingLicenseAttachment.cs" />
+    <Compile Include="Personnel\Entities\EducationAttachment.cs" />
+    <Compile Include="Personnel\Entities\ExperienceAttachment.cs" />
+    <Compile Include="Personnel\Entities\LanguageAttachment.cs" />
+    <Compile Include="Personnel\Entities\MilitaryServiceAttachment.cs" />
+    <Compile Include="Personnel\Entities\PassportAttachment.cs" />
+    <Compile Include="Personnel\Entities\ResidencyAttachment.cs" />
+    <Compile Include="Personnel\Entities\SkillAttachment.cs" />
+    <Compile Include="Personnel\Entities\TrainingAttachment.cs" />
+    <Compile Include="Personnel\Entities\DependentAttachment.cs" />
+    <Compile Include="Personnel\Entities\ChildAttachment.cs" />
+    <Compile Include="Personnel\Entities\SpouseAttachment.cs" />
+    <Compile Include="Personnel\Entities\EmployeeTemporaryWorkshop.cs" />
+    <Compile Include="Personnel\Entities\Attachment.cs" />
+    <Compile Include="Personnel\Entities\Certification.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Child.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\ChildBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Conviction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Dependent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\DrivingLicense.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Education.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\EducationBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\EmployeeCustodie.cs" />
+    <Compile Include="Personnel\Entities\Experience.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\JobRelatedInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Language.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\MilitaryService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Passport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Residency.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Skill.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Spouse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\SpouseBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Entities\Training.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\BloodType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\EmployeeCardStatus.cs" />
+    <Compile Include="Personnel\Enums\EmployeeStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\EmploymentStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\Gender.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\KinshipLevel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\MaritalStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\MilitaryStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\Religion.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Enums\SalaryStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Helpers\PersonnelGoupesNames.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\BoolCondition.cs" />
+    <Compile Include="Personnel\Indexes\AdditionalInformation.cs" />
+    <Compile Include="Personnel\Indexes\CertificationType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\City.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\ConvictionRule.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Country.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\CustodiesType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\DisabilityType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\DrivingLicenseType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\EmployeeContractType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\EmployeeType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\GlobalJobTitle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Industry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\KinshipType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\LanguageName.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Level.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Major.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\MajorType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\MilitiryServiceGranter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Nationality.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Race.cs" />
+    <Compile Include="Personnel\Indexes\ResidencyType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Score.cs" />
+    <Compile Include="Personnel\Indexes\ScoreType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\SkillType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Status.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\Supplier.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Indexes\TrainingCenter.cs" />
+    <Compile Include="Personnel\Indexes\University.cs" />
+    <Compile Include="Personnel\Configurations\CustodieDetails.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\RootEntities\Employee.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\RootEntities\EmployeeBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EmployeeRelationServices\RootEntities\EmployeeCard.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\RootEntities\EmployeeCardBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Configurations\EmployeeCodeSetting.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Personnel\Configurations\HealthInsuranceTypes.cs" />
+    <Compile Include="Personnel\RootEntities\EmployeeRelationServices.cs" />
+    <Compile Include="Personnel\RootEntities\JobRelatedInfoBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PMS\Entities\AppraisalPhaseWorkflow.cs" />
+    <Compile Include="PMS\Entities\Competency\AppraisalCompetence.cs" />
+    <Compile Include="PMS\Entities\JobDescription\AppraisalJobDescription.cs" />
+    <Compile Include="PMS\Entities\objective\AppraisalObjective.cs" />
+    <Compile Include="PMS\Entities\Organizational\AppraisalCustomSection.cs" />
+    <Compile Include="PMS\Entities\Organizational\AppraisalCustomSectionItem.cs" />
+    <Compile Include="PMS\Entities\PromotionHistory.cs" />
+    <Compile Include="PMS\Entities\TemplateAppraisalPositions.cs" />
+    <Compile Include="PMS\Entities\TemplateSectionWeight.cs" />
+    <Compile Include="PMS\Enums\TemplateSectionName.cs" />
+    <Compile Include="PMS\Helpers\PMSGoupesNames.cs" />
+    <Compile Include="PMS\Configurations\AppraisalPhaseSetting.cs" />
+    <Compile Include="PMS\Configurations\AppraisalTemplateSetting.cs" />
+    <Compile Include="PMS\Configurations\PromotionsSettings.cs" />
+    <Compile Include="PMS\RootEntities\Appraisal.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalPhase.cs" />
+    <Compile Include="PMS\Enums\AppraisalProcessBookmark.cs" />
+    <Compile Include="PMS\Enums\AppraisalProcessState.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalTemplate.cs" />
+    <Compile Include="PMS\Indexes\TemplateType.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalSection.cs" />
+    <Compile Include="PMS\Entities\AppraisalSectionItemKpi.cs" />
+    <Compile Include="PMS\Entities\AppraisalSectionItem.cs" />
+    <Compile Include="JobDesc\Entities\PositionStatus.cs" />
+    <Compile Include="JobDesc\Enum\PositionStatusType.cs" />
+    <Compile Include="PMS\Entities\PromotionsSettingsAppraisalPhases.cs" />
+    <Compile Include="ProjectManagement\Entities\Constrain.cs" />
+    <Compile Include="ProjectManagement\Entities\IndirectManagerInfo.cs" />
+    <Compile Include="ProjectManagement\Entities\Phase.cs" />
+    <Compile Include="ProjectManagement\Entities\Task.cs" />
+    <Compile Include="ProjectManagement\Entities\Team.cs" />
+    <Compile Include="ProjectManagement\Entities\Member.cs" />
+    <Compile Include="ProjectManagement\Entities\SuccessFactor.cs" />
+    <Compile Include="ProjectManagement\Entities\TRole.cs" />
+    <Compile Include="ProjectManagement\Enums\ProjectStatus.cs" />
+    <Compile Include="ProjectManagement\Helpers\ProjectManagementGroupNames.cs" />
+    <Compile Include="ProjectManagement\Indexes\KPItype.cs" />
+    <Compile Include="ProjectManagement\Indexes\PhaseStatus.cs" />
+    <Compile Include="ProjectManagement\Indexes\ProjectType.cs" />
+    <Compile Include="ProjectManagement\Indexes\ResourceStatus.cs" />
+    <Compile Include="ProjectManagement\Indexes\ResourceType.cs" />
+    <Compile Include="ProjectManagement\Indexes\TaskStatus.cs" />
+    <Compile Include="ProjectManagement\RootEntities\Evaluation.cs" />
+    <Compile Include="ProjectManagement\RootEntities\Project.cs" />
+    <Compile Include="ProjectManagement\Entities\Resource.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recruitment\Configurations\EvaluationSettings.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentMilitaryService.cs" />
+    <Compile Include="Recruitment\Indexes\ApplicationSource.cs" />
+    <Compile Include="Recruitment\Entities\AttachmentBase.cs" />
+    <Compile Include="Recruitment\Entities\Evaluations\Evaluator.cs" />
+    <Compile Include="Recruitment\Entities\Evaluations\InterviewCustomSectionItem.cs" />
+    <Compile Include="Recruitment\Entities\Examination.cs" />
+    <Compile Include="Recruitment\Entities\Evaluations\InterviewCustomSection.cs" />
+    <Compile Include="Recruitment\Entities\JobApplicationAttachment.cs" />
+    <Compile Include="Recruitment\Entities\OralExamination.cs" />
+    <Compile Include="Recruitment\Entities\PersonalSkill.cs" />
+    <Compile Include="Recruitment\Entities\ProfessionalCertification.cs" />
+    <Compile Include="Recruitment\Entities\Qualification.cs" />
+    <Compile Include="Recruitment\Entities\RChild.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentApplicant.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentComputerSkill.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentEducation.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentInformation.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentRequestAttachment.cs" />
+    <Compile Include="Recruitment\Entities\REducation.cs" />
+    <Compile Include="Recruitment\Entities\RJobRelatedInfo.cs" />
+    <Compile Include="Recruitment\Entities\RSpouse.cs" />
+    <Compile Include="Recruitment\Entities\TrainingCourse.cs" />
+    <Compile Include="Recruitment\Entities\TrainingCourseLanguage.cs" />
+    <Compile Include="Recruitment\Entities\WorkingExperience.cs" />
+    <Compile Include="Recruitment\Entities\WrittenExamination.cs" />
+    <Compile Include="Recruitment\Enums\AdvertisementStatus.cs" />
+    <Compile Include="Recruitment\Enums\EnterBy.cs" />
+    <Compile Include="Recruitment\Enums\ApplicationStatus.cs" />
+    <Compile Include="Recruitment\Enums\CertificationStatus.cs" />
+    <Compile Include="Recruitment\Enums\GraduationLevel.cs" />
+    <Compile Include="Recruitment\Enums\PositionBudget.cs" />
+    <Compile Include="Recruitment\Enums\RecruitmentType.cs" />
+    <Compile Include="Recruitment\Enums\RequestStatus .cs" />
+    <Compile Include="Recruitment\Enums\RoundType.cs" />
+    <Compile Include="Recruitment\Enums\TaskStatus.cs" />
+    <Compile Include="Recruitment\Helpers\DateHelper.cs" />
+    <Compile Include="Recruitment\Helpers\RecruitmentGoupesNames.cs" />
+    <Compile Include="Recruitment\Indexes\AttachmentType.cs" />
+    <Compile Include="Recruitment\Indexes\InterviewType.cs" />
+    <Compile Include="Recruitment\Indexes\JobType.cs" />
+    <Compile Include="Recruitment\Indexes\JoiningStatus.cs" />
+    <Compile Include="Recruitment\Indexes\Place.cs" />
+    <Compile Include="Recruitment\Indexes\RejectionReason.cs" />
+    <Compile Include="Recruitment\Indexes\RequestType.cs" />
+    <Compile Include="Recruitment\Indexes\VacancyReason.cs" />
+    <Compile Include="Recruitment\RootEntities\Advertisement.cs" />
+    <Compile Include="Recruitment\RootEntities\Applicant.cs" />
+    <Compile Include="Recruitment\RootEntities\Interview.cs" />
+    <Compile Include="Recruitment\RootEntities\JobApplication.cs" />
+    <Compile Include="Recruitment\RootEntities\RecruitmentRequest.cs" />
+    <Compile Include="Security\Configuration\FullAuthorityRole.cs" />
+    <Compile Include="Services\Delegation.cs" />
+    <Compile Include="Services\EmployeeToPosition.cs" />
+    <Compile Include="TaskManagement\Indexes\TaskType.cs" />
+    <Compile Include="TaskManagement\RootEntities\DailyWork.cs" />
+    <Compile Include="TaskManagement\RootEntities\Task.cs" />
+    <Compile Include="Training\Entities\AppraisalCourse.cs" />
+    <Compile Include="Training\Entities\AppraisalTrainee.cs" />
+    <Compile Include="Training\Entities\AppraisalTraineeAttachment.cs" />
+    <Compile Include="Training\Entities\CourseAttachment.cs" />
+    <Compile Include="Training\Entities\CourseCondition.cs" />
+    <Compile Include="Training\Entities\CourseCost.cs" />
+    <Compile Include="Training\Entities\CourseTrainingNeed.cs" />
+    <Compile Include="Training\Entities\CourseEmployee.cs" />
+    <Compile Include="Training\Entities\TrainingNeedCourse.cs" />
+    <Compile Include="Training\Enums\CourseImportance.cs" />
+    <Compile Include="Training\Enums\CoursePlaceStatus.cs" />
+    <Compile Include="Training\Enums\CourseStatus.cs" />
+    <Compile Include="Training\Enums\CourseStyle.cs" />
+    <Compile Include="Training\Enums\CourseEmployeeType.cs" />
+    <Compile Include="Training\Enums\TrainingNeedSource.cs" />
+    <Compile Include="Training\Enums\TrainingNeedStatus.cs" />
+    <Compile Include="Training\Helpers\TrainingGroupsNames.cs" />
+    <Compile Include="Training\Indexes\AppraisalCourseItem.cs" />
+    <Compile Include="Training\Indexes\AppraisalCourseLevel.cs" />
+    <Compile Include="Training\Indexes\AppraisalTraineeLevel.cs" />
+    <Compile Include="Training\Indexes\ConditionTitle.cs" />
+    <Compile Include="Training\Indexes\CostName.cs" />
+    <Compile Include="Training\Indexes\CourseLevel.cs" />
+    <Compile Include="Training\Indexes\CourseName.cs" />
+    <Compile Include="Training\Indexes\CourseSpecialize.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Training\Indexes\CourseSponsor.cs" />
+    <Compile Include="Training\Indexes\CourseType.cs" />
+    <Compile Include="Training\Indexes\CostCenter.cs" />
+    <Compile Include="Training\Indexes\Trainer.cs" />
+    <Compile Include="Training\Indexes\TrainingCenterName.cs" />
+    <Compile Include="Training\Indexes\TrainingNeedLevel.cs" />
+    <Compile Include="Training\Indexes\TrainingPlace.cs" />
+    <Compile Include="Training\Entities\Course.cs" />
+    <Compile Include="Training\RootEntities\TrainingNeed.cs" />
+    <Compile Include="Training\RootEntities\TrainingPlan.cs" />
+    <Compile Include="Workflow\PhasePeriod.cs" />
+    <Compile Include="Workflow\WorkflowApproval.cs" />
+    <Compile Include="Workflow\WorkflowItems.cs" />
+    <Compile Include="Workflow\WorkflowSettingOverwritingHistory.cs" />
+    <Compile Include="Workflow\WorkflowSettingPosition.cs" />
+    <Compile Include="Workflow\WorkflowSetting.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AttendanceSystem\BaseClasses\" />
+    <Folder Include="Global\Indexes\" />
+    <Folder Include="Objectives\Services\" />
+    <Folder Include="Objectives\ValueObjects\" />
+    <Folder Include="OrgChart\Entities\" />
+    <Folder Include="PayrollSystem\Indexes\" />
+    <Folder Include="Services\Annotations\Entities\" />
+    <Folder Include="Services\Annotations\Indexes\" />
+    <Folder Include="Services\Annotations\ValueObjects\" />
+    <Folder Include="TaskManagement\Entities\" />
+    <Folder Include="TaskManagement\Enums\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

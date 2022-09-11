@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="04/28/2015 12:56:58" ReportInfo.Modified="10/10/2016 13:36:23" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  { 
+      
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqSR0ndtVOqxsxk4zPInV7Nomaii6THqwS81JU+K1azw1n9jE0u3o3OOHnCuEXK7REgGxTpe/vw3UhhxBFPn8UB7kGKkycWEyB5oY846mqwneazBvBGR5jIQzWldDTqYluz5VxXp+TLIArRihFzIIbnHn8v9MtYU/S6mfxr7wtuPfjWccupHPOK2/eEzOBO3naE7h+QmmVHZNU5P9b1pbmsA==">
+      <TableDataSource Name="Table" Alias="MonthAdj" DataType="System.Int32" Enabled="true" SelectCommand="with MonthDetails AS&#13;&#10;(&#13;&#10;SELECT        &#13;&#10;InitialOvertimeValue, &#13;&#10;FinalOvertimeValue, &#13;&#10;FinalNonAttendanceValue, &#13;&#10;(SELECT TOP 1 N.Name FROM DisciplinarySetting N WHERE N.Id = dbo.AttendanceMonthlyAdjustment.Penalty_id) AS Penalty,&#13;&#10;EmployeeAttendanceCard_id,&#13;&#10;dbo.AttendanceRecord.Number as monthnumber ,&#13;&#10;dbo.AttendanceRecord.Name MonthName,&#13;&#10;dbo.AttendanceMonthlyAdjustmentDetail.WorkHoursValue - dbo.AttendanceMonthlyAdjustmentDetail.VacationValue - dbo.AttendanceMonthlyAdjustmentDetail.MissionValue&#13;&#10;AS RequiredHoursValue,&#13;&#10;WorkHoursValue,&#13;&#10;VacationValue,&#13;&#10;MissionValue,&#13;&#10;ActualWorkHoursValue,&#13;&#10;OvertimeOrderValue&#13;&#10;FROM            &#13;&#10;dbo.AttendanceMonthlyAdjustment INNER JOIN &#13;&#10;dbo.AttendanceMonthlyAdjustmentDetail on dbo.AttendanceMonthlyAdjustment.Id=dbo.AttendanceMonthlyAdjustmentDetail.AttendanceMonthlyAdjustment_id INNER JOIN &#13;&#10;dbo.AttendanceRecord ON dbo.AttendanceRecord.Id = dbo.AttendanceMonthlyAdjustment.AttendanceRecord_id&#13;&#10;where	&#13;&#10;AttendanceMonthlyAdjustment.IsVertualDeleted = 0 AND&#13;&#10;AttendanceRecord.IsVertualDeleted = 0 &#13;&#10;&#13;&#10;)&#13;&#10;&#13;&#10;select&#13;&#10;EmployeeAttendanceCard_id,&#13;&#10;monthnumber,&#13;&#10;MonthName,&#13;&#10;InitialOvertimeValue, &#13;&#10;FinalOvertimeValue, &#13;&#10;FinalNonAttendanceValue, &#13;&#10;Penalty,&#13;&#10;ISNULL(SUM(RequiredHoursValue),0)AS SumRequiredHoursValue,&#13;&#10;ISNULL(SUM(WorkHoursValue),0)AS SumWorkHoursValue,&#13;&#10;ISNULL(SUM(VacationValue),0)AS SumVacationValue,&#13;&#10;ISNULL(SUM(MissionValue),0)AS SumMissionValue,&#13;&#10;ISNULL(SUM(ActualWorkHoursValue),0)AS SumActualWorkHoursValue,&#13;&#10;ISNULL(SUM(OvertimeOrderValue),0)AS SumOvertimeOrderValue&#13;&#10;from   MonthDetails &#13;&#10;group by &#13;&#10;monthnumber,&#13;&#10;MonthName,&#13;&#10;EmployeeAttendanceCard_id,&#13;&#10;Penalty,&#13;&#10;InitialOvertimeValue,&#13;&#10;FinalOvertimeValue,&#13;&#10;FinalNonAttendanceValue">
+        <Column Name="EmployeeAttendanceCard_id" DataType="System.Int32"/>
+        <Column Name="SumRequiredHoursValue" DataType="System.Double"/>
+        <Column Name="SumWorkHoursValue" DataType="System.Double"/>
+        <Column Name="SumVacationValue" DataType="System.Double"/>
+        <Column Name="SumMissionValue" DataType="System.Double"/>
+        <Column Name="SumActualWorkHoursValue" DataType="System.Double"/>
+        <Column Name="SumOvertimeOrderValue" DataType="System.Double"/>
+        <Column Name="monthnumber" DataType="System.Int32"/>
+        <Column Name="InitialOvertimeValue" DataType="System.Double"/>
+        <Column Name="FinalOvertimeValue" DataType="System.Double"/>
+        <Column Name="FinalNonAttendanceValue" DataType="System.Double"/>
+        <Column Name="Penalty" DataType="System.Int32"/>
+        <Column Name="MonthName" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="EmpInfo" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        dbo.Employee.FirstName + ' ' + dbo.Employee.FatherName + ' ' + dbo.Employee.LastName AS FullName, dbo.EmployeeCard.Id AS EmpAttCardId&#13;&#10;FROM            dbo.EmployeeCard INNER JOIN&#13;&#10;                         dbo.Employee ON dbo.EmployeeCard.Employee_id = dbo.Employee.Id&#13;&#10;  where	EmployeeCard.IsVertualDeleted = 0 AND&#13;&#10;	Employee.IsVertualDeleted = 0">
+        <Column Name="Fullname" DataType="System.String"/>
+        <Column Name="EmpAttCardId" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="EmpAttCardId" ChildColumns="EmployeeAttendanceCard_id" Enabled="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" FirstPageSource="15" OtherPagesSource="15">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="37.8">
+      <TextObject Name="Text168" Width="1048.95" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير احصائيات الدوام تقاص شهري" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Tahoma, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="41.65" Width="1047.06"/>
+    <DataBand Name="Data1" Top="45.49" Width="1047.06" Height="56.7">
+      <TextObject Name="Text171" Left="916.65" Top="28.35" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الشهر المختار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text172" Left="765.45" Top="28.35" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[ComboBox1.Text]" HorzAlign="Center" Font="Arial, 12pt"/>
+      <TextObject Name="Text169" Left="916.65" Top="9.45" Width="132.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الاصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text170" Left="765.45" Top="9.45" Width="151.2" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" Font="Arial, 12pt"/>
+      <DataBand Name="Data2" Top="185.48" Width="1047.06" Height="47.25" CanGrow="true" CanBreak="true" DataSource="Table">
+        <TextObject Name="FinalOvertimeValueText" Left="236.25" Width="85.05" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.FinalOvertimeValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="ReqWorkMonthSumValueText" Left="803.25" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.SumWorkHoursValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="SumActWorkValueText" Left="727.65" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.SumActualWorkHoursValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="ReqWorkHoursText" Left="652.05" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.SumRequiredHoursValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="StatusText" Left="557.55" Width="94.5" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[IIf([MonthAdj.SumActualWorkHoursValue]&gt;[MonthAdj.SumRequiredHoursValue],&quot;OverTime&quot;,IIf([MonthAdj.SumActualWorkHoursValue]&lt;[MonthAdj.SumRequiredHoursValue],&quot;NonAttendance&quot;,&quot;Ok&quot;))]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="ExpectedOverTimeText" Left="481.95" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[IIf([MonthAdj.SumActualWorkHoursValue]&gt;[MonthAdj.SumRequiredHoursValue],[MonthAdj.SumActualWorkHoursValue]-[MonthAdj.SumRequiredHoursValue],0)]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="TotalOvertimeOrderValueText" Left="406.35" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.SumOvertimeOrderValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="InitialOvertimeValueText" Left="321.3" Width="85.05" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.InitialOvertimeValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="InitialNonAttendanceValueText" Left="160.65" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[IIf([MonthAdj.SumActualWorkHoursValue]&gt;[MonthAdj.SumRequiredHoursValue],0,IIf([MonthAdj.SumActualWorkHoursValue]&lt;[MonthAdj.SumRequiredHoursValue],[MonthAdj.SumRequiredHoursValue]-[MonthAdj.SumActualWorkHoursValue],0))]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="FinalNonAttendanceValueText" Left="85.05" Width="75.6" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.FinalNonAttendanceValue]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="PenaltyText" Width="85.05" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.Penalty]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <TextObject Name="Text31" Left="878.85" Width="170.1" Height="47.25" Border.Lines="All" Border.Color="DarkGray" CanGrow="true" GrowToBottom="true" Text="[MonthAdj.Table1_Table.Fullname]" HorzAlign="Center" VertAlign="Center" RightToLeft="true" Font="Arial, 8pt"/>
+        <DataHeaderBand Name="DataHeader2" Top="106.04" Width="1047.06" Height="75.6">
+          <TextObject Name="Text22" Left="321.3" Width="85.05" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الإضافي الشهري المحتسب قبل معامل الضرب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text20" Left="481.95" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الإضافي الشهري المحتمل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text29" Width="85.05" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="العقوبة المترتبة على نقص الدوام" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text24" Left="236.25" Width="85.05" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الإضافي الشهري المحتسب بعد معامل الضرب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text16" Left="803.25" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد ساعات العمل المطلوبة بالشهر حسب الوردية" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text17" Left="727.65" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد ساعات العمل المحققة بالشهر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text18" Left="652.05" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد ساعات العمل المطلوبة لهذا الشهر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text19" Left="557.55" Width="94.5" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الحالة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text21" Left="406.35" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الإضافي الشهري المكلف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text25" Left="160.65" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نقص الدوام الشهري قبل معامل الضرب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text27" Left="85.05" Width="75.6" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نقص الدوام الشهري بعد معامل الضرب" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+          <TextObject Name="Text30" Left="878.85" Width="170.1" Height="75.6" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        </DataHeaderBand>
+      </DataBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="236.58" Width="1047.06" Height="18.9"/>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="346" Height="170" AcceptButton="btnOk">
+    <ButtonControl Name="btnOk" Left="122" Top="59" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="204" Top="28" Width="60" Height="13" TabIndex="3" Text="اختار الشهر"/>
+    <ComboBoxControl Name="ComboBox1" Left="20" Top="24" Width="175" TabIndex="4" DataColumn="MonthAdj.MonthName" DropDownStyle="DropDownList" DropDownWidth="145" ItemHeight="13"/>
+  </DialogPage>
+</Report>

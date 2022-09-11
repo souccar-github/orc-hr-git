@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/29/2014 14:36:39" ReportInfo.Modified="07/04/2016 12:38:19" ReportInfo.CreatorVersion="0.0.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    private void CheckBox1_Click(object sender, EventArgs e)
+    {
+      if (CheckBox1.Checked)
+      {        
+        MajorTypeComboBox.SelectedIndex=-1;
+        MajorTypeComboBox.AutoFilter=false;
+        MajorTypeComboBox.AutoFill=false;
+        MajorTypeComboBox.Enabled=false;
+      }else
+      {
+        MajorTypeComboBox.AutoFilter=true;
+        MajorTypeComboBox.AutoFill=true;
+        MajorTypeComboBox.Enabled=true;	         
+      }  
+      
+    }
+
+    private void CheckBox2_Click(object sender, EventArgs e)
+    {
+      if (CheckBox2.Checked)
+      {        
+        MajorComboBox.SelectedIndex=-1;
+        MajorComboBox.AutoFilter=false;
+        MajorComboBox.AutoFill=false;
+        MajorComboBox.Enabled=false;
+      }else
+      {
+        MajorComboBox.AutoFilter=true;
+        MajorComboBox.AutoFill=true;
+        MajorComboBox.Enabled=true;	         
+      }   
+      
+    }
+
+    private void CheckBox3_Click(object sender, EventArgs e)
+    {
+      if (CheckBox3.Checked)
+      {        
+        UniversityComboBox.SelectedIndex=-1;
+        UniversityComboBox.AutoFilter=false;
+        UniversityComboBox.AutoFill=false;
+        UniversityComboBox.Enabled=false;
+      }else
+      {
+        UniversityComboBox.AutoFilter=true;	
+        UniversityComboBox.AutoFill=true;
+        UniversityComboBox.Enabled=true;         
+      }        
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Data Source" ConnectionString="rijcmlqFyGPagcQ4ZfeWTlgM3nu6s3PrH8VpJs3fVrAPvuTN9DMDqfqqvX422+G0R+f5xG5/Eql1nalJWj9SIPmSnbqW+SlWQYiJrY1tE4GntExzJvisKJgEDn89+JCmID8gF+f/58ALrFNBjmAe7T6TqLkNaNKBtR0xGIAi8eL0I8Q62qz8HWXkQMjIV8Af0UpypAd++qpIuBKCOKRNxXqX3GAmA==">
+      <TableDataSource Name="Table1" Alias="EmployeesDataSourse" DataType="System.Int32" Enabled="true" SelectCommand="SELECT        &#13;&#10;dbo.Employee.Id, &#13;&#10;dbo.Employee.FirstName, &#13;&#10;dbo.Employee.LastName, &#13;&#10;dbo.Employee.FatherName, &#13;&#10;dbo.Employee.Code, &#13;&#10;dbo.Position.Code AS PositionCode&#13;&#10;FROM&#13;&#10;dbo.Employee &#13;&#10;INNER JOIN dbo.AssigningEmployeeToPosition ON dbo.Employee.Id = dbo.AssigningEmployeeToPosition.Employee_id &#13;&#10;INNER JOIN dbo.Position ON dbo.AssigningEmployeeToPosition.Position_Id = dbo.Position.Id AND dbo.AssigningEmployeeToPosition.Id = dbo.Position.AssigningEmployeeToPosition_id &#13;&#10;INNER JOIN dbo.EmployeeCard ON dbo.Employee.Id = dbo.EmployeeCard.Employee_id &#13;&#10;WHERE        &#13;&#10;dbo.EmployeeCard.CardStatus = 1 AND  &#13;&#10;dbo.AssigningEmployeeToPosition.IsPrimary='True' AND &#13;&#10;Employee.IsVertualDeleted=0 AND &#13;&#10;AssigningEmployeeToPosition.IsVertualDeleted=0 AND &#13;&#10;Position.IsVertualDeleted=0 AND &#13;&#10;EmployeeCard.IsVertualDeleted=0&#13;&#10;ORDER BY dbo.Employee.Id DESC">
+        <Column Name="FirstName" DataType="System.String"/>
+        <Column Name="LastName" DataType="System.String"/>
+        <Column Name="FatherName" DataType="System.String"/>
+        <Column Name="PositionCode" DataType="System.String"/>
+        <Column Name="Code" DataType="System.String"/>
+        <Column Name="Id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="EducationDataSource" DataType="System.Int32" Enabled="true" SelectCommand="SELECT&#13;&#10;Type_id, &#13;&#10;(SELECT Name FROM dbo.MajorType WHERE Id = Type_id AND MajorType.IsVertualDeleted = 0 ) AS MajorTypeName, &#13;&#10;Major_id, &#13;&#10;(SELECT Name FROM dbo.Major WHERE Id = Major_id AND Major.IsVertualDeleted = 0 ) AS MajorName, &#13;&#10;University_id,&#13;&#10;(SELECT Name FROM dbo.University WHERE Id = University_id AND University.IsVertualDeleted = 0 ) AS UniversityName, &#13;&#10;Score, &#13;&#10;ScoreType_id, &#13;&#10;(SELECT Name FROM dbo.ScoreType WHERE Id = ScoreType_id AND ScoreType.IsVertualDeleted = 0 ) AS ScoreTypeName, &#13;&#10;REPLACE(ISNULL(CONVERT(DATE, DateOfIssuance), ''), '1900-01-01', '') AS DateOfIssuance,&#13;&#10;Country_id, &#13;&#10;(SELECT Name FROM dbo.Country WHERE Id = Country_id AND Country.IsVertualDeleted = 0 ) AS PlaceOfIssuanceName,&#13;&#10;Rank_id, &#13;&#10;(SELECT Name FROM dbo.LevelType WHERE Id = Rank_id AND LevelType.IsVertualDeleted = 0 ) AS RankName,&#13;&#10;Employee_id&#13;&#10;FROM            &#13;&#10;dbo.Education&#13;&#10;WHERE Education.IsVertualDeleted = 0&#13;&#10;ORDER BY DateOfIssuance DESC">
+        <Column Name="Employee_id" DataType="System.Int32"/>
+        <Column Name="Type_id" DataType="System.Int32"/>
+        <Column Name="PlaceOfIssuanceName" DataType="System.String"/>
+        <Column Name="DateOfIssuance" DataType="System.DateTime"/>
+        <Column Name="MajorTypeName" DataType="System.String"/>
+        <Column Name="Major_id" DataType="System.Int32"/>
+        <Column Name="MajorName" DataType="System.String"/>
+        <Column Name="University_id" DataType="System.Int32"/>
+        <Column Name="UniversityName" DataType="System.String"/>
+        <Column Name="Score" DataType="System.Single"/>
+        <Column Name="ScoreType_id" DataType="System.Int32"/>
+        <Column Name="ScoreTypeName" DataType="System.String"/>
+        <Column Name="Country_id" DataType="System.Int32"/>
+        <Column Name="Rank_id" DataType="System.Int32"/>
+        <Column Name="RankName" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="LevelType" DataType="System.Int32" Enabled="true" TableName="LevelType" SelectCommand="SELECT L.Id, L.IsVertualDeleted, L.Name, L.ValueOrder&#13;&#10;FROM &quot;LevelType&quot; L&#13;&#10;WHERE L.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Major" DataType="System.Int32" Enabled="true" TableName="Major" SelectCommand="SELECT M.Id, M.IsVertualDeleted, M.Name, M.ValueOrder&#13;&#10;FROM &quot;Major&quot; M&#13;&#10;WHERE M.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="MajorType" DataType="System.Int32" Enabled="true" TableName="MajorType" SelectCommand="SELECT M.Id, M.IsVertualDeleted, M.Name, M.ValueOrder&#13;&#10;FROM &quot;MajorType&quot; M&#13;&#10;WHERE M.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="ScoreType" DataType="System.Int32" Enabled="true" TableName="ScoreType" SelectCommand="SELECT S.Id, S.IsVertualDeleted, S.Name, S.ValueOrder&#13;&#10;FROM &quot;ScoreType&quot; S&#13;&#10;WHERE S.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="University" DataType="System.Int32" Enabled="true" TableName="University" SelectCommand="SELECT U.Id, U.IsVertualDeleted, U.Name, U.ValueOrder&#13;&#10;FROM &quot;University&quot; U&#13;&#10;WHERE  U.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Country" DataType="System.Int32" Enabled="true" TableName="Country" SelectCommand="SELECT C.Id, C.IsVertualDeleted, C.Name, C.ValueOrder&#13;&#10;FROM &quot;Country&quot; C&#13;&#10;WHERE C.IsVertualDeleted=0">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="IsVertualDeleted" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="ValueOrder" DataType="System.Int32"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="Table1_Child" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Spouse" ParentDataSource="null" ChildDataSource="null" ParentColumns="EmployeeId" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Table1_Table2" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="Nationality_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="Nationality_id" Enabled="true"/>
+    <Relation Name="Country_Table" ParentDataSource="null" ChildDataSource="null" ParentColumns="Id" ChildColumns="PlaceOfBirth_id" Enabled="true"/>
+    <Relation Name="Table1_Table" ParentDataSource="Table1" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Employee_id" Enabled="true"/>
+    <Relation Name="University_Table" ParentDataSource="University" ChildDataSource="Table" ParentColumns="Id" ChildColumns="University_id" Enabled="true"/>
+    <Relation Name="Major_Table" ParentDataSource="Major" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Major_id" Enabled="true"/>
+    <Relation Name="MajorType_Table" ParentDataSource="MajorType" ChildDataSource="Table" ParentColumns="Id" ChildColumns="Type_id" Enabled="true"/>
+    <Total Name="TotalCount" TotalType="Count" Evaluator="Data1" PrintOn="DataFooter1"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="207.9">
+      <TextObject Name="Text15" Top="18.9" Width="718.2" Height="37.8" Fill.Color="WhiteSmoke" Text="تقرير بيانات المستوى التعليمي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Width="75.6" Height="18.9" Text="[Date]" Format="Date" Format.Format="d" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text44" Top="56.7" Width="718.2" Height="37.8" Text="[MajorTypeComboBox.Text] :نوع المستوى العلمي" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+      <TextObject Name="Text50" Top="94.5" Width="718.2" Height="37.8" Text="[MajorComboBox.Text] :الاختصاص" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+      <TextObject Name="Text51" Top="132.3" Width="718.2" Height="37.8" Text="[UniversityComboBox.Text] :اسم الجامعة" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+      <TextObject Name="Text52" Top="170.1" Width="718.2" Height="37.8" Text="[ScoreTextBox.Text] :المعدل" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="214.25" Width="718.2" Height="18.9">
+      <TextObject Name="Text31" Left="358.1" Width="237.9" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاسم الكامل للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text30" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الرقم الذاتي للموظف" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text29" Width="358.55" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الموقع الوظيفي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="239.5" Width="718.2" Height="37.8" DataSource="Table1">
+      <TextObject Name="Text4" Left="359.1" Width="236.25" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.FirstName] [EmployeesDataSourse.FatherName] [EmployeesDataSourse.LastName]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text1" Width="359.1" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.PositionCode]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text46" Left="595.35" Top="18.9" Width="123.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع المستوى العلمي" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text47" Left="481.95" Top="18.9" Width="112.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="الاختصاص" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text48" Left="113.4" Top="18.9" Width="84.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="تاريخ الإصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text49" Left="0.45" Top="18.9" Width="113.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="مكان الاصدار" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text53" Left="359.1" Top="18.9" Width="123.3" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="اسم الجامعة" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text54" Left="273.95" Top="18.9" Width="85.5" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="المستوى" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text55" Left="198.45" Top="18.9" Width="76.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="نوع المعدل" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text5" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="LightGray" Text="[EmployeesDataSourse.Code]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataBand Name="Data2" Top="283.65" Width="718.2" Height="28.35" DataSource="Table">
+        <TextObject Name="Text2" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EducationDataSource.MajorTypeName]" HorzAlign="Center"/>
+        <TextObject Name="Text3" Left="481.95" Width="113.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EducationDataSource.MajorName]" HorzAlign="Center"/>
+        <TextObject Name="Text7" Left="359.1" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EducationDataSource.UniversityName]" HorzAlign="Center"/>
+        <TextObject Name="Text9" Left="198.45" Width="75.6" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EducationDataSource.ScoreTypeName]" HorzAlign="Center"/>
+        <TextObject Name="Text10" Left="274.05" Width="85.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EducationDataSource.Score]" HorzAlign="Center" WordWrap="false"/>
+        <TextObject Name="Text12" Left="114.3" Width="84.05" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[IIf( ToString(Format(&quot;{0:dd/MM/yyyy}&quot;, [EducationDataSource.DateOfIssuance])) == &quot;01/01/0001&quot;,&quot;&quot;,[EducationDataSource.DateOfIssuance] )]" Format="Date" Format.Format="yyyy/MM/dd" HorzAlign="Center"/>
+        <TextObject Name="Text13" Width="114.4" Height="18.9" Border.Lines="All" Border.Color="Silver" Text="[EducationDataSource.PlaceOfIssuanceName]" HorzAlign="Center"/>
+      </DataBand>
+      <DataFooterBand Name="DataFooter1" Top="318.35" Width="718.2" Height="18.9">
+        <TextObject Name="Text38" Left="595.35" Width="122.85" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="عدد الأسطر" HorzAlign="Center" RightToLeft="true" Font="Arial, 12pt, style=Bold"/>
+        <TextObject Name="Text6" Width="595.35" Height="18.9" Border.Lines="All" Border.Color="Silver" Fill.Color="WhiteSmoke" Text="[TotalCount]" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      </DataFooterBand>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="343.6" Width="718.2" Height="28.35">
+      <TextObject Name="Text8" Left="642.6" Top="9.45" Width="75.6" Height="18.9" Text="[Page]الصفحة" HorzAlign="Right" Font="Tahoma, 8pt"/>
+    </PageFooterBand>
+  </ReportPage>
+  <DialogPage Name="Form1" Width="338" Height="298">
+    <ButtonControl Name="btnOk" Left="118" Top="219" Anchor="Bottom, Right" TabIndex="0" Text="توليد التقرير" DialogResult="OK"/>
+    <LabelControl Name="Label1" Left="192" Top="36" Width="106" Height="13" TabIndex="2" Text="نوع المستوى العلمي"/>
+    <ComboBoxControl Name="MajorTypeComboBox" Left="16" Top="32" Width="175" TabIndex="3" DataColumn="EducationDataSource.MajorType.Name" DropDownWidth="175" ItemHeight="13"/>
+    <CheckBoxControl Name="CheckBox1" Left="176" Top="60" Width="146" Height="17" TabIndex="4" Text="جميع المستويات التعليمية" ClickEvent="CheckBox1_Click" CheckedChangedEvent=""/>
+    <LabelControl Name="Label2" Left="192" Top="88" Width="53" Height="13" TabIndex="2" Text="الاختصاص"/>
+    <LabelControl Name="Label3" Left="192" Top="140" Width="66" Height="13" TabIndex="2" Text="اسم الجامعة"/>
+    <LabelControl Name="Label4" Left="194" Top="192" Width="39" Height="13" TabIndex="2" Text="المعدل"/>
+    <ComboBoxControl Name="MajorComboBox" Left="16" Top="84" Width="175" TabIndex="5" DataColumn="EducationDataSource.Major.Name" DropDownWidth="175" ItemHeight="13"/>
+    <ComboBoxControl Name="UniversityComboBox" Left="16" Top="136" Width="175" TabIndex="6" DataColumn="EducationDataSource.University.Name" DropDownWidth="175" ItemHeight="13"/>
+    <TextBoxControl Name="ScoreTextBox" Left="16" Top="188" Width="175" TabIndex="7" Text="0" DataColumn="EducationDataSource.Score" FilterOperation="GreaterThanOrEqual"/>
+    <CheckBoxControl Name="CheckBox2" Left="176" Top="112" Width="107" Height="17" TabIndex="4" Text="جميع الاختصاصات" ClickEvent="CheckBox2_Click" CheckedChangedEvent=""/>
+    <CheckBoxControl Name="CheckBox3" Left="176" Top="164" Width="93" Height="17" TabIndex="4" Text="جميع الجامعات" ClickEvent="CheckBox3_Click" CheckedChangedEvent=""/>
+  </DialogPage>
+</Report>

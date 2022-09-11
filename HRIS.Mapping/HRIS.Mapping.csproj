@@ -1,0 +1,474 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{911D3780-0078-45CD-BEB7-3AADD6B247F8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HRIS.Mapping</RootNamespace>
+    <AssemblyName>HRIS.Mapping</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\ui\binaries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentNHibernate, Version=1.3.0.733, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="HRIS.Domain, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\HRIS.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Souccar.ReportGenerator.Domain, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UI\Binaries\Souccar.ReportGenerator.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttendanceSystem\Configurations\GeneralSettingsMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceDailyAdjustmentDetailMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceDailyAdjustmentMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceInfractionMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceMonthlyAdjustmentDetailMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceMonthlyAdjustmentMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustmentDetailMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustmentMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ServiceWorkflowMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\FinancialPromotionReasonMap.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\EmployeeInfractionMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeTransferRequestMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EntranceExitRecordRequestMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\InfractionSliceMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\NonAttendanceSliceMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\NonAttendanceSlicePercentageMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\NormalShiftMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\OvertimeSliceMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\ParticularOvertimeShiftMap.cs" />
+    <Compile Include="AttendanceSystem\Configurations\TemporaryWorkshopMap.cs" />
+    <Compile Include="AttendanceSystem\Entities\WorkshopRecurrenceMap.cs" />
+    <Compile Include="AttendanceSystem\Indexes\PenaltyIndexMap.cs" />
+    <Compile Include="AttendanceSystem\Configurations\AttendanceFormMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\AttendanceRecordMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\BioMetricDeviceMap.cs" />
+    <Compile Include="AttendanceSystem\Configurations\BioMetricSettingMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\EmployeeAttendanceCardMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\EntranceExitRecordMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\FingerprintTransferredDataMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\HourlyMissionMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\InfractionFormMap.cs" />
+    <Compile Include="AttendanceSystem\Configurations\NonAttendanceFormMap.cs" />
+    <Compile Include="AttendanceSystem\Configurations\OvertimeFormMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\OvertimeOrderMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\TravelMissionMap.cs" />
+    <Compile Include="AttendanceSystem\Configurations\WorkshopMap.cs" />
+    <Compile Include="Audit\LogMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EndingSecondaryPositionEmployeeMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\PositionsLogOfEmployeeMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\RecycleMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\RecycleLeaveMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\PaidSliceMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\BalanceSliceMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\LeaveRequestMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\AssignmentMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeDisciplinaryMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeePromotionMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeResignationMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeRewardMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeTerminationMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\EmployeeTransferMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ExitInterviewAnswerMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ExitInterviewMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\FinancialPromotionMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\LeaveAttachmentMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\ResignationAttachmentMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\DisciplinaryTypeMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EmployeeRelationServices\Indexes\FixedHolidayNameMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\LeaveReasonMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\LeaveTemplateDetailMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\LeaveSettingMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\DisciplinarySettingMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\ExitSurveyItemMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\GeneralEmployeeRelationSettingMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\RewardSettingMap.cs" />
+    <Compile Include="EmployeeRelationServices\Configurations\LeaveTemplateMasterMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\InfractionNameMap.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\PublicHolidayMap.cs" />
+    <Compile Include="Grade\Entities\JobTitleBenefitDetailMap.cs" />
+    <Compile Include="Grade\Entities\JobTitleDeductionDetailMap.cs" />
+    <Compile Include="JobDesc\Entities\DelegateAuthoritiesToPositionAuthorityMap.cs" />
+    <Compile Include="JobDesc\Entities\CompetenceCategoryLevelDescriptionMap.cs" />
+    <Compile Include="JobDesc\Entities\DelegateAuthoritiesToPositionMap.cs" />
+    <Compile Include="JobDesc\Entities\DelegateRolesToPositionMap.cs" />
+    <Compile Include="JobDesc\Entities\DelegateRolesToPositionRoleMap.cs" />
+    <Compile Include="JobDesc\Indexes\CompetencyNameMap.cs" />
+    <Compile Include="JobDesc\Indexes\KnowledgeTypeMap.cs" />
+    <Compile Include="JobDesc\Configurations\PositionCodeMap.cs" />
+    <Compile Include="Objectives\Entities\ObjectiveAppraisalWorkflowMap.cs" />
+    <Compile Include="Objectives\RootEntities\Objective - Copy.cs" />
+    <Compile Include="Objectives\RootEntities\ObjectiveAppraisalPhaseMap.cs" />
+    <Compile Include="Objectives\RootEntities\ObjectiveCreationPhaseMap.cs" />
+    <Compile Include="OrgChart\RootEntities\SubCompanyMap.cs" />
+    <Compile Include="OrgChart\Indexes\OrganizationSizeMap.cs" />
+    <Compile Include="PayrollSystem\Entities\BankingInformationMap.cs" />
+    <Compile Include="PayrollSystem\Entities\CrossDependencyMap.cs" />
+    <Compile Include="PayrollSystem\Entities\LeaveDeductionMap.cs" />
+    <Compile Include="PayrollSystem\Entities\EmployeeAdvanceMap.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyEmployeeAdvanceMap.cs" />
+    <Compile Include="PayrollSystem\Entities\PositionDeductionDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\NodeDeductionDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\JobDescriptionDeductionDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\GradeDeductionDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\GradeBenefitDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\JobDescriptionBenefitDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\NodeBenefitDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\PositionBenefitDetailMap.cs" />
+    <Compile Include="PayrollSystem\Entities\SalaryIncreaseOrdinanceEmployeeMap.cs" />
+    <Compile Include="PayrollSystem\RootEntities\FinancialCardMap.cs" />
+    <Compile Include="Personnel\Configurations\BankInformationMap.cs" />
+    <Compile Include="PayrollSystem\RootEntities\SalaryIncreaseOrdinanceMap.cs" />
+    <Compile Include="Personnel\Entities\TrainingAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\SkillAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\ResidencyAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\PassportAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\MilitaryServiceAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\LanguageAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\ExperienceAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\EducationAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\DrivingLicenseAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\DependentAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\CertificationAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\ConvictionAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\ChildAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\SpouseAttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\EmployeeTemporaryWorkshopMap.cs" />
+    <Compile Include="Personnel\Entities\AttachmentMap.cs" />
+    <Compile Include="Personnel\Entities\EmployeeCustodieMap.cs" />
+    <Compile Include="Personnel\Entities\JobRelatedInfoMap.cs" />
+    <Compile Include="Personnel\Indexes\AdditionalInformationMap.cs" />
+    <Compile Include="Personnel\Indexes\CityMap.cs" />
+    <Compile Include="Personnel\Indexes\CustodiesTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\EmployeeContractTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\EmployeeTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\GlobalJobTitleMap.cs" />
+    <Compile Include="Personnel\Indexes\MilitiryServiceGranterMap.cs" />
+    <Compile Include="Personnel\Indexes\RaceMap.cs" />
+    <Compile Include="Personnel\Indexes\ScoreMap.cs" />
+    <Compile Include="Personnel\Indexes\SupplierMap.cs" />
+    <Compile Include="Personnel\Indexes\TrainingCenterMap.cs" />
+    <Compile Include="Personnel\Indexes\UniversityMap.cs" />
+    <Compile Include="Personnel\Configurations\DefineCustodiesDetailsMap.cs" />
+    <Compile Include="Personnel\Configurations\DefineHealthInsuranceTypesMap.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\EmployeeCardMap.cs" />
+    <Compile Include="Personnel\Configurations\EmployeeCodeSettingMap.cs" />
+    <Compile Include="PMS\Entities\Competency\AppraisalCompetenceMap.cs" />
+    <Compile Include="PMS\Entities\JobDescription\AppraisalJobDescriptionMap.cs" />
+    <Compile Include="PMS\Entities\objective\AppraisalObjectiveMap.cs" />
+    <Compile Include="PMS\Entities\Organizational\AppraisalCustomSectionItemMap.cs" />
+    <Compile Include="PMS\Entities\Organizational\AppraisalCustomSectionMap.cs" />
+    <Compile Include="PMS\Entities\PromotionHistoryMap.cs" />
+    <Compile Include="PMS\Entities\PromotionsSettingsAppraisalPhasesMap.cs" />
+    <Compile Include="PMS\Configurations\AppraisalPhaseSettingMap.cs" />
+    <Compile Include="PMS\Configurations\AppraisalTemplateSettingMap.cs" />
+    <Compile Include="ProjectManagement\Entites\ConstrainMap.cs" />
+    <Compile Include="ProjectManagement\Entites\PhaseMap.cs" />
+    <Compile Include="ProjectManagement\Entites\TaskMap.cs" />
+    <Compile Include="ProjectManagement\Entites\TeamMap.cs" />
+    <Compile Include="ProjectManagement\Entites\IndirectManagerInfoMap.cs" />
+    <Compile Include="ProjectManagement\Entites\MemberMap.cs" />
+    <Compile Include="ProjectManagement\Entites\SuccessFactorMap.cs" />
+    <Compile Include="ProjectManagement\Entites\TRoleMap.cs" />
+    <Compile Include="ProjectManagement\Indexes\PhaseStatusMap.cs" />
+    <Compile Include="ProjectManagement\Indexes\KPItypeMap.cs" />
+    <Compile Include="ProjectManagement\Indexes\ProjectTypeMap.cs" />
+    <Compile Include="ProjectManagement\Indexes\ResourceStatusMap.cs" />
+    <Compile Include="ProjectManagement\Indexes\ResourceTypeMap.cs" />
+    <Compile Include="ProjectManagement\Indexes\TaskStatusMap.cs" />
+    <Compile Include="ProjectManagement\RootEntities\EvaluationMap.cs" />
+    <Compile Include="ProjectManagement\RootEntities\ProjectMap.cs" />
+    <Compile Include="ProjectManagement\Entites\ResourceMap.cs" />
+    <Compile Include="Recruitment\Configurations\EvaluationSettingsMap.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentMilitaryServiceMap.cs" />
+    <Compile Include="Recruitment\Indexes\ApplicationSourceMap.cs" />
+    <Compile Include="Recruitment\Entities\EvaluatorMap.cs" />
+    <Compile Include="Recruitment\Entities\InterviewCustomSectionItemMap.cs" />
+    <Compile Include="Recruitment\Entities\InterviewCustomSectionMap.cs" />
+    <Compile Include="Recruitment\Entities\JobApplicationAttachmentMap.cs" />
+    <Compile Include="Recruitment\Entities\OralExaminationMap.cs" />
+    <Compile Include="Recruitment\Entities\PersonalSkillMap.cs" />
+    <Compile Include="Recruitment\Entities\ProfessionalCertificationMap.cs" />
+    <Compile Include="Recruitment\Entities\QualificationMap.cs" />
+    <Compile Include="Recruitment\Entities\RChildMap.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentApplicantMap.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentComputerSkillMap.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentEducationMap.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentInformationMap.cs" />
+    <Compile Include="Recruitment\Entities\RecruitmentRequestAttachmentMap.cs" />
+    <Compile Include="Recruitment\Entities\REducationMap.cs" />
+    <Compile Include="Recruitment\Entities\RJobRelatedInfoMap.cs" />
+    <Compile Include="Recruitment\Entities\RSpouseMap.cs" />
+    <Compile Include="Recruitment\Entities\TrainingCourseLanguageMap.cs" />
+    <Compile Include="Recruitment\Entities\TrainingCourseMap.cs" />
+    <Compile Include="Recruitment\Entities\WorkingExperienceMap.cs" />
+    <Compile Include="Recruitment\Entities\WrittenExaminationMap.cs" />
+    <Compile Include="Recruitment\Indexes\AttachmentTypeMap.cs" />
+    <Compile Include="Recruitment\Indexes\InterviewTypeMap.cs" />
+    <Compile Include="Recruitment\Indexes\JobTypeMap.cs" />
+    <Compile Include="Recruitment\Indexes\JoiningStatusMap.cs" />
+    <Compile Include="Recruitment\Indexes\PlaceMap.cs" />
+    <Compile Include="Recruitment\Indexes\RejectionReasonMap.cs" />
+    <Compile Include="Recruitment\Indexes\RequestTypeMap.cs" />
+    <Compile Include="Recruitment\Indexes\VacancyReasonMap.cs" />
+    <Compile Include="Recruitment\RootEntities\AdvertisementMap.cs" />
+    <Compile Include="Recruitment\RootEntities\ApplicantMap.cs" />
+    <Compile Include="Recruitment\RootEntities\InterviewMap.cs" />
+    <Compile Include="Recruitment\RootEntities\JobApplicationMap.cs" />
+    <Compile Include="Recruitment\RootEntities\RecruitmentRequestMap.cs" />
+    <Compile Include="ReportGenerator\Classification\ReportTemplateMap.cs" />
+    <Compile Include="ReportGenerator\QueryBuilder\QueryLeafMap.cs" />
+    <Compile Include="ReportGenerator\QueryBuilder\QueryTreeMap.cs" />
+    <Compile Include="ReportGenerator\QueryBuilder\ReportMap.cs" />
+    <Compile Include="Reporting\RootEntities\ReportDefinitionMap.cs" />
+    <Compile Include="Security\Configuration\FullAuthorityRolesMap.cs" />
+    <Compile Include="Security\RootEntities\AuthorizableAggregatesFieldRole.cs" />
+    <Compile Include="Security\RootEntities\AuthorizableDetailsFieldRole.cs" />
+    <Compile Include="TaskManagement\Indexes\TaskType.cs" />
+    <Compile Include="TaskManagement\RootEntities\DailyWorkMap.cs" />
+    <Compile Include="TaskManagement\RootEntities\TaskMap.cs" />
+    <Compile Include="Training\Entities\AppraisalCourseMap.cs" />
+    <Compile Include="Training\Entities\AppraisalTraineeAttachmentMap.cs" />
+    <Compile Include="Training\Entities\AppraisalTraineeMap.cs" />
+    <Compile Include="Training\Entities\CourseAttachmentsMap.cs" />
+    <Compile Include="Training\Entities\CourseConditionMap.cs" />
+    <Compile Include="Training\Entities\CourseCostMap.cs" />
+    <Compile Include="Training\Entities\CourseTrainingNeedMap.cs" />
+    <Compile Include="Training\Entities\CourseEmployeeMap.cs" />
+    <Compile Include="Training\Indexes\AppraisalCourseItemMap.cs" />
+    <Compile Include="Training\Indexes\AppraisalCourseLevelMap.cs" />
+    <Compile Include="Training\Indexes\AppraisalTraineeLevelMap.cs" />
+    <Compile Include="Training\Indexes\ConditionTitleMap.cs" />
+    <Compile Include="Training\Indexes\CostNameMap.cs" />
+    <Compile Include="Training\Indexes\CourseLevelMap.cs" />
+    <Compile Include="Training\Indexes\CourseNameMap.cs" />
+    <Compile Include="Training\Indexes\CourseSponsorMap.cs" />
+    <Compile Include="Training\Indexes\CourseTypeMap.cs" />
+    <Compile Include="Training\Indexes\CostCenterMap.cs" />
+    <Compile Include="Training\Indexes\TrainerMap.cs" />
+    <Compile Include="Training\Indexes\TrainingCenterNameMap.cs" />
+    <Compile Include="Training\Indexes\TrainingNeedLevelMap.cs" />
+    <Compile Include="Training\Indexes\TrainingPlaceMap.cs" />
+    <Compile Include="Training\Entities\CourseMap.cs" />
+    <Compile Include="Training\RootEntities\TrainingNeedMap.cs" />
+    <Compile Include="Training\RootEntities\TrainingPlanMap.cs" />
+    <Compile Include="Workflow\Entities\WorkflowSettingApprovalMap.cs" />
+    <Compile Include="Workflow\Entities\WorkflowSettingOverwritingHistoryMap.cs" />
+    <Compile Include="Workflow\Entities\WorkflowSettingPositionMap.cs" />
+    <Compile Include="Workflow\RootEntities\WorkflowItemsMap.cs" />
+    <Compile Include="Workflow\RootEntities\WorkflowSettingMap.cs" />
+    <Compile Include="JobDesc\Entities\NatureJobMap.cs" />
+    <Compile Include="JobDesc\Entities\RoleKpiMap.cs" />
+    <Compile Include="JobDesc\Entities\ResponsibilityKpiMap.cs" />
+    <Compile Include="JobDesc\Indexes\NatureJobTypeMap.cs" />
+    <Compile Include="JobDesc\Configurations\CompetencyCategoryMap.cs" />
+    <Compile Include="Attachment\AttachmentInfoMap.cs" />
+    <Compile Include="EmployeeRelationServices\Entities\AssigningEmployeeToPositionMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\ChangeableHolidayNameMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\DocumentTypeMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\RewardTypeMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\ServiceEndTypeMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\WorkSideMap.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\ChangeableHolidayMap.cs" />
+    <Compile Include="EmployeeRelationServices\RootEntities\FixedHolidayMap.cs" />
+    <Compile Include="JobDesc\Entities\JobDescriptionReportingMap.cs" />
+    <Compile Include="JobDesc\Entities\PositionDelegateMap.cs" />
+    <Compile Include="JobDesc\Entities\JobDescriptionDelegateMap.cs" />
+    <Compile Include="JobDesc\Entities\PositionReportingMap.cs" />
+    <Compile Include="JobDesc\RootEntities\JobDescriptionMap.cs" />
+    <Compile Include="JobDesc\Indexes\AuthorityTypeMap.cs" />
+    <Compile Include="JobDesc\Indexes\CompetencyTypeMap.cs" />
+    <Compile Include="JobDesc\Indexes\ConditionTypeMap.cs" />
+    <Compile Include="Notification\RootEntities\NotifyMap.cs" />
+    <Compile Include="Notification\Entities\NotifyReceiverMap.cs" />
+    <Compile Include="Objectives\Entities\ActionPlanMap.cs" />
+    <Compile Include="Objectives\Entities\ObjectiveConstraintMap.cs" />
+    <Compile Include="Objectives\Entities\ObjectiveKpiMap.cs" />
+    <Compile Include="Objectives\Entities\SharedWithMap.cs" />
+    <Compile Include="Objectives\Indexes\DimensionMap.cs" />
+    <Compile Include="Objectives\Indexes\ObjectiveConstraintTypeMap.cs" />
+    <Compile Include="Objectives\RootEntities\ObjectiveMap.cs" />
+    <Compile Include="Objectives\RootEntities\StrategicObjectiveMap.cs" />
+    <Compile Include="Grade\Entities\GradeByEducationQualificationMap.cs" />
+    <Compile Include="PayrollSystem\Entities\CrossDeductionWithBenefitMap.cs" />
+    <Compile Include="PayrollSystem\Entities\CrossDeductionWithDeductionMap.cs" />
+    <Compile Include="PayrollSystem\Entities\EmployeeLoanMap.cs" />
+    <Compile Include="PayrollSystem\Entities\LoanPaymentMap.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyEmployeeBenefitMap.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyEmployeeDeductionMap.cs" />
+    <Compile Include="PayrollSystem\Entities\PrimaryEmployeeBenefitMap.cs" />
+    <Compile Include="PayrollSystem\Entities\PrimaryEmployeeDeductionMap.cs" />
+    <Compile Include="PayrollSystem\Configurations\BenefitCardMap.cs" />
+    <Compile Include="PayrollSystem\Configurations\DeductionCardMap.cs" />
+    <Compile Include="PayrollSystem\Configurations\GeneralOptionMap.cs" />
+    <Compile Include="PayrollSystem\Entities\MonthlyCardMap.cs" />
+    <Compile Include="PayrollSystem\RootEntities\MonthMap.cs" />
+    <Compile Include="PayrollSystem\Configurations\TaxSliceMap.cs" />
+    <Compile Include="Personnel\Indexes\LanguageNameMap.cs" />
+    <Compile Include="JobDesc\Indexes\PriorityMap.cs" />
+    <Compile Include="JobDesc\Entities\AuthorityMap.cs" />
+    <Compile Include="JobDesc\Entities\CompetenceMap.cs" />
+    <Compile Include="JobDesc\Entities\ComputerSkillMap.cs" />
+    <Compile Include="JobDesc\Entities\RestrictionMap.cs" />
+    <Compile Include="JobDesc\Entities\JEducationMap.cs" />
+    <Compile Include="JobDesc\Entities\JExperienceMap.cs" />
+    <Compile Include="JobDesc\Entities\JSkillMap.cs" />
+    <Compile Include="JobDesc\Entities\KnowledgeMap.cs" />
+    <Compile Include="JobDesc\Entities\JLanguageMap.cs" />
+    <Compile Include="JobDesc\Entities\ResponsibilityMap.cs" />
+    <Compile Include="JobDesc\Entities\RoleMap.cs" />
+    <Compile Include="JobDesc\Entities\WorkingRestrictionMap.cs" />
+    <Compile Include="Localization\ResourceGroupMap.cs" />
+    <Compile Include="Localization\LocaleStringResourceMap.cs" />
+    <Compile Include="Localization\LanguageMap.cs" />
+    <Compile Include="Grade\Entities\GradeStepMap.cs" />
+    <Compile Include="Grade\Entities\NonCashBenefitMap.cs" />
+    <Compile Include="Grade\Indexes\CashDeductionTypeMap.cs" />
+    <Compile Include="Grade\Indexes\CostCenterMap.cs" />
+    <Compile Include="OrgChart\Indexes\CurrencyTypeMap.cs" />
+    <Compile Include="Grade\Indexes\JobGroupMap.cs" />
+    <Compile Include="Grade\Entities\JobTitleMap.cs" />
+    <Compile Include="OrgChart\Configurations\NodeTypeMap.cs" />
+    <Compile Include="Grade\Indexes\NoneCashBenefitTypeMap.cs" />
+    <Compile Include="OrgChart\Indexes\OrganizationalLevelMap.cs" />
+    <Compile Include="OrgChart\Indexes\TimeIntervalMap.cs" />
+    <Compile Include="Grade\RootEntities\GradeByEducationMap.cs" />
+    <Compile Include="Grade\RootEntities\GradeMap.cs" />
+    <Compile Include="OrgChart\RootEntities\NodeMap.cs" />
+    <Compile Include="OrgChart\RootEntities\OrganizationMap.cs" />
+    <Compile Include="Personnel\Entities\CertificationMap.cs" />
+    <Compile Include="Personnel\Entities\ChildrenMap.cs" />
+    <Compile Include="Personnel\Entities\ContactMap.cs" />
+    <Compile Include="Personnel\Entities\ConvictionMap.cs" />
+    <Compile Include="Personnel\Entities\DependentMap.cs" />
+    <Compile Include="Personnel\Entities\DrivingLicenseMap.cs" />
+    <Compile Include="Personnel\Entities\EducationMap.cs" />
+    <Compile Include="Personnel\Entities\ExperiencesMap.cs" />
+    <Compile Include="Personnel\Entities\LanguageMap.cs" />
+    <Compile Include="Personnel\Entities\MilitaryServiceMap.cs" />
+    <Compile Include="Personnel\Entities\PassportMap.cs" />
+    <Compile Include="Personnel\Entities\ResidencyMap.cs" />
+    <Compile Include="Personnel\Entities\SkillMap.cs" />
+    <Compile Include="Personnel\Entities\SpouseMap.cs" />
+    <Compile Include="Personnel\Entities\TrainingMap.cs" />
+    <Compile Include="Personnel\Indexes\CertificationTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\ConvictionRuleMap.cs" />
+    <Compile Include="Personnel\Indexes\CountryMap.cs" />
+    <Compile Include="Personnel\Indexes\DisabilityTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\DrivingLicenseTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\GenderMap.cs" />
+    <Compile Include="Personnel\Indexes\IndustryMap.cs" />
+    <Compile Include="Personnel\Indexes\KinshipTypeMap.cs" />
+    <Compile Include="EmployeeRelationServices\Indexes\LeaveTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\LevelMap.cs" />
+    <Compile Include="Personnel\Indexes\MajorMap.cs" />
+    <Compile Include="Personnel\Indexes\MajorTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\MaritalStatusMap.cs" />
+    <Compile Include="Personnel\Indexes\NationalityMap.cs" />
+    <Compile Include="Personnel\Indexes\ResidencyTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\ScoreTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\SkillTypeMap.cs" />
+    <Compile Include="Personnel\Indexes\StatusMap.cs" />
+    <Compile Include="Personnel\RootEntities\EmployeeMap.cs" />
+    <Compile Include="PMS\Entities\AppraisalPhaseWorkflowMap.cs" />
+    <Compile Include="PMS\Entities\AppraisalSectionItemKpiMap.cs" />
+    <Compile Include="PMS\Entities\AppraisalSectionItemMap.cs" />
+    <Compile Include="PMS\Entities\TemplateAppraisalPositionsMap.cs" />
+    <Compile Include="PMS\Entities\TemplateSectionWeightMap.cs" />
+    <Compile Include="PMS\Indexes\TemplateTypeMap.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalMap.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalPhaseMap.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalSectionMap.cs" />
+    <Compile Include="PMS\RootEntities\AppraisalTemplateMap.cs" />
+    <Compile Include="PMS\RootEntities\BusinessProcessLogEntryMap.cs" />
+    <Compile Include="JobDesc\Entities\PositionMap.cs" />
+    <Compile Include="JobDesc\Entities\PositionStatusMap.cs" />
+    <Compile Include="JobDesc\Indexes\PositionTypeMap.cs" />
+    <Compile Include="PMS\Configurations\PromotionsSettingsMap.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\RootEntities\AuthorizableElementRole.cs" />
+    <Compile Include="Security\RootEntities\PermissionMap.cs" />
+    <Compile Include="Security\RootEntities\PermissionRoleMap.cs" />
+    <Compile Include="Security\RootEntities\PermissionSetMap.cs" />
+    <Compile Include="Security\RootEntities\RoleMap.cs" />
+    <Compile Include="Security\RootEntities\UserMap.cs" />
+    <Compile Include="Security\RootEntities\UserRoleMap.cs" />
+    <Compile Include="Services\DelegationMap.cs" />
+    <Compile Include="Services\EmployeeToPositionMap.cs" />
+    <Compile Include="Training\Indexes\CourseSpecializeMap.cs" />
+    <Compile Include="Workflow\Entities\WorkflowApprovalMap.cs" />
+    <Compile Include="Workflow\Entities\WorkflowStepMap.cs" />
+    <Compile Include="Workflow\RootEntities\WorkflowItemMap.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OrgChart\Entities\" />
+    <Folder Include="PayrollSystem\Indexes\" />
+    <Folder Include="TaskManagement\Entities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Souccar.Domain\Souccar.csproj">
+      <Project>{942b938b-82ef-4839-b6ce-57a7b6ffbaf3}</Project>
+      <Name>Souccar</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,154 @@
+﻿@using Project.Web.Mvc4.Helpers.Resource
+@using Project.Web.Mvc4.Helpers
+@using HRIS.Domain.EmployeeRelationServices.Entities
+@*//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//
+    //*******company name: souccar for electronic industries*******//
+    //author: Ammar Alziebak
+    //description:
+    //start date: 08/03/2015
+    //end date:
+    //last update:
+    //update by:
+    //-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//-//*@
+<script>
+    var postionsDataSource = {
+        transport: {
+            read: {
+                url: '@Url.Action("ReadPositionCascadeJobTitle", "Reference", new { area = "EmployeeRelationServices"})'
+        }
+    },
+        schema: {
+        data: "Data",
+        id: "Id"
+        }
+    };
+</script>
+<script type="text/javascript">
+    function addRequiredStar(fieldName) {
+        $("label[for='" + fieldName + "']").append('<span class="equired-star">*</span>');
+    }
+
+    function AssignmentEditHandler(e) {
+        var container = e.container.find(".controls-container");
+        var openPositionFunction = "openReferenceWindow('Position','HRIS.Domain.JobDesc.Entities.Position','Position');";
+        var jobTitle = $("[name=JobTitle]").data("kendoDropDownList");
+        var elementPosition = '<div class="control control-Position second-column required"><div class="k-edit-label"><label for="Position">@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)<span class="equired-star">*</span></label></div><div data-container-for="Position" class="k-edit-field">' +
+                        '<input id="Position" name="Position" class="dropDownList addabelIndex" ' +
+                        ' data-role="dropdownlist" ' +
+                        ' data-text-field="Name" ' +
+                        ' data-value-field="Id" ' +
+                        ' data-source="postionsDataSource"' +
+                        ' data-value-primitive="true" ' +
+                        ' data-option-label="Select" ' +
+                        ' data-bind="value:PositionName" /> &nbsp;' +
+                        ' <button id="openPosition" class="k-button"> ' +
+                        ' <span class="k-icon k-i-note" style="vertical-align: sub;"></span> ' +
+                        ' </button> ' +
+                        ' </div></div>';
+
+        $(elementPosition).insertAfter(".control.control-JobTitle");
+
+        kendo.init($(".control-Position"));
+
+        var position = $("#Position").data("kendoDropDownList");
+        container.find("#openPosition").off('click').on('click', function () {
+            var referenceId = position.value();
+            if (referenceId == null || referenceId == 0)
+                return;
+            openViewWindow('HRIS.Domain.JobDescription.Entities.Position', "@JobDescriptionLocalizationHelper.GetResource(JobDescriptionLocalizationHelper.Position)", referenceId);
+        });
+        position.enable(false);
+        //var position = $('#positions').kendoDropDownList({ dataSource: { data: postionsDataSource }, autoBind: false, dataTextField: "Name", dataValueField: "Id", enable: true }).data("kendoDropDownList");
+        function cascade() {
+            if (jobTitle.value()) {
+                position.value("");
+                position.enable(true);
+                position.dataSource.filter([
+                    { field: "ParentId", operator: "eq", value: parseInt(jobTitle.value()) }
+                ]);
+            }
+            else {
+                position.enable(false);
+                position.value("");
+            }
+        }
+        jobTitle.bind("cascade", cascade);
+        reOrderControls(container);
+        position.bind("change", function () {
+            e.model.CustomInformation = position.value();
+        });
+        @*assignmentEditViewAsStatus(e);
+        var dropdownlist = e.container.find("#dropDownListJobTitle").data("kendoDropDownList");
+        dropdownlist.bind("cascade", jobTitleDropdownChange);
+        var posid = null;
+        var jobtit = null;
+        if (!e.model.isNew()) {
+            posid = e.model.Position.Id;
+            jobtit = e.model.JobTitle.Id;
+        }
+        var url1 = '@Url.Action("ReadPositionCascadeToJobTitleAssignment", "Reference", new { area = "EmployeeRelationServices" })';
+        var targetControl1 = $("#dropDownListPosition").data("kendoDropDownList");
+        cascadeFor(url1, targetControl1, jobtit, posid);
+        function jobTitleDropdownChange(event) {
+
+            var url = '@Url.Action("ReadPositionCascadeToJobTitleAssignment", "Reference", new { area = "EmployeeRelationServices" })';
+            var targetControl = $("#dropDownListPosition").data("kendoDropDownList");
+
+            cascadeFor(url, targetControl, Number(event.sender.value()), posid);
+        }
+
+
+        //addRequiredStar('JobTitle');
+        //addRequiredStar('Position');
+        //addRequiredStar('Weight');
+        //addRequiredStar('AssigningDate');
+        reOrderControls(e.container);*@
+    }
+
+    function cascadeFor(url, targetControl, value, posid) {
+
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify({ jobTitleId: value, posintionid: posid }),
+            contentType: 'application/json',
+            success: function (data) {
+                data.Data.unshift({ Name: "@GlobalResource.Select", Id: 0 });
+                var dataSource = new kendo.data.DataSource({
+                    data: data.Data
+                });
+                targetControl.setDataSource(dataSource);
+                targetControl.text("@GlobalResource.Select");
+                targetControl.dataSource.read();
+            }
+        });
+
+    }
+
+    function AssignmentViewHandler(e) {
+        //assignmentEditViewAsStatus(e);
+        //reOrderControls(e.container);
+        $("#view_edit").remove();
+    }
+
+    function assignmentEditViewAsStatus(e) {
+        //var isIsPrimary = Boolean(e.model.IsPrimary);
+        //if (isIsPrimary == true) {
+        //    e.container.find(".control-Weight").hide();
+        //}
+        //var isPrimaryCkb = e.container.find('[name="IsPrimary"]');
+        //isPrimaryCkb.change(function () {
+        //    if (this.checked == true) {
+        //        e.container.find(".control-Weight").hide();
+        //        e.container.find("[name='Weight']").data("kendoNumericTextBox").value(0);
+        //        $("#grid").data("kendoGrid")._data[0].Weight = $("[name='Weight']").val();
+        //    } else {
+        //        e.container.find(".control-Weight").show();
+        //    }
+        //});
+    }
+
+
+
+</script>
