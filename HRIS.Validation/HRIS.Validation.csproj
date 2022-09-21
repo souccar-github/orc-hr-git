@@ -98,6 +98,7 @@
       <DependentUpon>GlobalMessagesResource.resx</DependentUpon>
     </Compile>
     <Compile Include="Specification\AttendanceSystem\Configurations\GeneralSettingsSpecification.cs" />
+    <Compile Include="Specification\AttendanceSystem\RootEntities\DailyEntranceExitRecordSpecification.cs" />
     <Compile Include="Specification\EmployeeRelationServices\Entities\LeaveAttachmentSpecification.cs" />
     <Compile Include="Specification\EmployeeRelationServices\Entities\ServiceWorkflowSpecification.cs" />
     <Compile Include="Specification\EmployeeRelationServices\RootEntities\EmployeeInfractionSpecification.cs" />

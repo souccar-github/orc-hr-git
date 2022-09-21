@@ -23,6 +23,10 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using Project.Web.Mvc4.Helpers.Resource;
 using System.Net.NetworkInformation;
+using Project.Web.Mvc4.Areas.EmployeeRelationServices.Services;
+using HRIS.Domain.Personnel.RootEntities;
+using HRIS.Domain.AttendanceSystem.Entities;
+using HRIS.Domain.AttendanceSystem.DTO;
 
 namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
 {
@@ -106,70 +110,94 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
             var start = DateTime.Now;
             try
             {
+                IList<PublicHoliday> publicHolidays;
+                IList<FixedHoliday> fixedHolidays;
+                IList<ChangeableHoliday> changeableHolidays;
+                AttendanceSystemIntegrationService.GetHolidays(out publicHolidays, out fixedHolidays, out changeableHolidays);
                 var bioMetricSetting = (BioMetricSetting)typeof(BioMetricSetting).GetById(bioMetricDeviceId);
-                var allFingerprintTransferredData = ServiceFactory.ORMService.All<FingerprintTransferredData>();
-                var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>();
+                var dailyEnternaceExitRecord = new DailyEnternaceExitRecord();
 
-                var bioMetricDevice = BioMetricService.GetDevice(bioMetricSetting.BioMetricDevice.DeviceTypeFullName);
-                var isConnected = bioMetricDevice.Connect(bioMetricSetting.IpAddress, bioMetricSetting.Port);
-                if (!isConnected)
-                {
-                    return Json(new
-                    {
-                        Success = false,
-                        Msg = AttendanceLocalizationHelper.ConnectedFailed
-                    });
-                }
-                var employeeAttendanceCards = typeof(EmployeeCard).GetAll<EmployeeCard>().Where(x => x.AttendanceDemand == true);
+
+               // //var bioMetricDevice = BioMetricService.GetDevice(bioMetricSetting.BioMetricDevice.DeviceTypeFullName);
+                //var isConnected = bioMetricDevice.Connect(bioMetricSetting.IpAddress, bioMetricSetting.Port);
+                //if (!isConnected)
+                //{
+                //    return Json(new
+                //    {
+                //        Success = false,
+                //        Msg = AttendanceLocalizationHelper.ConnectedFailed
+                //    });
+                //}
                 if (transferDataFromBioMetric)
                 {
+                    //var data = bioMetricDevice.GetRecordsData();
+
+                    var data = Project.Web.Mvc4.Areas.AttendanceSystem.Services.AttendanceService.GetTestingRecordsData().ToList();
+                    var dataGroupedByUserDeviceCode = data
+                    .GroupBy(x => x.UserDeviceId);
+
+                    var userDeviceCods = dataGroupedByUserDeviceCode.Select(x => x.Key.ToString());
+                    var employeeAttendanceCards = typeof(EmployeeCard).GetAll<EmployeeCard>()
+                        .ToList().Where(x => x.AttendanceDemand == true &&
+                    userDeviceCods.Contains(x.EmployeeMachineCode));
+                    var employees = employeeAttendanceCards.Select(x => x.Employee);
+
+                    Dictionary<Employee, AttendanceForm> forms = AttendanceSystem.Services.AttendanceService.GetAttendanceForms(employees.ToList());
+                    var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList().Where(
+                        x => data.Any(y => x.LogDate >= y.DateTime.AddDays(-1).Date && x.LogDate <= y.DateTime.Date.AddDays(1).Date));
+                    var allDailyEnternaceExitRecordData = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(
+                        x => data.Any(y => x.Date >= y.DateTime.AddDays(-1).Date && x.Date <= y.DateTime.Date.AddDays(1).Date));
                     var entities = new List<IAggregateRoot>();
-                    var data = bioMetricDevice.GetRecordsData();
                     if (!ignoreFingerPrintType)
-                        foreach (var bioMetricRecordData in data)
+                        foreach (var item in dataGroupedByUserDeviceCode)
                         {
-                            var empAttendanceCard = employeeAttendanceCards.FirstOrDefault(x => x.EmployeeMachineCode == bioMetricRecordData.UserDeviceId.ToString());
+                            var userDeviceId = item.Key;
+                            var empAttendanceCard = employeeAttendanceCards.FirstOrDefault(x => x.EmployeeMachineCode == userDeviceId.ToString());
                             if (empAttendanceCard == null)
                             {
                                 continue; // todo Mhd Alsaadi: للتأكد هل سيتم تجاهل الريكورد الذي لم نجد له مقابل ببطاقات الدوام سواء لعدم وجود البطاقة او لعدم وجود كود الجهاز
                             }
-                            var errorType = ErrorType.None;// GetEntranceExitRecordErrorType(bioMetricRecordData, data);
-
-                            var allFingerprintTransferredDataOfEmployee = allFingerprintTransferredData.Where(x => x.Employee.Id == empAttendanceCard.Employee.Id).ToList();
                             var allEntranceExitRecordDataOfEmployee = allEntranceExitRecordData.Where(x => x.Employee.Id == empAttendanceCard.Employee.Id).ToList();
-                            if (!AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                                allFingerprintTransferredDataOfEmployee, bioMetricRecordData.DateTime, InsertSource.Machine,
-                                ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType), bioMetricSetting.IgnorePeriod))
+                            foreach (var bioMetricRecordData in item)
                             {
-                                var entranceExitRecord = new EntranceExitRecord();
-                                var currentUser = UserExtensions.CurrentUser;
-                                var fingerprintTransferredData = new FingerprintTransferredData();
 
-                                entranceExitRecord.Employee = empAttendanceCard.Employee;
-                                //entranceExitRecord.ErrorMessage = "";
-                                entranceExitRecord.ErrorType = errorType;
-                                entranceExitRecord.InsertSource = InsertSource.Machine;
-                                entranceExitRecord.LogDateTime = bioMetricRecordData.DateTime;
-                                entranceExitRecord.LogTime = new DateTime(2000, 1, 1, bioMetricRecordData.DateTime.Hour, bioMetricRecordData.DateTime.Minute, bioMetricRecordData.DateTime.Second);
-                                entranceExitRecord.LogDate = new DateTime(bioMetricRecordData.DateTime.Year, bioMetricRecordData.DateTime.Month, bioMetricRecordData.DateTime.Day, 0, 0, 0);
-                                entranceExitRecord.LogType = ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType);
-                                entranceExitRecord.Note = "";
-                                //entranceExitRecord.Status = errorType == ErrorType.None ? EntranceExitStatus.Ok : EntranceExitStatus.Error;
-                                entranceExitRecord.UpdateReason = "";
+                                var errorType = ErrorType.None;// GetEntranceExitRecordErrorType(bioMetricRecordData, data);
 
-                                entities.Add(entranceExitRecord);
+                                if (!AttendanceSystem.Services.AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
+                                    bioMetricRecordData.DateTime, InsertSource.Machine,
+                                    ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType), bioMetricSetting.IgnorePeriod))
+                                {
+                                    var entranceExitRecord = new EntranceExitRecord();
+                                    var currentUser = UserExtensions.CurrentUser;
+                                    var fingerprintTransferredData = new FingerprintTransferredData();
 
-                                fingerprintTransferredData.EntranceExitRecord = entranceExitRecord;
-                                fingerprintTransferredData.LogDateTime = bioMetricRecordData.DateTime;
-                                fingerprintTransferredData.LogType = ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType);
-                                fingerprintTransferredData.Employee = empAttendanceCard.Employee;
+                                    entranceExitRecord.Employee = empAttendanceCard.Employee;
+                                    //entranceExitRecord.ErrorMessage = "";
+                                    entranceExitRecord.ErrorType = errorType;
+                                    entranceExitRecord.InsertSource = InsertSource.Machine;
+                                    entranceExitRecord.LogDateTime = bioMetricRecordData.DateTime;
+                                    entranceExitRecord.LogTime = new DateTime(2000, 1, 1, bioMetricRecordData.DateTime.Hour, bioMetricRecordData.DateTime.Minute, bioMetricRecordData.DateTime.Second);
+                                    entranceExitRecord.LogDate = new DateTime(bioMetricRecordData.DateTime.Year, bioMetricRecordData.DateTime.Month, bioMetricRecordData.DateTime.Day, 0, 0, 0);
+                                    entranceExitRecord.LogType = ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType);
+                                    entranceExitRecord.Note = "";
+                                    //entranceExitRecord.Status = errorType == ErrorType.None ? EntranceExitStatus.Ok : EntranceExitStatus.Error;
+                                    entranceExitRecord.UpdateReason = "";
 
-                                entities.Add(fingerprintTransferredData);
+                                    entities.Add(entranceExitRecord);
 
+                                    fingerprintTransferredData.EntranceExitRecord = entranceExitRecord;
+                                    fingerprintTransferredData.LogDateTime = bioMetricRecordData.DateTime;
+                                    fingerprintTransferredData.LogType = ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType);
+                                    fingerprintTransferredData.Employee = empAttendanceCard.Employee;
+
+                                    entities.Add(fingerprintTransferredData);
+
+                                }
                             }
                         }
                     else
                     {
+                        var empAttendanceCard = new EmployeeCard();
                         var groupedData = allEntranceExitRecordData.ToList().GroupBy(x => x.Employee);
                         var lastRecordTypeByEmployees = groupedData.
                                 Select(obj => new
@@ -177,77 +205,99 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                                     Employee = obj.Key,
                                     LastRecordType = obj.Any() ?
                                        obj.OrderByDescending(entranceExitRecord => entranceExitRecord.LogDateTime).FirstOrDefault().LogType :
-                                       LogType.Exit
+                                       LogType.Exit,
+                                    Date = obj.Any() ?
+                                       obj.OrderByDescending(entranceExitRecord => entranceExitRecord.LogDateTime).FirstOrDefault().LogDateTime :
+                                       DateTime.Now
                                 }).ToList();
-                        foreach (var bioMetricRecordData in data)
+                        foreach (var item in dataGroupedByUserDeviceCode)
                         {
-                            var empAttendanceCard = employeeAttendanceCards.FirstOrDefault(x => x.EmployeeMachineCode == bioMetricRecordData.UserDeviceId.ToString());
+                            var userDeviceId = item.Key;
+                            empAttendanceCard = employeeAttendanceCards.FirstOrDefault(x => x.EmployeeMachineCode == userDeviceId.ToString());
                             if (empAttendanceCard == null)
                             {
                                 continue; // todo Mhd Alsaadi: للتأكد هل سيتم تجاهل الريكورد الذي لم نجد له مقابل ببطاقات الدوام سواء لعدم وجود البطاقة او لعدم وجود كود الجهاز
                             }
-                            var errorType = ErrorType.None;// GetEntranceExitRecordErrorType(bioMetricRecordData, data);
-
-                            var allFingerprintTransferredDataOfEmployee = allFingerprintTransferredData.Where(x => x.Employee.Id == empAttendanceCard.Employee.Id).ToList();
+                            var dailyEntranceExitRecord = new DailyEnternaceExitRecord();
+                            List<NormalShift> ranges = new List<NormalShift>();
+                            WorkshopRecurrenceDTO recurrence = new WorkshopRecurrenceDTO();
                             var allEntranceExitRecordDataOfEmployee = allEntranceExitRecordData.Where(x => x.Employee.Id == empAttendanceCard.Employee.Id).ToList();
-                            if (!AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                                allFingerprintTransferredDataOfEmployee, bioMetricRecordData.DateTime, InsertSource.Machine,
-                                ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType), bioMetricSetting.IgnorePeriod, true))
+                            var lastRecord = lastRecordTypeByEmployees.FirstOrDefault(x => x.Employee?.Id == empAttendanceCard?.Employee?.Id);
+                            foreach (var bioMetricRecordData in item.OrderBy(x => x.DateTime))
                             {
-                                var entranceExitRecord = new EntranceExitRecord();
-                                var currentUser = UserExtensions.CurrentUser;
-                                var fingerprintTransferredData = new FingerprintTransferredData();
-                                if (!lastRecordTypeByEmployees.Any(x => x.Employee?.Id == empAttendanceCard?.Employee?.Id))
-                                    lastRecordTypeByEmployees.Add(new
+                                var errorType = ErrorType.None;// GetEntranceExitRecordErrorType(bioMetricRecordData, data);
+
+                                if (!AttendanceSystem.Services.AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
+                                    bioMetricRecordData.DateTime, InsertSource.Machine,
+                                    ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType), bioMetricSetting.IgnorePeriod, true))
+                                {
+                                    if (!ranges.Any(y => bioMetricRecordData.DateTime >= y.ShiftRangeStartTime && bioMetricRecordData.DateTime <= y.ShiftRangeEndTime))
+                                    {
+                                        recurrence = AttendanceSystem.Services.AttendanceService.GetWorkshopsRecurrenceInDate(empAttendanceCard,
+                                          new DateTime(bioMetricRecordData.DateTime.Year, bioMetricRecordData.DateTime.Month, bioMetricRecordData.DateTime.Day),
+                                          forms[empAttendanceCard.Employee], publicHolidays, fixedHolidays, changeableHolidays);
+                                        ranges = recurrence.Workshop.Prepare(recurrence.Date).NormalShifts.ToList();
+                                        if (dailyEntranceExitRecord.Employee != null) entities.Add(dailyEntranceExitRecord);
+                                        dailyEntranceExitRecord = new DailyEnternaceExitRecord();
+                                    }
+                                    var entranceExitRecord = new EntranceExitRecord();
+                                    var currentUser = UserExtensions.CurrentUser;
+                                    var fingerprintTransferredData = new FingerprintTransferredData();
+                                    if (lastRecord == null || (lastRecord != null && !ranges.Any(y => lastRecord.Date >= y.ShiftRangeStartTime && lastRecord.Date <= y.ShiftRangeEndTime)))
+                                        lastRecord = new
+                                        {
+                                            Employee = empAttendanceCard.Employee,
+                                            LastRecordType = LogType.Exit,
+                                            Date = DateTime.Now
+                                        };
+
+                                    var lastRecordEmployee = lastRecordTypeByEmployees.FirstOrDefault(x => x.Employee?.Id == empAttendanceCard?.Employee?.Id);
+                                    entranceExitRecord.Employee = empAttendanceCard.Employee;
+                                    //entranceExitRecord.ErrorMessage = "";
+                                    entranceExitRecord.ErrorType = errorType;
+                                    entranceExitRecord.InsertSource = InsertSource.Machine;
+                                    entranceExitRecord.LogDateTime = bioMetricRecordData.DateTime;
+                                    entranceExitRecord.LogTime = new DateTime(2000, 1, 1, bioMetricRecordData.DateTime.Hour, bioMetricRecordData.DateTime.Minute, bioMetricRecordData.DateTime.Second);
+                                    entranceExitRecord.LogDate = new DateTime(bioMetricRecordData.DateTime.Year, bioMetricRecordData.DateTime.Month, bioMetricRecordData.DateTime.Day, 0, 0, 0);
+                                    entranceExitRecord.LogType = lastRecord.LastRecordType == LogType.Exit ? LogType.Entrance : LogType.Exit;
+                                    entranceExitRecord.Note = "";
+                                    //entranceExitRecord.Status = errorType == ErrorType.None ? EntranceExitStatus.Ok : EntranceExitStatus.Error;
+                                    entranceExitRecord.UpdateReason = "";
+                                    //add dailyEntranceExitRecord
+                                    dailyEntranceExitRecord = ComposeDailyRecord(dailyEntranceExitRecord, entranceExitRecord);
+                                    entities.Add(entranceExitRecord);
+
+                                    fingerprintTransferredData.EntranceExitRecord = entranceExitRecord;
+                                    fingerprintTransferredData.LogDateTime = bioMetricRecordData.DateTime;
+                                    fingerprintTransferredData.LogType = lastRecord.LastRecordType == LogType.Exit ? LogType.Entrance : LogType.Exit;
+                                    fingerprintTransferredData.Employee = empAttendanceCard.Employee;
+
+                                    entities.Add(fingerprintTransferredData);
+                                    lastRecord = new
                                     {
                                         Employee = empAttendanceCard.Employee,
-                                        LastRecordType = LogType.Exit
-                                    });
-                                var lastRecordEmployee = lastRecordTypeByEmployees.FirstOrDefault(x => x.Employee?.Id == empAttendanceCard?.Employee?.Id);
-                                entranceExitRecord.Employee = empAttendanceCard.Employee;
-                                //entranceExitRecord.ErrorMessage = "";
-                                entranceExitRecord.ErrorType = errorType;
-                                entranceExitRecord.InsertSource = InsertSource.Machine;
-                                entranceExitRecord.LogDateTime = bioMetricRecordData.DateTime;
-                                entranceExitRecord.LogTime = new DateTime(2000, 1, 1, bioMetricRecordData.DateTime.Hour, bioMetricRecordData.DateTime.Minute, bioMetricRecordData.DateTime.Second);
-                                entranceExitRecord.LogDate = new DateTime(bioMetricRecordData.DateTime.Year, bioMetricRecordData.DateTime.Month, bioMetricRecordData.DateTime.Day, 0, 0, 0);
-                                entranceExitRecord.LogType = lastRecordEmployee.LastRecordType == LogType.Exit ? LogType.Entrance : LogType.Exit;
-                                entranceExitRecord.Note = "";
-                                //entranceExitRecord.Status = errorType == ErrorType.None ? EntranceExitStatus.Ok : EntranceExitStatus.Error;
-                                entranceExitRecord.UpdateReason = "";
-
-                                entities.Add(entranceExitRecord);
-
-                                fingerprintTransferredData.EntranceExitRecord = entranceExitRecord;
-                                fingerprintTransferredData.LogDateTime = bioMetricRecordData.DateTime;
-                                fingerprintTransferredData.LogType = lastRecordEmployee.LastRecordType == LogType.Exit ? LogType.Entrance : LogType.Exit;
-                                fingerprintTransferredData.Employee = empAttendanceCard.Employee;
-
-                                entities.Add(fingerprintTransferredData);
-                                lastRecordTypeByEmployees.Remove(lastRecordEmployee);
-                                lastRecordTypeByEmployees.Add(new
-                                {
-                                    Employee = empAttendanceCard.Employee,
-                                    LastRecordType = entranceExitRecord.LogType
-                                });
+                                        LastRecordType = entranceExitRecord.LogType,
+                                        Date = entranceExitRecord.LogDateTime
+                                    };
+                                }
                             }
+                            if (dailyEntranceExitRecord.Employee != null) entities.Add(dailyEntranceExitRecord);
                         }
                     }
-                        
                     var info = AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.BioMetricInteraction);
                     ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser, null, Souccar.Domain.Audit.OperationType.Update, info, start, null);
 
                 }
 
-                if (clearDataFromBioMetricTitle)
-                {
-                    bioMetricDevice.ClearRecordsData();
-                    var fingerprintTransferredDatas = ServiceFactory.ORMService.All<FingerprintTransferredData>();
-                    foreach (var fingerprintTransferredData in fingerprintTransferredDatas)
-                    {
-                        fingerprintTransferredData.Delete();
-                    }
-                }
+                //if (clearDataFromBioMetricTitle)
+                //{
+                //    bioMetricDevice.ClearRecordsData();
+                //    var fingerprintTransferredDatas = ServiceFactory.ORMService.All<FingerprintTransferredData>();
+                //    foreach (var fingerprintTransferredData in fingerprintTransferredDatas)
+                //    {
+                //        fingerprintTransferredData.Delete();
+                //    }
+                //}
             }
             catch(Exception e)
             {
@@ -263,7 +313,69 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 Msg = Helpers.GlobalResource.DoneMessage
             });
         }
+        private DailyEnternaceExitRecord ComposeDailyRecord(DailyEnternaceExitRecord dailyEnternaceExitRecord,
+    EntranceExitRecord entranceExitRecord)
+        {
+            try
+            {
+                if (dailyEnternaceExitRecord.Employee == null)
+                {
+                    dailyEnternaceExitRecord.Employee = entranceExitRecord.Employee;
+                    dailyEnternaceExitRecord.InsertSource = entranceExitRecord.InsertSource;
+                    dailyEnternaceExitRecord.Node = entranceExitRecord.Employee.GetSecondaryPositionElsePrimary().JobDescription?.Node;
+                    dailyEnternaceExitRecord.Date = entranceExitRecord.LogDate.Date;
+                    if (entranceExitRecord.LogType == LogType.Entrance)
+                    {
+                        dailyEnternaceExitRecord.LoginDateTime = entranceExitRecord.LogDateTime;
+                        dailyEnternaceExitRecord.LoginTime = entranceExitRecord.LogTime;
+                    }
+                    else
+                    {
+                        dailyEnternaceExitRecord.LogoutDateTime = entranceExitRecord.LogDateTime;
+                        dailyEnternaceExitRecord.LogoutTime = entranceExitRecord.LogTime;
+                    }
+                }
+                else if (dailyEnternaceExitRecord.Employee == entranceExitRecord.Employee)
+                {
+                    if (dailyEnternaceExitRecord.LogoutDateTime == null && entranceExitRecord.LogType == LogType.Exit)
+                    {
+                        dailyEnternaceExitRecord.LogoutDateTime = entranceExitRecord.LogDateTime;
+                        dailyEnternaceExitRecord.LogoutTime = entranceExitRecord.LogTime;
+                    }
+                    else if (dailyEnternaceExitRecord.SecondLoginDateTime == null && entranceExitRecord.LogType == LogType.Entrance)
+                    {
+                        dailyEnternaceExitRecord.SecondLoginDateTime = entranceExitRecord.LogDateTime;
+                        dailyEnternaceExitRecord.SecondLoginTime = entranceExitRecord.LogTime;
+                    }
+                    else if (dailyEnternaceExitRecord.SecondLogoutDateTime == null && entranceExitRecord.LogType == LogType.Exit)
+                    {
+                        dailyEnternaceExitRecord.SecondLogoutDateTime = entranceExitRecord.LogDateTime;
+                        dailyEnternaceExitRecord.SecondLogoutTime = entranceExitRecord.LogTime;
+                    }
+                    else
+                    {
+                        if (entranceExitRecord.LogType == LogType.Entrance)
+                        {
+                            dailyEnternaceExitRecord.ThirdLoginDateTime = entranceExitRecord.LogDateTime;
+                            dailyEnternaceExitRecord.ThirdLoginTime = entranceExitRecord.LogTime;
+                        }
+                        else
+                        {
+                            dailyEnternaceExitRecord.ThirdLogoutDateTime = entranceExitRecord.LogDateTime;
+                            dailyEnternaceExitRecord.ThirdLogoutTime = entranceExitRecord.LogTime;
+                        }
 
+                    }
+                }
+                return dailyEnternaceExitRecord;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         private LogType ConvertBioMetricRecordTypeToMaestroRecordType(BioMetricRecordType bioMetricRecordType)
         {
             if (bioMetricRecordType == BioMetricRecordType.In || bioMetricRecordType == BioMetricRecordType.InMission || bioMetricRecordType == BioMetricRecordType.NotSupported)

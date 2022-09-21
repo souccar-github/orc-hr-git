@@ -73,6 +73,7 @@
     <Compile Include="AttendanceSystem\Entities\AttendanceMonthlyAdjustmentMap.cs" />
     <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustmentDetailMap.cs" />
     <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustmentMap.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\DailyEnternaceExitRecordMap.cs" />
     <Compile Include="EmployeeRelationServices\Entities\ServiceWorkflowMap.cs" />
     <Compile Include="EmployeeRelationServices\Indexes\FinancialPromotionReasonMap.cs" />
     <Compile Include="EmployeeRelationServices\RootEntities\EmployeeInfractionMap.cs" />

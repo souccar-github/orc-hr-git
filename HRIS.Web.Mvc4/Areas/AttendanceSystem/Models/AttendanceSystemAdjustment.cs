@@ -5,30 +5,30 @@ using System.Web;
 using HRIS.Domain.AttendanceSystem.Configurations;
 using HRIS.Domain.AttendanceSystem.Entities;
 using HRIS.Validation.MessageKeys;
-using  Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers;
+using Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers;
 using Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers;
 using project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers;
 using Souccar.Infrastructure.Core;
 using Souccar.Core.Extensions;
-using  Project.Web.Mvc4.Factories;
-using  Project.Web.Mvc4.Helpers;
-using  Project.Web.Mvc4.Models.GridModel;
-using  Project.Web.Mvc4.Models.Navigation;
-using  Project.Web.Mvc4.Helpers.Resource;
+using Project.Web.Mvc4.Factories;
+using Project.Web.Mvc4.Helpers;
+using Project.Web.Mvc4.Models.GridModel;
+using Project.Web.Mvc4.Models.Navigation;
+using Project.Web.Mvc4.Helpers.Resource;
 using HRIS.Domain.Global.Constant;
 using HRIS.Domain.ProjectManagement.RootEntities;
 using HRIS.Domain.ProjectManagement.Entities;
 using HRIS.Domain.AttendanceSystem.RootEntities;
-using  Project.Web.Mvc4.Models;
+using Project.Web.Mvc4.Models;
 
 namespace Project.Web.Mvc4.Areas.AttendanceSystem.Models
 {
-   
 
-    public class AttendanceSystemAdjustment: ModelAdjustment
+
+    public class AttendanceSystemAdjustment : ModelAdjustment
     {
         private static Dictionary<string, ViewModel> parent = new Dictionary<string, ViewModel>();
-        public  override void AdjustModule(Module module)
+        public override void AdjustModule(Module module)
         {
             var service = new Service
             {
@@ -68,11 +68,11 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Models
 
             var attendanceRecord = module.Aggregates.SingleOrDefault(x => x.TypeFullName == typeof(AttendanceRecord).FullName);
 
-            var attendanceMonthlyAdjustment = attendanceRecord.Details.SingleOrDefault(x => x.TypeFullName == 
+            var attendanceMonthlyAdjustment = attendanceRecord.Details.SingleOrDefault(x => x.TypeFullName ==
                 typeof(AttendanceMonthlyAdjustment).FullName);
             attendanceMonthlyAdjustment.Details = DetailFactory.Create(typeof(AttendanceMonthlyAdjustment));
 
-            var attendanceMonthlyAdjustmentDetail = attendanceMonthlyAdjustment.Details.SingleOrDefault(x => x.TypeFullName == 
+            var attendanceMonthlyAdjustmentDetail = attendanceMonthlyAdjustment.Details.SingleOrDefault(x => x.TypeFullName ==
                 typeof(AttendanceMonthlyAdjustmentDetail).FullName);
             attendanceMonthlyAdjustmentDetail.Details = DetailFactory.Create(typeof(AttendanceMonthlyAdjustmentDetail));
 
@@ -91,8 +91,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Models
             var attendanceWithoutAdjustmentDetail = attendanceWithoutAdjustment.Details.SingleOrDefault(x => x.TypeFullName ==
                 typeof(AttendanceWithoutAdjustmentDetail).FullName);
             attendanceWithoutAdjustmentDetail.Details = DetailFactory.Create(typeof(AttendanceWithoutAdjustmentDetail));
-            
-            
+
+
             //var nonAttendanceForm = module.Aggregates.SingleOrDefault(x => x.TypeFullName == typeof(NonAttendanceForm).FullName);
 
             //var nonAttendanceSlice = nonAttendanceForm.Details.SingleOrDefault(x => x.TypeFullName ==
@@ -134,7 +134,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Models
                 parent.Add("BioMetricSetting", new BioMetricSettingEventHandlers());
                 parent.Add("EntranceExitRecord", new EntranceExitRecordEventHandlers());
                 parent.Add("GeneralSettings", new GeneralSettingsEventHandlers());
-                parent.Add("HourlyMission", new HourlyMissionEventHandlers()); 
+                parent.Add("HourlyMission", new HourlyMissionEventHandlers());
                 parent.Add("NonAttendanceForm", new NonAttendanceFormEventHandlers());
                 parent.Add("NonAttendanceSlicePercentage", new NonAttendanceSlicePercentageEventHandlers());
                 parent.Add("NonAttendanceSlice", new NonAttendanceSliceViewModel());
@@ -148,6 +148,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Models
                 parent.Add("TravelMission", new TravelMissionEventHandlers());
                 parent.Add("Workshop", new WorkshopEventHandlers());
                 parent.Add("WorkshopRecurrence", new WorkshopRecurrenceEventHandlers());
+                parent.Add("DailyEnternaceExitRecord", new DailyEntranceExitRecordEventHandlers());
 
 
 
@@ -156,13 +157,14 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Models
             {
                 return parent[type];
             }
-            catch {
+            catch
+            {
 
                 return new ViewModel();
             }
-        
-       
+
+
         }
-       
+
     }
 }

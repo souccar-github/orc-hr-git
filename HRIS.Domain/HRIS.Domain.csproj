@@ -83,7 +83,9 @@
     <Compile Include="AttendanceSystem\Entities\AttendanceMonthlyAdjustmentDetail.cs" />
     <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustment.cs" />
     <Compile Include="AttendanceSystem\Entities\AttendanceWithoutAdjustmentDetail.cs" />
+    <Compile Include="AttendanceSystem\Enums\DayStatus.cs" />
     <Compile Include="AttendanceSystem\Enums\TravelMissionType.cs" />
+    <Compile Include="AttendanceSystem\RootEntities\DailyEnternaceExitRecord.cs" />
     <Compile Include="EmployeeRelationServices\Entities\ServiceWorkflow.cs" />
     <Compile Include="EmployeeRelationServices\Enums\DeductionType.cs" />
     <Compile Include="EmployeeRelationServices\Enums\SalaryType.cs" />

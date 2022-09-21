@@ -132,6 +132,34 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 Msg = message,
             });
         }
+        [HttpPost]
+        public ActionResult DeleteDailyEntranceExitRecords(GridFilter filter = null)
+        {
+            string message;
+            var isSuccess = false;
+            int pageSize = 10;
+            int skip = 0;
+            bool serverPaging = true;
+            IEnumerable<GridSort> sort = null;
+
+            var entityType = typeof(DailyEnternaceExitRecord);
+            CrudController.UpdateFilter(filter, entityType);
+            IQueryable<IEntity> queryable = CrudController.GetAllWithVertualDeleted(entityType);
+            pageSize = queryable.Count();
+            var filteredEntranceExitRecords = DataSourceResult.GetDataSourceResult(queryable, entityType, pageSize, skip, serverPaging, sort, filter);
+            var withoutFilters = filter.Filters.Count() > 1 ? false : true;
+            var entranceExitRecordsDeleted = AttendanceService.DeleteFilteredDailyEntranceExitRecords(filteredEntranceExitRecords.Data, withoutFilters);
+
+            message = "( " + entranceExitRecordsDeleted + " ) " + ServiceFactory.LocalizationService
+                .GetResource(CustomMessageKeysAttendanceSystemModule.GetFullKey(CustomMessageKeysAttendanceSystemModule.EntranceExitRecordsDeleted));
+            isSuccess = true;
+
+            return Json(new
+            {
+                Success = isSuccess,
+                Msg = message,
+            });
+        }
 
 
         //[HttpPost]

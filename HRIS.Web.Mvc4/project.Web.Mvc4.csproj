@@ -412,6 +412,7 @@
     <Compile Include="Areas\AttendanceSystem\EventHandlers\AttendanceWithoutAdjustmentDetailEventHandlers.cs" />
     <Compile Include="Areas\AttendanceSystem\EventHandlers\AttendanceWithoutAdjustmentEventHandlers.cs" />
     <Compile Include="Areas\AttendanceSystem\EventHandlers\BioMetricSettingEventHandlers.cs" />
+    <Compile Include="Areas\AttendanceSystem\EventHandlers\DailyEntranceExitRecodEventHandler.cs" />
     <Compile Include="Areas\AttendanceSystem\EventHandlers\EmployeeAttendanceCardEventHandlers.cs" />
     <Compile Include="Areas\AttendanceSystem\EventHandlers\EntranceExitRecordEventHandlers.cs" />
     <Compile Include="Areas\AttendanceSystem\EventHandlers\GeneralSettingsEventHandlers.cs" />

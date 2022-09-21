@@ -12,6 +12,9 @@ using HRIS.Domain.Personnel.Enums;
 using HRIS.Domain.Training.Entities;
 using Project.Web.Mvc4.Helpers.DomainExtensions;
 using Project.Web.Mvc4.Areas.AttendanceSystem.Services;
+using HRIS.Domain.AttendanceSystem.RootEntities;
+using Project.Web.Mvc4.Extensions;
+using HRIS.Domain.AttendanceSystem.Enums;
 
 namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
 {
@@ -20,6 +23,15 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
         public ActionResult Index(RequestInformation.Navigation.Step moduleInfo)
         {
             AttendanceService.ResetNonAttendanceFormLastReset();//تصفير تاريخ أخر تصفير لنماذج نقص الدوام والتأخر
+            var attendanceRecord = ServiceFactory.ORMService.All<AttendanceRecord>().Where(x => x.AttendanceMonthStatus != AttendanceMonthStatus.Locked).OrderByDescending(x => x.FromDate).FirstOrDefault();
+            if (attendanceRecord != null)
+            {
+                AttendanceService.GenerateAttendanceRecordDetailsUntillCurrentDay(attendanceRecord);
+                attendanceRecord.Save();
+                AttendanceService.CalculateAttendanceRecord(attendanceRecord);
+                attendanceRecord.AttendanceMonthStatus = AttendanceMonthStatus.Calculated;
+                attendanceRecord.Save();
+            }
             if (TempData["Module"] == null)
                 return RedirectToAction("Welcome", "Module", new { area = "", id = ModulesNames.AttendanceSystem });
             return View();

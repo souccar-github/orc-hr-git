@@ -99,14 +99,14 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             var user = UserExtensions.CurrentUser;
             if (UserExtensions.IsCurrentUserFullAuthorized(typeOfClass.FullName))
             {
-                result.Data = allBeforeFilter.OrderByDescending(x=> x.LogDate).ThenByDescending(x=>x.Employee.TripleName).ThenByDescending(x => x.LogTime).Skip<EntranceExitRecord>(skip).Take<EntranceExitRecord>(pageSize).AsQueryable();
+                result.Data = allBeforeFilter.OrderByDescending(x => x.LogDate).ThenByDescending(x => x.Employee.TripleName).ThenByDescending(x => x.LogTime).Skip<EntranceExitRecord>(skip).Take<EntranceExitRecord>(pageSize).AsQueryable();
                 result.Total = allBeforeFilter.Count();
             }
             else
             {
                 var employeesCanViewThem = UserExtensions.GetChildrenAsEmployess(user);
                 filteredDate = allBeforeFilter.Where(x => employeesCanViewThem.Any(y => y.Id == x.Employee.Id)).ToList();
-                result.Data = filteredDate.OrderByDescending(x => x.LogDate).ThenByDescending(x => x.Employee.TripleName).ThenByDescending(x=> x.LogTime).Skip<EntranceExitRecord>(skip).Take<EntranceExitRecord>(pageSize).AsQueryable();
+                result.Data = filteredDate.OrderByDescending(x => x.LogDate).ThenByDescending(x => x.Employee.TripleName).ThenByDescending(x => x.LogTime).Skip<EntranceExitRecord>(skip).Take<EntranceExitRecord>(pageSize).AsQueryable();
                 result.Total = filteredDate.Count();
             }
         }
@@ -130,7 +130,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             entranceExitRecord.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.LogTime.Hour, entranceExitRecord.LogTime.Minute, entranceExitRecord.LogTime.Second);
 
             entranceExitRecord.LogDate = new DateTime(entranceExitRecord.LogDate.Year, entranceExitRecord.LogDate.Month, entranceExitRecord.LogDate.Day, 0, 0, 0);
-            
+
             //entranceExitRecord.ErrorMessage = string.Empty;
 
             //var oldEntranceExitRecord = ServiceFactory.ORMService.All<EntranceExitRecord>()
@@ -155,7 +155,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             entranceExitRecord.LogDateTime = logDateTime;
             //entranceExitRecord.ErrorMessage = string.Empty;
             entranceExitRecord.ErrorType = ErrorType.None;
-       
+
             entranceExitRecord.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.LogTime.Hour, entranceExitRecord.LogTime.Minute, entranceExitRecord.LogTime.Second);
 
             entranceExitRecord.LogDate = new DateTime(entranceExitRecord.LogDate.Year, entranceExitRecord.LogDate.Month, entranceExitRecord.LogDate.Day, 0, 0, 0);
@@ -218,10 +218,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
 
             if (operationType == CrudOperationType.Insert)
             {
-                var allFingerprintTransferredDataOfEmployee = ServiceFactory.ORMService.All<FingerprintTransferredData>().Where(x => x.Employee.Id == entranceExitRecord.Employee.Id).ToList();
                 var allEntranceExitRecordDataOfEmployee = ServiceFactory.ORMService.All<EntranceExitRecord>().Where(x => x.Employee.Id == entranceExitRecord.Employee.Id).ToList();
-                if (AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                    allFingerprintTransferredDataOfEmployee, entranceExitRecordDatetime, InsertSource.Manual, entranceExitRecord.LogType, 0))
+                if (AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, entranceExitRecordDatetime, InsertSource.Manual, entranceExitRecord.LogType, 0))
                 {
 
                     validationResults.Add(new ValidationResult

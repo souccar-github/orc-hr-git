@@ -30,6 +30,10 @@ using Project.Web.Mvc4.Helpers.DomainExtensions;
 using HRIS.Domain.Grades.RootEntities;
 using System.Data.SqlClient;
 using Project.Web.Mvc4.Helpers.Resource;
+using System.IO;
+using System.Reflection;
+using HRIS.SDKs.Domain.AttendanceSystem.BioMetricDevice;
+using Newtonsoft.Json;
 
 namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 {//todo : Mhd Update changeset no.1
@@ -57,8 +61,82 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
             if (attendanceRecord.AttendanceMonthlyAdjustments.Any())
                 CalculateAttendanceMonthlyAdjustment(attendanceRecord.AttendanceMonthlyAdjustments, generalSetting, overTimeOrders, attendanceInfractions, updatedInfractions, entities);
+
+            ApplyTheCalculationsOnDailyAttendanceRecord(attendanceRecord, entities);
             ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser);
-            attendanceRecord.Save();
+        }
+
+
+        public static List<BioMetricRecordData> GetTestingRecordsData()
+        {
+            var dirPath = Assembly.GetExecutingAssembly().Location;
+            dirPath = Path.GetDirectoryName(dirPath);
+            var path = Path.GetFullPath(Path.Combine("C:\\fingerPrints\\records.json"));
+            string json = File.ReadAllText(path);
+            List<BioMetricRecordData> records = JsonConvert.DeserializeObject<List<BioMetricRecordData>>(json);
+            return records;
+        }
+
+        private static void ApplyTheCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord, List<IAggregateRoot> entities)
+        {
+            if (attendanceRecord.AttendanceWithoutAdjustments.Any())
+            {
+                var allDailyRecords = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(x => !x.IsClosed &&
+                   attendanceRecord.AttendanceWithoutAdjustments.Any(y => y.EmployeeAttendanceCard.Employee.Id == x.Employee.Id));
+                foreach (var attendance in attendanceRecord.AttendanceWithoutAdjustments)
+                {
+                    var dailyRecordsByEmployee = allDailyRecords.Where(x => x.Employee.Id == attendance.EmployeeAttendanceCard.Employee.Id);
+                    foreach (var item in attendance.AttendanceWithoutAdjustmentDetails)
+                    {
+                        var dailyRecord = dailyRecordsByEmployee.FirstOrDefault(x => x.Date == item.Date.Date);
+                        var lateType = LateType.None;
+                        var absenseType = AbsenseType.None;
+                        if (dailyRecord == null)
+                        {
+                            dailyRecord = new DailyEnternaceExitRecord()
+                            {
+                                Date = item.Date,
+                                Employee = attendance.EmployeeAttendanceCard.Employee,
+                                Node = attendance.EmployeeAttendanceCard.Employee.GetSecondaryPositionElsePrimary().JobDescription?.Node,
+                                InsertSource = InsertSource.AutoGenerate,
+                                Note = "Added when calculating the attendance"
+                            };
+                        }
+                        dailyRecord.Day = item.Date.DayOfWeek;
+                        dailyRecord.Status = GetDayStatus(item, out absenseType, out lateType);
+                        dailyRecord.LateHoursValue = Math.Round(item.LatenessHoursValue, 2);
+                        dailyRecord.OvertimeHoursValue = Math.Round(item.OvertimeOrderValue, 2) + Math.Round(item.NormalOvertimeValue, 2) +
+                            Math.Round(item.ParticularOvertimeValue, 2) + Math.Round(item.ExpectedOvertimeValue, 2) + Math.Round(item.HolidayOvertimeValue, 2);
+                        dailyRecord.HolidayOvertimeHoursValue = Math.Round(item.HolidayOvertimeValue, 2);
+                        dailyRecord.AbsentHoursValue = item.RequiredWorkHoursValue > 0 && item.RequiredWorkHoursValue - item.ActualWorkValue > 0 ? Math.Round(item.RequiredWorkHoursValue - item.ActualWorkValue, 2) : 0;
+                        dailyRecord.WorkHoursValue = Math.Round(item.ActualWorkValue, 2);
+                        dailyRecord.RequiredWorkHours = Math.Round(item.RequiredWorkHoursValue, 2);
+                        dailyRecord.LateType = lateType;
+                        dailyRecord.AbsenseType = absenseType;
+                        //dailyRecord.AbsentHoursValue = item.ActualWorkValue - (item.MissionValue + item.VacationValue);
+                        entities.Add(dailyRecord);
+                    }
+                }
+            }
+        }
+        private static DayStatus GetDayStatus(AttendanceWithoutAdjustmentDetail item, out AbsenseType absenseType, out LateType lateType)
+        {
+            absenseType = AbsenseType.None;
+            lateType = LateType.None;
+            if (item.IsHoliday || item.IsOffDay) return DayStatus.Holiday;
+            else if (item.HasVacation && item.VacationValue >= item.RequiredWorkHoursValue) return DayStatus.Vacation;
+            else if (item.LatenessHoursValue > 0)
+            {
+                lateType = LateType.Unjustified;
+                return DayStatus.Late;
+            }
+            else if ((item.ActualWorkValue <= 0 || item.RequiredWorkHoursValue - item.ActualWorkValue > 0) && !item.HasVacation && !item.IsOffDay && !item.IsHoliday)
+            {
+                absenseType = AbsenseType.Unjustified;
+                if (item.HasMission) absenseType = AbsenseType.Mission;
+                return item.ActualWorkValue <= 0 ? DayStatus.Absent : DayStatus.Present;
+            }
+            else return DayStatus.Present;
         }
 
         public static void CalculateAttendanceMonthlyAdjustment(IList<AttendanceMonthlyAdjustment> attendanceMonthlyAdjustments, GeneralSettings generalSetting, IList<OvertimeOrder> overTimeOrders, List<AttendanceInfraction> attendanceInfractions, List<AttendanceInfraction> updatedInfractions, List<IAggregateRoot> entites)
@@ -84,7 +162,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             foreach (var attendanceMonthlyAdjustment in attendanceMonthlyAdjustments)
             {
                 List<EmployeeDisciplinary> employeeDisciplinarysShouldRemoved = new List<EmployeeDisciplinary>();
-                employeeDisciplinarysShouldRemoved.AddRange(attendanceMonthlyAdjustment.EmployeeDisciplinarys.Where(x => !attendanceMonthlyAdjustment.AttendanceMonthlyAdjustmentDetails.Any(y=> x.DisciplinaryDate == y.Date)));
+                employeeDisciplinarysShouldRemoved.AddRange(attendanceMonthlyAdjustment.EmployeeDisciplinarys.Where(x => !attendanceMonthlyAdjustment.AttendanceMonthlyAdjustmentDetails.Any(y => x.DisciplinaryDate == y.Date)));
                 foreach (var item in employeeDisciplinarysShouldRemoved)
                 {
                     attendanceMonthlyAdjustment.EmployeeDisciplinarys.Remove(item);
@@ -766,6 +844,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             foreach (var range in workshopNormalShiftsRanges)
             {
                 var rangeTimeLine = new LinkedList<TimeLineNodeDTO>();
+                var outOfRangeTimeLineBefore = new LinkedList<TimeLineNodeDTO>();
+                var outOfRangeTimeLineAfter = new LinkedList<TimeLineNodeDTO>();
                 #region Attendance
 
                 entranceExitRecords.Where(
@@ -781,37 +861,70 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                     .OrderBy(x => x.LogDateTime)
                     .ForEach(x => rangeTimeLine.AddLast(x));
 
+                entranceExitRecords.Where(
+                    x =>
+                        x.LogDateTime <= range.EntryTime &&
+                        x.LogDateTime >= range.ShiftRangeStartTime)
+                    .Select(x => new TimeLineNodeDTO
+                    {
+                        LogDateTime = x.LogDateTime,
+                        LogType = x.LogType,
+                        IsAttendance = true
+                    })
+                    .OrderBy(x => x.LogDateTime)
+                    .ForEach(x => outOfRangeTimeLineBefore.AddLast(x));
+
+                entranceExitRecords.Where(
+                    x =>
+                        x.LogDateTime <= range.ShiftRangeEndTime &&
+                        x.LogDateTime >= range.ExitTime)
+                    .Select(x => new TimeLineNodeDTO
+                    {
+                        LogDateTime = x.LogDateTime,
+                        LogType = x.LogType,
+                        IsAttendance = true
+                    })
+                    .OrderBy(x => x.LogDateTime)
+                    .ForEach(x => outOfRangeTimeLineAfter.AddLast(x));
+
                 if (rangeTimeLine.Count != 0)
                 {
                     // وهي حالة وجود تسجيلا دخول وخروج ضمن بداية ونهاية الدوام اما حالة ان الدخول والخروج خارج اوقات الدوام ستعالج بعد الشرط الحالي
-                    if (rangeTimeLine.Last.Value.LogType == LogType.Entrance)
+                    if (rangeTimeLine.Last?.Value?.LogType == LogType.Entrance)
                     {
-                        // مما يعني  أنه خرج بعد نهاية الدوام لذلك نعتبره خرج نهاية الدوام ونتجاهل خروجه بعد الدوام لأنه دوام بدون تقاص
-                        rangeTimeLine.AddLast(new TimeLineNodeDTO
-                        {
-                            LogDateTime = range.ExitTime,
-                            LogType = LogType.Exit,
-                            IsAttendance = true
-                        });
+                        if (outOfRangeTimeLineAfter.Any(x => x.LogType == LogType.Exit))
+                            // مما يعني  أنه خرج بعد نهاية الدوام لذلك نعتبره خرج نهاية الدوام ونتجاهل خروجه بعد الدوام لأنه دوام بدون تقاص
+                            rangeTimeLine.AddLast(new TimeLineNodeDTO
+                            {
+                                LogDateTime = range.ExitTime,
+                                LogType = LogType.Exit,
+                                IsAttendance = true
+                            });
+                        else
+                            rangeTimeLine.RemoveLast();
+
                     }
-                    if (rangeTimeLine.First.Value.LogType == LogType.Exit)
+                    if (rangeTimeLine.First?.Value?.LogType == LogType.Exit)
                     {
-                        // مما يعني  أنه دخل قبل بداية الدوام لذلك نعتبره دخل أول الدوام ونتجاهل دخوله قبل الدوام لأنه دوام بدون تقاص
-                        rangeTimeLine.AddFirst(new TimeLineNodeDTO
-                        {
-                            LogDateTime = range.EntryTime,
-                            LogType = LogType.Entrance,
-                            IsAttendance = true
-                        });
+                        if (outOfRangeTimeLineBefore.Any(x => x.LogType == LogType.Entrance))
+                            // مما يعني  أنه دخل قبل بداية الدوام لذلك نعتبره دخل أول الدوام ونتجاهل دخوله قبل الدوام لأنه دوام بدون تقاص
+                            rangeTimeLine.AddFirst(new TimeLineNodeDTO
+                            {
+                                LogDateTime = range.EntryTime,
+                                LogType = LogType.Entrance,
+                                IsAttendance = true
+                            });
+                        else
+                            rangeTimeLine.RemoveLast();
                     }
-                    if (rangeTimeLine.First.Value.LogDateTime <=
+                    if (rangeTimeLine.First?.Value?.LogDateTime <=
                         range.EntryTime.AddMinutes(range.IgnoredPeriodAfterEntryTime))
                     {
                         // أي أنه دخل ضمن فترة السماحية بالتالي نعتبره دخل بداية الدوام بشكل نظامي
                         rangeTimeLine.First.Value.LogDateTime = range.EntryTime;
                     }
 
-                    if (rangeTimeLine.Last.Value.LogDateTime >=
+                    if (rangeTimeLine.Last?.Value?.LogDateTime >=
                         range.ExitTime.AddMinutes(-range.IgnoredPeriodBeforeExitTime))
                     {
                         // أي أنه دخل ضمن فترة السماحية بالتالي نعتبره دخل بداية الدوام بشكل نظامي
@@ -1215,67 +1328,66 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
                 #region Add Non Attendance Ranges
 
+                if (rangeTimeLine.Count > 0)
                 {
-                    if (rangeTimeLine.Count > 0)
+                    if (rangeTimeLine.Last.Value.LogDateTime <
+                        range.ExitTime.AddMinutes(-range.IgnoredPeriodBeforeExitTime))
                     {
-                        if (rangeTimeLine.Last.Value.LogDateTime <
-                            range.ExitTime.AddMinutes(-range.IgnoredPeriodBeforeExitTime))
+                        rangeTimeLine.AddLast(new TimeLineNodeDTO
                         {
-                            rangeTimeLine.AddLast(new TimeLineNodeDTO
-                            {
-                                LogDateTime = rangeTimeLine.Last.Value.LogDateTime,
-                                LogType = LogType.Entrance,
-                                IsNonAttendance = true
-                            });
-                            rangeTimeLine.AddLast(new TimeLineNodeDTO
-                            {
-                                LogDateTime = range.ExitTime,
-                                LogType = LogType.Exit,
-                                IsNonAttendance = true
-                            });
-                        }
-
-                        currentNode = rangeTimeLine.First;
-                        while (currentNode != null && currentNode.Next != null)
-                        {
-                            if (currentNode.Value.LogType == LogType.Exit &&
-                                currentNode.Next.Value.LogDateTime > currentNode.Value.LogDateTime)
-                            {
-                                // ترتيب الاضافة مهم يجب عدم التبديل
-                                rangeTimeLine.AddBefore(currentNode.Next, new TimeLineNodeDTO
-                                {
-                                    LogDateTime = currentNode.Next.Value.LogDateTime,
-                                    LogType = LogType.Exit,
-                                    IsNonAttendance = true
-                                });
-                                rangeTimeLine.AddAfter(currentNode, new TimeLineNodeDTO
-                                {
-                                    LogDateTime = currentNode.Value.LogDateTime,
-                                    LogType = LogType.Entrance,
-                                    IsNonAttendance = true
-                                });
-                            }
-                            currentNode = currentNode.Next;
-                        }
-                    }
-                    else
-                    {
-                        rangeTimeLine.AddFirst(new TimeLineNodeDTO
-                        {
-                            LogDateTime = range.EntryTime,
+                            LogDateTime = rangeTimeLine.Last.Value.LogDateTime,
                             LogType = LogType.Entrance,
-                            IsNonAttendance = true,
-                            IsAbsent = true
+                            IsNonAttendance = true
                         });
                         rangeTimeLine.AddLast(new TimeLineNodeDTO
                         {
                             LogDateTime = range.ExitTime,
                             LogType = LogType.Exit,
-                            IsNonAttendance = true,
-                            IsAbsent = true
+                            IsNonAttendance = true
                         });
                     }
+
+                    currentNode = rangeTimeLine.First;
+                    while (currentNode != null && currentNode.Next != null)
+                    {
+                        if (currentNode.Value.LogType == LogType.Exit &&
+                            currentNode.Next.Value.LogDateTime > currentNode.Value.LogDateTime)
+                        {
+                            // ترتيب الاضافة مهم يجب عدم التبديل
+                            rangeTimeLine.AddBefore(currentNode.Next, new TimeLineNodeDTO
+                            {
+                                LogDateTime = currentNode.Next.Value.LogDateTime,
+                                LogType = LogType.Exit,
+                                IsNonAttendance = true
+                            });
+                            rangeTimeLine.AddAfter(currentNode, new TimeLineNodeDTO
+                            {
+                                LogDateTime = currentNode.Value.LogDateTime,
+                                LogType = LogType.Entrance,
+                                IsNonAttendance = true
+                            });
+                        }
+                        currentNode = currentNode.Next;
+                    }
                 }
+                else
+                {
+                    rangeTimeLine.AddFirst(new TimeLineNodeDTO
+                    {
+                        LogDateTime = range.EntryTime,
+                        LogType = LogType.Entrance,
+                        IsNonAttendance = true,
+                        IsAbsent = true
+                    });
+                    rangeTimeLine.AddLast(new TimeLineNodeDTO
+                    {
+                        LogDateTime = range.ExitTime,
+                        LogType = LogType.Exit,
+                        IsNonAttendance = true,
+                        IsAbsent = true
+                    });
+                }
+
 
                 #endregion
 
@@ -1385,7 +1497,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             var finalOrderedResult = mergedRecords.OrderBy(x => x.Record.LogDateTime).ThenBy(x => x.OrderWhenConflict).ToList();
             for (int i = 0; i < finalOrderedResult.Count; i += 2)
             {
-                if(finalOrderedResult.Count > i+ 1)
+                if (finalOrderedResult.Count > i + 1)
                 {
                     var currentValue = (finalOrderedResult[i + 1].Record.LogDateTime - finalOrderedResult[i].Record.LogDateTime).TotalHours;
                     var currentRange = "{" + finalOrderedResult[i].Record.LogDateTime.ToString("HH") + ":" + finalOrderedResult[i].Record.LogDateTime.ToString("mm") + "-" +
@@ -1440,23 +1552,31 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
                     if (rangeTimeLine.Any() && rangeTimeLine.Last.Value.LogType == LogType.Entrance)
                     {
-                        rangeTimeLine.AddLast(new OverTimeNodeDTO
-                        {
-                            //حساب الاضافي في الفترة الممتدة من الحد الادنى للدخول و فترة الدخول و في حال كانت  اخر تسجيلة دخول فيجب تسكير الدخول بخروج في بداية الدوام
-                            LogDateTime = range.EntryTime,
-                            LogType = LogType.Exit,
-                            IsParticular = false
-                        });
+                        if (entranceExitRecords.Any(y =>
+                         y.LogDateTime < range.ShiftRangeEndTime && y.LogType == LogType.Exit))
+                            rangeTimeLine.AddLast(new OverTimeNodeDTO
+                            {
+                                //حساب الاضافي في الفترة الممتدة من الحد الادنى للدخول و فترة الدخول و في حال كانت  اخر تسجيلة دخول فيجب تسكير الدخول بخروج في بداية الدوام
+                                LogDateTime = range.EntryTime,
+                                LogType = LogType.Exit,
+                                IsParticular = false
+                            });
+                        else
+                            rangeTimeLine.Clear();
                     }
                     if (rangeTimeLine.Any() && rangeTimeLine.First.Value.LogType == LogType.Exit)
                     {
-                        rangeTimeLine.AddFirst(new OverTimeNodeDTO
-                        {
-                            //حساب الاضافي في الفترة الممتدة من الحد الادنى للدخول و فترة الدخول و في حال كانت  اول تسجيلة خروج فيجب اضافة الدخول في بداية الفترة لانها تعتبر دخول تم قبل بداية الفترة والذي يتم اهماله
-                            LogDateTime = range.ShiftRangeStartTime,
-                            LogType = LogType.Entrance,
-                            IsParticular = false
-                        });
+                        if (entranceExitRecords.Any(y =>
+                         y.LogDateTime > range.ShiftRangeStartTime && y.LogDateTime <= range.ExitTime && y.LogType == LogType.Entrance))
+                            rangeTimeLine.AddFirst(new OverTimeNodeDTO
+                            {
+                                //حساب الاضافي في الفترة الممتدة من الحد الادنى للدخول و فترة الدخول و في حال كانت  اول تسجيلة خروج فيجب اضافة الدخول في بداية الفترة لانها تعتبر دخول تم قبل بداية الفترة والذي يتم اهماله
+                                LogDateTime = range.ShiftRangeStartTime,
+                                LogType = LogType.Entrance,
+                                IsParticular = false
+                            });
+                        else
+                            rangeTimeLine.Clear();
                     }
 
                     #endregion
@@ -1482,21 +1602,30 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
                     if (rangeTimeLine.Any() && rangeTimeLine.Last.Value.LogType == LogType.Entrance)
                     {
-                        rangeTimeLine.AddLast(new OverTimeNodeDTO
-                        {
-                            LogDateTime = range.ShiftRangeEndTime,
-                            LogType = LogType.Exit,
-                            IsParticular = false
-                        });
+                        if (entranceExitRecords.Any(y =>
+                         y.LogDateTime > range.ShiftRangeStartTime && y.LogDateTime <= range.ExitTime && y.LogType == LogType.Exit) ||
+                         rangeTimeLine.Any(x => x.LogDateTime > range.ExitTime && x.LogType == LogType.Exit))
+                            rangeTimeLine.AddLast(new OverTimeNodeDTO
+                            {
+                                LogDateTime = range.ShiftRangeEndTime,
+                                LogType = LogType.Exit,
+                                IsParticular = false
+                            });
+                        else
+                            rangeTimeLine.Clear();
                     }
                     if (rangeTimeLine.Any() && rangeTimeLine.First.Value.LogType == LogType.Exit)
                     {
-                        rangeTimeLine.AddFirst(new OverTimeNodeDTO
-                        {
-                            LogDateTime = range.ExitTime,
-                            LogType = LogType.Entrance,
-                            IsParticular = false
-                        });
+                        if (entranceExitRecords.Any(y =>
+                         y.LogDateTime > range.ShiftRangeStartTime && y.LogDateTime <= range.ExitTime && y.LogType == LogType.Entrance))
+                            rangeTimeLine.AddFirst(new OverTimeNodeDTO
+                            {
+                                LogDateTime = range.ExitTime,
+                                LogType = LogType.Entrance,
+                                IsParticular = false
+                            });
+                        else
+                            rangeTimeLine.Clear();
                     }
 
                     #endregion
@@ -2118,11 +2247,9 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             IList<LeaveRequest> EmpHourlyLeave = ServiceFactory.ORMService.All<LeaveRequest>().Where(x => employees.Contains(x.EmployeeCard.Employee) && x.IsHourlyLeave == true && x.StartDate >= fromDate && x.EndDate <= toDate).ToList();
             var workshopsRecurrences = GetWorkshopsRecurrenceInPeriod(employeeAttendanceCards.ToList(), fromDate, toDate);
             var entities = new List<IAggregateRoot>();
-            var allFingerprintTransferredData = ServiceFactory.ORMService.All<FingerprintTransferredData>();
             var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>();
             foreach (var employeeAttendanceCard in employeeAttendanceCards)
             {
-                var allFingerprintTransferredDataOfEmployee = allFingerprintTransferredData.Where(x => x.Employee.Id == employeeAttendanceCard.Employee.Id).ToList();
                 var allEntranceExitRecordDataOfEmployee = allEntranceExitRecordData.Where(x => x.Employee.Id == employeeAttendanceCard.Employee.Id).ToList();
                 var cardEntities = new List<IAggregateRoot>();
 
@@ -2160,8 +2287,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                             ErrorType = ErrorType.None,
                             Note = note
                         };
-                        if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                            allFingerprintTransferredDataOfEmployee, shift.EntryTime, InsertSource.AutoGenerate,
+                        if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, shift.EntryTime, InsertSource.AutoGenerate,
                             LogType.Entrance, 0))
                         {
                             if (missionVacationRanges.Any())
@@ -2188,8 +2314,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                             ErrorType = ErrorType.None,
                             Note = note
                         };
-                        if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                           allFingerprintTransferredDataOfEmployee, shift.ExitTime, InsertSource.AutoGenerate, LogType.Exit, 0))
+                        if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, shift.ExitTime, InsertSource.AutoGenerate, LogType.Exit, 0))
                         {
                             if (missionVacationRanges.Any())
                             {
@@ -2222,8 +2347,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                                         ErrorType = ErrorType.None,
                                         Note = note
                                     };
-                                    if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                                       allFingerprintTransferredDataOfEmployee, exitRecord1.LogDateTime,
+                                    if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, exitRecord1.LogDateTime,
                                        InsertSource.AutoGenerate, LogType.Exit, 0))
                                     {
                                         if (i == 0 || missionVacationRanges[i].Start != missionVacationRanges[i - 1].End)
@@ -2247,8 +2371,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                                         Note = note
                                     };
 
-                                    if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                                         allFingerprintTransferredDataOfEmployee, entranceRecord1.LogDateTime,
+                                    if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, entranceRecord1.LogDateTime,
                                          InsertSource.AutoGenerate, LogType.Entrance, 0))
                                     {
                                         if (i == missionVacationRanges.Count - 1 || missionVacationRanges[i].End != missionVacationRanges[i + 1].Start)
@@ -2323,7 +2446,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             var entities = new List<IAggregateRoot>();
             var days = 0;
             DateTime endDate = attendanceRecord.ToDate >= DateTime.Now.Date ? DateTime.Now.Date : attendanceRecord.ToDate.AddDays(1);
-            if (attendanceRecord.FromDate < endDate)
+            if (attendanceRecord.FromDate <= endDate)
             {
                 days = (endDate - attendanceRecord.FromDate).Days;
             }
@@ -2331,13 +2454,13 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             {
                 foreach (var item in attendanceRecord.AttendanceWithoutAdjustments)
                 {
-                    List<DateTime> realDays = new List<DateTime>();  
+                    List<DateTime> realDays = new List<DateTime>();
                     var totalDaysOfEmployee = days;
                     var date = attendanceRecord.FromDate;
                     var hireDate = item.EmployeeAttendanceCard.StartWorkingDate;
                     var abruptionDate = item.EmployeeAttendanceCard.EndWorkingDate;
-                    date = hireDate.HasValue && hireDate.Value > attendanceRecord.FromDate ? 
-                        hireDate.Value : 
+                    date = hireDate.HasValue && hireDate.Value > attendanceRecord.FromDate ?
+                        hireDate.Value :
                         attendanceRecord.FromDate;
                     var daysConflictWithAbruptionDate = abruptionDate.HasValue && abruptionDate.Value > attendanceRecord.FromDate &&
                         abruptionDate.Value < endDate ?
@@ -2350,7 +2473,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                     for (var i = 0; i < totalDaysOfEmployee; i++)
                     {
                         realDays.Add(date);
-                        if (!oldListOfDetail.Any(x=> x.Date == date))
+                        if (!oldListOfDetail.Any(x => x.Date == date))
                         {
                             var detail = new AttendanceWithoutAdjustmentDetail
                             {
@@ -2447,7 +2570,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             }
             ServiceFactory.ORMService.SaveTransaction<IAggregateRoot>(entities, UserExtensions.CurrentUser);
         }
-        
+
 
         public static void GenerateAttendanceRecordForSelectedEmployees(IList<EmployeeCard> employeeAttendanceCards, AttendanceRecord attendanceRecord, GeneralSettings generalSettings)
         {
@@ -2615,7 +2738,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             if (attendanceForm.CalculationMethod == CalculationMethod.MonthlyAdjustment)
             {
                 var lastAttendanceMonthlyAdjustmentDetail = ServiceFactory.ORMService.All<AttendanceMonthlyAdjustmentDetail>().Where(x => x.Date.Month == lastMonthDate.Month
-                    && x.Date.Year == lastMonthDate.Year ).OrderByDescending(x => x.Id).FirstOrDefault();
+                    && x.Date.Year == lastMonthDate.Year).OrderByDescending(x => x.Id).FirstOrDefault();
                 if (lastAttendanceMonthlyAdjustmentDetail != null)
                 {
                     var recurrenceIndex = recurrences.FindIndex(x => x.RecurrenceOrder == lastAttendanceMonthlyAdjustmentDetail.RecurrenceIndex);
@@ -2720,7 +2843,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             return index;
         }
 
-        public static int GetRecurrenceIndexByDate(AttendanceForm attendanceForm, DateTime fromDate,EmployeeCard employeeCard)
+        public static int GetRecurrenceIndexByDate(AttendanceForm attendanceForm, DateTime fromDate, EmployeeCard employeeCard)
         {
             var thisMonth = fromDate.Month;
             var fromDateDay = fromDate.Day;
@@ -2732,7 +2855,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             }
             else
             {
-                year = fromDate.Year ;
+                year = fromDate.Year;
                 month = fromDate.Month - 1;
             }
             var lastMonthDate = new DateTime(year, month, 1).AddDays(fromDate.Day - 1);
@@ -2883,7 +3006,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 IList<WorkshopRecurrence> recurrences = item.Value.WorkshopRecurrences.OrderBy(x => x.RecurrenceOrder).ToList();
                 Employee Emp = item.Key;
                 EmployeesRecurrences.Add(Emp, recurrences);
-                var recurrenceIndex = GetRecurrenceIndexByDate(forms[Emp], fromDate,Emp.EmployeeCard);
+                var recurrenceIndex = GetRecurrenceIndexByDate(forms[Emp], fromDate, Emp.EmployeeCard);
                 EmployeesRecurrenceIndexes.Add(Emp, recurrenceIndex);
             }
             Dictionary<Employee, List<WorkshopRecurrenceDTO>> results = new Dictionary<Employee, List<WorkshopRecurrenceDTO>>();
@@ -2904,7 +3027,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 var daysConflictWithAbruptionDate = abruptionDate.HasValue && abruptionDate.Value > fromDate &&
                     abruptionDate.Value < toDate ?
                     (toDate - abruptionDate.Value).TotalDays : 0;
-                if(cumulativeDate != fromDate) totalDaysOfEmployee = (int)(toDate - cumulativeDate).TotalDays + 1;
+                if (cumulativeDate != fromDate) totalDaysOfEmployee = (int)(toDate - cumulativeDate).TotalDays + 1;
                 totalDaysOfEmployee = totalDaysOfEmployee - (int)(daysConflictWithAbruptionDate);
                 var result = new List<WorkshopRecurrenceDTO>();
                 for (var i = 0; i < totalDaysOfEmployee; i++)
@@ -3088,7 +3211,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             }
         }
 
-        public static List<KeyValuePair< string, string>> CheckEntranceExitRecordsConsistency(IList<int> filteredEntranceExitRecordIds)
+        public static List<KeyValuePair<string, string>> CheckEntranceExitRecordsConsistency(IList<int> filteredEntranceExitRecordIds)
         {
             var entities = new List<IAggregateRoot>();
             var allEntranceExitRecords = new List<EntranceExitRecord>();
@@ -3100,7 +3223,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             AttendanceSystemIntegrationService.GetHolidays(out publicHolidays, out fixedHolidays, out changeableHolidays);
             var entranceExitRecords = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList();
 
-           var entranceExitRecordsAfterFilter = !filteredEntranceExitRecordIds.Any() ? entranceExitRecords : entranceExitRecords.Where(x => filteredEntranceExitRecordIds.Any(y => y == x.Id)).ToList();
+            var entranceExitRecordsAfterFilter = !filteredEntranceExitRecordIds.Any() ? entranceExitRecords : entranceExitRecords.Where(x => filteredEntranceExitRecordIds.Any(y => y == x.Id)).ToList();
             var notCheckedEntranceExitRecords = entranceExitRecordsAfterFilter.Where(x => x.IsChecked == false || x.IsChecked == null);
             if (notCheckedEntranceExitRecords.Any())
             {
@@ -3147,7 +3270,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                                     preparedEntranceExitRecords[i + 1].Record.IsChecked = false;
                                     preparedEntranceExitRecords[i].Record.IsChecked = false;
                                     success = false;
-                                    result.Add(new KeyValuePair<string, string>( preparedEntranceExitRecords[i].Record.Employee.FullName, AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.EntranceTimeGreaterThanExitTime)));
+                                    result.Add(new KeyValuePair<string, string>(preparedEntranceExitRecords[i].Record.Employee.FullName, AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.EntranceTimeGreaterThanExitTime)));
                                 }
                                 else if (preparedEntranceExitRecords[i].Record.LogType == LogType.Entrance && preparedEntranceExitRecords[i + 1].Record.LogType == LogType.Entrance)
                                 {
@@ -3226,7 +3349,92 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             else
                 return 0;
         }
-        internal static bool DeleteFilteredEntranceExitWithRecordsWithFingerPrints(List<string> entranceExitIds)
+        public static int DeleteFilteredDailyEntranceExitRecords(IQueryable filteredEntranceExitRecords, bool withoutFilters)
+        {
+            var allDailyEntranceExitRecordIds = new List<string>();
+            var allEntranceExitRecordIds = new List<string>();
+            var allDailyEntranceExitRecord = (IEnumerable<DailyEnternaceExitRecord>)filteredEntranceExitRecords;
+            var allEntranceExitRecord = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList();
+            var allFilteredEntranceExitRecord = (IEnumerable<EntranceExitRecord>)allEntranceExitRecord.Where(x => allDailyEntranceExitRecord.Any(y => y.Date == x.LogDate && y.Employee == x.Employee));
+            if (!withoutFilters)
+            {
+                allDailyEntranceExitRecordIds = allDailyEntranceExitRecord.Select(x => x.Id.ToString()).ToList();
+                allEntranceExitRecordIds = allFilteredEntranceExitRecord.Select(x => x.Id.ToString()).ToList();
+            }
+            var result = DeleteFilteredEntranceExitWithRecordsWithFingerPrints(allEntranceExitRecordIds, allDailyEntranceExitRecordIds);
+            if (result)
+                return allDailyEntranceExitRecord.Count();
+            else
+                return 0;
+        }
+        public static bool DeleteFilteredEntranceExitWithRecordsWithFingerPrints(List<string> entranceExitIds, List<string> dailyRecords)
+        {
+            using (var l_oConnection = new SqlConnection(System.Configuration.ConfigurationManager.
+                                                   ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                try
+                {
+                    SqlDataAdapter sqlAdapter = new SqlDataAdapter();
+                    var entranceExitIdsStr = "";
+                    var dailyentranceExitIdsStr = "";
+                    var whereFingerprintTransferredDataStr = "";
+                    var whereentranceExitStr = "";
+                    if (entranceExitIds.Count > 0)
+                    {
+                        for (var i = 0; i < entranceExitIds.Count; i++)
+                        {
+                            if (i != entranceExitIds.Count - 1)
+                                entranceExitIdsStr = entranceExitIdsStr + entranceExitIds[i] + ", ";
+                            else
+                                entranceExitIdsStr = entranceExitIdsStr + entranceExitIds[i];
+                        }
+                        whereFingerprintTransferredDataStr = " Where EntranceExitRecord_Id in (" + entranceExitIdsStr + ")";
+                        whereentranceExitStr = " Where Id in (" + entranceExitIdsStr + ")";
+                    }
+                    if (dailyRecords.Count > 0)
+                    {
+                        for (var i = 0; i < dailyRecords.Count; i++)
+                        {
+                            if (i != dailyRecords.Count - 1)
+                                dailyentranceExitIdsStr = dailyentranceExitIdsStr + dailyRecords[i] + ", ";
+                            else
+                                dailyentranceExitIdsStr = dailyentranceExitIdsStr + dailyRecords[i];
+                        }
+                        dailyentranceExitIdsStr = " Where Id in (" + dailyentranceExitIdsStr + ")";
+                    }
+                    l_oConnection.Open();
+
+                    // Create a String to hold the query.
+                    string queryFingerprintTransferredData = "DELETE FROM FingerprintTransferredData" + whereFingerprintTransferredDataStr;
+
+                    string queryEntranceExitRecord = "DELETE FROM EntranceExitRecord" + whereentranceExitStr;
+                    string querydailyentranceExitIdsStr = "DELETE FROM DailyEnternaceExitRecord" + dailyentranceExitIdsStr;
+
+                    // Create a SqlCommand object and pass the constructor the connection string and the query string.
+                    SqlCommand queryCommandFingerprintTransferredData = new SqlCommand(queryFingerprintTransferredData, l_oConnection);
+                    sqlAdapter.DeleteCommand = queryCommandFingerprintTransferredData;
+                    sqlAdapter.DeleteCommand.ExecuteNonQuery();
+                    queryCommandFingerprintTransferredData.Dispose();
+                    SqlCommand queryCommandEntranceExitRecord = new SqlCommand(queryEntranceExitRecord, l_oConnection);
+                    sqlAdapter.DeleteCommand = queryCommandEntranceExitRecord;
+                    sqlAdapter.DeleteCommand.ExecuteNonQuery();
+                    queryCommandEntranceExitRecord.Dispose();
+                    SqlCommand queryCommanddailyentranceExitIdsStr = new SqlCommand(querydailyentranceExitIdsStr, l_oConnection);
+                    sqlAdapter.DeleteCommand = queryCommanddailyentranceExitIdsStr;
+                    sqlAdapter.DeleteCommand.ExecuteNonQuery();
+                    queryCommandFingerprintTransferredData.Dispose();
+
+                    l_oConnection.Close();
+                    return true;
+
+                }
+                catch (SqlException ex)
+                {
+                    return false;
+                }
+            }
+        }
+        public static bool DeleteFilteredEntranceExitWithRecordsWithFingerPrints(List<string> entranceExitIds)
         {
             using (var l_oConnection = new SqlConnection(System.Configuration.ConfigurationManager.
                                                    ConnectionStrings["DefaultConnection"].ConnectionString))
@@ -3277,7 +3485,6 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             }
         }
         public static bool CheckEntranceExitRecordDuplicate(List<EntranceExitRecord> EntranceExitRecordData,
-            List<FingerprintTransferredData> allFingerprintTransferredData,
             DateTime time, InsertSource insertSource, LogType logType, int ignorePeriodMinutes,
             bool igoneTypeOfFingerPint = false)
         {

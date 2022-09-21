@@ -63,7 +63,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             var workflow = ServiceFactory.ORMService.GetById<WorkflowItem>(workflowId);
             var user = UserExtensions.CurrentUser;
             var body = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardApprovalBody);
-           
+
             var title = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.RewardApprovalSubjectFor), workflow.TargetUser.FullName);
 
             WorkflowStatus workflowStatus;
@@ -162,7 +162,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             }
             entities.Add(disciplinary);
 
-           
+
 
             var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.AcceptDisciplinary);
             var info_type = status == WorkflowStepStatus.Accept ? LocalizationHelper.GetResource(LocalizationHelper.Accept)
@@ -182,7 +182,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             var workflow = ServiceFactory.ORMService.GetById<WorkflowItem>(workflowId);
             var user = UserExtensions.CurrentUser;
             var body = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TerminationApprovalBody);
-          
+
             var title = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TerminationApprovalSubjectFor), workflow.TargetUser.FullName);
 
             WorkflowStatus workflowStatus;
@@ -319,8 +319,8 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
 
             if (workflowStatus == WorkflowStatus.Completed)
             {
-                
-                 financialPromotion.ApprovedDate = DateTime.Now;
+
+                financialPromotion.ApprovedDate = DateTime.Now;
                 entities.AddRange(ChangeEmployeeFinancialPromotionInfo(financialPromotion));
             }
             else if (workflowStatus == WorkflowStatus.Canceled)
@@ -398,7 +398,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             var workflow = ServiceFactory.ORMService.GetById<WorkflowItem>(workflowId);
             var user = UserExtensions.CurrentUser;
             var title = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YouHaveALeaveRequestFor) + " " + workflow.TargetUser.FullName;
-           
+
             var body = string.Format("{0} {1} {2}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YouHaveALeaveRequestFor), workflow.TargetUser.FullName, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PleaseCheckItOut));
 
             leave = ServiceFactory.ORMService.All<LeaveRequest>().Where(x => x.WorkflowItem.Id == workflow.Id).FirstOrDefault();
@@ -415,8 +415,8 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             var destinationEntityOperationType = OperationType.Nothing;
             IDictionary<string, int> destinationData = new Dictionary<string, int>();
             destinationData.Add("WorkflowId", workflowId);
-            if(leave!=null)
-            destinationData.Add("ServiceId", leave.Id);
+            if (leave != null)
+                destinationData.Add("ServiceId", leave.Id);
 
             var leaveDate = leave.StartDate != null && leave.EndDate != null ?
                 leave.IsHourlyLeave ?
@@ -453,7 +453,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             {
                 if (workflowStatus == WorkflowStatus.Completed)
                 {
-                    new  MobileApp.Helpers.PushNotification(strWhenCompleted, "", notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
+                    new MobileApp.Helpers.PushNotification(strWhenCompleted, "", notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
                 }
                 else if (workflowStatus == WorkflowStatus.Canceled)
                 {
@@ -498,7 +498,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             var strWhenCanceled = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YourMissionHasBeenRejectedWhichDate), missionDate);
 
             var notify = WorkflowHelper.UpdateDefaultWorkflow(workflow, note, status, user, title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
-               destinationActionName, destinationEntityId, destinationEntityTitle, destinationEntityOperationType, destinationData, out workflowStatus, strWhenCompleted,strWhenCompleted,strWhenCanceled, strWhenCanceled);
+               destinationActionName, destinationEntityId, destinationEntityTitle, destinationEntityOperationType, destinationData, out workflowStatus, strWhenCompleted, strWhenCompleted, strWhenCanceled, strWhenCanceled);
             if (notify != null)
             {
                 entities.Add(notify);
@@ -562,7 +562,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             IDictionary<string, int> destinationData = new Dictionary<string, int>();
             destinationData.Add("WorkflowId", workflowId);
             destinationData.Add("ServiceId", mission.Id);
-            var missionDate = mission.FromDate.Date.ToString("d") + "-" +  mission.ToDate.Date.ToString("d");
+            var missionDate = mission.FromDate.Date.ToString("d") + "-" + mission.ToDate.Date.ToString("d");
             var strWhenCompleted = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YourMissionHasBeenApprovedWhichDate), missionDate);
             var strWhenCanceled = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YourMissionHasBeenRejectedWhichDate), missionDate);
             var notify = WorkflowHelper.UpdateDefaultWorkflow(workflow, note, status, user, title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
@@ -625,7 +625,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                     Date = new DateTime(missionRequestItem.StartDate.Year, missionRequestItem.StartDate.Month, missionRequestItem.StartDate.Day),
                     StartDateTime = missionRequestItem.StartDate,
                     EndDateTime = missionRequestItem.StartDate,
-                    StartTime =  missionRequestItem.FromTime??new DateTime(),
+                    StartTime = missionRequestItem.FromTime ?? new DateTime(),
                     EndTime = missionRequestItem.ToTime ?? new DateTime(),
                 };
                 var defaultDate = new DateTime(2000, 1, 1);
@@ -639,25 +639,25 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 var hourlyMissions = ServiceFactory.ORMService.All<HourlyMission>().Where(x => x.Employee == employee);
                 //اختبار تكرار الطلب
                 if (travelMissions.Any(x =>
-                    ((x.Status == Status.Approved) || (x.Status == Status.Draft)) && request.Date.Year == x.FromDate.Year 
+                    ((x.Status == Status.Approved) || (x.Status == Status.Draft)) && request.Date.Year == x.FromDate.Year
                     && request.Date.Month == x.FromDate.Month && request.Date.Day == x.FromDate.Day))
                 {
                     return EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MissionAlreadyExistInTheSamePeriod);
                 }
-                
+
                 var fromTimeRequest = request.StartDateTime.Date.TimeOfDay;
                 var toTimeRequest = request.EndDateTime.Date.TimeOfDay;
-                
-                
+
+
                 if (hourlyMissions.Any(x =>
-                    ((x.Status == Status.Approved) || (x.Status == Status.Draft)) && request.Date.Date == x.Date &&
-                    (missionRequestItem.FromTime >= x.StartDateTime && missionRequestItem.FromTime <= x.EndDateTime) ||
-                   (missionRequestItem.ToTime >= x.StartDateTime && missionRequestItem.ToTime <= x.EndDateTime)
-                     ))
+                   ((x.Status == Status.Approved) || (x.Status == Status.Draft)) && request.Date.Date == x.Date &&
+                   (missionRequestItem.FromTime >= x.StartDateTime && missionRequestItem.FromTime <= x.EndDateTime) ||
+                  (missionRequestItem.ToTime >= x.StartDateTime && missionRequestItem.ToTime <= x.EndDateTime)
+                    ))
                 {
                     return EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MissionAlreadyExistInTheSamePeriod);
                 }
-               
+
                 //اختبار الموظف على راس عمله ومطالب بالدوام
                 var employeeAttendanceCard = typeof(EmployeeCard).GetAll<EmployeeCard>().FirstOrDefault(x => x.Employee.Id == employee.Id);
                 if (!(employeeAttendanceCard.CardStatus == EmployeeCardStatus.OnHeadOfHisWork && employeeAttendanceCard.AttendanceDemand))
@@ -681,7 +681,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 IDictionary<string, int> destinationData = new Dictionary<string, int>();
                 var notify = new Notify();
                 var serviceWorkflow = employee.EmployeeCard.ServiceWorkflows.FirstOrDefault(x => x.ServiceType == HRIS.Domain.EmployeeRelationServices.Enums.ServiceType.Mission);
-                var workflowItem = WorkflowHelper.InitWithSetting(serviceWorkflow != null ? serviceWorkflow.WorkflowSetting :generalSetting.MissionRequestWorkflowName, employee.User(),
+                var workflowItem = WorkflowHelper.InitWithSetting(serviceWorkflow != null ? serviceWorkflow.WorkflowSetting : generalSetting.MissionRequestWorkflowName, employee.User(),
                     title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
                     destinationActionName, destinationEntityId, destinationEntityTitle
                     , destinationEntityOperationType, destinationData,
@@ -691,7 +691,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 notify.DestinationData.Add("WorkflowId", workflowItem.Id);
                 notify.DestinationData.Add("ServiceId", request.Id);
                 ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { notify }, UserExtensions.CurrentUser);
-            new MobileApp.Helpers.PushNotification(title, body, notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
+                new MobileApp.Helpers.PushNotification(title, body, notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
                 return string.Empty;
             }
             else
@@ -701,7 +701,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                     Employee = employee,
                     Note = missionRequestItem.Description,
                     Status = Status.Draft,
-                    FromDate =new DateTime(missionRequestItem.StartDate.Year, missionRequestItem.StartDate.Month, missionRequestItem.StartDate.Day) ,
+                    FromDate = new DateTime(missionRequestItem.StartDate.Year, missionRequestItem.StartDate.Month, missionRequestItem.StartDate.Day),
                     ToDate = new DateTime(missionRequestItem.EndDate.Year, missionRequestItem.EndDate.Month, missionRequestItem.EndDate.Day),
                 };
                 var travelMissions = ServiceFactory.ORMService.All<TravelMission>().Where(x => x.Employee == employee);
@@ -716,9 +716,9 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 }
                 if (hourlyMissions.Any(x =>
                     ((x.Status == Status.Approved) || (x.Status == Status.Draft)) &&
-                   (missionRequestItem.EndDate >= x.EndDateTime.Date) 
+                   (missionRequestItem.EndDate >= x.EndDateTime.Date)
                    &&
-                   (missionRequestItem.StartDate <= x.StartDateTime.Date) ))
+                   (missionRequestItem.StartDate <= x.StartDateTime.Date)))
                 {
                     return EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MissionAlreadyExistInTheSamePeriod);
                 }
@@ -749,21 +749,21 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                     title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
                     destinationActionName, destinationEntityId, destinationEntityTitle
                     , destinationEntityOperationType, destinationData,
-                    employee.User().Position(), WorkflowType.EmployeeMissionRequest, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TravelMission)+" - " +missionRequestItem.Description, out notify);
+                    employee.User().Position(), WorkflowType.EmployeeMissionRequest, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.TravelMission) + " - " + missionRequestItem.Description, out notify);
                 request.WorkflowItem = workflowItem;
-               // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
+                // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
                 var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MissionRequest);
                 ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser, request, Souccar.Domain.Audit.OperationType.Update, info, start, new List<Entity>() { request.Employee });
 
                 notify.DestinationData.Add("WorkflowId", workflowItem.Id);
                 notify.DestinationData.Add("ServiceId", request.Id);
                 ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { notify }, UserExtensions.CurrentUser);
-            new MobileApp.Helpers.PushNotification(title, body, notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
+                new MobileApp.Helpers.PushNotification(title, body, notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
                 return string.Empty;
             }
-            
-            
-            
+
+
+
         }
         #endregion
 
@@ -882,10 +882,8 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             }
             //اختبار تكرار السجل
             var employeeAttendanceCard = typeof(EmployeeCard).GetAll<EmployeeCard>().FirstOrDefault(x => x.Employee.Id == employee.Id);
-            var allFingerprintTransferredDataOfEmployee = ServiceFactory.ORMService.All<FingerprintTransferredData>().Where(x => x.Employee.Id == employee.Id).ToList();
             var allEntranceExitRecordDataOfEmployee = ServiceFactory.ORMService.All<EntranceExitRecord>().Where(x => x.Employee.Id == employee.Id).ToList();
-            if (AttendanceSystem.Services.AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                allFingerprintTransferredDataOfEmployee, request.LogDateTime, InsertSource.ByEmployee, request.LogType, 0))
+            if (AttendanceSystem.Services.AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, request.LogDateTime, InsertSource.ByEmployee, request.LogType, 0))
             {
                 return EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EntranceExitRecordAlreadyExist);
             }
@@ -920,11 +918,11 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
                 destinationActionName, destinationEntityId, destinationEntityTitle
                 , destinationEntityOperationType, destinationData,
-                employee.User().Position(), WorkflowType.EmployeeEntranceExitRecordRequest, (recordRequestItem.LogType == LogType.Entrance ? 
-                    EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Entrance) 
+                employee.User().Position(), WorkflowType.EmployeeEntranceExitRecordRequest, (recordRequestItem.LogType == LogType.Entrance ?
+                    EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Entrance)
                     : EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Exit)) + " - " + recordRequestItem.Note, out notify);
             request.WorkflowItem = workflowItem;
-           // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
+            // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
             var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EntranceExitRecord);
             ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser, request, Souccar.Domain.Audit.OperationType.Update, info, start, new List<Entity>() { request.Employee });
 
@@ -1011,14 +1009,14 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 + " - " + EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestWorkflow)))
             {
                 notify = WorkflowHelper.UpdateDefaultWorkflow(workflow, note, status, user, title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
-              destinationActionName, destinationEntityId, destinationEntityTitle, destinationEntityOperationType, destinationData, out workflowStatus, strWhenCompleted, strWhenCompleted, strWhenCanceled, strWhenCanceled,false);
+              destinationActionName, destinationEntityId, destinationEntityTitle, destinationEntityOperationType, destinationData, out workflowStatus, strWhenCompleted, strWhenCompleted, strWhenCanceled, strWhenCanceled, false);
             }
             else
             {
                 notify = WorkflowHelper.UpdateDefaultWorkflow(workflow, note, status, user, title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
               destinationActionName, destinationEntityId, destinationEntityTitle, destinationEntityOperationType, destinationData, out workflowStatus, strWhenCompleted, strWhenCompleted, strWhenCanceled, strWhenCanceled);
             }
-           
+
             if (notify != null)
             {
                 entities.Add(notify);
@@ -1044,7 +1042,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                     requestItem.RequestDate = request.Date;
                     requestItem.RequestId = request.Id;
                     requestItem.WorkflowItemId = request.WorkflowItem.Id;
-                    SaveSecTransferRequestItem(request.Employee.Id,request.Employee.Positions.FirstOrDefault(x=>x.IsPrimary).Id,requestItem);
+                    SaveSecTransferRequestItem(request.Employee.Id, request.Employee.Positions.FirstOrDefault(x => x.IsPrimary).Id, requestItem);
                 }
                 else
                 {
@@ -1136,10 +1134,10 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 + " - " + EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.DestWorkflow)
                 + " - " + request.Date.ToString("dd / MM / yyyy")
                 + " - " + request.Employee.FullName
-                , out notify,true);
+                , out notify, true);
             request.WorkflowItem = workflowItem;
-                // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
-                var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeTransferRequest);
+            // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
+            var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeTransferRequest);
             ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser, request, Souccar.Domain.Audit.OperationType.Update, info, start, new List<Entity>() { request.Employee });
 
             notify.DestinationData.Add("WorkflowId", workflowItem.Id);
@@ -1210,11 +1208,11 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 + " - " + EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.SourceWorkflow)
                 + " - " + RequestItem.RequestDate.ToString("dd / MM / yyyy")
                 + " - " + employee.FullName
-                , out notify,true);
+                , out notify, true);
             var request = ServiceFactory.ORMService.GetById<EmployeeTransferRequest>(RequestItem.RequestId);
             request.WorkflowItem = workflowItem;
             var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeTransferRequest);
-            ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem , request }, UserExtensions.CurrentUser, request, Souccar.Domain.Audit.OperationType.Update, info, start, new List<Entity>() { employee });
+            ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser, request, Souccar.Domain.Audit.OperationType.Update, info, start, new List<Entity>() { employee });
 
             notify.DestinationData.Add("WorkflowId", workflowItem.Id);
             notify.DestinationData.Add("ServiceId", request.Id);
@@ -1335,7 +1333,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 return EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgEmployeeCardNotExist);
             var FirstRepresentative = ServiceFactory.ORMService.GetById<Employee>(RequestItem.FirstRepresentative);
             var SecondRepresentative = ServiceFactory.ORMService.GetById<Employee>(RequestItem.SecondRepresentative);
-            var empCard = ServiceFactory.ORMService.All<EmployeeCard>().FirstOrDefault(x=>x.Employee == employee);
+            var empCard = ServiceFactory.ORMService.All<EmployeeCard>().FirstOrDefault(x => x.Employee == employee);
 
             var request = new EmployeeLoan()
             {
@@ -1408,7 +1406,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
                 destinationActionName, destinationEntityId, destinationEntityTitle
                 , destinationEntityOperationType, destinationData,
-                position, WorkflowType.EmployeeLoanRequest, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LoanRequestRepresentative) + " - "+ request.RequestDate + " - " + request.Note, out notify,true);
+                position, WorkflowType.EmployeeLoanRequest, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LoanRequestRepresentative) + " - " + request.RequestDate + " - " + request.Note, out notify, true);
             request.WorkflowItem = workflowItem;
             // ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, UserExtensions.CurrentUser);
             var info = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EmployeeLoanRequest);
@@ -1432,7 +1430,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 return EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.MsgEmployeeCardNotExist);
             var FirstRepresentative = ServiceFactory.ORMService.GetById<Employee>(RequestItem.FirstRepresentative);
             var SecondRepresentative = ServiceFactory.ORMService.GetById<Employee>(RequestItem.SecondRepresentative);
-            
+
             var employeeAttendanceCard = typeof(EmployeeCard).GetAll<EmployeeCard>().FirstOrDefault(x => x.Employee.Id == employee.Id);
             //اختبار الموظف على راس عمله ومطالب بالدوام
             if (!(employeeAttendanceCard.CardStatus == EmployeeCardStatus.OnHeadOfHisWork && employeeAttendanceCard.AttendanceDemand))
@@ -1460,7 +1458,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                 title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
                 destinationActionName, destinationEntityId, destinationEntityTitle
                 , destinationEntityOperationType, destinationData,
-                position, WorkflowType.EmployeeLoanRequest, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LoanRequestMain) + " - " + RequestItem.RequestDate + " - " + RequestItem.Note, out notify,true);
+                position, WorkflowType.EmployeeLoanRequest, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.LoanRequestMain) + " - " + RequestItem.RequestDate + " - " + RequestItem.Note, out notify, true);
             var request = ServiceFactory.ORMService.GetById<EmployeeLoan>(RequestItem.RequestId);
             request.WorkflowItem = workflowItem;
             request.WorkflowItem = workflowItem;
@@ -1479,8 +1477,8 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
         public static void SaveAdvanceWorkflow(int workflowId, EmployeeAdvance advance, WorkflowStepStatus status, string note, int advanceAmount)
         {
             var start = DateTime.Now;
-            if(advanceAmount>0)
-            advance.AdvanceAmount = advanceAmount;
+            if (advanceAmount > 0)
+                advance.AdvanceAmount = advanceAmount;
             var entities = new List<IAggregateRoot>();
             var workflow = ServiceFactory.ORMService.GetById<WorkflowItem>(workflowId);
             var user = UserExtensions.CurrentUser;
@@ -1548,7 +1546,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
         public static void SaveCustodiesWorkflow(int workflowId, EmployeeCustodie custodies, WorkflowStepStatus status, string note)
         {
             var start = DateTime.Now;
-         
+
             var entities = new List<IAggregateRoot>();
             var workflow = ServiceFactory.ORMService.GetById<WorkflowItem>(workflowId);
             var user = UserExtensions.CurrentUser;
@@ -1598,7 +1596,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
 
         }
         #endregion
-        
+
         public static Notify AddTerminationDecisionNotify(EmployeeDisciplinary employeeDisciplinary, EmployeeCard employeeCard)
         {
             var generalOption = ServiceFactory.ORMService.All<GeneralOption>().FirstOrDefault();
@@ -1634,8 +1632,8 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             termination.TerminationStatus = Status.Approved;
             foreach (var item in employeeCard.EmployeeCustodies)
             {
-                if (item.CustodyEndDate ==  null)
-                item.CustodyEndDate = DateTime.Now;
+                if (item.CustodyEndDate == null)
+                    item.CustodyEndDate = DateTime.Now;
             }
 
             var aeps = employeeCard.Employee.Positions;
@@ -1689,9 +1687,9 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             {
                 primaryPosition.Position.AddPositionStatus(HRIS.Domain.JobDescription.Enum.PositionStatusType.Vacant);
                 primaryPosition.Position.JobDescription.JobTitle.Vacancies++;
-                historyOfPrimaryPosition = employeeCard.Employee.LogOfPositions.FirstOrDefault(x => x.Position.Id == primaryPosition.Position.Id); 
+                historyOfPrimaryPosition = employeeCard.Employee.LogOfPositions.FirstOrDefault(x => x.Position.Id == primaryPosition.Position.Id);
             }
-            
+
             var ep = primaryPosition.Position.AssigningEmployeeToPosition;
             primaryPosition.Position.AssigningEmployeeToPosition = null;
             ep.Position = promotion.Position;
@@ -1728,7 +1726,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             foreach (var item in employeeCard.EmployeeCustodies)
             {
                 if (item.CustodyEndDate == null)
-                item.CustodyEndDate = DateTime.Now;
+                    item.CustodyEndDate = DateTime.Now;
             }
 
             employeeCard.CardStatus = EmployeeCardStatus.Resigned;
@@ -1827,7 +1825,7 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
             //  var setting = Advance.RewardSetting;
             advance.AdvanceStatus = Status.Approved;
 
-          //  var newSalary = GetNewSalary(setting.IsPercentage, employeeCard.Salary, setting.Percentage, setting.FixedValue);//الراتب الذي يجب اضافته إلى البطاقة الشهرية todo
+            //  var newSalary = GetNewSalary(setting.IsPercentage, employeeCard.Salary, setting.Percentage, setting.FixedValue);//الراتب الذي يجب اضافته إلى البطاقة الشهرية todo
             entities.Add(advance.EmployeeCard);
 
             return entities;
@@ -1890,13 +1888,13 @@ namespace Project.Web.Mvc4.Areas.EmployeeRelationServices.Helper
                         var minDay = new DateTime(2000, 1, 1, 0, 0, 0);
                         var minutesbefore = (maxDay.TimeOfDay - leaveRequest.FromTime.GetValueOrDefault().TimeOfDay).TotalMinutes;
                         var minutesafter = (leaveRequest.ToTime.GetValueOrDefault().TimeOfDay - minDay.TimeOfDay).TotalMinutes;
-                        minutes =Math.Round( minutesafter + minutesbefore, 0);
+                        minutes = Math.Round(minutesafter + minutesbefore, 0);
 
                     }
                     else
                     {
                         minutes = (leaveRequest.ToTime.GetValueOrDefault().TimeOfDay - leaveRequest.FromTime.GetValueOrDefault().TimeOfDay).TotalMinutes;
-                  
+
                     }
                     var spentDays =
                         Math.Round(1 / ((leaveSetting.HoursEquivalentToOneLeaveDay * EmployeeRelationServicesConstants.NumberOfMinutesInHour) / minutes), 2);

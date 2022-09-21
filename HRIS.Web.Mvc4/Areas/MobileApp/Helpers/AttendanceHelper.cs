@@ -29,7 +29,7 @@ namespace Project.Web.Mvc4.Areas.MobileApp.Helpers
 {
     public class AttendanceHelper
     {
-        public static string SaveEntranceExitRecordRequestItem(EntranceExitRequestViewModel recordRequestItem, User user,int locale)
+        public static string SaveEntranceExitRecordRequestItem(EntranceExitRequestViewModel recordRequestItem, User user, int locale)
         {
             var employee = ServiceFactory.ORMService.GetById<Employee>(recordRequestItem.EmployeeId);
             var generalSetting = ServiceFactory.ORMService.All<GeneralEmployeeRelationSetting>().FirstOrDefault();
@@ -59,14 +59,12 @@ namespace Project.Web.Mvc4.Areas.MobileApp.Helpers
                 && x.LogDateTime.Hour == request.LogDateTime.Hour
                 && x.LogDateTime.Minute == request.LogDateTime.Minute) && x.RecordStatus != Status.Rejected).Any())
             {
-                throw new Exception(EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EntranceExitRecordAlreadyExist,locale));
+                throw new Exception(EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EntranceExitRecordAlreadyExist, locale));
             }
             //اختبار تكرار السجل
             var employeeAttendanceCard = ServiceFactory.ORMService.All<EmployeeCard>().FirstOrDefault(x => x.Employee.Id == employee.Id);
-            var allFingerprintTransferredDataOfEmployee = ServiceFactory.ORMService.All<FingerprintTransferredData>().Where(x => x.Employee.Id == employee.Id).ToList();
             var allEntranceExitRecordDataOfEmployee = ServiceFactory.ORMService.All<EntranceExitRecord>().Where(x => x.Employee.Id == employee.Id).ToList();
-            if (AttendanceSystem.Services.AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee,
-                allFingerprintTransferredDataOfEmployee, request.LogDateTime, InsertSource.ByEmployee, request.LogType, 0))
+            if (AttendanceSystem.Services.AttendanceService.CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, request.LogDateTime, InsertSource.ByEmployee, request.LogType, 0))
             {
                 throw new Exception(EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.EntranceExitRecordAlreadyExist, locale));
             }
@@ -83,7 +81,7 @@ namespace Project.Web.Mvc4.Areas.MobileApp.Helpers
             var title = EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YouHaveAEntranceOrExitRecordRequestFor, locale) + " " + employee.FullName;
 
             var body = string.Format("{0} {1} {2}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YouHaveAEntranceOrExitRecordRequestFor, locale), employee.FullName, EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.PleaseCheckItOut, locale));
-            
+
             var destinationTabName = NavigationTabName.Operational;
             var destinationModuleName = ModulesNames.EmployeeRelationServices;
             var destinationLocalizationModuleName = ServiceFactory.LocalizationService.GetResource(
@@ -101,18 +99,18 @@ namespace Project.Web.Mvc4.Areas.MobileApp.Helpers
                 destinationActionName, destinationEntityId, destinationEntityTitle
                 , destinationEntityOperationType, destinationData,
                 employee.User().Position(), WorkflowType.EmployeeEntranceExitRecordRequest, recordRequestItem.LogType == LogType.Entrance ?
-                    EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Entrance,locale)
-                    : EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Exit,locale) + " - " + recordRequestItem.Note, out notify);
+                    EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Entrance, locale)
+                    : EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.Exit, locale) + " - " + recordRequestItem.Note, out notify);
             request.WorkflowItem = workflowItem;
             ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { workflowItem, request }, user);
             notify.DestinationData.Add("WorkflowId", workflowItem.Id);
             notify.DestinationData.Add("ServiceId", request.Id);
             ServiceFactory.ORMService.SaveTransaction(new List<IAggregateRoot>() { notify }, user);
-            new PushNotification(title,body, notify.Receivers.FirstOrDefault().Receiver.FCMToken??"");
+            new PushNotification(title, body, notify.Receivers.FirstOrDefault().Receiver.FCMToken ?? "");
             return string.Empty;
         }
 
-        public static void SaveEntranceExitRecordRequestWorkflow(int workflowId, EntranceExitRecordRequest recordRequest, WorkflowStepStatus status, string note, User user,int locale)
+        public static void SaveEntranceExitRecordRequestWorkflow(int workflowId, EntranceExitRecordRequest recordRequest, WorkflowStepStatus status, string note, User user, int locale)
         {
             var entities = new List<IAggregateRoot>();
             var workflow = ServiceFactory.ORMService.GetById<WorkflowItem>(workflowId);
@@ -137,7 +135,7 @@ namespace Project.Web.Mvc4.Areas.MobileApp.Helpers
             var recordDate = recordRequest.LogDateTime.Date.ToString("d") + "-" + recordRequest.LogDateTime.ToString("t");
             var strWhenCompleted = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YourEntraceExitRecordHasBeenApprovedWhichDate), recordDate);
             var strWhenCanceled = string.Format("{0} {1}", EmployeeRelationServicesLocalizationHelper.GetResource(EmployeeRelationServicesLocalizationHelper.YourEntraceExitRecordHasBeenRejectedWhichDate), recordDate);
-            
+
 
             var notify = Project.Web.Mvc4.Helpers.WorkflowHelper.UpdateDefaultWorkflow(workflow, note, status, user, title, body, destinationTabName, destinationModuleName, destinationLocalizationModuleName, destinationControllerName,
                destinationActionName, destinationEntityId, destinationEntityTitle, destinationEntityOperationType, destinationData, out workflowStatus, strWhenCompleted, strWhenCompleted, strWhenCanceled, strWhenCanceled);
