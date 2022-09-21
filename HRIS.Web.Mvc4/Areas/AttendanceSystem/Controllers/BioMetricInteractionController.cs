@@ -118,21 +118,21 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 var dailyEnternaceExitRecord = new DailyEnternaceExitRecord();
 
 
-               // //var bioMetricDevice = BioMetricService.GetDevice(bioMetricSetting.BioMetricDevice.DeviceTypeFullName);
-                //var isConnected = bioMetricDevice.Connect(bioMetricSetting.IpAddress, bioMetricSetting.Port);
-                //if (!isConnected)
-                //{
-                //    return Json(new
-                //    {
-                //        Success = false,
-                //        Msg = AttendanceLocalizationHelper.ConnectedFailed
-                //    });
-                //}
+                var bioMetricDevice = BioMetricService.GetDevice(bioMetricSetting.BioMetricDevice.DeviceTypeFullName);
+                var isConnected = bioMetricDevice.Connect(bioMetricSetting.IpAddress, bioMetricSetting.Port);
+                if (!isConnected)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Msg = AttendanceLocalizationHelper.ConnectedFailed
+                    });
+                }
                 if (transferDataFromBioMetric)
                 {
-                    //var data = bioMetricDevice.GetRecordsData();
+                    var data = bioMetricDevice.GetRecordsData();
 
-                    var data = Project.Web.Mvc4.Areas.AttendanceSystem.Services.AttendanceService.GetTestingRecordsData().ToList();
+                    //var data = Project.Web.Mvc4.Areas.AttendanceSystem.Services.AttendanceService.GetTestingRecordsData().ToList();
                     var dataGroupedByUserDeviceCode = data
                     .GroupBy(x => x.UserDeviceId);
 
@@ -289,15 +289,15 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
 
                 }
 
-                //if (clearDataFromBioMetricTitle)
-                //{
-                //    bioMetricDevice.ClearRecordsData();
-                //    var fingerprintTransferredDatas = ServiceFactory.ORMService.All<FingerprintTransferredData>();
-                //    foreach (var fingerprintTransferredData in fingerprintTransferredDatas)
-                //    {
-                //        fingerprintTransferredData.Delete();
-                //    }
-                //}
+                if (clearDataFromBioMetricTitle)
+                {
+                    bioMetricDevice.ClearRecordsData();
+                    var fingerprintTransferredDatas = ServiceFactory.ORMService.All<FingerprintTransferredData>();
+                    foreach (var fingerprintTransferredData in fingerprintTransferredDatas)
+                    {
+                        fingerprintTransferredData.Delete();
+                    }
+                }
             }
             catch(Exception e)
             {
