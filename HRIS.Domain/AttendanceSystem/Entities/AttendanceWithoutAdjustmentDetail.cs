@@ -31,6 +31,9 @@ namespace HRIS.Domain.AttendanceSystem.Entities
         [UserInterfaceParameter(Order = 8)]
         public virtual bool IsWorkDay { get; set; } // هل اليوم هو يوم عمل أو لا
 
+        [UserInterfaceParameter(Order = 8)]
+        public virtual bool IsAbsense { get { return ActualWorkValue <= 0 && !HasMission && !HasVacation && !IsOffDay && !IsHoliday; } } // هل اليوم هو يوم غياب أو لا
+
         [UserInterfaceParameter(Order = 9)]
         public virtual string RequiredWorkHoursRanges { get; set; } // الوردية لليوم كمجالات لكامل الفترات
         [UserInterfaceParameter(Order = 10, IsHidden = true)]

@@ -108,7 +108,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         dailyRecord.OvertimeHoursValue = Math.Round(item.OvertimeOrderValue, 2) + Math.Round(item.NormalOvertimeValue, 2) +
                             Math.Round(item.ParticularOvertimeValue, 2) + Math.Round(item.ExpectedOvertimeValue, 2) + Math.Round(item.HolidayOvertimeValue, 2);
                         dailyRecord.HolidayOvertimeHoursValue = Math.Round(item.HolidayOvertimeValue, 2);
-                        dailyRecord.AbsentHoursValue = item.RequiredWorkHoursValue > 0 && item.RequiredWorkHoursValue - item.ActualWorkValue > 0 ? Math.Round(item.RequiredWorkHoursValue - item.ActualWorkValue, 2) : 0;
+                        dailyRecord.AbsentHoursValue = 
+                            item.IsAbsense ?  0 :  Math.Round(item.NonAttendanceHoursValue, 2);
                         dailyRecord.WorkHoursValue = Math.Round(item.ActualWorkValue, 2);
                         dailyRecord.RequiredWorkHours = Math.Round(item.RequiredWorkHoursValue, 2);
                         dailyRecord.LateType = lateType;
@@ -130,11 +131,12 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 lateType = LateType.Unjustified;
                 return DayStatus.Late;
             }
-            else if ((item.ActualWorkValue <= 0 || item.RequiredWorkHoursValue - item.ActualWorkValue > 0) && !item.HasVacation && !item.IsOffDay && !item.IsHoliday)
+            else if ((item.ActualWorkValue <= 0 || item.RequiredWorkHoursValue - item.ActualWorkValue > 0) && !item.IsOffDay && !item.IsHoliday)
             {
                 absenseType = AbsenseType.Unjustified;
                 if (item.HasMission) absenseType = AbsenseType.Mission;
-                return item.ActualWorkValue <= 0 ? DayStatus.Absent : DayStatus.Present;
+                if (item.HasVacation) absenseType = AbsenseType.Leave;
+                return item.IsAbsense ? DayStatus.Absent : DayStatus.Present;
             }
             else return DayStatus.Present;
         }
@@ -1306,21 +1308,32 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
                 if (rangeTimeLine.Count > 0)
                 {
-                    if (rangeTimeLine.First.Value.LogDateTime >
-                        range.EntryTime.AddMinutes(range.IgnoredPeriodAfterEntryTime))
+                    var firstAttandance = rangeTimeLine.FirstOrDefault(x => x.IsAttendance);
+                    if (firstAttandance != null)
                     {
-                        rangeTimeLine.AddFirst(new TimeLineNodeDTO
+                        currentNode = rangeTimeLine.First;
+                        while (currentNode != null && currentNode.Value != firstAttandance)
                         {
-                            LogDateTime = rangeTimeLine.First.Value.LogDateTime,
-                            LogType = LogType.Exit,
-                            IsLateness = true
-                        });
-                        rangeTimeLine.AddFirst(new TimeLineNodeDTO
+                            currentNode = currentNode.Next;
+                        }
+                        var lastRest = rangeTimeLine.OrderByDescending(x => x.LogDateTime).FirstOrDefault(x => x.IsRestTime);
+                        var firstRest = rangeTimeLine.OrderBy(x => x.LogDateTime).FirstOrDefault(x => x.IsRestTime);
+                        if (firstAttandance.LogDateTime >
+                            range.EntryTime.AddMinutes(range.IgnoredPeriodAfterEntryTime) && (lastRest == null || firstAttandance.LogDateTime > lastRest.LogDateTime))
                         {
-                            LogDateTime = range.EntryTime,
-                            LogType = LogType.Entrance,
-                            IsLateness = true
-                        });
+                            rangeTimeLine.AddBefore(currentNode, new TimeLineNodeDTO
+                            {
+                                LogDateTime = lastRest != null && firstRest.LogDateTime >= range.EntryTime ? lastRest.LogDateTime : range.EntryTime,
+                                LogType = LogType.Entrance,
+                                IsLateness = true
+                            });
+                            rangeTimeLine.AddBefore(currentNode, new TimeLineNodeDTO
+                            {
+                                LogDateTime = firstAttandance.LogDateTime,
+                                LogType = LogType.Exit,
+                                IsLateness = true
+                            });
+                        }
                     }
                 }
 
@@ -1742,10 +1755,10 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         attendanceWithoutAdjustmentDetail.OvertimeOrderValue += rangeValue;
                         attendanceWithoutAdjustmentDetail.OvertimeOrderRanges += range;
                     }
-                    else
-                    {
-                        rangeValue = 0;
-                    }
+                    //else
+                    //{
+                    //    rangeValue = 0;
+                    //}
                 }
 
                 if (rangeValue > 0)
@@ -1755,15 +1768,18 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         if (currentNode.Value.IsParticular) // if true so it is particular overtime
                         {
                             attendanceWithoutAdjustmentDetail.ParticularOvertimeValue += rangeValue;
+                            attendanceWithoutAdjustmentDetail.ParticularOvertimeFormatedValue += range;
                         }
                         else
                         {
                             attendanceWithoutAdjustmentDetail.NormalOvertimeValue += rangeValue;
+                            attendanceWithoutAdjustmentDetail.NormalOvertimeFormatedValue += range;
                         }
                     }
                     else
                     {
                         attendanceWithoutAdjustmentDetail.HolidayOvertimeValue += rangeValue;
+                        attendanceWithoutAdjustmentDetail.HolidayOvertimeFormatedValue += range;
                     }
                 }
                 currentNode = currentNode.Next.Next;
