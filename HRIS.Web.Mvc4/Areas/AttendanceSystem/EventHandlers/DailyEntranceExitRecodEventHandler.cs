@@ -70,7 +70,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
                 result.Total = filteredDate.Count();
             }
         }
-         public override void BeforeUpdate(RequestInformation requestInformation, Entity entity, IDictionary<string, object> originalState, string customInformation = null)
+        public override void BeforeUpdate(RequestInformation requestInformation, Entity entity, IDictionary<string, object> originalState, string customInformation = null)
         {
             var dailyEntranceExitRecord = (DailyEnternaceExitRecord)entity;
 
@@ -99,32 +99,32 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             {
                 EntranceExitRecord record = new EntranceExitRecord();
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
-                    entranceExitRecord.LoginTime.Value.Hour,
-                    entranceExitRecord.LoginTime.Value.Minute,
-                    entranceExitRecord.LoginTime.Value.Second);
+                    entranceExitRecord.LoginDateTime.Value.Year,
+                    entranceExitRecord.LoginDateTime.Value.Month,
+                    entranceExitRecord.LoginDateTime.Value.Day,
+                    entranceExitRecord.LoginDateTime.Value.Hour,
+                    entranceExitRecord.LoginDateTime.Value.Minute,
+                    entranceExitRecord.LoginDateTime.Value.Second);
                 record.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.LoginTime.Value.Hour, entranceExitRecord.LoginTime.Value.Minute, entranceExitRecord.LoginTime.Value.Second);
                 record.Employee = entranceExitRecord.Employee;
                 record.LogDateTime = logDateTime;
                 record.LogType = LogType.Entrance;
-                record.LogDate = entranceExitRecord.Date;
+                record.LogDate = entranceExitRecord.LoginDate.Value;
                 records.Add(record);
             }
             if (entranceExitRecord.LogoutTime != null)
             {
                 EntranceExitRecord record = new EntranceExitRecord();
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
-                    entranceExitRecord.LogoutTime.Value.Hour,
-                    entranceExitRecord.LogoutTime.Value.Minute,
-                    entranceExitRecord.LogoutTime.Value.Second);
+                    entranceExitRecord.LogoutDateTime.Value.Year,
+                    entranceExitRecord.LogoutDateTime.Value.Month,
+                    entranceExitRecord.LogoutDateTime.Value.Day,
+                    entranceExitRecord.LogoutDateTime.Value.Hour,
+                    entranceExitRecord.LogoutDateTime.Value.Minute,
+                    entranceExitRecord.LogoutDateTime.Value.Second);
                 record.Employee = entranceExitRecord.Employee;
                 record.LogDateTime = logDateTime;
-                record.LogDate = entranceExitRecord.Date;
+                record.LogDate = entranceExitRecord.LogoutDate.Value;
                 record.LogType = LogType.Exit;
                 record.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.LogoutTime.Value.Hour, entranceExitRecord.LogoutTime.Value.Minute, entranceExitRecord.LogoutTime.Value.Second);
                 records.Add(record);
@@ -133,16 +133,16 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             {
                 EntranceExitRecord record = new EntranceExitRecord();
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
-                    entranceExitRecord.SecondLoginTime.Value.Hour,
-                    entranceExitRecord.SecondLoginTime.Value.Minute,
-                    entranceExitRecord.SecondLoginTime.Value.Second);
+                    entranceExitRecord.SecondLoginDateTime.Value.Year,
+                    entranceExitRecord.SecondLoginDateTime.Value.Month,
+                    entranceExitRecord.SecondLoginDateTime.Value.Day,
+                    entranceExitRecord.SecondLoginDateTime.Value.Hour,
+                    entranceExitRecord.SecondLoginDateTime.Value.Minute,
+                    entranceExitRecord.SecondLoginDateTime.Value.Second);
                 record.Employee = entranceExitRecord.Employee;
                 record.LogDateTime = logDateTime;
                 record.LogType = LogType.Entrance;
-                record.LogDate = entranceExitRecord.Date;
+                record.LogDate = entranceExitRecord.SecondLoginDate.Value;
                 record.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.SecondLoginTime.Value.Hour, entranceExitRecord.SecondLoginTime.Value.Minute, entranceExitRecord.SecondLoginTime.Value.Second);
                 records.Add(record);
             }
@@ -150,16 +150,16 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             {
                 EntranceExitRecord record = new EntranceExitRecord();
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
-                    entranceExitRecord.SecondLogoutTime.Value.Hour,
-                    entranceExitRecord.SecondLogoutTime.Value.Minute,
-                    entranceExitRecord.SecondLogoutTime.Value.Second);
+                    entranceExitRecord.SecondLogoutDateTime.Value.Year,
+                    entranceExitRecord.SecondLogoutDateTime.Value.Month,
+                    entranceExitRecord.SecondLogoutDateTime.Value.Day,
+                    entranceExitRecord.SecondLogoutDateTime.Value.Hour,
+                    entranceExitRecord.SecondLogoutDateTime.Value.Minute,
+                    entranceExitRecord.SecondLogoutDateTime.Value.Second);
                 record.Employee = entranceExitRecord.Employee;
                 record.LogDateTime = logDateTime;
                 record.LogType = LogType.Exit;
-                record.LogDate = entranceExitRecord.Date;
+                record.LogDate = entranceExitRecord.SecondLogoutDate.Value;
                 record.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.SecondLogoutTime.Value.Hour, entranceExitRecord.SecondLogoutTime.Value.Minute, entranceExitRecord.SecondLogoutTime.Value.Second);
                 records.Add(record);
             }
@@ -167,16 +167,16 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             {
                 EntranceExitRecord record = new EntranceExitRecord();
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
-                    entranceExitRecord.ThirdLoginTime.Value.Hour,
-                    entranceExitRecord.ThirdLoginTime.Value.Minute,
-                    entranceExitRecord.ThirdLoginTime.Value.Second);
+                    entranceExitRecord.ThirdLoginDateTime.Value.Year,
+                    entranceExitRecord.ThirdLoginDateTime.Value.Month,
+                    entranceExitRecord.ThirdLoginDateTime.Value.Day,
+                    entranceExitRecord.ThirdLoginDateTime.Value.Hour,
+                    entranceExitRecord.ThirdLoginDateTime.Value.Minute,
+                    entranceExitRecord.ThirdLoginDateTime.Value.Second);
                 record.Employee = entranceExitRecord.Employee;
                 record.LogDateTime = logDateTime;
                 record.LogType = LogType.Entrance;
-                record.LogDate = entranceExitRecord.Date;
+                record.LogDate = entranceExitRecord.ThirdLoginDate.Value;
                 record.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.ThirdLoginTime.Value.Hour, entranceExitRecord.ThirdLoginTime.Value.Minute, entranceExitRecord.ThirdLoginTime.Value.Second);
                 records.Add(record);
             }
@@ -184,17 +184,17 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             {
                 EntranceExitRecord record = new EntranceExitRecord();
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
-                    entranceExitRecord.ThirdLogoutTime.Value.Hour,
-                    entranceExitRecord.ThirdLogoutTime.Value.Minute,
-                    entranceExitRecord.ThirdLogoutTime.Value.Second);
+                    entranceExitRecord.ThirdLogoutDateTime.Value.Year,
+                    entranceExitRecord.ThirdLogoutDateTime.Value.Month,
+                    entranceExitRecord.ThirdLogoutDateTime.Value.Day,
+                    entranceExitRecord.ThirdLogoutDateTime.Value.Hour,
+                    entranceExitRecord.ThirdLogoutDateTime.Value.Minute,
+                    entranceExitRecord.ThirdLogoutDateTime.Value.Second);
                 record.Employee = entranceExitRecord.Employee;
                 record.LogType = LogType.Exit;
                 record.LogTime = new DateTime(2000, 1, 1, entranceExitRecord.ThirdLogoutTime.Value.Hour, entranceExitRecord.ThirdLogoutTime.Value.Minute, entranceExitRecord.ThirdLogoutTime.Value.Second);
                 record.LogDateTime = logDateTime;
-                record.LogDate = entranceExitRecord.Date;
+                record.LogDate = entranceExitRecord.ThirdLogoutDate.Value;
                 records.Add(record);
             }
             return records;
@@ -205,80 +205,117 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             if (entranceExitRecord.LoginTime != null)
             {
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
+                    entranceExitRecord.LoginDate.Value.Year,
+                    entranceExitRecord.LoginDate.Value.Month,
+                    entranceExitRecord.LoginDate.Value.Day,
                     entranceExitRecord.LoginTime.Value.Hour,
                     entranceExitRecord.LoginTime.Value.Minute,
                     entranceExitRecord.LoginTime.Value.Second);
 
                 entranceExitRecord.LoginDateTime = logDateTime;
-                entranceExitRecord.LoginTime = new DateTime(2000, 1, 1, entranceExitRecord.LoginTime.Value.Hour, entranceExitRecord.LoginTime.Value.Minute, entranceExitRecord.LoginTime.Value.Second);
+                entranceExitRecord.LoginTime = new DateTime(2000, 1, 1,
+                    logDateTime.Hour, logDateTime.Minute, logDateTime.Second);
+                entranceExitRecord.LoginDate = new DateTime(
+                    logDateTime.Year,
+                    logDateTime.Month,
+                    logDateTime.Day,
+                    0, 0, 0);
             }
             if (entranceExitRecord.LogoutTime != null)
             {
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
+                    entranceExitRecord.LogoutDate.Value.Year,
+                    entranceExitRecord.LogoutDate.Value.Month,
+                    entranceExitRecord.LogoutDate.Value.Day,
                     entranceExitRecord.LogoutTime.Value.Hour,
                     entranceExitRecord.LogoutTime.Value.Minute,
                     entranceExitRecord.LogoutTime.Value.Second);
 
                 entranceExitRecord.LogoutDateTime = logDateTime;
-                entranceExitRecord.LogoutTime = new DateTime(2000, 1, 1, entranceExitRecord.LogoutTime.Value.Hour, entranceExitRecord.LogoutTime.Value.Minute, entranceExitRecord.LogoutTime.Value.Second);
+                entranceExitRecord.LogoutTime = new DateTime(2000, 1, 1,
+                    logDateTime.Hour, logDateTime.Minute, logDateTime.Second);
+                entranceExitRecord.LogoutDate = new DateTime(
+                    logDateTime.Year,
+                    logDateTime.Month,
+                    logDateTime.Day,
+                    0, 0, 0);
             }
             if (entranceExitRecord.SecondLoginTime != null)
             {
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
+                    entranceExitRecord.SecondLoginDate.Value.Year,
+                    entranceExitRecord.SecondLoginDate.Value.Month,
+                    entranceExitRecord.SecondLoginDate.Value.Day,
                     entranceExitRecord.SecondLoginTime.Value.Hour,
                     entranceExitRecord.SecondLoginTime.Value.Minute,
                     entranceExitRecord.SecondLoginTime.Value.Second);
 
                 entranceExitRecord.SecondLoginDateTime = logDateTime;
-                entranceExitRecord.SecondLoginTime = new DateTime(2000, 1, 1, entranceExitRecord.SecondLoginTime.Value.Hour, entranceExitRecord.SecondLoginTime.Value.Minute, entranceExitRecord.SecondLoginTime.Value.Second);
+                entranceExitRecord.SecondLoginTime = new DateTime(2000, 1, 1,
+                    logDateTime.Hour, logDateTime.Minute, logDateTime.Second);
+                entranceExitRecord.SecondLoginDate = new DateTime(
+                    logDateTime.Year,
+                    logDateTime.Month,
+                    logDateTime.Day,
+                    0, 0, 0);
             }
             if (entranceExitRecord.SecondLogoutTime != null)
             {
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
+                    entranceExitRecord.SecondLogoutDate.Value.Year,
+                    entranceExitRecord.SecondLogoutDate.Value.Month,
+                    entranceExitRecord.SecondLogoutDate.Value.Day,
                     entranceExitRecord.SecondLogoutTime.Value.Hour,
                     entranceExitRecord.SecondLogoutTime.Value.Minute,
                     entranceExitRecord.SecondLogoutTime.Value.Second);
 
                 entranceExitRecord.SecondLogoutDateTime = logDateTime;
-                entranceExitRecord.SecondLogoutTime = new DateTime(2000, 1, 1, entranceExitRecord.SecondLogoutTime.Value.Hour, entranceExitRecord.SecondLogoutTime.Value.Minute, entranceExitRecord.SecondLogoutTime.Value.Second);
+                entranceExitRecord.SecondLogoutTime = new DateTime(2000, 1, 1,
+                    logDateTime.Hour, logDateTime.Minute, logDateTime.Second);
+                entranceExitRecord.SecondLogoutDate = new DateTime(
+                    logDateTime.Year,
+                    logDateTime.Month,
+                    logDateTime.Day,
+                    0, 0, 0);
             }
             if (entranceExitRecord.ThirdLoginTime != null)
             {
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
+                    entranceExitRecord.ThirdLoginDate.Value.Year,
+                    entranceExitRecord.ThirdLoginDate.Value.Month,
+                    entranceExitRecord.ThirdLoginDate.Value.Day,
                     entranceExitRecord.ThirdLoginTime.Value.Hour,
                     entranceExitRecord.ThirdLoginTime.Value.Minute,
                     entranceExitRecord.ThirdLoginTime.Value.Second);
 
                 entranceExitRecord.ThirdLoginDateTime = logDateTime;
-                entranceExitRecord.ThirdLoginTime = new DateTime(2000, 1, 1, entranceExitRecord.ThirdLoginTime.Value.Hour, entranceExitRecord.ThirdLoginTime.Value.Minute, entranceExitRecord.ThirdLoginTime.Value.Second);
+                entranceExitRecord.ThirdLoginTime = new DateTime(2000, 1, 1,
+                    logDateTime.Hour, logDateTime.Minute, logDateTime.Second);
+                entranceExitRecord.ThirdLoginDate = new DateTime(
+                    logDateTime.Year,
+                    logDateTime.Month,
+                    logDateTime.Day,
+                    0, 0, 0);
             }
             if (entranceExitRecord.ThirdLogoutTime != null)
             {
                 DateTime logDateTime = new DateTime(
-                    entranceExitRecord.Date.Year,
-                    entranceExitRecord.Date.Month,
-                    entranceExitRecord.Date.Day,
+                    entranceExitRecord.ThirdLogoutDate.Value.Year,
+                    entranceExitRecord.ThirdLogoutDate.Value.Month,
+                    entranceExitRecord.ThirdLogoutDate.Value.Day,
                     entranceExitRecord.ThirdLogoutTime.Value.Hour,
                     entranceExitRecord.ThirdLogoutTime.Value.Minute,
                     entranceExitRecord.ThirdLogoutTime.Value.Second);
 
                 entranceExitRecord.ThirdLogoutDateTime = logDateTime;
-                entranceExitRecord.ThirdLogoutTime = new DateTime(2000, 1, 1, entranceExitRecord.ThirdLogoutTime.Value.Hour, entranceExitRecord.ThirdLogoutTime.Value.Minute, entranceExitRecord.ThirdLogoutTime.Value.Second);
+                entranceExitRecord.ThirdLogoutTime = new DateTime(2000, 1, 1,
+                    logDateTime.Hour, logDateTime.Minute, logDateTime.Second);
+
+                entranceExitRecord.ThirdLogoutDate = new DateTime(
+                    logDateTime.Year,
+                    logDateTime.Month,
+                    logDateTime.Day,
+                    0, 0, 0);
             }
         }
         public override void BeforeValidation(RequestInformation requestInformation, Entity entity, IDictionary<string, object> originalState,
@@ -313,7 +350,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
         }
         public override void AfterUpdate(RequestInformation requestInformation, Entity entity, IDictionary<string, object> originalState, string customInformation = null)
         {
-            var entranceExitRecord = (DailyEnternaceExitRecord)entity; 
+            var entranceExitRecord = (DailyEnternaceExitRecord)entity;
             var attendanceRecord = ServiceFactory.ORMService.All<AttendanceRecord>().Where(x => x.AttendanceMonthStatus != AttendanceMonthStatus.Locked).OrderByDescending(x => x.FromDate).FirstOrDefault();
             if (attendanceRecord != null)
             {

@@ -146,7 +146,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                     var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList().Where(
                         x => data.Any(y => x.LogDate >= y.DateTime.AddDays(-1).Date && x.LogDate <= y.DateTime.Date.AddDays(1).Date));
                     var allDailyEnternaceExitRecordData = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(
-                        x => data.Any(y => x.Date >= y.DateTime.AddDays(-1).Date && x.Date <= y.DateTime.Date.AddDays(1).Date));
+                        x => data.Any(y => x.Date >= y.DateTime.AddDays(-1).Date && x.Date <= y.DateTime.Date.AddDays(1).Date)).ToList();
+                    var allUpdatedDailyEnternaceExitRecords = new List<DailyEnternaceExitRecord>();
                     var entities = new List<IAggregateRoot>();
                     if (!ignoreFingerPrintType)
                         foreach (var item in dataGroupedByUserDeviceCode)
@@ -237,8 +238,14 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                                           new DateTime(bioMetricRecordData.DateTime.Year, bioMetricRecordData.DateTime.Month, bioMetricRecordData.DateTime.Day),
                                           forms[empAttendanceCard.Employee], publicHolidays, fixedHolidays, changeableHolidays);
                                         ranges = recurrence.Workshop.Prepare(recurrence.Date).NormalShifts.ToList();
-                                        if (dailyEntranceExitRecord.Employee != null) entities.Add(dailyEntranceExitRecord);
-                                        dailyEntranceExitRecord = new DailyEnternaceExitRecord();
+                                        if (dailyEntranceExitRecord.Employee != null)
+                                        { 
+                                            allUpdatedDailyEnternaceExitRecords.Add(dailyEntranceExitRecord);
+                                            entities.Add(dailyEntranceExitRecord);
+                                        }
+                                        dailyEntranceExitRecord = allDailyEnternaceExitRecordData.Any(x => x.Employee == empAttendanceCard.Employee &&  x.Date == bioMetricRecordData.DateTime.Date) ?
+                                               allDailyEnternaceExitRecordData.FirstOrDefault(x => x.Date == bioMetricRecordData.DateTime.Date) :
+                                               new DailyEnternaceExitRecord();
                                     }
                                     var entranceExitRecord = new EntranceExitRecord();
                                     var currentUser = UserExtensions.CurrentUser;
@@ -281,12 +288,39 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                                     };
                                 }
                             }
-                            if (dailyEntranceExitRecord.Employee != null) entities.Add(dailyEntranceExitRecord);
+                            if (dailyEntranceExitRecord.Employee != null)
+                            {
+                                allUpdatedDailyEnternaceExitRecords.Add(dailyEntranceExitRecord);
+                                entities.Add(dailyEntranceExitRecord);
+                            }
                         }
+                    }
+                    var attendanceRecord = ServiceFactory.ORMService.All<AttendanceRecord>().Where(x => x.AttendanceMonthStatus != AttendanceMonthStatus.Locked).OrderByDescending(x => x.FromDate).FirstOrDefault();
+                    if (attendanceRecord != null)
+                    {
+                        Project.Web.Mvc4.Areas.AttendanceSystem.Services.AttendanceService.GenerateAttendanceRecordDetailsUntillCurrentDay(attendanceRecord);
+                        foreach (var dailyEnternaceExit in allUpdatedDailyEnternaceExitRecords)
+                        {
+                            var attendanceWithoutAdjustments = attendanceRecord.AttendanceWithoutAdjustments.FirstOrDefault(x => x.EmployeeAttendanceCard.Employee == dailyEnternaceExit.Employee);
+                            var attendanceDetail = attendanceWithoutAdjustments != null ?
+                                attendanceWithoutAdjustments.AttendanceWithoutAdjustmentDetails.FirstOrDefault(x => x.Date == dailyEnternaceExit.Date) : null;
+                            if (attendanceDetail != null)
+                            {
+                                attendanceDetail.IsCalculated = false;
+                                entities.Add(attendanceDetail);
+                            }
+                        }
+                        attendanceRecord.Save();
                     }
                     var info = AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.BioMetricInteraction);
                     ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser, null, Souccar.Domain.Audit.OperationType.Update, info, start, null);
-
+                    //calculate the attendance
+                    if (attendanceRecord != null)
+                    {
+                        Project.Web.Mvc4.Areas.AttendanceSystem.Services.AttendanceService.CalculateAttendanceRecord(attendanceRecord);
+                        attendanceRecord.AttendanceMonthStatus = AttendanceMonthStatus.Calculated;
+                        attendanceRecord.Save();
+                    }
                 }
 
                 if (clearDataFromBioMetricTitle)
@@ -313,8 +347,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 Msg = Helpers.GlobalResource.DoneMessage
             });
         }
-        private DailyEnternaceExitRecord ComposeDailyRecord(DailyEnternaceExitRecord dailyEnternaceExitRecord,
-    EntranceExitRecord entranceExitRecord)
+        private DailyEnternaceExitRecord ComposeDailyRecord(DailyEnternaceExitRecord dailyEnternaceExitRecord, EntranceExitRecord entranceExitRecord)
         {
             try
             {
@@ -324,33 +357,69 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                     dailyEnternaceExitRecord.InsertSource = entranceExitRecord.InsertSource;
                     dailyEnternaceExitRecord.Node = entranceExitRecord.Employee.GetSecondaryPositionElsePrimary().JobDescription?.Node;
                     dailyEnternaceExitRecord.Date = entranceExitRecord.LogDate.Date;
+                    dailyEnternaceExitRecord.Day = entranceExitRecord.LogDate.Date.DayOfWeek;
                     if (entranceExitRecord.LogType == LogType.Entrance)
                     {
                         dailyEnternaceExitRecord.LoginDateTime = entranceExitRecord.LogDateTime;
                         dailyEnternaceExitRecord.LoginTime = entranceExitRecord.LogTime;
+                        dailyEnternaceExitRecord.LoginDate = new DateTime(
+                            entranceExitRecord.LogDateTime.Year,
+                            entranceExitRecord.LogDateTime.Month,
+                            entranceExitRecord.LogDateTime.Day,
+                            0, 0, 0);
                     }
                     else
                     {
                         dailyEnternaceExitRecord.LogoutDateTime = entranceExitRecord.LogDateTime;
-                        dailyEnternaceExitRecord.LogoutTime = entranceExitRecord.LogTime;
+                        dailyEnternaceExitRecord.LogoutTime = entranceExitRecord.LogTime; 
+                        dailyEnternaceExitRecord.LogoutDate = new DateTime(
+                            entranceExitRecord.LogDateTime.Year,
+                            entranceExitRecord.LogDateTime.Month,
+                            entranceExitRecord.LogDateTime.Day,
+                            0, 0, 0);
                     }
                 }
                 else if (dailyEnternaceExitRecord.Employee == entranceExitRecord.Employee)
                 {
-                    if (dailyEnternaceExitRecord.LogoutDateTime == null && entranceExitRecord.LogType == LogType.Exit)
+                    if (dailyEnternaceExitRecord.LoginDateTime == null && entranceExitRecord.LogType == LogType.Entrance)
+                    {
+                        dailyEnternaceExitRecord.LoginDateTime = entranceExitRecord.LogDateTime;
+                        dailyEnternaceExitRecord.LoginTime = entranceExitRecord.LogTime;
+                        dailyEnternaceExitRecord.LoginDate = new DateTime(
+                            entranceExitRecord.LogDateTime.Year,
+                            entranceExitRecord.LogDateTime.Month,
+                            entranceExitRecord.LogDateTime.Day,
+                            0, 0, 0);
+                    }
+                    else if (dailyEnternaceExitRecord.LogoutDateTime == null && entranceExitRecord.LogType == LogType.Exit)
                     {
                         dailyEnternaceExitRecord.LogoutDateTime = entranceExitRecord.LogDateTime;
                         dailyEnternaceExitRecord.LogoutTime = entranceExitRecord.LogTime;
+                        dailyEnternaceExitRecord.LogoutDate = new DateTime(
+                            entranceExitRecord.LogDateTime.Year,
+                            entranceExitRecord.LogDateTime.Month,
+                            entranceExitRecord.LogDateTime.Day,
+                            0, 0, 0);
                     }
                     else if (dailyEnternaceExitRecord.SecondLoginDateTime == null && entranceExitRecord.LogType == LogType.Entrance)
                     {
                         dailyEnternaceExitRecord.SecondLoginDateTime = entranceExitRecord.LogDateTime;
                         dailyEnternaceExitRecord.SecondLoginTime = entranceExitRecord.LogTime;
+                        dailyEnternaceExitRecord.SecondLoginDate = new DateTime(
+                            entranceExitRecord.LogDateTime.Year,
+                            entranceExitRecord.LogDateTime.Month,
+                            entranceExitRecord.LogDateTime.Day,
+                            0, 0, 0);
                     }
                     else if (dailyEnternaceExitRecord.SecondLogoutDateTime == null && entranceExitRecord.LogType == LogType.Exit)
                     {
                         dailyEnternaceExitRecord.SecondLogoutDateTime = entranceExitRecord.LogDateTime;
                         dailyEnternaceExitRecord.SecondLogoutTime = entranceExitRecord.LogTime;
+                        dailyEnternaceExitRecord.SecondLogoutDate = new DateTime(
+                            entranceExitRecord.LogDateTime.Year,
+                            entranceExitRecord.LogDateTime.Month,
+                            entranceExitRecord.LogDateTime.Day,
+                            0, 0, 0);
                     }
                     else
                     {
@@ -358,11 +427,21 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                         {
                             dailyEnternaceExitRecord.ThirdLoginDateTime = entranceExitRecord.LogDateTime;
                             dailyEnternaceExitRecord.ThirdLoginTime = entranceExitRecord.LogTime;
+                            dailyEnternaceExitRecord.ThirdLoginDate = new DateTime(
+                                entranceExitRecord.LogDateTime.Year,
+                                entranceExitRecord.LogDateTime.Month,
+                                entranceExitRecord.LogDateTime.Day,
+                                0, 0, 0);
                         }
                         else
                         {
                             dailyEnternaceExitRecord.ThirdLogoutDateTime = entranceExitRecord.LogDateTime;
                             dailyEnternaceExitRecord.ThirdLogoutTime = entranceExitRecord.LogTime;
+                            dailyEnternaceExitRecord.ThirdLogoutDate = new DateTime(
+                                entranceExitRecord.LogDateTime.Year,
+                                entranceExitRecord.LogDateTime.Month,
+                                entranceExitRecord.LogDateTime.Day,
+                                0, 0, 0);
                         }
 
                     }

@@ -10,9 +10,7 @@ namespace HRIS.Domain.AttendanceSystem.Enums
         Present,
         Absent,
         Vacation,
-        Holiday,
-        Late,
-        Unjustified
+        Holiday
     }
     public enum LateType
     {

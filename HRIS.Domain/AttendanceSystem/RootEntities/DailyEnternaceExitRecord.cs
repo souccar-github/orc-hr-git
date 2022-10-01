@@ -46,34 +46,47 @@ namespace HRIS.Domain.AttendanceSystem.RootEntities
         [UserInterfaceParameter(Order = 65, IsTime = true)]
         public virtual DateTime? LoginTime { get; set; }
 
+        [UserInterfaceParameter(Order = 66)]
+        public virtual DateTime? LoginDate { get; set; }
+
         [UserInterfaceParameter(Order = 70, IsDateTime = true, IsHidden = true)]
         public virtual DateTime? LogoutDateTime { get; set; }
 
         [UserInterfaceParameter(Order = 75, IsTime = true)]
         public virtual DateTime? LogoutTime { get; set; }
+        [UserInterfaceParameter(Order = 77)]
+        public virtual DateTime? LogoutDate { get; set; }
 
         [UserInterfaceParameter(Order = 80, IsDateTime = true, IsHidden = true)]
         public virtual DateTime? SecondLoginDateTime { get; set; }
 
         [UserInterfaceParameter(Order = 90, IsTime = true)]
         public virtual DateTime? SecondLoginTime { get; set; }
+        [UserInterfaceParameter(Order = 94)]
+        public virtual DateTime? SecondLoginDate { get; set; }
 
         [UserInterfaceParameter(Order = 95, IsDateTime = true, IsHidden = true)]
         public virtual DateTime? SecondLogoutDateTime { get; set; }
 
         [UserInterfaceParameter(Order = 100, IsTime = true)]
         public virtual DateTime? SecondLogoutTime { get; set; }
+        [UserInterfaceParameter(Order = 101)]
+        public virtual DateTime? SecondLogoutDate { get; set; }
 
         [UserInterfaceParameter(Order = 105, IsDateTime = true, IsHidden = true)]
         public virtual DateTime? ThirdLoginDateTime { get; set; }
 
         [UserInterfaceParameter(Order = 110, IsTime = true)]
         public virtual DateTime? ThirdLoginTime { get; set; }
+        [UserInterfaceParameter(Order = 112)]
+        public virtual DateTime? ThirdLoginDate { get; set; }
         [UserInterfaceParameter(Order = 115, IsDateTime = true, IsHidden = true)]
         public virtual DateTime? ThirdLogoutDateTime { get; set; }
 
         [UserInterfaceParameter(Order = 120, IsTime = true)]
         public virtual DateTime? ThirdLogoutTime { get; set; }
+        [UserInterfaceParameter(Order = 122)]
+        public virtual DateTime? ThirdLogoutDate { get; set; }
 
 
         [UserInterfaceParameter(Order = 130, IsNonEditable = true)]

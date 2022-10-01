@@ -129,7 +129,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             else if (item.LatenessHoursValue > 0)
             {
                 lateType = LateType.Unjustified;
-                return DayStatus.Late;
+                return DayStatus.Present;
             }
             else if ((item.ActualWorkValue <= 0 || item.RequiredWorkHoursValue - item.ActualWorkValue > 0) && !item.IsOffDay && !item.IsHoliday)
             {
@@ -744,7 +744,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         {
                             employeeDisciplinaryExist.DisciplinaryStatus = HRIS.Domain.Global.Enums.Status.Approved;
                             employeeDisciplinaryExist.DisciplinaryReason = NonAttendanceInfractionInfo;
-                            employeeDisciplinaryExist.DisciplinarySetting = infractionOfNonAttendance.Penalty;
+                            employeeDisciplinaryExist.DisciplinarySetting = infractionOfLateness.Penalty;
                             employeeDisciplinaryExist.Creator = UserExtensions.CurrentUser;
                             entites.Add(employeeDisciplinaryExist);
                         }

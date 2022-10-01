@@ -21,12 +21,18 @@ namespace HRIS.Mapping.AttendanceSystem.RootEntities
             Map(x => x.Date);
             Map(x => x.LoginDateTime);
             Map(x => x.LoginTime);
+            Map(x => x.LoginDate);
+            Map(x => x.LogoutDate);
 
             Map(x => x.SecondLoginDateTime);
             Map(x => x.SecondLoginTime);
+            Map(x => x.SecondLoginDate);
+            Map(x => x.SecondLogoutDate);
 
             Map(x => x.ThirdLoginDateTime);
             Map(x => x.ThirdLoginTime);
+            Map(x => x.ThirdLoginDate);
+            Map(x => x.ThirdLogoutDate);
 
             Map(x => x.LogoutTime);
             Map(x => x.LogoutDateTime);
