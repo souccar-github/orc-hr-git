@@ -45,6 +45,10 @@ namespace HRIS.Mapping.AttendanceSystem.RootEntities
             Map(x => x.AbsenseType);
             Map(x => x.LateType);
             Map(x => x.Day);
+            Map(x => x.HasVacation);
+            Map(x => x.VacationValue);
+            Map(x => x.HasMission);
+            Map(x => x.MissionValue);
             Map(x => x.Status);
             Map(x => x.RequiredWorkHours);
             Map(x => x.WorkHoursValue);

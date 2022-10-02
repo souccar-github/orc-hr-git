@@ -105,6 +105,10 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         dailyRecord.Day = item.Date.DayOfWeek;
                         dailyRecord.Status = GetDayStatus(item, out absenseType, out lateType);
                         dailyRecord.LateHoursValue = Math.Round(item.LatenessHoursValue, 2);
+                        dailyRecord.MissionValue = Math.Round(item.MissionValue, 2);
+                        dailyRecord.VacationValue = Math.Round(item.VacationValue, 2);
+                        dailyRecord.HasMission = item.HasMission;
+                        dailyRecord.HasVacation = item.HasVacation;
                         dailyRecord.OvertimeHoursValue = Math.Round(item.OvertimeOrderValue, 2) + Math.Round(item.NormalOvertimeValue, 2) +
                             Math.Round(item.ParticularOvertimeValue, 2) + Math.Round(item.ExpectedOvertimeValue, 2) + Math.Round(item.HolidayOvertimeValue, 2);
                         dailyRecord.HolidayOvertimeHoursValue = Math.Round(item.HolidayOvertimeValue, 2);
@@ -126,6 +130,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             lateType = LateType.None;
             if (item.IsHoliday || item.IsOffDay) return DayStatus.Holiday;
             else if (item.HasVacation && item.VacationValue >= item.RequiredWorkHoursValue) return DayStatus.Vacation;
+            else if (item.HasMission && item.MissionValue >= item.RequiredWorkHoursValue) return DayStatus.Mission;
             else if (item.LatenessHoursValue > 0)
             {
                 lateType = LateType.Unjustified;
@@ -134,8 +139,6 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             else if ((item.ActualWorkValue <= 0 || item.RequiredWorkHoursValue - item.ActualWorkValue > 0) && !item.IsOffDay && !item.IsHoliday)
             {
                 absenseType = AbsenseType.Unjustified;
-                if (item.HasMission) absenseType = AbsenseType.Mission;
-                if (item.HasVacation) absenseType = AbsenseType.Leave;
                 return item.IsAbsense ? DayStatus.Absent : DayStatus.Present;
             }
             else return DayStatus.Present;
@@ -2464,7 +2467,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             DateTime endDate = attendanceRecord.ToDate >= DateTime.Now.Date ? DateTime.Now.Date : attendanceRecord.ToDate.AddDays(1);
             if (attendanceRecord.FromDate <= endDate)
             {
-                days = (endDate - attendanceRecord.FromDate).Days;
+                days = (endDate - attendanceRecord.FromDate).Days +1;
             }
             if (days > 0)
             {

@@ -102,6 +102,14 @@ namespace HRIS.Domain.AttendanceSystem.RootEntities
 
         [UserInterfaceParameter(Order = 170, IsNonEditable = true)]
         public virtual double HolidayOvertimeHoursValue { get; set; }
+        [UserInterfaceParameter(Order = 171, IsNonEditable = true)]
+        public virtual bool HasMission { get; set; }
+        [UserInterfaceParameter(Order = 172, IsNonEditable =true)]
+        public virtual double MissionValue { get; set; }
+        [UserInterfaceParameter(Order = 173, IsNonEditable = true)]
+        public virtual bool HasVacation { get; set; }
+        [UserInterfaceParameter(Order = 174, IsNonEditable = true)]
+        public virtual double VacationValue { get; set; }
 
         [UserInterfaceParameter(Order = 180, IsNonEditable = true)]
         public virtual LateType LateType { get; set; }
