@@ -355,7 +355,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 {
                     dailyEnternaceExitRecord.Employee = entranceExitRecord.Employee;
                     dailyEnternaceExitRecord.InsertSource = entranceExitRecord.InsertSource;
-                    dailyEnternaceExitRecord.Node = entranceExitRecord.Employee.GetSecondaryPositionElsePrimary().JobDescription?.Node;
+                    dailyEnternaceExitRecord.Node = entranceExitRecord.Employee.GetSecondaryPositionElsePrimary()?.JobDescription?.Node;
                     dailyEnternaceExitRecord.Date = entranceExitRecord.LogDate.Date;
                     dailyEnternaceExitRecord.Day = entranceExitRecord.LogDate.Date.DayOfWeek;
                     if (entranceExitRecord.LogType == LogType.Entrance)

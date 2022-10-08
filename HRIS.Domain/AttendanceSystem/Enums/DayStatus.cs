@@ -7,8 +7,8 @@ namespace HRIS.Domain.AttendanceSystem.Enums
 {
     public enum DayStatus
     {
-        Present,
         Absent,
+        Present,
         Vacation,
         Mission,
         Holiday

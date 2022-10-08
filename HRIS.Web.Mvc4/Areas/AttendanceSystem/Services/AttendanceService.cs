@@ -76,17 +76,37 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             List<BioMetricRecordData> records = JsonConvert.DeserializeObject<List<BioMetricRecordData>>(json);
             return records;
         }
+        public static void SetTestingRecordsData()
+        {
+            var dirPath = Assembly.GetExecutingAssembly().Location;
+            dirPath = Path.GetDirectoryName(dirPath);
+            var path = Path.GetFullPath(Path.Combine("C:\\fingerPrints\\records.json"));
+            var records = ServiceFactory.ORMService.All<EntranceExitRecord>();
+            string lines = "[";
+            foreach (var item in records)
+            {
+
+                lines += "{'UserDeviceId': " + item.Employee.EmployeeCard.EmployeeMachineCode + ",'RecordType': 1,'DateTime': '" + item.LogDateTime.ToString("s") + "'},";
+
+            }
+            lines += "]";
+            var jsonString = JsonConvert.SerializeObject(lines);
+            File.WriteAllText(path, jsonString);
+
+        }
 
         private static void ApplyTheCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord, List<IAggregateRoot> entities)
         {
             if (attendanceRecord.AttendanceWithoutAdjustments.Any())
             {
-                var allDailyRecords = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(x => !x.IsClosed &&
+                var allDailyRecords = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(x => !x.IsCalculated &&
                    attendanceRecord.AttendanceWithoutAdjustments.Any(y => y.EmployeeAttendanceCard.Employee.Id == x.Employee.Id));
                 foreach (var attendance in attendanceRecord.AttendanceWithoutAdjustments)
                 {
+                    var details = attendance.AttendanceWithoutAdjustmentDetails;
                     var dailyRecordsByEmployee = allDailyRecords.Where(x => x.Employee.Id == attendance.EmployeeAttendanceCard.Employee.Id);
-                    foreach (var item in attendance.AttendanceWithoutAdjustmentDetails)
+                    details = details.Where(x => allDailyRecords.Any(y => y.Date == x.Date)).ToList();
+                    foreach (var item in details)
                     {
                         var dailyRecord = dailyRecordsByEmployee.FirstOrDefault(x => x.Date == item.Date.Date);
                         var lateType = LateType.None;
@@ -97,7 +117,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                             {
                                 Date = item.Date,
                                 Employee = attendance.EmployeeAttendanceCard.Employee,
-                                Node = attendance.EmployeeAttendanceCard.Employee.GetSecondaryPositionElsePrimary().JobDescription?.Node,
+                                Node = attendance.EmployeeAttendanceCard.Employee.GetSecondaryPositionElsePrimary()?.JobDescription?.Node,
                                 InsertSource = InsertSource.AutoGenerate,
                                 Note = "Added when calculating the attendance"
                             };
@@ -118,6 +138,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         dailyRecord.RequiredWorkHours = Math.Round(item.RequiredWorkHoursValue, 2);
                         dailyRecord.LateType = lateType;
                         dailyRecord.AbsenseType = absenseType;
+                        dailyRecord.IsCalculated = true;
                         //dailyRecord.AbsentHoursValue = item.ActualWorkValue - (item.MissionValue + item.VacationValue);
                         entities.Add(dailyRecord);
                     }
@@ -573,7 +594,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             DateTime endDate = attendanceWithoutAdjustments[0].AttendanceRecord.ToDate >= DateTime.Now.Date ? DateTime.Now.Date : attendanceWithoutAdjustments[0].AttendanceRecord.ToDate;
 
             // اعادة كافة التواترات وما يقابلها من ورديات خلال الفترة المحددة
-            var allRecurrences = GetWorkshopsRecurrenceInPeriod(employeeAttendanceCards, fromDate, endDate);
+            var allRecurrences = GetWorkshopsRecurrenceInPeriod(employeeAttendanceCards, fromDate, endDate.AddDays(1));
             foreach (var attendanceWithoutAdjustment in attendanceWithoutAdjustments)
             {
                 List<EmployeeDisciplinary> employeeDisciplinarysShouldRemoved = new List<EmployeeDisciplinary>();

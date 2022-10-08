@@ -202,6 +202,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
         private void ComposeRecord(DailyEnternaceExitRecord entranceExitRecord)
         {
             entranceExitRecord.Date = new DateTime(entranceExitRecord.Date.Year, entranceExitRecord.Date.Month, entranceExitRecord.Date.Day, 0, 0, 0);
+            entranceExitRecord.IsCalculated = false;
             if (entranceExitRecord.LoginTime != null)
             {
                 DateTime logDateTime = new DateTime(
