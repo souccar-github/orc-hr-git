@@ -34,6 +34,8 @@ using System.IO;
 using System.Reflection;
 using HRIS.SDKs.Domain.AttendanceSystem.BioMetricDevice;
 using Newtonsoft.Json;
+using System.Configuration;
+using System.Data;
 
 namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 {//todo : Mhd Update changeset no.1
@@ -97,52 +99,23 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
         private static void ApplyTheCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord, List<IAggregateRoot> entities)
         {
-            if (attendanceRecord.AttendanceWithoutAdjustments.Any())
+            try
             {
-                var allDailyRecords = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(x => !x.IsCalculated &&
-                   attendanceRecord.AttendanceWithoutAdjustments.Any(y => y.EmployeeAttendanceCard.Employee.Id == x.Employee.Id));
-                foreach (var attendance in attendanceRecord.AttendanceWithoutAdjustments)
+                SqlConnection sqlCon = null;
+                String SqlconString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (sqlCon = new SqlConnection(SqlconString))
                 {
-                    var details = attendance.AttendanceWithoutAdjustmentDetails;
-                    var dailyRecordsByEmployee = allDailyRecords.Where(x => x.Employee.Id == attendance.EmployeeAttendanceCard.Employee.Id);
-                    details = details.Where(x => allDailyRecords.Any(y => y.Date == x.Date)).ToList();
-                    foreach (var item in details)
-                    {
-                        var dailyRecord = dailyRecordsByEmployee.FirstOrDefault(x => x.Date == item.Date.Date);
-                        var lateType = LateType.None;
-                        var absenseType = AbsenseType.None;
-                        if (dailyRecord == null)
-                        {
-                            dailyRecord = new DailyEnternaceExitRecord()
-                            {
-                                Date = item.Date,
-                                Employee = attendance.EmployeeAttendanceCard.Employee,
-                                Node = attendance.EmployeeAttendanceCard.Employee.GetSecondaryPositionElsePrimary()?.JobDescription?.Node,
-                                InsertSource = InsertSource.AutoGenerate,
-                                Note = "Added when calculating the attendance"
-                            };
-                        }
-                        dailyRecord.Day = item.Date.DayOfWeek;
-                        dailyRecord.Status = GetDayStatus(item, out absenseType, out lateType);
-                        dailyRecord.LateHoursValue = Math.Round(item.LatenessHoursValue, 2);
-                        dailyRecord.MissionValue = Math.Round(item.MissionValue, 2);
-                        dailyRecord.VacationValue = Math.Round(item.VacationValue, 2);
-                        dailyRecord.HasMission = item.HasMission;
-                        dailyRecord.HasVacation = item.HasVacation;
-                        dailyRecord.OvertimeHoursValue = Math.Round(item.OvertimeOrderValue, 2) + Math.Round(item.NormalOvertimeValue, 2) +
-                            Math.Round(item.ParticularOvertimeValue, 2) + Math.Round(item.ExpectedOvertimeValue, 2) + Math.Round(item.HolidayOvertimeValue, 2);
-                        dailyRecord.HolidayOvertimeHoursValue = Math.Round(item.HolidayOvertimeValue, 2);
-                        dailyRecord.AbsentHoursValue = 
-                            item.IsAbsense ?  0 :  Math.Round(item.NonAttendanceHoursValue, 2);
-                        dailyRecord.WorkHoursValue = Math.Round(item.ActualWorkValue, 2);
-                        dailyRecord.RequiredWorkHours = Math.Round(item.RequiredWorkHoursValue, 2);
-                        dailyRecord.LateType = lateType;
-                        dailyRecord.AbsenseType = absenseType;
-                        dailyRecord.IsCalculated = true;
-                        //dailyRecord.AbsentHoursValue = item.ActualWorkValue - (item.MissionValue + item.VacationValue);
-                        entities.Add(dailyRecord);
-                    }
+                    sqlCon.Open();
+                    SqlCommand sql_cmnd = new SqlCommand("UpdateDailyRecordsFromAttendance", sqlCon);
+                    sql_cmnd.CommandType = CommandType.StoredProcedure;
+                    sql_cmnd.Parameters.AddWithValue("@attendanceRecordId", SqlDbType.Int).Value = attendanceRecord.Id;
+                    sql_cmnd.ExecuteNonQuery();
+                    sqlCon.Close();
                 }
+            }
+            catch(Exception ex)
+            {
+                throw;
             }
         }
         private static DayStatus GetDayStatus(AttendanceWithoutAdjustmentDetail item, out AbsenseType absenseType, out LateType lateType)

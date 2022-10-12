@@ -1,0 +1,10 @@
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\bin\Debug\DBScripts.dacpac
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\bin\Debug\DBScripts.dll
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\bin\Debug\DBScripts.pdb
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\DBScripts.sqlproj.AssemblyReference.cache
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\Model.xml
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\refactor.xml
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\postdeploy.sql
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\predeploy.sql
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\DBScripts.dll
+C:\Users\Ali\source\repos\orc-hr-git\DBScripts\obj\Debug\DBScripts.pdb
