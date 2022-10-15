@@ -62,8 +62,18 @@ namespace HRIS.Mapping.AttendanceSystem.RootEntities
             Map(x => x.IsCalculated);
             Map(x => x.IsClosed);
 
+            Map(x => x.RequiredWorkHoursFormatedValue);
+            Map(x => x.WorkHoursFormatedValue);
+            Map(x => x.AbsentHoursFormatedValue);
+            Map(x => x.LatenessHoursFormatedValue);
+            Map(x => x.OvertimeHoursFormatedValue);
+            Map(x => x.HolidayOvertimeFormatedValue);
+            Map(x => x.MissionFormatedValue);
+            Map(x => x.VacationFormatedValue);
+
             References(x => x.Employee);
             References(x => x.Node);
+            
         }
         }
     }

@@ -64,8 +64,9 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             if (attendanceRecord.AttendanceMonthlyAdjustments.Any())
                 CalculateAttendanceMonthlyAdjustment(attendanceRecord.AttendanceMonthlyAdjustments, generalSetting, overTimeOrders, attendanceInfractions, updatedInfractions, entities);
 
-            ApplyTheCalculationsOnDailyAttendanceRecord(attendanceRecord, entities);
+           
             ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser);
+            ApplyTheCalculationsOnDailyAttendanceRecord(attendanceRecord, entities);
         }
 
 

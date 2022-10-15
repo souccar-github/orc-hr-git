@@ -36,14 +36,14 @@ namespace Project
             result.Data = allBeforeFilter.OrderByDescending(x => x.Date).Skip(skip).Take(pageSize).AsQueryable();
             result.Total = allBeforeFilter.Count();
         }
-        public override void BeforeDelete(RequestInformation requestInformation, Entity entity, string customInformation = null)
-        {
-            List<IAggregateRoot> entities = new List<IAggregateRoot>();
-            var detail = (AttendanceDailyAdjustmentDetail)entity;
-            var dailyRecord = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().FirstOrDefault(x => x.Date == detail.Date);
-            dailyRecord.IsCalculated = false;
-            entities.Add(dailyRecord);
-            ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser);
-        }
+        //public override void BeforeDelete(RequestInformation requestInformation, Entity entity, string customInformation = null)
+        //{
+        //    List<IAggregateRoot> entities = new List<IAggregateRoot>();
+        //    var detail = (AttendanceDailyAdjustmentDetail)entity;
+        //    var dailyRecord = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().FirstOrDefault(x => x.Date == detail.Date);
+        //    dailyRecord.IsCalculated = false;
+        //    entities.Add(dailyRecord);
+        //    ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser);
+        //}
     }
 }

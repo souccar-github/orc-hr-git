@@ -11,7 +11,7 @@ using Souccar.Domain.DomainModel;
 namespace HRIS.Domain.AttendanceSystem.RootEntities
 {
     [Order(5)]
-    //[Module(ModulesNames.AttendanceSystem)]
+    [Module(ModulesNames.AttendanceSystem)]
     public class EntranceExitRecord : Entity, IAggregateRoot
     {
         //[UserInterfaceParameter(Order = 1)]

@@ -57,9 +57,17 @@ CASE
     WHEN detail.LatenessHoursValue > 0 then 1
     WHEN detail.ActualWorkValue <= 0 and detail.IsOffDay = 0 
 	and detail.IsHoliday = 0 and detail.HasVacation = 0 
-	and detail.HasMission = 0  then 1
+	and detail.HasMission = 0  then 0
 	ELSE 1
-END as [status]
+END as [status],
+detail.RequiredWorkHoursFormatedValue as [RequiredWorkHoursFormatedValue],
+detail.ActualWorkFormatedValue as [WorkHoursFormatedValue],
+detail.NonAttendanceHoursFormatedValue as [AbsentHoursFormatedValue],
+detail.LatenessHoursFormatedValue as [LatenessHoursFormatedValue],
+detail.OvertimeOrderFormatedValue as [OvertimeHoursFormatedValue],
+detail.HolidayOvertimeFormatedValue as [HolidayOvertimeFormatedValue],
+detail.MissionFormatedValue as [MissionFormatedValue],
+detail.VacationFormatedValue as [VacationFormatedValue]
  into #detailsTmp
 from AttendanceWithoutAdjustment attendance with  (nolock)
 inner join AttendanceWithoutAdjustmentDetail detail with  (nolock)
@@ -68,7 +76,8 @@ where
 attendance.IsVertualDeleted = 0 and
 detail.IsVertualDeleted = 0
 and attendance.AttendanceRecord_id = @attendanceRecordId
-and detail.Date not in (select Date from #recordsTmp)
+and detail.Date not in (select Date from #recordsTmp where 
+ #recordsTmp.EmpCardId = attendance.EmployeeAttendanceCard_id)
 
 
 ---
@@ -111,13 +120,22 @@ CASE
     WHEN detail.LatenessHoursValue > 0 then 1
     WHEN detail.ActualWorkValue <= 0 and detail.IsOffDay = 0 
 	and detail.IsHoliday = 0 and detail.HasVacation = 0 
-	and detail.HasMission = 0  then 1
-	ELSE 1
-END 
+	and detail.HasMission = 0  then 0
+    WHEN detail.ActualWorkValue > 0 then 1
+	else 1
+END,
+DailyEnternaceExitRecord.RequiredWorkHoursFormatedValue =  detail.RequiredWorkHoursFormatedValue,
+DailyEnternaceExitRecord.WorkHoursFormatedValue =  detail.ActualWorkFormatedValue,
+DailyEnternaceExitRecord.AbsentHoursFormatedValue =  detail.NonAttendanceHoursFormatedValue,
+DailyEnternaceExitRecord.LatenessHoursFormatedValue =  detail.LatenessHoursFormatedValue,
+DailyEnternaceExitRecord.OvertimeHoursFormatedValue =  detail.OvertimeOrderFormatedValue,
+DailyEnternaceExitRecord.HolidayOvertimeFormatedValue =  detail.HolidayOvertimeFormatedValue,
+DailyEnternaceExitRecord.MissionFormatedValue =  detail.MissionFormatedValue,
+DailyEnternaceExitRecord.VacationFormatedValue =  detail.VacationFormatedValue
 FROM
     DailyEnternaceExitRecord DailyEntrExitRecords
 INNER JOIN
-    #detailsTmp tmp on DailyEntrExitRecords.Id = tmp.dailyRecordId
+    #recordsTmp tmp on DailyEntrExitRecords.Id = tmp.dailyRecordId
 	
 INNER JOIN
     AttendanceWithoutAdjustmentDetail detail on tmp.detailId = detail.Id
@@ -127,14 +145,18 @@ Insert into DailyEnternaceExitRecord
 (AbsenseType, AbsentHoursValue, Date, Day, Employee_id, HasMission, HasVacation, HolidayOvertimeHoursValue
 ,InsertSource, IsCalculated, IsClosed, LateHoursValue , LateType, MissionValue
 , Node_id, Note, OvertimeHoursValue, RequiredWorkHours, Status,WorkHoursValue,
- VacationValue, IsVertualDeleted)
+ VacationValue, IsVertualDeleted, RequiredWorkHoursFormatedValue, WorkHoursFormatedValue, AbsentHoursFormatedValue,
+ LatenessHoursFormatedValue, OvertimeHoursFormatedValue, HolidayOvertimeFormatedValue, 
+ MissionFormatedValue, VacationFormatedValue)
 
 select details.AbsenseType, details.AbsentHoursValue, details.Date, details.day, empCard.Employee_id,
 details.HasMission, details.HasVacation, details.HolidayOvertimeHoursValue,
 0, 1, 0, details.LateHoursValue, details.LateType, details.MissionValue,
 (select dbo.GetNodeOfEmployee(empCard.Employee_id)), '', details.OvertimeHoursValue,
 details.RequiredWorkHours, details.status, details.WorkHoursValue,
- details.VacationValue, 0
+ details.VacationValue, 0, RequiredWorkHoursFormatedValue, WorkHoursFormatedValue, AbsentHoursFormatedValue,
+ LatenessHoursFormatedValue, OvertimeHoursFormatedValue, HolidayOvertimeFormatedValue, 
+ MissionFormatedValue, VacationFormatedValue
 from #detailsTmp details inner join 
 EmployeeCard empCard on details.empCardId = empCard.Id 
  

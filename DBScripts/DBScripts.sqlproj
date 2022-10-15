@@ -62,5 +62,6 @@
   <ItemGroup>
     <Build Include="Procedures\UpdateDailyRecordsFromAttendance.sql" />
     <Build Include="Functions\GetNodeOfEmployee.sql" />
+    <Build Include="Procedures\GetAllHolidaysBetweenTwoDates.sql" />
   </ItemGroup>
 </Project>
