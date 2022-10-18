@@ -143,10 +143,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                     var employees = employeeAttendanceCards.Select(x => x.Employee);
 
                     Dictionary<Employee, AttendanceForm> forms = AttendanceSystem.Services.AttendanceService.GetAttendanceForms(employees.ToList());
-                    var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList().Where(
-                        x => data.Any(y => x.LogDate >= y.DateTime.AddDays(-1).Date && x.LogDate <= y.DateTime.Date.AddDays(1).Date));
-                    var allDailyEnternaceExitRecordData = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList().Where(
-                        x => data.Any(y => x.Date >= y.DateTime.AddDays(-1).Date && x.Date <= y.DateTime.Date.AddDays(1).Date)).ToList();
+                    var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList();
+                    var allDailyEnternaceExitRecordData = ServiceFactory.ORMService.All<DailyEnternaceExitRecord>().ToList();
                     var allUpdatedDailyEnternaceExitRecords = new List<DailyEnternaceExitRecord>();
                     var entities = new List<IAggregateRoot>();
                     if (!ignoreFingerPrintType)
@@ -244,7 +242,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                                             entities.Add(dailyEntranceExitRecord);
                                         }
                                         dailyEntranceExitRecord = allDailyEnternaceExitRecordData.Any(x => x.Employee == empAttendanceCard.Employee &&  x.Date == bioMetricRecordData.DateTime.Date) ?
-                                               allDailyEnternaceExitRecordData.FirstOrDefault(x => x.Date == bioMetricRecordData.DateTime.Date) :
+                                               allDailyEnternaceExitRecordData.FirstOrDefault(x => x.Employee == empAttendanceCard.Employee && x.Date == bioMetricRecordData.DateTime.Date) :
                                                new DailyEnternaceExitRecord();
                                     }
                                     var entranceExitRecord = new EntranceExitRecord();
