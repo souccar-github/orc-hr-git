@@ -16,8 +16,10 @@ namespace HRIS.Mapping.AttendanceSystem.RootEntities
 
             Map(x => x.LogDateTime);
             Map(x => x.LogType);
+            Map(x => x.IsTransfered);
+            Map(x => x.IsLogTypeIgnored);
+            Map(x => x.IsOld);
 
-            References(x => x.EntranceExitRecord);
             References(x => x.Employee);
 
         }

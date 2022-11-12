@@ -1,4 +1,5 @@
-﻿using HRIS.Domain.AttendanceSystem.RootEntities;
+﻿using HRIS.Domain.AttendanceSystem.Enums;
+using HRIS.Domain.AttendanceSystem.RootEntities;
 using HRIS.Domain.Personnel.RootEntities;
 using LinqToExcel;
 using LinqToExcel.Attributes;
@@ -65,10 +66,9 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
             var isSuccess = false;
             try
             {
-                var entranceExitRecords = new List<EntranceExitRecord>();
+                var fingerprintRecords = new List<FingerprintTransferredData>();
                 var excel = new ExcelQueryFactory(Session["ExcelFilePhysicalPath"].ToString());
-                var records = from record in excel.Worksheet<EntranceExitRecordModel>("Records").AsEnumerable()
-                                  //where !string.IsNullOrEmpty(record.EmployeeName)
+                var records = from record in excel.Worksheet<FingerPrintModel>("Records").AsEnumerable()
                               select record;
                 employees = ServiceFactory.ORMService.All<Employee>().ToList();
                 var num = 1;
@@ -80,19 +80,19 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
 
                     if (string.IsNullOrEmpty(record.EmployeeName))
                         continue;
-                    var outEntranceExitRecords = new List<EntranceExitRecord>();
-                    if (!CheckTheRecordValues(record, num, out outEntranceExitRecords, out success, out msg))
+                    var fingerprints = new List<FingerprintTransferredData>();
+                    if (!CheckTheRecordValues(record, num, out fingerprints, out success, out msg))
                         return Json(new
                         {
                             Success = success,
                             Msg = msg
                         });
-                    entranceExitRecords.AddRange(outEntranceExitRecords);
+                    fingerprintRecords.AddRange(fingerprints);
                 }
                 var info = AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.ImportEntranceExitRecordsFromExcel);
-                ServiceFactory.ORMService.SaveTransaction<EntranceExitRecord>(entranceExitRecords, UserExtensions.CurrentUser, null, Souccar.Domain.Audit.OperationType.Update, info, start, null);
+                ServiceFactory.ORMService.SaveTransaction<FingerprintTransferredData>(fingerprintRecords, UserExtensions.CurrentUser, null, Souccar.Domain.Audit.OperationType.Update, info, start, null);
 
-               // ServiceFactory.ORMService.SaveTransaction<EntranceExitRecord>(entranceExitRecords,UserExtensions.CurrentUser);
+                AttendanceSystem.Services.AttendanceService.HandlingFingerPrintsDataAfterPulling(InsertSource.FromExcel);
                 return Json(new
                 {
                     Success = true,
@@ -108,12 +108,12 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 });
             }
         }
-        public bool CheckTheRecordValues(EntranceExitRecordModel record, int num, out List<EntranceExitRecord> entranceExitRecords, out bool success, out string msg)
+        public bool CheckTheRecordValues(FingerPrintModel record, int num, out List<FingerprintTransferredData> records, out bool success, out string msg)
         {
             success = false;
             msg = "";
-            entranceExitRecords = new List<EntranceExitRecord>();
-            var entranceExitRecord = new EntranceExitRecord();
+            records = new List<FingerprintTransferredData>();
+            var fingerprint = new FingerprintTransferredData();
             try
             {
                 var defaultDate = new DateTime(2000, 1, 1, 0, 0, 0);
@@ -136,11 +136,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                     return false;
                 }
                 var logTimeValue = string.IsNullOrEmpty(record.EnterLogTime) ? defaultDate : DateTime.Parse(record.EnterLogTime);
-                //if (!string.IsNullOrEmpty(record.EnterLogTime) && logTimeValue == defaultDate)
-                //{
-                //    msg = AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.LogTimeIsNotValidInTheRowWhichNumberIs) + " " + num;
-                //    return false;
-                //}
+
                 var logDateValue = !string.IsNullOrEmpty(record.LogDate) ? DateTime.Parse(record.LogDate) : defaultDate;
                 if (string.IsNullOrEmpty(record.LogDate) && logDateValue == defaultDate)
                 {
@@ -149,22 +145,21 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 }
                 if(logTimeValue != defaultDate)
                 {
-                    entranceExitRecord = new EntranceExitRecord()
+                    fingerprint = new FingerprintTransferredData()
                     {
                         Employee = employee,
-                        LogDate = new DateTime(logDateValue.Year, logDateValue.Month, logDateValue.Day, 0, 0, 0),
-                        LogTime = new DateTime(2000, 1, 1, logTimeValue.Hour, logTimeValue.Minute, logTimeValue.Second),
-                        LogType = (HRIS.Domain.AttendanceSystem.Enums.LogType)0,
-                        LogDateTime = new DateTime(logDateValue.Year,
+                        LogType = (HRIS.Domain.AttendanceSystem.Enums.LogType) 0,
+                        LogDateTime = new DateTime(logDateValue.Year, 
                                       logDateValue.Month,
                                       logDateValue.Day,
                                       logTimeValue.Hour,
                                       logTimeValue.Minute,
                                       logTimeValue.Second),
-                        InsertSource = HRIS.Domain.AttendanceSystem.Enums.InsertSource.Manual,
-                        Note = "From Excel"
+                        IsLogTypeIgnored = true,
+                        IsTransfered = false,
+                        IsOld = false
                     };
-                    entranceExitRecords.Add(entranceExitRecord);
+                    records.Add(fingerprint);
                 }
                 logTimeValue = string.IsNullOrEmpty(record.ExitLogTime) ? defaultDate : DateTime.Parse(record.ExitLogTime);
                 //if (!string.IsNullOrEmpty(record.ExitLogTime) && logTimeValue == defaultDate)
@@ -174,11 +169,9 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                 //}
                 if (logTimeValue != defaultDate)
                 {
-                    entranceExitRecord = new EntranceExitRecord()
+                    fingerprint = new FingerprintTransferredData()
                     {
                         Employee = employee,
-                        LogDate = new DateTime(logDateValue.Year, logDateValue.Month, logDateValue.Day, 0, 0, 0),
-                        LogTime = new DateTime(2000, 1, 1, logTimeValue.Hour, logTimeValue.Minute, logTimeValue.Second),
                         LogType = (HRIS.Domain.AttendanceSystem.Enums.LogType)1,
                         LogDateTime = new DateTime(logDateValue.Year,
                                       logDateValue.Month,
@@ -186,10 +179,11 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                                       logTimeValue.Hour,
                                       logTimeValue.Minute,
                                       logTimeValue.Second),
-                        InsertSource = HRIS.Domain.AttendanceSystem.Enums.InsertSource.Manual,
-                        Note = "From Excel"
+                        IsLogTypeIgnored = true,
+                        IsTransfered = false,
+                        IsOld = false
                     };
-                    entranceExitRecords.Add(entranceExitRecord);
+                    records.Add(fingerprint);
                 }
                 success = true;
                 return true;
@@ -203,7 +197,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
         }
     }
 
-    public class EntranceExitRecordModel
+    public class FingerPrintModel
     {
 
         [ExcelColumn("التاريخ")]

@@ -26,6 +26,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
             var attendanceRecord = ServiceFactory.ORMService.All<AttendanceRecord>().Where(x => x.AttendanceMonthStatus != AttendanceMonthStatus.Locked).OrderByDescending(x => x.FromDate).FirstOrDefault();
             if (attendanceRecord != null)
             {
+                //AttendanceService.SetTestingRecordsData();
                 AttendanceService.GenerateAttendanceRecordDetailsUntillCurrentDay(attendanceRecord);
                 attendanceRecord.Save();
                 AttendanceService.CalculateAttendanceRecord(attendanceRecord);

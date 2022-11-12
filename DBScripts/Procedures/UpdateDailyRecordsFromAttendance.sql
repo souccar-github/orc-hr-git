@@ -3,6 +3,7 @@
 )
 AS
 Begin
+SET NOCOUNT ON
 select dailyRecords.Date as [Date], dailyRecords.Employee_id as employeeId, 
 EmpCard.Id as EmpCardId, dailyRecords.Id as dailyRecordId, details.Id as detailId,
 details.AttendanceWithoutAdjustment_id as attendanceRecordId into #recordsTmp
@@ -164,7 +165,6 @@ EmployeeCard empCard on details.empCardId = empCard.Id
  drop table #recordsTmp
 
  drop table #detailsTmp;
- IF OBJECT_ID('Hamwi..@positionTmp') IS NOT NULL DROP TABLE positionTmp
-
+ SET NOCOUNT OFF
  End
 GO

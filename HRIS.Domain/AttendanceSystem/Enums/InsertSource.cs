@@ -10,6 +10,7 @@ namespace HRIS.Domain.AttendanceSystem.Enums
         Manual, // مدخل يدويا من الموظف
         AutoGenerate, // مولد تلقائيا من قبل البرنامج
         Machine, // مستورد من الالة سواء بصمة او غيرها
-        ByEmployee // عبر تطبيق الموبايل
+        ByEmployee, // عبر تطبيق الموبايل
+        FromExcel
     }
 }

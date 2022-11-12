@@ -66,9 +66,23 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
 
            
             ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser);
-            ApplyTheCalculationsOnDailyAttendanceRecord(attendanceRecord, entities);
+            ApplyTheCalculationsOnDailyAttendanceRecord(attendanceRecord);
         }
 
+        private static void ApplyTheCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord)
+        {
+            try
+            {
+                ApplyTheWithoutCalculationsOnDailyAttendanceRecord(attendanceRecord);
+                ApplyTheDailyCalculationsOnDailyAttendanceRecord(attendanceRecord);
+                ApplyTheMonthlyCalculationsOnDailyAttendanceRecord(attendanceRecord);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         public static List<BioMetricRecordData> GetTestingRecordsData()
         {
@@ -84,7 +98,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             var dirPath = Assembly.GetExecutingAssembly().Location;
             dirPath = Path.GetDirectoryName(dirPath);
             var path = Path.GetFullPath(Path.Combine("C:\\fingerPrints\\records.json"));
-            var records = ServiceFactory.ORMService.All<EntranceExitRecord>();
+            var records = ServiceFactory.ORMService.All<EntranceExitRecord>().OrderByDescending(x=> x.LogDateTime);
             string lines = "[";
             foreach (var item in records)
             {
@@ -97,8 +111,29 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             File.WriteAllText(path, jsonString);
 
         }
-
-        private static void ApplyTheCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord, List<IAggregateRoot> entities)
+        public static void HandlingFingerPrintsDataAfterPulling(InsertSource source)
+        {
+            try
+            {
+                SqlConnection sqlCon = null;
+                String SqlconString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (sqlCon = new SqlConnection(SqlconString))
+                {
+                    sqlCon.Open();
+                    SqlCommand sql_cmnd = new SqlCommand("HandlingFingerPrintsData", sqlCon);
+                    sql_cmnd.CommandType = CommandType.StoredProcedure;
+                    sql_cmnd.Parameters.AddWithValue("@insertSource", SqlDbType.Bit).Value = source;
+                    sql_cmnd.CommandTimeout = 120;
+                    sql_cmnd.ExecuteNonQuery();
+                    sqlCon.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private static void ApplyTheWithoutCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord)
         {
             try
             {
@@ -110,11 +145,56 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                     SqlCommand sql_cmnd = new SqlCommand("UpdateDailyRecordsFromAttendance", sqlCon);
                     sql_cmnd.CommandType = CommandType.StoredProcedure;
                     sql_cmnd.Parameters.AddWithValue("@attendanceRecordId", SqlDbType.Int).Value = attendanceRecord.Id;
+                    sql_cmnd.CommandTimeout = 120;
                     sql_cmnd.ExecuteNonQuery();
                     sqlCon.Close();
                 }
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        private static void ApplyTheDailyCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord)
+        {
+            try
+            {
+                SqlConnection sqlCon = null;
+                String SqlconString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (sqlCon = new SqlConnection(SqlconString))
+                {
+                    sqlCon.Open();
+                    SqlCommand sql_cmnd = new SqlCommand("UpdateDailyRecordsFromDailyAttendance", sqlCon);
+                    sql_cmnd.CommandType = CommandType.StoredProcedure;
+                    sql_cmnd.Parameters.AddWithValue("@attendanceRecordId", SqlDbType.Int).Value = attendanceRecord.Id;
+                    sql_cmnd.CommandTimeout = 120;
+                    sql_cmnd.ExecuteNonQuery();
+                    sqlCon.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private static void ApplyTheMonthlyCalculationsOnDailyAttendanceRecord(AttendanceRecord attendanceRecord)
+        {
+            try
+            {
+                SqlConnection sqlCon = null;
+                String SqlconString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (sqlCon = new SqlConnection(SqlconString))
+                {
+                    sqlCon.Open();
+                    SqlCommand sql_cmnd = new SqlCommand("UpdateDailyRecordsFromMonthlyAttendance", sqlCon);
+                    sql_cmnd.CommandType = CommandType.StoredProcedure;
+                    sql_cmnd.Parameters.AddWithValue("@attendanceRecordId", SqlDbType.Int).Value = attendanceRecord.Id;
+                    sql_cmnd.CommandTimeout = 120;
+                    sql_cmnd.ExecuteNonQuery();
+                    sqlCon.Close();
+                }
+            }
+            catch (Exception ex)
             {
                 throw;
             }
@@ -181,6 +261,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 for (var i = 0; i < attendanceMonthlyAdjustment.AttendanceMonthlyAdjustmentDetails.Count; i++)
                 {
                     if (attendanceMonthlyAdjustment.AttendanceMonthlyAdjustmentDetails[i].IsCalculated)
+                        continue;
+                    if (i >= recurrences.Count)
                         continue;
                     attendanceMonthlyAdjustment.AttendanceMonthlyAdjustmentDetails[i].RecurrenceIndex = 0;
                     attendanceMonthlyAdjustment.AttendanceMonthlyAdjustmentDetails[i].IsWorkDay = false;
@@ -385,6 +467,8 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 {
 
                     if (attendanceDailyAdjustment.AttendanceDailyAdjustmentDetails[i].IsCalculated)
+                        continue;
+                    if (i >= recurrences.Count)
                         continue;
                     attendanceDailyAdjustment.AttendanceDailyAdjustmentDetails[i].RecurrenceIndex = 0;
                     attendanceDailyAdjustment.AttendanceDailyAdjustmentDetails[i].HasVacation = false;
@@ -1814,10 +1898,12 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
         public static double GetActualWorkHoursValue(List<EntranceExitRecord> entranceExitRecords)
         {
             var result = 0.0;
+
             var allEntrance = Enumerable.ToArray(entranceExitRecords.Where(x => x.LogType == LogType.Entrance).OrderBy(x => x.LogDateTime));
             var allExit = Enumerable.ToArray(entranceExitRecords.Where(x => x.LogType == LogType.Exit).OrderBy(x => x.LogDateTime));
-
-            for (var i = 0; i < allEntrance.Count(); i++)
+            if (allEntrance.Count() == 0 || allExit.Count() == 0) return 0.0;
+            var minmumRecords = allEntrance.Count() >= allExit.Count() ? allExit.Count() : allEntrance.Count();
+            for (var i = 0; i < minmumRecords; i++)
             {
                 if (allExit[i].LogDateTime < allEntrance[i].LogDateTime)
                     result += 24 + (allExit[i].LogDateTime - allEntrance[i].LogDateTime).TotalHours;
@@ -2261,10 +2347,10 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             IList<LeaveRequest> EmpHourlyLeave = ServiceFactory.ORMService.All<LeaveRequest>().Where(x => employees.Contains(x.EmployeeCard.Employee) && x.IsHourlyLeave == true && x.StartDate >= fromDate && x.EndDate <= toDate).ToList();
             var workshopsRecurrences = GetWorkshopsRecurrenceInPeriod(employeeAttendanceCards.ToList(), fromDate, toDate);
             var entities = new List<IAggregateRoot>();
-            var allEntranceExitRecordData = ServiceFactory.ORMService.All<EntranceExitRecord>();
+            var fingerPrintsData = ServiceFactory.ORMService.All<FingerprintTransferredData>();
             foreach (var employeeAttendanceCard in employeeAttendanceCards)
             {
-                var allEntranceExitRecordDataOfEmployee = allEntranceExitRecordData.Where(x => x.Employee.Id == employeeAttendanceCard.Employee.Id).ToList();
+                var allEntranceExitRecordDataOfEmployee = fingerPrintsData.Where(x => x.Employee.Id == employeeAttendanceCard.Employee.Id).ToList();
                 var cardEntities = new List<IAggregateRoot>();
 
                 var workshopRecurrences = workshopsRecurrences[employeeAttendanceCard.Employee];
@@ -2290,56 +2376,52 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         missionVacationRanges.AddRange(hourlyvacations.Select(x => new { Start = x.FromDateTime.GetValueOrDefault(), End = x.ToDateTime.GetValueOrDefault() }).ToList());
                         missionVacationRanges = missionVacationRanges.OrderBy(x => x.Start).ToList();
 
-                        var entranceRecord = new EntranceExitRecord
+                        var entrancefingerprint = new FingerprintTransferredData
                         {
                             Employee = employeeAttendanceCard.Employee,
-                            InsertSource = InsertSource.AutoGenerate,
                             LogDateTime = shift.EntryTime,
-                            LogTime = new DateTime(2000, 1, 1, shift.EntryTime.Hour, shift.EntryTime.Minute, shift.EntryTime.Second),
-                            LogDate = new DateTime(shift.EntryTime.Year, shift.EntryTime.Month, shift.EntryTime.Day, 0, 0, 0),
                             LogType = LogType.Entrance,
-                            ErrorType = ErrorType.None,
-                            Note = note
+                            IsLogTypeIgnored = true,
+                            IsTransfered = false,
+                            IsOld = false
                         };
-                        if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, shift.EntryTime, InsertSource.AutoGenerate,
+                        if (!CheckFingerPrintDuplicate(allEntranceExitRecordDataOfEmployee, shift.EntryTime, InsertSource.AutoGenerate,
                             LogType.Entrance, 0))
                         {
                             if (missionVacationRanges.Any())
                             {
-                                if (missionVacationRanges.First().Start != entranceRecord.LogDateTime)
+                                if (missionVacationRanges.First().Start != entrancefingerprint.LogDateTime)
                                 {
-                                    cardEntities.Add(entranceRecord);
+                                    cardEntities.Add(entrancefingerprint);
                                 }
                             }
                             else
                             {
-                                cardEntities.Add(entranceRecord);
+                                cardEntities.Add(entrancefingerprint);
                             }
                         }
 
-                        var exitRecord = new EntranceExitRecord
+                        var exitfingerprint = new FingerprintTransferredData
                         {
                             Employee = employeeAttendanceCard.Employee,
-                            InsertSource = InsertSource.AutoGenerate,
                             LogDateTime = shift.ExitTime,
-                            LogTime = new DateTime(2000, 1, 1, shift.ExitTime.Hour, shift.ExitTime.Minute, shift.ExitTime.Second),
-                            LogDate = new DateTime(shift.ExitTime.Year, shift.ExitTime.Month, shift.ExitTime.Day, 0, 0, 0),
                             LogType = LogType.Exit,
-                            ErrorType = ErrorType.None,
-                            Note = note
+                            IsLogTypeIgnored = true,
+                            IsTransfered = false,
+                            IsOld = false
                         };
-                        if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, shift.ExitTime, InsertSource.AutoGenerate, LogType.Exit, 0))
+                        if (!CheckFingerPrintDuplicate(allEntranceExitRecordDataOfEmployee, shift.ExitTime, InsertSource.AutoGenerate, LogType.Exit, 0))
                         {
                             if (missionVacationRanges.Any())
                             {
-                                if (missionVacationRanges.Last().End != exitRecord.LogDateTime)
+                                if (missionVacationRanges.Last().End != exitfingerprint.LogDateTime)
                                 {
-                                    cardEntities.Add(exitRecord);
+                                    cardEntities.Add(exitfingerprint);
                                 }
                             }
                             else
                             {
-                                cardEntities.Add(exitRecord);
+                                cardEntities.Add(exitfingerprint);
                             }
                         }
 
@@ -2348,49 +2430,45 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                         {
                             for (int i = 0; i < missionVacationRanges.Count; i++)
                             {
-                                if (missionVacationRanges[i].Start != entranceRecord.LogDateTime)
+                                if (missionVacationRanges[i].Start != entrancefingerprint.LogDateTime)
                                 {
-                                    var exitRecord1 = new EntranceExitRecord
+                                    var exitfingerprintInside = new FingerprintTransferredData
                                     {
                                         Employee = employeeAttendanceCard.Employee,
-                                        InsertSource = InsertSource.AutoGenerate,
                                         LogDateTime = missionVacationRanges[i].Start,
-                                        LogTime = new DateTime(2000, 1, 1, missionVacationRanges[i].Start.Hour, missionVacationRanges[i].Start.Minute, missionVacationRanges[i].Start.Second),
-                                        LogDate = new DateTime(missionVacationRanges[i].Start.Year, missionVacationRanges[i].Start.Month, missionVacationRanges[i].Start.Day, 0, 0, 0),
                                         LogType = LogType.Exit,
-                                        ErrorType = ErrorType.None,
-                                        Note = note
-                                    };
-                                    if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, exitRecord1.LogDateTime,
+                                        IsLogTypeIgnored = true,
+                                        IsTransfered = false,
+                                        IsOld = false
+                                    }; 
+                                    if (!CheckFingerPrintDuplicate(allEntranceExitRecordDataOfEmployee, exitfingerprintInside.LogDateTime,
                                        InsertSource.AutoGenerate, LogType.Exit, 0))
                                     {
                                         if (i == 0 || missionVacationRanges[i].Start != missionVacationRanges[i - 1].End)
                                         {
-                                            cardEntities.Add(exitRecord1);
+                                            cardEntities.Add(exitfingerprintInside);
                                         }
 
                                     }
                                 }
-                                if (missionVacationRanges[i].End != exitRecord.LogDateTime)
+                                if (missionVacationRanges[i].End != exitfingerprint.LogDateTime)
                                 {
-                                    var entranceRecord1 = new EntranceExitRecord
+                                    var entrancefingerprintInside = new FingerprintTransferredData
                                     {
                                         Employee = employeeAttendanceCard.Employee,
-                                        InsertSource = InsertSource.AutoGenerate,
                                         LogDateTime = missionVacationRanges[i].End,
-                                        LogTime = new DateTime(2000, 1, 1, missionVacationRanges[i].End.Hour, missionVacationRanges[i].End.Minute, missionVacationRanges[i].End.Second),
-                                        LogDate = new DateTime(missionVacationRanges[i].End.Year, missionVacationRanges[i].End.Month, missionVacationRanges[i].End.Day, 0, 0, 0),
                                         LogType = LogType.Entrance,
-                                        ErrorType = ErrorType.None,
-                                        Note = note
+                                        IsLogTypeIgnored = true,
+                                        IsTransfered = false,
+                                        IsOld = false
                                     };
 
-                                    if (!CheckEntranceExitRecordDuplicate(allEntranceExitRecordDataOfEmployee, entranceRecord1.LogDateTime,
+                                    if (!CheckFingerPrintDuplicate(allEntranceExitRecordDataOfEmployee, entrancefingerprintInside.LogDateTime,
                                          InsertSource.AutoGenerate, LogType.Entrance, 0))
                                     {
                                         if (i == missionVacationRanges.Count - 1 || missionVacationRanges[i].End != missionVacationRanges[i + 1].Start)
                                         {
-                                            cardEntities.Add(entranceRecord1);
+                                            cardEntities.Add(entrancefingerprintInside);
                                         }
                                     }
                                 }
@@ -2409,6 +2487,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 var info = AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.AutoGenerateAttendanceRecords);
                 ServiceFactory.ORMService.SaveTransaction(entities, UserExtensions.CurrentUser, null, Souccar.Domain.Audit.OperationType.Update, info, start, null);
             }
+            AttendanceSystem.Services.AttendanceService.HandlingFingerPrintsDataAfterPulling(InsertSource.Machine);
         }
 
         public static int GenerateAttendanceRecordForSelectedEmployees(IQueryable employeeAttendanceCards, AttendanceRecord attendanceRecord, GeneralSettings generalSettings)
@@ -3498,16 +3577,27 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 }
             }
         }
-        public static bool CheckEntranceExitRecordDuplicate(List<EntranceExitRecord> EntranceExitRecordData,
+        public static bool CheckEntranceExitRecordDuplicate(List<EntranceExitRecord> entranceExitRecords,
             DateTime time, InsertSource insertSource, LogType logType, int ignorePeriodMinutes,
             bool igoneTypeOfFingerPint = false)
         {
-            var entranceExitRecord = EntranceExitRecordData
-               .Where(x => x.LogType == logType && ((x.LogDateTime >= time.AddMinutes(-ignorePeriodMinutes)) && (x.LogDateTime <= time.AddMinutes(ignorePeriodMinutes))));
+            var entranceExitRecordExisted = entranceExitRecords
+               .Any(x => x.LogType == logType && ((x.LogDateTime >= time.AddMinutes(-ignorePeriodMinutes)) && (x.LogDateTime <= time.AddMinutes(ignorePeriodMinutes))));
             if (igoneTypeOfFingerPint)
-                entranceExitRecord = EntranceExitRecordData
-               .Where(x => ((x.LogDateTime >= time.AddMinutes(-ignorePeriodMinutes)) && (x.LogDateTime <= time.AddMinutes(ignorePeriodMinutes))));
-            return entranceExitRecord.Any();
+                entranceExitRecordExisted = entranceExitRecords
+               .Any(x => ((x.LogDateTime >= time.AddMinutes(-ignorePeriodMinutes)) && (x.LogDateTime <= time.AddMinutes(ignorePeriodMinutes))));
+            return entranceExitRecordExisted;
+        }
+        public static bool CheckFingerPrintDuplicate(List<FingerprintTransferredData> fingerprints,
+            DateTime time, InsertSource insertSource, LogType logType, int ignorePeriodMinutes,
+            bool igoneTypeOfFingerPint = false)
+        {
+            var fingerprintExisted = fingerprints
+               .Any(x => x.LogType == logType && ((x.LogDateTime >= time.AddMinutes(-ignorePeriodMinutes)) && (x.LogDateTime <= time.AddMinutes(ignorePeriodMinutes))));
+            if (igoneTypeOfFingerPint)
+                fingerprintExisted = fingerprints
+               .Any(x => ((x.LogDateTime >= time.AddMinutes(-ignorePeriodMinutes)) && (x.LogDateTime <= time.AddMinutes(ignorePeriodMinutes))));
+            return fingerprintExisted;
         }
 
         #region Get Attendance System Settings

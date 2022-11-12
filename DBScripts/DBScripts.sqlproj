@@ -62,6 +62,15 @@
   <ItemGroup>
     <Build Include="Procedures\UpdateDailyRecordsFromAttendance.sql" />
     <Build Include="Functions\GetNodeOfEmployee.sql" />
-    <Build Include="Procedures\GetAllHolidaysBetweenTwoDates.sql" />
+    <Build Include="Functions\GetAllHolidaysBetweenTwoDates.sql" />
+    <Build Include="Functions\GetAttendanceFormOfEmployee.sql" />
+    <Build Include="Procedures\HandlingFingerPrintsData.sql" />
+    <Build Include="Procedures\SetIsNotCalculatedForAllAttendanceDetails.sql" />
+    <Build Include="Procedures\UpdateDailyRecordsFromDailyAttendance.sql" />
+    <Build Include="Procedures\UpdateMonthlyRecordsFromAttendance.sql" />
+    <Build Include="Functions\GetFormatValueAsHourMinute.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Functions\GetRecurrenceIndexByDate.sql" />
   </ItemGroup>
 </Project>

@@ -273,7 +273,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
         {
             var entranceExitRecord = (EntranceExitRecord)entity;
 
-            var fingerprintTransferredData = ServiceFactory.ORMService.All<FingerprintTransferredData>().Where(x => x.EntranceExitRecord == entranceExitRecord).FirstOrDefault();
+            var fingerprintTransferredData = ServiceFactory.ORMService.All<FingerprintTransferredData>().Where(x => x.LogDateTime == entranceExitRecord.LogDateTime).FirstOrDefault();
             if (fingerprintTransferredData != null)
                 fingerprintTransferredData.Delete();
             UpdateEntranceRecordsAfterCrudOperation(entranceExitRecord.Employee, entranceExitRecord.LogDateTime);

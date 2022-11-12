@@ -184,11 +184,12 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
 
                                     entities.Add(entranceExitRecord);
 
-                                    fingerprintTransferredData.EntranceExitRecord = entranceExitRecord;
                                     fingerprintTransferredData.LogDateTime = bioMetricRecordData.DateTime;
                                     fingerprintTransferredData.LogType = ConvertBioMetricRecordTypeToMaestroRecordType(bioMetricRecordData.RecordType);
                                     fingerprintTransferredData.Employee = empAttendanceCard.Employee;
 
+                                    fingerprintTransferredData.IsTransfered = true;
+                                    fingerprintTransferredData.IsLogTypeIgnored = false;
                                     entities.Add(fingerprintTransferredData);
 
                                 }
@@ -272,11 +273,11 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                                     dailyEntranceExitRecord = ComposeDailyRecord(dailyEntranceExitRecord, entranceExitRecord);
                                     entities.Add(entranceExitRecord);
 
-                                    fingerprintTransferredData.EntranceExitRecord = entranceExitRecord;
                                     fingerprintTransferredData.LogDateTime = bioMetricRecordData.DateTime;
                                     fingerprintTransferredData.LogType = lastRecord.LastRecordType == LogType.Exit ? LogType.Entrance : LogType.Exit;
                                     fingerprintTransferredData.Employee = empAttendanceCard.Employee;
-
+                                    fingerprintTransferredData.IsTransfered = true;
+                                    fingerprintTransferredData.IsLogTypeIgnored = true;
                                     entities.Add(fingerprintTransferredData);
                                     lastRecord = new
                                     {
