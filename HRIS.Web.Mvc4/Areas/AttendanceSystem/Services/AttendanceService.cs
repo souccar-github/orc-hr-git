@@ -652,7 +652,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             DateTime endDate = attendanceWithoutAdjustments[0].AttendanceRecord.ToDate >= DateTime.Now.Date ? DateTime.Now.Date : attendanceWithoutAdjustments[0].AttendanceRecord.ToDate;
 
             // اعادة كافة التواترات وما يقابلها من ورديات خلال الفترة المحددة
-            var allRecurrences = GetWorkshopsRecurrenceInPeriod(employeeAttendanceCards, fromDate, endDate.AddDays(1));
+            var allRecurrences = GetWorkshopsRecurrenceInPeriod(employeeAttendanceCards, fromDate, endDate);
             foreach (var attendanceWithoutAdjustment in attendanceWithoutAdjustments)
             {
                 List<EmployeeDisciplinary> employeeDisciplinarysShouldRemoved = new List<EmployeeDisciplinary>();
@@ -2538,7 +2538,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
         {
             var entities = new List<IAggregateRoot>();
             var days = 0;
-            DateTime endDate = attendanceRecord.ToDate >= DateTime.Now.Date ? DateTime.Now.Date : attendanceRecord.ToDate.AddDays(1);
+            DateTime endDate = attendanceRecord.ToDate >= DateTime.Now.Date ? DateTime.Now.Date : attendanceRecord.ToDate;
             if (attendanceRecord.FromDate <= endDate)
             {
                 days = (endDate - attendanceRecord.FromDate).Days +1;
