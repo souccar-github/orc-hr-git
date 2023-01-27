@@ -121,15 +121,26 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Controllers
                     record.EmployeeName.Split('-').Count() < 3 ?
                     record.EmployeeName.Split('-')[1] :
                     null;
-                var employee = string.IsNullOrEmpty(employeeValue) && employees.FirstOrDefault(x => Regex.Replace(x.FullName, @"\s+", "").ToLower() == Regex.Replace(record.EmployeeName, @"\s+", "").ToLower()) != null ?
-                    employees.FirstOrDefault(x => Regex.Replace(x.FullName, @"\s+", "").ToLower() == Regex.Replace(record.EmployeeName, @"\s+", "").ToLower() ) :
-                    string.IsNullOrEmpty(employeeValue) && employees.FirstOrDefault(x => Regex.Replace(x.FullName, @"\s+", "").ToLower() == Regex.Replace(record.EmployeeName, @"\s+", "").ToLower()) == null ?
-                    employees.FirstOrDefault(x => 
-                    (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "")) ||
-                    (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "")) ||
-                    (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", ""))  ||
-                    (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", ""))):
-                    employees.FirstOrDefault(x => x.Username == employeeValue);
+                Employee employee = null;
+                if (string.IsNullOrEmpty(employeeValue))
+                {
+                    //check if the name equal fullname
+                    employee = employees.FirstOrDefault(x =>
+                               (Regex.Replace(Regex.Replace(Regex.Replace(x.FullName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "")) ||
+                               (Regex.Replace(Regex.Replace(Regex.Replace(x.FullName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "")) ||
+                               (Regex.Replace(Regex.Replace(Regex.Replace(x.FullName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "")) ||
+                               (Regex.Replace(Regex.Replace(Regex.Replace(x.FullName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "")));
+
+                    // check if the name equal fullname l2
+                    if(employee == null)
+                        employee = employees.FirstOrDefault(x =>
+                                   (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "")) ||
+                                   (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "")) ||
+                                   (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "أ", "ا"), @"\s+", "")) ||
+                                   (Regex.Replace(Regex.Replace(Regex.Replace(x.FullNameL2, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "") == Regex.Replace(Regex.Replace(Regex.Replace(record.EmployeeName, @"(?<!<!--.*?)" + "ة", "ه"), @"(?<!<!--.*?)" + "إ", "ا"), @"\s+", "")));
+                }
+                else
+                    employee = employees.FirstOrDefault(x => x.Username == employeeValue);
                 if (!string.IsNullOrEmpty(record.EnterLogTime) && employee == null)
                 {
                     msg = AttendanceLocalizationHelper.GetResource(AttendanceLocalizationHelper.EmployeeNameIsNotValidInTheRowWhichNumberIs) + " " + num;
