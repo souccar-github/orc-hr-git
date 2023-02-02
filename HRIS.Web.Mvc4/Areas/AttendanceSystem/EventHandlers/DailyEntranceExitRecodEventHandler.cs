@@ -73,16 +73,46 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
         public override void BeforeUpdate(RequestInformation requestInformation, Entity entity, IDictionary<string, object> originalState, string customInformation = null)
         {
             var dailyEntranceExitRecord = (DailyEnternaceExitRecord)entity;
-
             ComposeRecord(dailyEntranceExitRecord);
-            UpdateEntranceExitRecord(dailyEntranceExitRecord);
+            UpdateEntranceExitRecord(dailyEntranceExitRecord, originalState);
         }
 
-        private void UpdateEntranceExitRecord(DailyEnternaceExitRecord dailyEntranceExitRecord)
+        private void UpdateEntranceExitRecord(DailyEnternaceExitRecord dailyEntranceExitRecord, IDictionary<string, object> oldOne)
         {
-            var entranceExitsRecords = ServiceFactory.ORMService.All<EntranceExitRecord>().Where(x => x.LogDate == dailyEntranceExitRecord.Date && x.Employee == dailyEntranceExitRecord.Employee);
 
-            var allEntranceExitRecordIds = entranceExitsRecords.Select(x => x.Id.ToString()).ToList();
+            List<EntranceExitRecord> records = new List<EntranceExitRecord>();
+            var entranceExitsRecords = ServiceFactory.ORMService.All<EntranceExitRecord>().Where(x => x.Employee == dailyEntranceExitRecord.Employee);
+            if (oldOne["LoginDateTime"] != null && !string.IsNullOrEmpty(oldOne["LoginDateTime"].ToString()))
+            {
+                var record = entranceExitsRecords.FirstOrDefault(x => x.LogDateTime == Convert.ToDateTime(oldOne["LoginDateTime"].ToString()));
+                if (record != null) records.Add(record);
+            }
+            if (oldOne["LogoutDateTime"] != null && !string.IsNullOrEmpty(oldOne["LogoutDateTime"].ToString()))
+            {
+                var record = entranceExitsRecords.FirstOrDefault(x => x.LogDateTime == Convert.ToDateTime(oldOne["LogoutDateTime"].ToString()));
+                if (record != null) records.Add(record);
+            }
+            if (oldOne["SecondLoginDateTime"] != null && !string.IsNullOrEmpty(oldOne["SecondLoginDateTime"].ToString()))
+            {
+                var record = entranceExitsRecords.FirstOrDefault(x => x.LogDateTime == Convert.ToDateTime(oldOne["SecondLoginDateTime"].ToString()));
+                if (record != null) records.Add(record);
+            }
+            if (oldOne["SecondLogoutDateTime"] != null && !string.IsNullOrEmpty(oldOne["SecondLogoutDateTime"].ToString()))
+            {
+                var record = entranceExitsRecords.FirstOrDefault(x => x.LogDateTime == Convert.ToDateTime(oldOne["SecondLogoutDateTime"].ToString()));
+                if (record != null) records.Add(record);
+            }
+            if (oldOne["ThirdLoginDateTime"] != null && !string.IsNullOrEmpty(oldOne["ThirdLoginDateTime"].ToString()))
+            {
+                var record = entranceExitsRecords.FirstOrDefault(x => x.LogDateTime == Convert.ToDateTime(oldOne["ThirdLoginDateTime"].ToString()));
+                if (record != null) records.Add(record);
+            }
+            if (oldOne["ThirdLogoutDateTime"] != null && !string.IsNullOrEmpty(oldOne["ThirdLogoutDateTime"].ToString()))
+            {
+                var record = entranceExitsRecords.FirstOrDefault(x => x.LogDateTime == Convert.ToDateTime(oldOne["ThirdLogoutDateTime"].ToString()));
+                if (record != null) records.Add(record);
+            }
+            var allEntranceExitRecordIds = records.Select(x => x.Id.ToString()).ToList();
             var result = allEntranceExitRecordIds.Any() ? AttendanceService.DeleteFilteredEntranceExitWithRecordsWithFingerPrints(allEntranceExitRecordIds) : true;
             if (result)
             {
