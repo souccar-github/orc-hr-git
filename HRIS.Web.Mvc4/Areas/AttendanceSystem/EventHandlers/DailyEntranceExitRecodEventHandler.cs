@@ -401,5 +401,21 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             }
         }
 
+        public override void BeforeDelete(Entity entity)
+        {
+            PreventDefault = true;
+        }
+        public override void AfterDelete(RequestInformation requestInformation, Entity entity, string customInformation = null)
+        {
+            var dailyEnternaceExitRecord = (DailyEnternaceExitRecord)entity;
+            var dailyEnternaceExitRecordIds = new List<string>() { dailyEnternaceExitRecord.Id.ToString() };
+            var datesOfDailyEnternaceExitRecord = new List<DateTime>();
+            datesOfDailyEnternaceExitRecord = AttendanceService.GetDatesOfDailyEntranceExitRecords(dailyEnternaceExitRecord, datesOfDailyEnternaceExitRecord);
+            var allEntranceExitRecords = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList();
+            var allEntranceExitRecordIds = allEntranceExitRecords.Where(x => datesOfDailyEnternaceExitRecord.Any(y=> y == x.LogDateTime) && dailyEnternaceExitRecord.Employee == x.Employee)
+                     .Select(x => x.Id.ToString()).ToList();
+            AttendanceService.DeleteFilteredEntranceExitWithRecordsWithFingerPrints(allEntranceExitRecordIds, dailyEnternaceExitRecordIds);
+        }
+
     }
 }

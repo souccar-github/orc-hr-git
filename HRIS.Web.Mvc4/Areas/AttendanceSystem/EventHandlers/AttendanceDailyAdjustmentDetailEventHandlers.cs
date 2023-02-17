@@ -17,6 +17,10 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.EventHandlers
             model.Views[0].ViewHandler = "RemoveEditButtonViewHandler";
             model.ViewModelTypeFullName = typeof(AttendanceDailyAdjustmentDetailEventHandlers).FullName;
         }
+        public override void BeforeRead(RequestInformation requestInformation)
+        {
+            PreventDefault = true;
+        }
         public override void AfterRead(RequestInformation requestInformation, DataSourceResult result, int pageSize = 10, int skip = 0)
         {
             var allBeforeFilter = ((IQueryable<AttendanceDailyAdjustmentDetail>)result.Data).ToList();

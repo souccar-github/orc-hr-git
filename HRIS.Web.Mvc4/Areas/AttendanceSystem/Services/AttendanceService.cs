@@ -3447,8 +3447,13 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             var allDailyEntranceExitRecordIds = new List<string>();
             var allEntranceExitRecordIds = new List<string>();
             var allDailyEntranceExitRecord = (IEnumerable<DailyEnternaceExitRecord>)filteredEntranceExitRecords;
+            var datesOfDailyEnternaceExitRecord = new List<DateTime>();
+            foreach (var record in allDailyEntranceExitRecord)
+            {
+                datesOfDailyEnternaceExitRecord.AddRange(GetDatesOfDailyEntranceExitRecords(record, datesOfDailyEnternaceExitRecord));
+            }
             var allEntranceExitRecord = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList();
-            var allFilteredEntranceExitRecord = (IEnumerable<EntranceExitRecord>)allEntranceExitRecord.Where(x => allDailyEntranceExitRecord.Any(y => y.Date == x.LogDate && y.Employee == x.Employee));
+            var allFilteredEntranceExitRecord = allEntranceExitRecord.Where(x => datesOfDailyEnternaceExitRecord.Any(y => y == x.LogDateTime) && allDailyEntranceExitRecord.Any(y => y.Employee == x.Employee));
             if (!withoutFilters)
             {
                 allDailyEntranceExitRecordIds = allDailyEntranceExitRecord.Select(x => x.Id.ToString()).ToList();
@@ -3459,6 +3464,29 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                 return allDailyEntranceExitRecord.Count();
             else
                 return 0;
+        }
+        public static List<DateTime> GetDatesOfDailyEntranceExitRecords(DailyEnternaceExitRecord dailyEnternaceExitRecord, List<DateTime> dates)
+        {
+            if (dailyEnternaceExitRecord.LoginDate.HasValue && dailyEnternaceExitRecord.LoginDateTime.Value != default && !dates.Any(x=> x == dailyEnternaceExitRecord.LoginDateTime.Value))
+                dates.Add(dailyEnternaceExitRecord.LoginDateTime.Value);
+
+            if (dailyEnternaceExitRecord.SecondLoginDate.HasValue && dailyEnternaceExitRecord.SecondLoginDateTime.Value != default && !dates.Any(x => x == dailyEnternaceExitRecord.SecondLoginDateTime.Value))
+                dates.Add(dailyEnternaceExitRecord.SecondLoginDateTime.Value);
+
+            if (dailyEnternaceExitRecord.ThirdLoginDate.HasValue && dailyEnternaceExitRecord.ThirdLoginDateTime.Value != default && !dates.Any(x => x == dailyEnternaceExitRecord.ThirdLoginDateTime.Value))
+                dates.Add(dailyEnternaceExitRecord.ThirdLoginDateTime.Value);
+
+            if (dailyEnternaceExitRecord.LogoutDate.HasValue && dailyEnternaceExitRecord.LogoutDateTime.Value != default && !dates.Any(x => x == dailyEnternaceExitRecord.LogoutDateTime.Value))
+                dates.Add(dailyEnternaceExitRecord.LogoutDateTime.Value);
+
+            if (dailyEnternaceExitRecord.SecondLogoutDate.HasValue && dailyEnternaceExitRecord.SecondLogoutDateTime.Value != default && !dates.Any(x => x == dailyEnternaceExitRecord.SecondLogoutDateTime.Value))
+                dates.Add(dailyEnternaceExitRecord.SecondLogoutDateTime.Value);
+
+            if (dailyEnternaceExitRecord.ThirdLogoutDate.HasValue && dailyEnternaceExitRecord.ThirdLogoutDateTime.Value != default && !dates.Any(x => x == dailyEnternaceExitRecord.ThirdLogoutDateTime.Value))
+                dates.Add(dailyEnternaceExitRecord.ThirdLogoutDateTime.Value);
+
+            return dates;
+
         }
         public static bool DeleteFilteredEntranceExitWithRecordsWithFingerPrints(List<string> entranceExitIds, List<string> dailyRecords)
         {

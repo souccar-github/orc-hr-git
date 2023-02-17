@@ -18,6 +18,10 @@ namespace project
             model.Views[0].ViewHandler = "RemoveEditButtonViewHandler";
             model.ViewModelTypeFullName = typeof(AttendanceMonthlyAdjustmentDetailEventHandlers).FullName;
         }
+        public override void BeforeRead(RequestInformation requestInformation)
+        {
+            PreventDefault = true;
+        }
         public override void AfterRead(RequestInformation requestInformation, DataSourceResult result, int pageSize = 10, int skip = 0)
         {
             var allBeforeFilter = ((IQueryable<AttendanceMonthlyAdjustmentDetail>)result.Data).ToList();
