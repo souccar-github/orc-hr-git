@@ -3450,7 +3450,7 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
             var datesOfDailyEnternaceExitRecord = new List<DateTime>();
             foreach (var record in allDailyEntranceExitRecord)
             {
-                datesOfDailyEnternaceExitRecord.AddRange(GetDatesOfDailyEntranceExitRecords(record, datesOfDailyEnternaceExitRecord));
+                datesOfDailyEnternaceExitRecord = GetDatesOfDailyEntranceExitRecords(record, datesOfDailyEnternaceExitRecord);
             }
             var allEntranceExitRecord = ServiceFactory.ORMService.All<EntranceExitRecord>().ToList();
             var allFilteredEntranceExitRecord = allEntranceExitRecord.Where(x => datesOfDailyEnternaceExitRecord.Any(y => y == x.LogDateTime) && allDailyEntranceExitRecord.Any(y => y.Employee == x.Employee));
