@@ -3526,24 +3526,34 @@ namespace Project.Web.Mvc4.Areas.AttendanceSystem.Services
                     l_oConnection.Open();
 
                     // Create a String to hold the query.
-                    string queryFingerprintTransferredData = "DELETE FROM FingerprintTransferredData" + whereFingerprintTransferredDataStr;
+                    string queryFingerprintTransferredData = entranceExitIds.Count > 0 ? "DELETE FROM FingerprintTransferredData" + whereFingerprintTransferredDataStr : string.Empty;
 
-                    string queryEntranceExitRecord = "DELETE FROM EntranceExitRecord" + whereentranceExitStr;
-                    string querydailyentranceExitIdsStr = "DELETE FROM DailyEnternaceExitRecord" + dailyentranceExitIdsStr;
+                    string queryEntranceExitRecord = entranceExitIds.Count > 0 ? "DELETE FROM EntranceExitRecord" + whereentranceExitStr : string.Empty;
+                    string querydailyentranceExitIdsStr = dailyRecords.Count > 0 ? "DELETE FROM DailyEnternaceExitRecord" + dailyentranceExitIdsStr : string.Empty;
 
                     // Create a SqlCommand object and pass the constructor the connection string and the query string.
-                    SqlCommand queryCommandFingerprintTransferredData = new SqlCommand(queryFingerprintTransferredData, l_oConnection);
-                    sqlAdapter.DeleteCommand = queryCommandFingerprintTransferredData;
-                    sqlAdapter.DeleteCommand.ExecuteNonQuery();
-                    queryCommandFingerprintTransferredData.Dispose();
-                    SqlCommand queryCommandEntranceExitRecord = new SqlCommand(queryEntranceExitRecord, l_oConnection);
-                    sqlAdapter.DeleteCommand = queryCommandEntranceExitRecord;
-                    sqlAdapter.DeleteCommand.ExecuteNonQuery();
-                    queryCommandEntranceExitRecord.Dispose();
-                    SqlCommand queryCommanddailyentranceExitIdsStr = new SqlCommand(querydailyentranceExitIdsStr, l_oConnection);
-                    sqlAdapter.DeleteCommand = queryCommanddailyentranceExitIdsStr;
-                    sqlAdapter.DeleteCommand.ExecuteNonQuery();
-                    queryCommandFingerprintTransferredData.Dispose();
+                    if (!string.IsNullOrEmpty(queryFingerprintTransferredData))
+                    {
+                        SqlCommand queryCommandFingerprintTransferredData = new SqlCommand(queryFingerprintTransferredData, l_oConnection);
+                        sqlAdapter.DeleteCommand = queryCommandFingerprintTransferredData;
+                        sqlAdapter.DeleteCommand.ExecuteNonQuery();
+                        queryCommandFingerprintTransferredData.Dispose();
+                    }
+                    if (!string.IsNullOrEmpty(queryEntranceExitRecord))
+                    {
+                        SqlCommand queryCommandEntranceExitRecord = new SqlCommand(queryEntranceExitRecord, l_oConnection);
+                        sqlAdapter.DeleteCommand = queryCommandEntranceExitRecord;
+                        sqlAdapter.DeleteCommand.ExecuteNonQuery();
+                        queryCommandEntranceExitRecord.Dispose();
+                    }
+
+                    if (!string.IsNullOrEmpty(querydailyentranceExitIdsStr))
+                    {
+                        SqlCommand queryCommanddailyentranceExitIdsStr = new SqlCommand(querydailyentranceExitIdsStr, l_oConnection);
+                        sqlAdapter.DeleteCommand = queryCommanddailyentranceExitIdsStr;
+                        sqlAdapter.DeleteCommand.ExecuteNonQuery();
+                        queryCommanddailyentranceExitIdsStr.Dispose();
+                    }
 
                     l_oConnection.Close();
                     return true;
